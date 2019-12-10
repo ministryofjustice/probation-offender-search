@@ -1,0 +1,54 @@
+version: "3"
+services:
+  offender-search:
+    image: mojdigitalstudio/offender-search:latest
+    networks:
+      - hmpps
+    container_name: offender-search
+    depends_on:
+      - localstack
+    ports:
+      - "8084:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=localstack,dev
+
+  oauth:
+    image: mojdigitalstudio/nomis-oauth2-server:latest
+    networks:
+      - hmpps
+    container_name: oauth
+    ports:
+      - "9090:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+
+  localstack:
+    image: localstack/localstack
+    networks:
+      - hmpps
+    container_name: localstack
+    ports:
+      - "4567-4597:4567-4597"
+      - 8999:8080
+    environment:
+      - SERVICES=es
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=${DATA_DIR- }
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_EXECUTION_ENV=True
+      - DEFAULT_REGION=eu-west-2
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+networks:
+  hmpps:
