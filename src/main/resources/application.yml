@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: offender-search
+
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  use-forward-headers: true
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol_header: x-forwarded-proto
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.security: INFO
+    uk.gov.justice.hmpps: DEBUG
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: 'info, health, ping'
+  endpoint:
+    health:
+      cache:
+        time-to-live: 2000ms
+      show-components: always
+    info:
+      cache:
+        time-to-live: 2000ms
+
+azure:
+  application-insights:
+    web:
+      enable-W3C: true
+
+cloud:
+  aws:
+    stack:
+      auto: false
+    region:
+      static: eu-west-2
