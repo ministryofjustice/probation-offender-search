@@ -12,6 +12,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail;
 import uk.gov.justice.hmpps.offendersearch.dto.SearchDto;
 import uk.gov.justice.hmpps.offendersearch.services.SearchService;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class OffenderSearchController {
             nickname="search")
 
     @GetMapping
-    public List<OffenderDetail> searchOffenders(SearchDto searchForm) {
+    public List<OffenderDetail> searchOffenders(SearchDto searchForm) throws IOException {
 
         log.debug("Search called");
 
