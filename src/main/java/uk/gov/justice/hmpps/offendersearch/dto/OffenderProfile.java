@@ -20,7 +20,6 @@ public class OffenderProfile {
     private OffenderLanguages offenderLanguages;
     private String religion;
     private String sexualOrientation;
-    private String offenderDetails;
     private String remandStatus;
     private PreviousConviction previousConviction;
     private String riskColour;

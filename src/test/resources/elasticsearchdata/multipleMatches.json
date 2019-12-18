@@ -1,0 +1,1096 @@
+{
+  "took": 97,
+  "timed_out": false,
+  "_shards": {
+    "total": 6,
+    "successful": 6,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": 4,
+    "max_score": 2.8768208,
+    "hits": [
+      {
+        "_shard": "[offender][2]",
+        "_node": "cxs5t1YjTea4QMWmTbPHuw",
+        "_index": "offender",
+        "_type": "document",
+        "_id": "3",
+        "_score": 2.8768208,
+        "_source": {
+          "gender": "Male",
+          "dateOfBirth": "1978-01-06",
+          "softDeleted": false,
+          "title": "Mr",
+          "contactDetails": {
+            "allowSMS": true,
+            "addresses": [
+              {
+                "buildingName": "string",
+                "noFixedAbode": true,
+                "streetName": "string",
+                "notes": "string",
+                "telephoneNumber": "string",
+                "town": "string",
+                "district": "string",
+                "addressNumber": "string",
+                "county": "string",
+                "postcode": "string",
+                "from": "2018-01-16",
+                "to": "2018-01-16"
+              }
+            ],
+            "emailAddresses": [],
+            "phoneNumbers": []
+          },
+          "middleNames": [],
+          "previousSurnames": [],
+          "firstName": "John",
+          "offenderManagers": [
+            {
+              "fromDate": "2018-02-16",
+              "partitionArea": "National Data",
+              "trustOfficer": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "active": true,
+              "staff": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "team": {
+                "district": {
+                  "code": "C16CRCA",
+                  "description": "C16 County"
+                },
+                "description": "OMU A",
+                "borough": {
+                  "code": "C16100",
+                  "description": "C16 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N03",
+                "description": "NPS Wales"
+              }
+            },
+            {
+              "fromDate": "1900-01-01",
+              "partitionArea": "National Data",
+              "toDate": "2018-02-16",
+              "trustOfficer": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N04)"
+              },
+              "active": false,
+              "staff": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N04)"
+              },
+              "team": {
+                "district": {
+                  "code": "N04NPSA",
+                  "description": "N04 Division"
+                },
+                "description": "Unallocated Team(N04)",
+                "borough": {
+                  "code": "N04100",
+                  "description": "N04 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N04",
+                "description": "NPS Midlands"
+              }
+            }
+          ],
+          "surname": "Smith",
+          "partitionArea": "some name",
+          "otherIds": {
+            "pncNumber": "2018/0123456X",
+            "pncNumberShortYear": "18/123456x",
+            "croNumber": "SF80/655108T",
+            "crn": "X00003",
+            "pncNumberLongYear": "2018/123456x",
+            "croNumberLowercase": "sf80/655108t"
+          },
+          "offenderAliases": [],
+          "offenderId": 3,
+          "currentDisposal": "1",
+          "offenderProfile": {
+            "riskColour": "red",
+            "sexualOrientation": "string",
+            "offenderDetails": {},
+            "notes": "string",
+            "remandStatus": "string",
+            "ethnicity": "string",
+            "nationality": "string",
+            "secondaryNationality": "string",
+            "offenderLanguages": {
+              "requiresInterpreter": true,
+              "languageConcerns": "string",
+              "otherLanguages": [
+                "string"
+              ],
+              "primaryLanguage": "string"
+            },
+            "immigrationStatus": "string",
+            "previousConviction": {
+              "detail": {}
+            },
+            "religion": "string"
+          }
+        },
+        "highlight": {
+          "surname": [
+            "Smith"
+          ]
+        },
+        "_explanation": {
+          "value": 2.8768208,
+          "description": "sum of:",
+          "details": [
+            {
+              "value": 2.8768208,
+              "description": "sum of:",
+              "details": [
+                {
+                  "value": 2.8768208,
+                  "description": "max of:",
+                  "details": [
+                    {
+                      "value": 2.8768208,
+                      "description": "max of:",
+                      "details": [
+                        {
+                          "value": 2.8768208,
+                          "description": "weight(surname:smith in 2) [PerFieldSimilarity], result of:",
+                          "details": [
+                            {
+                              "value": 2.8768208,
+                              "description": "score(doc=2,freq=1.0 = termFreq=1.0\n), product of:",
+                              "details": [
+                                {
+                                  "value": 10.0,
+                                  "description": "boost",
+                                  "details": []
+                                },
+                                {
+                                  "value": 0.2876821,
+                                  "description": "idf, computed as log(1 + (docCount - docFreq + 0.5) / (docFreq + 0.5)) from:",
+                                  "details": [
+                                    {
+                                      "value": 1.0,
+                                      "description": "docFreq",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "docCount",
+                                      "details": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "value": 1.0,
+                                  "description": "tfNorm, computed as (freq * (k1 + 1)) / (freq + k1 * (1 - b + b * fieldLength / avgFieldLength)) from:",
+                                  "details": [
+                                    {
+                                      "value": 1.0,
+                                      "description": "termFreq=1.0",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.2,
+                                      "description": "parameter k1",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 0.75,
+                                      "description": "parameter b",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "avgFieldLength",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "fieldLength",
+                                      "details": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": 0.0,
+              "description": "match on required clause, product of:",
+              "details": [
+                {
+                  "value": 0.0,
+                  "description": "# clause",
+                  "details": []
+                },
+                {
+                  "value": 1.0,
+                  "description": "DocValuesFieldExistsQuery [field=_primary_term]",
+                  "details": []
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "_shard": "[offender][5]",
+        "_node": "cxs5t1YjTea4QMWmTbPHuw",
+        "_index": "offender",
+        "_type": "document",
+        "_id": "1",
+        "_score": 2.8768208,
+        "_source": {
+          "gender": "Male",
+          "dateOfBirth": "1978-01-06",
+          "softDeleted": false,
+          "title": "Mr",
+          "contactDetails": {
+            "allowSMS": true,
+            "addresses": [
+              {
+                "buildingName": "string",
+                "noFixedAbode": true,
+                "streetName": "string",
+                "notes": "string",
+                "telephoneNumber": "string",
+                "town": "string",
+                "district": "string",
+                "addressNumber": "string",
+                "county": "string",
+                "postcode": "string",
+                "from": "2018-01-16",
+                "to": "2018-01-16"
+              }
+            ],
+            "emailAddresses": [],
+            "phoneNumbers": []
+          },
+          "middleNames": [],
+          "previousSurnames": [],
+          "firstName": "John",
+          "offenderManagers": [
+            {
+              "fromDate": "2018-02-16",
+              "partitionArea": "National Data",
+              "trustOfficer": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "active": true,
+              "staff": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "team": {
+                "district": {
+                  "code": "C16CRCA",
+                  "description": "C16 County"
+                },
+                "description": "OMU A",
+                "borough": {
+                  "code": "C16100",
+                  "description": "C16 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N01",
+                "description": "NPS North West"
+              }
+            },
+            {
+              "fromDate": "1900-01-01",
+              "partitionArea": "National Data",
+              "toDate": "2018-02-16",
+              "trustOfficer": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N04)"
+              },
+              "active": false,
+              "staff": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N04)"
+              },
+              "team": {
+                "district": {
+                  "code": "N04NPSA",
+                  "description": "N04 Division"
+                },
+                "description": "Unallocated Team(N04)",
+                "borough": {
+                  "code": "N04100",
+                  "description": "N04 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N04",
+                "description": "NPS Midlands"
+              }
+            }
+          ],
+          "surname": "Smith",
+          "partitionArea": "some name",
+          "otherIds": {
+            "pncNumber": "2018/0123456X",
+            "pncNumberShortYear": "18/123456x",
+            "croNumber": "SF80/655108T",
+            "crn": "X00001",
+            "pncNumberLongYear": "2018/123456x",
+            "croNumberLowercase": "sf80/655108t"
+          },
+          "offenderAliases": [],
+          "offenderId": 1,
+          "currentDisposal": "1",
+          "offenderProfile": {
+            "riskColour": "red",
+            "sexualOrientation": "string",
+            "offenderDetails": {},
+            "notes": "string",
+            "remandStatus": "string",
+            "ethnicity": "string",
+            "nationality": "string",
+            "secondaryNationality": "string",
+            "offenderLanguages": {
+              "requiresInterpreter": true,
+              "languageConcerns": "string",
+              "otherLanguages": [
+                "string"
+              ],
+              "primaryLanguage": "string"
+            },
+            "immigrationStatus": "string",
+            "previousConviction": {
+              "detail": {}
+            },
+            "religion": "string"
+          }
+        },
+        "highlight": {
+          "surname": [
+            "Smith"
+          ]
+        },
+        "_explanation": {
+          "value": 2.8768208,
+          "description": "sum of:",
+          "details": [
+            {
+              "value": 2.8768208,
+              "description": "sum of:",
+              "details": [
+                {
+                  "value": 2.8768208,
+                  "description": "max of:",
+                  "details": [
+                    {
+                      "value": 2.8768208,
+                      "description": "max of:",
+                      "details": [
+                        {
+                          "value": 2.8768208,
+                          "description": "weight(surname:smith in 2) [PerFieldSimilarity], result of:",
+                          "details": [
+                            {
+                              "value": 2.8768208,
+                              "description": "score(doc=2,freq=1.0 = termFreq=1.0\n), product of:",
+                              "details": [
+                                {
+                                  "value": 10.0,
+                                  "description": "boost",
+                                  "details": []
+                                },
+                                {
+                                  "value": 0.2876821,
+                                  "description": "idf, computed as log(1 + (docCount - docFreq + 0.5) / (docFreq + 0.5)) from:",
+                                  "details": [
+                                    {
+                                      "value": 1.0,
+                                      "description": "docFreq",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "docCount",
+                                      "details": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "value": 1.0,
+                                  "description": "tfNorm, computed as (freq * (k1 + 1)) / (freq + k1 * (1 - b + b * fieldLength / avgFieldLength)) from:",
+                                  "details": [
+                                    {
+                                      "value": 1.0,
+                                      "description": "termFreq=1.0",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.2,
+                                      "description": "parameter k1",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 0.75,
+                                      "description": "parameter b",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "avgFieldLength",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "fieldLength",
+                                      "details": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": 0.0,
+              "description": "match on required clause, product of:",
+              "details": [
+                {
+                  "value": 0.0,
+                  "description": "# clause",
+                  "details": []
+                },
+                {
+                  "value": 1.0,
+                  "description": "DocValuesFieldExistsQuery [field=_primary_term]",
+                  "details": []
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "_shard": "[offender][3]",
+        "_node": "cxs5t1YjTea4QMWmTbPHuw",
+        "_index": "offender",
+        "_type": "document",
+        "_id": "2",
+        "_score": 1.8232156,
+        "_source": {
+          "gender": "Male",
+          "dateOfBirth": "1978-01-06",
+          "softDeleted": false,
+          "title": "Mr",
+          "contactDetails": {
+            "allowSMS": true,
+            "addresses": [
+              {
+                "buildingName": "string",
+                "noFixedAbode": true,
+                "streetName": "string",
+                "notes": "string",
+                "telephoneNumber": "string",
+                "town": "string",
+                "district": "string",
+                "addressNumber": "string",
+                "county": "string",
+                "postcode": "string",
+                "from": "2018-01-16",
+                "to": "2018-01-16"
+              }
+            ],
+            "emailAddresses": [],
+            "phoneNumbers": []
+          },
+          "middleNames": [],
+          "previousSurnames": [],
+          "firstName": "John",
+          "offenderManagers": [
+            {
+              "fromDate": "2018-02-16",
+              "partitionArea": "National Data",
+              "trustOfficer": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "active": true,
+              "staff": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "team": {
+                "district": {
+                  "code": "C16CRCA",
+                  "description": "C16 County"
+                },
+                "description": "OMU A",
+                "borough": {
+                  "code": "C16100",
+                  "description": "C16 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N02",
+                "description": "NPS North East"
+              }
+            },
+            {
+              "fromDate": "2018-02-16",
+              "partitionArea": "National Data",
+              "trustOfficer": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "active": false,
+              "staff": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "team": {
+                "district": {
+                  "code": "C16CRCA",
+                  "description": "C16 County"
+                },
+                "description": "OMU A",
+                "borough": {
+                  "code": "C16100",
+                  "description": "C16 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N02",
+                "description": "NPS North East"
+              }
+            },
+            {
+              "fromDate": "1900-01-01",
+              "partitionArea": "National Data",
+              "toDate": "2018-02-16",
+              "trustOfficer": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N01)"
+              },
+              "active": false,
+              "staff": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N01)"
+              },
+              "team": {
+                "district": {
+                  "code": "N01NPSA",
+                  "description": "N01 Division"
+                },
+                "description": "Unallocated Team(N01)",
+                "borough": {
+                  "code": "N01100",
+                  "description": "N01 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N01",
+                "description": "NPS North West"
+              }
+            }
+          ],
+          "surname": "Smith",
+          "partitionArea": "some name",
+          "otherIds": {
+            "pncNumber": "2018/0123456X",
+            "pncNumberShortYear": "18/123456x",
+            "croNumber": "SF80/655108T",
+            "crn": "X00002",
+            "pncNumberLongYear": "2018/123456x",
+            "croNumberLowercase": "sf80/655108t"
+          },
+          "offenderAliases": [],
+          "offenderId": 2,
+          "currentDisposal": "1",
+          "offenderProfile": {
+            "riskColour": "red",
+            "sexualOrientation": "string",
+            "offenderDetails": {},
+            "notes": "string",
+            "remandStatus": "string",
+            "ethnicity": "string",
+            "nationality": "string",
+            "secondaryNationality": "string",
+            "offenderLanguages": {
+              "requiresInterpreter": true,
+              "languageConcerns": "string",
+              "otherLanguages": [
+                "string"
+              ],
+              "primaryLanguage": "string"
+            },
+            "immigrationStatus": "string",
+            "previousConviction": {
+              "detail": {}
+            },
+            "religion": "string"
+          }
+        },
+        "highlight": {
+          "surname": [
+            "Smith"
+          ]
+        },
+        "_explanation": {
+          "value": 1.8232156,
+          "description": "sum of:",
+          "details": [
+            {
+              "value": 1.8232156,
+              "description": "sum of:",
+              "details": [
+                {
+                  "value": 1.8232156,
+                  "description": "max of:",
+                  "details": [
+                    {
+                      "value": 1.8232156,
+                      "description": "max of:",
+                      "details": [
+                        {
+                          "value": 1.8232156,
+                          "description": "weight(surname:smith in 3) [PerFieldSimilarity], result of:",
+                          "details": [
+                            {
+                              "value": 1.8232156,
+                              "description": "score(doc=3,freq=1.0 = termFreq=1.0\n), product of:",
+                              "details": [
+                                {
+                                  "value": 10.0,
+                                  "description": "boost",
+                                  "details": []
+                                },
+                                {
+                                  "value": 0.18232156,
+                                  "description": "idf, computed as log(1 + (docCount - docFreq + 0.5) / (docFreq + 0.5)) from:",
+                                  "details": [
+                                    {
+                                      "value": 2.0,
+                                      "description": "docFreq",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 2.0,
+                                      "description": "docCount",
+                                      "details": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "value": 1.0,
+                                  "description": "tfNorm, computed as (freq * (k1 + 1)) / (freq + k1 * (1 - b + b * fieldLength / avgFieldLength)) from:",
+                                  "details": [
+                                    {
+                                      "value": 1.0,
+                                      "description": "termFreq=1.0",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.2,
+                                      "description": "parameter k1",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 0.75,
+                                      "description": "parameter b",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "avgFieldLength",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "fieldLength",
+                                      "details": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": 0.0,
+              "description": "match on required clause, product of:",
+              "details": [
+                {
+                  "value": 0.0,
+                  "description": "# clause",
+                  "details": []
+                },
+                {
+                  "value": 1.0,
+                  "description": "DocValuesFieldExistsQuery [field=_primary_term]",
+                  "details": []
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "_shard": "[offender][3]",
+        "_node": "cxs5t1YjTea4QMWmTbPHuw",
+        "_index": "offender",
+        "_type": "document",
+        "_id": "4",
+        "_score": 1.8232156,
+        "_source": {
+          "gender": "Male",
+          "dateOfBirth": "1978-01-06",
+          "softDeleted": false,
+          "title": "Ms",
+          "contactDetails": {
+            "allowSMS": true,
+            "addresses": [
+              {
+                "buildingName": "string",
+                "noFixedAbode": true,
+                "streetName": "string",
+                "notes": "string",
+                "telephoneNumber": "string",
+                "town": "string",
+                "district": "string",
+                "addressNumber": "string",
+                "county": "string",
+                "postcode": "string",
+                "from": "2018-01-16",
+                "to": "2018-01-16"
+              }
+            ],
+            "emailAddresses": [],
+            "phoneNumbers": []
+          },
+          "middleNames": [],
+          "previousSurnames": [],
+          "firstName": "Jane",
+          "offenderManagers": [
+            {
+              "fromDate": "2018-02-16",
+              "partitionArea": "National Data",
+              "trustOfficer": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "active": true,
+              "staff": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "team": {
+                "district": {
+                  "code": "C16CRCA",
+                  "description": "C16 County"
+                },
+                "description": "OMU A",
+                "borough": {
+                  "code": "C16100",
+                  "description": "C16 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N02",
+                "description": "NPS North East"
+              }
+            },
+            {
+              "fromDate": "1900-01-01",
+              "partitionArea": "National Data",
+              "toDate": "2018-02-16",
+              "trustOfficer": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N01)"
+              },
+              "active": false,
+              "staff": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N01)"
+              },
+              "team": {
+                "district": {
+                  "code": "N01NPSA",
+                  "description": "N01 Division"
+                },
+                "description": "Unallocated Team(N01)",
+                "borough": {
+                  "code": "N01100",
+                  "description": "N01 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N01",
+                "description": "NPS North West"
+              }
+            }
+          ],
+          "surname": "Smith",
+          "partitionArea": "some name",
+          "otherIds": {
+            "pncNumber": "2018/0123456X",
+            "pncNumberShortYear": "18/123456x",
+            "croNumber": "SF80/655108T",
+            "crn": "X00004",
+            "pncNumberLongYear": "2018/123456x",
+            "croNumberLowercase": "sf80/655108t"
+          },
+          "offenderAliases": [],
+          "offenderId": 4,
+          "currentDisposal": "1",
+          "offenderProfile": {
+            "riskColour": "red",
+            "sexualOrientation": "string",
+            "offenderDetails": {},
+            "notes": "string",
+            "remandStatus": "string",
+            "ethnicity": "string",
+            "nationality": "string",
+            "secondaryNationality": "string",
+            "offenderLanguages": {
+              "requiresInterpreter": true,
+              "languageConcerns": "string",
+              "otherLanguages": [
+                "string"
+              ],
+              "primaryLanguage": "string"
+            },
+            "immigrationStatus": "string",
+            "previousConviction": {
+              "detail": {}
+            },
+            "religion": "string"
+          }
+        },
+        "highlight": {
+          "surname": [
+            "Smith"
+          ]
+        },
+        "_explanation": {
+          "value": 1.8232156,
+          "description": "sum of:",
+          "details": [
+            {
+              "value": 1.8232156,
+              "description": "sum of:",
+              "details": [
+                {
+                  "value": 1.8232156,
+                  "description": "max of:",
+                  "details": [
+                    {
+                      "value": 1.8232156,
+                      "description": "max of:",
+                      "details": [
+                        {
+                          "value": 1.8232156,
+                          "description": "weight(surname:smith in 6) [PerFieldSimilarity], result of:",
+                          "details": [
+                            {
+                              "value": 1.8232156,
+                              "description": "score(doc=6,freq=1.0 = termFreq=1.0\n), product of:",
+                              "details": [
+                                {
+                                  "value": 10.0,
+                                  "description": "boost",
+                                  "details": []
+                                },
+                                {
+                                  "value": 0.18232156,
+                                  "description": "idf, computed as log(1 + (docCount - docFreq + 0.5) / (docFreq + 0.5)) from:",
+                                  "details": [
+                                    {
+                                      "value": 2.0,
+                                      "description": "docFreq",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 2.0,
+                                      "description": "docCount",
+                                      "details": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "value": 1.0,
+                                  "description": "tfNorm, computed as (freq * (k1 + 1)) / (freq + k1 * (1 - b + b * fieldLength / avgFieldLength)) from:",
+                                  "details": [
+                                    {
+                                      "value": 1.0,
+                                      "description": "termFreq=1.0",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.2,
+                                      "description": "parameter k1",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 0.75,
+                                      "description": "parameter b",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "avgFieldLength",
+                                      "details": []
+                                    },
+                                    {
+                                      "value": 1.0,
+                                      "description": "fieldLength",
+                                      "details": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": 0.0,
+              "description": "match on required clause, product of:",
+              "details": [
+                {
+                  "value": 0.0,
+                  "description": "# clause",
+                  "details": []
+                },
+                {
+                  "value": 1.0,
+                  "description": "DocValuesFieldExistsQuery [field=_primary_term]",
+                  "details": []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "aggregations": {
+    "nested#offenderManagers": {
+      "doc_count": 9,
+      "lterms#active": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": 0,
+            "key_as_string": "false",
+            "doc_count": 5,
+            "sterms#byProbationAreaCode": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "N01",
+                  "doc_count": 2
+                },
+                {
+                  "key": "N04",
+                  "doc_count": 2
+                },
+                {
+                  "key": "N02",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": 1,
+            "key_as_string": "true",
+            "doc_count": 4,
+            "sterms#byProbationAreaCode": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "N02",
+                  "doc_count": 2
+                },
+                {
+                  "key": "N01",
+                  "doc_count": 1
+                },
+                {
+                  "key": "N03",
+                  "doc_count": 1
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "suggest": {
+    "term#firstName": [
+      {
+        "text": "smith",
+        "offset": 0,
+        "length": 5,
+        "options": []
+      }
+    ],
+    "term#surname": [
+      {
+        "text": "smith",
+        "offset": 0,
+        "length": 5,
+        "options": []
+      }
+    ]
+  }
+}

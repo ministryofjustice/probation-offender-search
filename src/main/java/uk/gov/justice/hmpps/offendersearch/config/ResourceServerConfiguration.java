@@ -54,7 +54,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/webjars/**", "/favicon.ico", "/csrf",
-                        "/health", "/info", "/ping",
+                        "/health", "/info", "/health/ping",
                         "/v2/api-docs",
                         "/swagger-ui.html", "/swagger-resources", "/swagger-resources/configuration/ui",
                         "/swagger-resources/configuration/security").permitAll()
