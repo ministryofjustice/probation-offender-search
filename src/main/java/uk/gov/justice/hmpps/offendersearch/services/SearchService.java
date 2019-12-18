@@ -35,7 +35,7 @@ public class SearchService {
 
     public List<OffenderDetail> performSearch(SearchDto searchOptions) throws IOException {
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest("offender");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         QueryBuilder queryBuilder = QueryBuilders
