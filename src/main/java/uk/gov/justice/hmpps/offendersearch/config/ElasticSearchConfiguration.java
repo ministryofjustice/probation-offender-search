@@ -19,7 +19,7 @@ public class ElasticSearchConfiguration {
     @Value("${elasticsearch.scheme}")
     private String scheme;
 
-    @Bean(destroyMethod = "close")
+    @Bean
     public RestHighLevelClient client(){
 
         return new RestHighLevelClient(RestClient.builder(new HttpHost(host, port, scheme)));

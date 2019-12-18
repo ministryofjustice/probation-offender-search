@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -64,13 +63,18 @@ public class SearchService {
 
             Arrays.stream(searchHit)
                     .forEach(hit -> offenderDetailList
-                            .add(mapper
-                                    .convertValue(hit.getSourceAsMap(),
-                                            OffenderDetail.class))
-                    );
+                            .add(parseOffenderDetail(hit.getSourceAsString())));
         }
 
         return offenderDetailList;
+    }
+
+    private OffenderDetail parseOffenderDetail(String src) {
+        try {
+            return mapper.readValue(src, OffenderDetail.class);
+        } catch(Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
 }

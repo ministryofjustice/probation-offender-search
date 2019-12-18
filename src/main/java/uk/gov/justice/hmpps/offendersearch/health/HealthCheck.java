@@ -17,8 +17,8 @@ public abstract class HealthCheck implements HealthIndicator {
     @Override
     public Health health() {
         try {
-            final var responseEntity = this.restTemplate.getForEntity("/ping", String.class);
-            return Health.up().withDetail("HttpStatus", responseEntity.getStatusCode()).build();
+            // TODO elasticsearch healthcheck
+            return Health.up().build();
         } catch (final RestClientException e) {
             return Health.down(e).build();
         }

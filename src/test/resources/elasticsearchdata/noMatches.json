@@ -1,0 +1,43 @@
+{
+  "took" : 68,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 6,
+    "successful" : 6,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 0,
+    "max_score" : null,
+    "hits" : [ ]
+  },
+  "aggregations" : {
+    "nested#offenderManagers" : {
+      "doc_count" : 0,
+      "lterms#active" : {
+        "doc_count_error_upper_bound" : 0,
+        "sum_other_doc_count" : 0,
+        "buckets" : [ ]
+      }
+    }
+  },
+  "suggest": {
+    "term#firstName": [
+      {
+        "text": "smith",
+        "offset": 0,
+        "length": 5,
+        "options": []
+      }
+    ],
+    "term#surname": [
+      {
+        "text": "smith",
+        "offset": 0,
+        "length": 5,
+        "options": []
+      }
+    ]
+  }
+}

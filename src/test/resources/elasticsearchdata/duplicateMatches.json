@@ -1,0 +1,284 @@
+{
+  "took": 97,
+  "timed_out": false,
+  "_shards": {
+    "total": 6,
+    "successful": 6,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": 2,
+    "max_score": 2.8768208,
+    "hits": [
+      {
+        "_node": "cxs5t1YjTea4QMWmTbPHuw",
+        "_index": "offender",
+        "_type": "document",
+        "_id": "1",
+        "_score": 2.8768208,
+        "_source": {
+          "gender": "Male",
+          "dateOfBirth": "1978-01-06",
+          "softDeleted": false,
+          "title": "Mr",
+          "contactDetails": {
+            "allowSMS": true,
+            "addresses": [
+              {
+                "buildingName": "string",
+                "noFixedAbode": true,
+                "streetName": "string",
+                "notes": "string",
+                "telephoneNumber": "string",
+                "town": "string",
+                "district": "string",
+                "addressNumber": "string",
+                "county": "string",
+                "postcode": "string",
+                "from": "2018-01-16",
+                "to": "2018-01-16"
+              }
+            ],
+            "emailAddresses": [],
+            "phoneNumbers": []
+          },
+          "middleNames": [],
+          "previousSurnames": [],
+          "firstName": "John",
+          "offenderManagers": [
+            {
+              "fromDate": "2018-02-16",
+              "partitionArea": "National Data",
+              "trustOfficer": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "active": true,
+              "staff": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "team": {
+                "district": {
+                  "code": "C16CRCA",
+                  "description": "C16 County"
+                },
+                "description": "OMU A",
+                "borough": {
+                  "code": "C16100",
+                  "description": "C16 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N03",
+                "description": "NPS Wales"
+              }
+            },
+            {
+              "fromDate": "1900-01-01",
+              "partitionArea": "National Data",
+              "toDate": "2018-02-16",
+              "trustOfficer": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N04)"
+              },
+              "active": false,
+              "staff": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N04)"
+              },
+              "team": {
+                "district": {
+                  "code": "N04NPSA",
+                  "description": "N04 Division"
+                },
+                "description": "Unallocated Team(N04)",
+                "borough": {
+                  "code": "N04100",
+                  "description": "N04 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N04",
+                "description": "NPS Midlands"
+              }
+            }
+          ],
+          "surname": "Smith",
+          "partitionArea": "some name",
+          "otherIds": {
+            "pncNumber": "2018/0123456X",
+            "pncNumberShortYear": "18/123456x",
+            "croNumber": "SF80/655108T",
+            "crn": "X00001",
+            "pncNumberLongYear": "2018/123456x",
+            "croNumberLowercase": "sf80/655108t"
+          },
+          "offenderAliases": [],
+          "offenderId": 1,
+          "currentDisposal": "1",
+          "offenderProfile": {
+            "riskColour": "red",
+            "sexualOrientation": "string",
+            "offenderDetails": {},
+            "notes": "string",
+            "remandStatus": "string",
+            "ethnicity": "string",
+            "nationality": "string",
+            "secondaryNationality": "string",
+            "offenderLanguages": {
+              "requiresInterpreter": true,
+              "languageConcerns": "string",
+              "otherLanguages": [
+                "string"
+              ],
+              "primaryLanguage": "string"
+            },
+            "immigrationStatus": "string",
+            "previousConviction": {
+              "detail": {}
+            },
+            "religion": "string"
+          }
+        }
+      },
+      {
+        "_node": "cxs5t1YjTea4QMWmTbPHuw",
+        "_index": "offender",
+        "_type": "document",
+        "_id": "2",
+        "_score": 2.8768208,
+        "_source": {
+          "gender": "Male",
+          "dateOfBirth": "1978-01-06",
+          "softDeleted": false,
+          "title": "Mr",
+          "contactDetails": {
+            "allowSMS": true,
+            "addresses": [
+              {
+                "buildingName": "string",
+                "noFixedAbode": true,
+                "streetName": "string",
+                "notes": "string",
+                "telephoneNumber": "string",
+                "town": "string",
+                "district": "string",
+                "addressNumber": "string",
+                "county": "string",
+                "postcode": "string",
+                "from": "2018-01-16",
+                "to": "2018-01-16"
+              }
+            ],
+            "emailAddresses": [],
+            "phoneNumbers": []
+          },
+          "middleNames": [],
+          "previousSurnames": [],
+          "firstName": "John",
+          "offenderManagers": [
+            {
+              "fromDate": "2018-02-16",
+              "partitionArea": "National Data",
+              "trustOfficer": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "active": true,
+              "staff": {
+                "surname": "Dolphin",
+                "forenames": "Andy"
+              },
+              "team": {
+                "district": {
+                  "code": "C16CRCA",
+                  "description": "C16 County"
+                },
+                "description": "OMU A",
+                "borough": {
+                  "code": "C16100",
+                  "description": "C16 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N03",
+                "description": "NPS Wales"
+              }
+            },
+            {
+              "fromDate": "1900-01-01",
+              "partitionArea": "National Data",
+              "toDate": "2018-02-16",
+              "trustOfficer": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N04)"
+              },
+              "active": false,
+              "staff": {
+                "surname": "Staff",
+                "forenames": "Unallocated Staff(N04)"
+              },
+              "team": {
+                "district": {
+                  "code": "N04NPSA",
+                  "description": "N04 Division"
+                },
+                "description": "Unallocated Team(N04)",
+                "borough": {
+                  "code": "N04100",
+                  "description": "N04 Cluster 1"
+                }
+              },
+              "softDeleted": false,
+              "probationArea": {
+                "code": "N04",
+                "description": "NPS Midlands"
+              }
+            }
+          ],
+          "surname": "Smith",
+          "partitionArea": "some name",
+          "otherIds": {
+            "pncNumber": "2018/0123456X",
+            "pncNumberShortYear": "18/123456x",
+            "croNumber": "SF80/655108T",
+            "crn": "X00002",
+            "pncNumberLongYear": "2018/123456x",
+            "croNumberLowercase": "sf80/655108t"
+          },
+          "offenderAliases": [],
+          "offenderId": 2,
+          "currentDisposal": "1",
+          "offenderProfile": {
+            "riskColour": "red",
+            "sexualOrientation": "string",
+            "offenderDetails": {},
+            "notes": "string",
+            "remandStatus": "string",
+            "ethnicity": "string",
+            "nationality": "string",
+            "secondaryNationality": "string",
+            "offenderLanguages": {
+              "requiresInterpreter": true,
+              "languageConcerns": "string",
+              "otherLanguages": [
+                "string"
+              ],
+              "primaryLanguage": "string"
+            },
+            "immigrationStatus": "string",
+            "previousConviction": {
+              "detail": {}
+            },
+            "religion": "string"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail;
@@ -13,7 +14,6 @@ import uk.gov.justice.hmpps.offendersearch.dto.SearchDto;
 import uk.gov.justice.hmpps.offendersearch.services.SearchService;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 @Api(tags = {"offender-search"})
@@ -40,7 +40,7 @@ public class OffenderSearchController {
             nickname="search")
 
     @GetMapping
-    public List<OffenderDetail> searchOffenders(SearchDto searchForm) throws IOException {
+    public List<OffenderDetail> searchOffenders(final @RequestBody SearchDto searchForm) throws IOException {
 
         log.debug("Search called");
 
