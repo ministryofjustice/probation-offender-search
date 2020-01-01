@@ -55,17 +55,6 @@ executors:
   builder:  
     docker:
       - image: circleci/openjdk:11-jdk-browsers
-      - image: localstack/localstack
-        environment:
-          - SERVICES=es
-          - DEBUG=${DEBUG- }
-          - DATA_DIR=${DATA_DIR- }
-          - PORT_WEB_UI=${PORT_WEB_UI- }
-          - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
-          - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
-          - DOCKER_HOST=unix:///var/run/docker.sock
-          - AWS_EXECUTION_ENV=True
-          - DEFAULT_REGION=eu-west-2
     working_directory: ~/app
 
 orbs:
@@ -75,9 +64,25 @@ orbs:
 
 jobs:
   build:
-    executor: builder
+    working_directory: ~/app
+    docker:
+      - image: circleci/openjdk:11-jdk-browsers
+      - image: localstack/localstack
+        environment:
+          - SERVICES=es
+          - ES_PORT_EXTERNAL=4571
+          - DEBUG=${DEBUG- }
+          - DATA_DIR=/tmp/localstack/data
+          - DOCKER_HOST=unix:///var/run/docker.sock
+          - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+          - AWS_EXECUTION_ENV=True
+          - DEFAULT_REGION=eu-west-2
+          - TMPDIR=/private
     steps:
       - checkout
+      - run:
+          name: Wait for localstack to start
+          command: sleep 15
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle" }}
