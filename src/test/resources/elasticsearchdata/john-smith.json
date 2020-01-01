@@ -1,0 +1,70 @@
+{
+  "offenderId": 1,
+  "softDeleted": false,
+
+  "otherIds": {
+    "crn": "X00001",
+    "pncNumber": "2018/0123456X",
+    "croNumber": "SF80/655108T",
+    "nomsNumber" : "G8020GG"
+  },
+
+  "title": "Mr",
+  "firstName": "John",
+  "middleNames": [],
+  "surname": "Smith",
+  "previousSurnames": [],
+
+  "dateOfBirth": "1978-01-06",
+  "gender": "Male",
+
+  "currentDisposal": "1",
+  "partitionArea": "some name",
+
+  "offenderAliases": [
+  ],
+
+  "contactDetails": {
+    "addresses": [
+      {
+        "from": "2018-01-16",
+        "to": "2018-01-16",
+        "addressNumber": "string",
+        "buildingName": "string",
+        "county": "string",
+        "district": "string",
+        "noFixedAbode": true,
+        "notes": "string",
+        "postcode": "string",
+        "streetName": "string",
+        "telephoneNumber": "string",
+        "town": "string"
+      }
+    ],
+    "emailAddresses": [],
+    "phoneNumbers": [],
+    "allowSMS": true
+  },
+
+  "offenderProfile": {
+    "riskColour": "red",
+    "ethnicity": "string",
+    "immigrationStatus": "string",
+    "nationality": "string",
+    "notes": "string",
+    "offenderDetails": {},
+    "offenderLanguages": {
+      "languageConcerns": "string",
+      "otherLanguages": [ "string" ],
+      "primaryLanguage": "string",
+      "requiresInterpreter": true
+    },
+    "previousConviction": {
+      "detail": {}
+    },
+    "religion": "string",
+    "remandStatus": "string",
+    "secondaryNationality": "string",
+    "sexualOrientation": "string"
+  }
+}

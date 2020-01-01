@@ -55,6 +55,17 @@ executors:
   builder:  
     docker:
       - image: circleci/openjdk:11-jdk-browsers
+      - image: localstack/localstack
+        environment:
+          - SERVICES=es
+          - DEBUG=${DEBUG- }
+          - DATA_DIR=${DATA_DIR- }
+          - PORT_WEB_UI=${PORT_WEB_UI- }
+          - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+          - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+          - DOCKER_HOST=unix:///var/run/docker.sock
+          - AWS_EXECUTION_ENV=True
+          - DEFAULT_REGION=eu-west-2
     working_directory: ~/app
 
 orbs:

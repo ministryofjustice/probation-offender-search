@@ -5,17 +5,21 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail;
+import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,12 +33,9 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev,wiremock")
+@ActiveProfiles("dev,localstack")
 @RunWith(SpringJUnit4ClassRunner.class)
-public class OffenderSearchAPITest {
-
-    @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(4444).jettyStopTimeout(10000L));
+public class OffenderSearchAPIIntegrationTest {
 
     @LocalServerPort
     int port;
@@ -42,24 +43,25 @@ public class OffenderSearchAPITest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private LocalStackHelper localStackHelper;
+
     @Value("${test.token.good}")
     private String validOauthToken;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        localStackHelper.loadData();
         RestAssured.port = port;
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
     }
 
+
     @Test
     public void offenderSearch() throws IOException {
 
-            stubFor(get(anyUrl()).willReturn(
-                    okForContentType("application/json", response("src/test/resources/elasticsearchdata/singleMatch.json"))));
-
-
-        final var results = given()
+       final var results = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -72,8 +74,8 @@ public class OffenderSearchAPITest {
                 .body()
                 .as(OffenderDetail[].class);
 
-         assertThat(results).hasSize(1);
-         assertThat(results).extracting("firstName").containsOnly("John");
+         assertThat(results).hasSize(2);
+         assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane");
     }
 
     @Test
@@ -91,7 +93,9 @@ public class OffenderSearchAPITest {
                 .body("developerMessage", containsString("Invalid search  - please provide at least 1 search parameter"));
     }
 
-    private String response(String file) throws IOException {
-        return Files.readString(Paths.get(file));
-    }
+    @Test
+    public void noSearchParameters_ccbadRequest() throws IOException {
+
+        }
+
 }
