@@ -5,16 +5,10 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
@@ -26,6 +20,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail;
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,9 +36,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ContextConfiguration
 public class OffenderSearchAPIIntegrationTest extends AbstractTestExecutionListener {
 
-    @LocalServerPort
-    int port;
-
     @Value("${test.token.good}")
     private String validOauthToken;
 
@@ -51,9 +43,8 @@ public class OffenderSearchAPIIntegrationTest extends AbstractTestExecutionListe
     public void beforeTestClass(TestContext testContext) throws IOException {
         ObjectMapper objectMapper = testContext.getApplicationContext().getBean(ObjectMapper.class);
         RestHighLevelClient esClient = testContext.getApplicationContext().getBean(RestHighLevelClient.class);
-        int port = Integer.parseInt(testContext.getApplicationContext().getEnvironment().getProperty("local.server.port"));
         new LocalStackHelper(esClient).loadData();
-        RestAssured.port = port;
+        RestAssured.port = Integer.parseInt(Objects.requireNonNull(testContext.getApplicationContext().getEnvironment().getProperty("local.server.port")));;
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
     }
