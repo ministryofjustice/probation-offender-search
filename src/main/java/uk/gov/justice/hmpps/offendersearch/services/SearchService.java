@@ -65,6 +65,10 @@ public class SearchService {
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("firstName", searchOptions.getFirstName()));
         }
+        if (searchOptions.getDateOfBirth() !=  null ){
+            matchingAllFieldsQuery.must(QueryBuilders
+                    .matchQuery("dateOfBirth", searchOptions.getDateOfBirth()));
+        }
         if (searchOptions.getCrn() !=  null ){
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("otherIds.crn", searchOptions.getCrn()));
@@ -72,6 +76,10 @@ public class SearchService {
         if (searchOptions.getCroNumber() !=  null ){
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("otherIds.croNumber", searchOptions.getCroNumber()));
+        }
+        if (searchOptions.getPncNumber() !=  null ){
+            matchingAllFieldsQuery.must(QueryBuilders
+                    .matchQuery("otherIds.pncNumber", searchOptions.getPncNumber()));
         }
 
         return matchingAllFieldsQuery;

@@ -67,7 +67,7 @@ jobs:
     working_directory: ~/app
     docker:
       - image: circleci/openjdk:11-jdk-browsers
-      - image: localstack/localstack
+      - image: localstack/localstack:0.10.5
         environment:
           - SERVICES=es
           - ES_PORT_EXTERNAL=4571
@@ -81,7 +81,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Wait for localstack to start
+          name: Wait for localstack to start (will revisit)
           command: sleep 15
       - restore_cache:
           keys:

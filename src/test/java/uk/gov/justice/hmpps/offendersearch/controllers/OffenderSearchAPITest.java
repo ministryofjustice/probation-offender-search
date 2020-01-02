@@ -91,6 +91,20 @@ public class OffenderSearchAPITest {
                 .body("developerMessage", containsString("Invalid search  - please provide at least 1 search parameter"));
     }
 
+    @Test
+    public void invalidDateOfBirthFormat_badRequest() throws IOException {
+
+        final var results = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"dateOfBirth\":\"23/11/1976\"}")
+                .when()
+                .get("/search")
+                .then()
+                .statusCode(400);
+    }
+
     private String response(String file) throws IOException {
         return Files.readString(Paths.get(file));
     }
