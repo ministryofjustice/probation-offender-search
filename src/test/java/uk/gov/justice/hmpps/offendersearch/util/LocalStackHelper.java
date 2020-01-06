@@ -1,14 +1,13 @@
 package uk.gov.justice.hmpps.offendersearch.util;
 
+import com.amazonaws.util.IOUtils;
+import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,6 +38,24 @@ public class LocalStackHelper {
         loadOffender("6", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-n03.json"));
         loadOffender("7", loadFile("src/test/resources/elasticsearchdata/anne-gramsci-n02.json"));
         loadOffender("8", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-c20.json"));
+
+        waitForOffenderLoading();
+
+    }
+
+    private void waitForOffenderLoading() throws IOException {
+        var count = 0;
+        while (count < 8 ) {
+            //check offenders have been loaded before continuing with the test
+            var something = esClient.getLowLevelClient().performRequest("get", "/offender/_count", new BasicHeader("any", "any"));
+            count = JsonParser.parseString(IOUtils.toString(something.getEntity().getContent())).getAsJsonObject().get("count").getAsInt();
+            log.debug("Offenders loaded count: {}", count);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void loadOffender(String key, String offender) throws IOException {
