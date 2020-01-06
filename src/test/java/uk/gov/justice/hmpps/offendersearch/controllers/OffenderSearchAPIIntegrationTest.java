@@ -41,8 +41,8 @@ public class OffenderSearchAPIIntegrationTest extends AbstractTestExecutionListe
 
     @Override
     public void beforeTestClass(TestContext testContext) throws IOException {
-        ObjectMapper objectMapper = testContext.getApplicationContext().getBean(ObjectMapper.class);
-        RestHighLevelClient esClient = testContext.getApplicationContext().getBean(RestHighLevelClient.class);
+        var objectMapper = testContext.getApplicationContext().getBean(ObjectMapper.class);
+        var esClient = testContext.getApplicationContext().getBean(RestHighLevelClient.class);
         new LocalStackHelper(esClient).loadData();
         RestAssured.port = Integer.parseInt(Objects.requireNonNull(testContext.getApplicationContext().getEnvironment().getProperty("local.server.port")));;
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
