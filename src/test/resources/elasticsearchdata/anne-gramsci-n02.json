@@ -1,0 +1,127 @@
+{
+  "offenderId": 7,
+  "softDeleted": false,
+
+  "otherIds": {
+    "crn": "X00007"
+  },
+
+  "title": "Ms",
+  "firstName": "Anne",
+  "middleNames": [],
+  "surname": "Gramsci",
+  "previousSurnames": [],
+
+  "dateOfBirth": "1988-01-06",
+  "gender": "Female",
+
+  "currentDisposal": "1",
+  "partitionArea": "some name",
+
+  "offenderAliases": [
+  ],
+
+  "contactDetails": {
+    "addresses": [
+      {
+        "from": "2018-01-16",
+        "to": "2018-01-16",
+        "addressNumber": "string",
+        "buildingName": "string",
+        "county": "string",
+        "district": "string",
+        "noFixedAbode": true,
+        "notes": "string",
+        "postcode": "string",
+        "streetName": "string",
+        "telephoneNumber": "string",
+        "town": "string"
+      }
+    ],
+    "emailAddresses": [],
+    "phoneNumbers": [],
+    "allowSMS": true
+  },
+
+  "offenderProfile": {
+    "riskColour": "red",
+    "ethnicity": "string",
+    "immigrationStatus": "string",
+    "nationality": "string",
+    "notes": "string",
+    "offenderDetails": {},
+    "offenderLanguages": {
+      "languageConcerns": "string",
+      "otherLanguages": [ "string" ],
+      "primaryLanguage": "string",
+      "requiresInterpreter": true
+    },
+    "previousConviction": {
+      "detail": {}
+    },
+    "religion": "string",
+    "remandStatus": "string",
+    "secondaryNationality": "string",
+    "sexualOrientation": "string"
+  },
+  "offenderManagers": [
+    {
+      "trustOfficer": {
+        "forenames": "Andy",
+        "surname": "Dolphin"
+      },
+      "staff": {
+        "forenames": "Andy",
+        "surname": "Dolphin"
+      },
+      "partitionArea": "National Data",
+      "softDeleted": false,
+      "team": {
+        "description": "OMU A",
+        "district": {
+          "code": "C16CRCA",
+          "description": "C16 County"
+        },
+        "borough": {
+          "code": "C16100",
+          "description": "C16 Cluster 1"
+        }
+      },
+      "probationArea": {
+        "code": "N02",
+        "description": "NPS North East"
+      },
+      "fromDate": "2018-02-16",
+      "active": true
+    },
+    {
+      "trustOfficer": {
+        "forenames": "Unallocated Staff(N01)",
+        "surname": "Staff"
+      },
+      "staff": {
+        "forenames": "Unallocated Staff(N01)",
+        "surname": "Staff"
+      },
+      "partitionArea": "National Data",
+      "softDeleted": false,
+      "team": {
+        "description": "Unallocated Team(N01)",
+        "district": {
+          "code": "N01NPSA",
+          "description": "N01 Division"
+        },
+        "borough": {
+          "code": "N01100",
+          "description": "N01 Cluster 1"
+        }
+      },
+      "probationArea": {
+        "code": "N01",
+        "description": "NPS North West"
+      },
+      "fromDate": "1900-01-01",
+      "toDate": "2018-02-16",
+      "active": false
+    }
+  ]}

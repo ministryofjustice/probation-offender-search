@@ -25,15 +25,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev,localstack")
+@ActiveProfiles("dev,wiremock")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OffenderSearchAPITest {
 
     @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(4571).jettyStopTimeout(10000L));
+    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(4444).jettyStopTimeout(10000L));
 
     @LocalServerPort
     int port;
@@ -62,7 +63,7 @@ public class OffenderSearchAPITest {
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"smith\"}")
+                .body("{\"surname\":\"smith\"}")
                 .when()
                 .get("/search")
                 .then()
@@ -73,6 +74,35 @@ public class OffenderSearchAPITest {
 
          assertThat(results).hasSize(1);
          assertThat(results).extracting("firstName").containsOnly("John");
+    }
+
+    @Test
+    public void noSearchParameters_badRequest() throws IOException {
+
+        final var results = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{}")
+                .when()
+                .get("/search")
+                .then()
+                .statusCode(400)
+                .body("developerMessage", containsString("Invalid search  - please provide at least 1 search parameter"));
+    }
+
+    @Test
+    public void invalidDateOfBirthFormat_badRequest() throws IOException {
+
+        final var results = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"dateOfBirth\":\"23/11/1976\"}")
+                .when()
+                .get("/search")
+                .then()
+                .statusCode(400);
     }
 
     private String response(String file) throws IOException {

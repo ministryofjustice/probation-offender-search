@@ -4,7 +4,7 @@ import org.assertj.core.util.Lists;
 import uk.gov.justice.hmpps.offendersearch.dto.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public interface OffenderDetailHelper {
@@ -29,15 +29,15 @@ public interface OffenderDetailHelper {
                         .probationArea(ProbationArea.builder().code("A").description("B").build())
                         .build()))
                 .offenderProfile(OffenderProfile.builder()
-                        .offenderLanguages(OffenderLanguages.builder().primaryLanguage("English").otherLanguages(Arrays.asList("French")).requiresInterpreter(false).build())
+                        .offenderLanguages(OffenderLanguages.builder().primaryLanguage("English").otherLanguages(Collections.singletonList("French")).requiresInterpreter(false).build())
                         .ethnicity("ethnicity")
-                        .disabilities(Arrays.asList(Disability.builder().build())).build())
+                        .disabilities(Collections.singletonList(Disability.builder().build())).build())
                 .contactDetails(ContactDetails.builder()
-                        .addresses(Arrays.asList(Address.builder().addressNumber("123").build())).build())
+                        .addresses(Collections.singletonList(Address.builder().addressNumber("123").build())).build())
                 .build();
     }
 
     static List<OffenderDetail> anOffenderList() {
-        return Arrays.asList(anOffender());
+        return Collections.singletonList(anOffender());
     }
 }
