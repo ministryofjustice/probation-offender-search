@@ -42,7 +42,7 @@ public class OffenderSearchController {
     @GetMapping
     public List<OffenderDetail> searchOffenders(final @RequestBody SearchDto searchForm) throws IOException {
 
-        log.debug("Search called");
+        log.info("Search called with {}", searchForm);
 
         return searchService.performSearch(searchForm);
     }
