@@ -2,6 +2,7 @@ package uk.gov.justice.hmpps.offendersearch.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -57,11 +58,11 @@ public class SearchService {
         var matchingAllFieldsQuery = QueryBuilders
                 .boolQuery();
 
-        if (searchOptions.getSurname() !=  null ){
+        if (StringUtils.isNotBlank(searchOptions.getSurname()) ){
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("surname", searchOptions.getSurname()));
         }
-        if (searchOptions.getFirstName() !=  null ){
+        if (StringUtils.isNotBlank(searchOptions.getFirstName()) ){
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("firstName", searchOptions.getFirstName()));
         }
@@ -69,15 +70,15 @@ public class SearchService {
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("dateOfBirth", searchOptions.getDateOfBirth()));
         }
-        if (searchOptions.getCrn() !=  null ){
+        if (StringUtils.isNotBlank(searchOptions.getCrn())){
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("otherIds.crn", searchOptions.getCrn()));
         }
-        if (searchOptions.getCroNumber() !=  null ){
+        if (StringUtils.isNotBlank(searchOptions.getCroNumber())){
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("otherIds.croNumber", searchOptions.getCroNumber()));
         }
-        if (searchOptions.getPncNumber() !=  null ){
+        if (StringUtils.isNotBlank(searchOptions.getPncNumber())){
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("otherIds.pncNumber", searchOptions.getPncNumber()));
         }
