@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 
@@ -30,6 +31,7 @@ public class SearchDto {
     private String nomsNumber;
 
     public boolean isValid(){
-        return (firstName!=null || surname!=null || dateOfBirth!=null || pncNumber!=null || crn!=null || nomsNumber!=null || croNumber!=null);
+        return (StringUtils.isNotBlank(firstName) || StringUtils.isNotBlank(surname) || dateOfBirth!=null || StringUtils.isNotBlank(pncNumber) || StringUtils.isNotBlank(crn) ||
+                StringUtils.isNotBlank(nomsNumber) || StringUtils.isNotBlank(croNumber));
     }
 }
