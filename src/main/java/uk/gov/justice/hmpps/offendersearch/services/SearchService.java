@@ -82,6 +82,10 @@ public class SearchService {
             matchingAllFieldsQuery.must(QueryBuilders
                     .matchQuery("otherIds.pncNumber", searchOptions.getPncNumber()));
         }
+        if (StringUtils.isNotBlank(searchOptions.getNomsNumber())){
+            matchingAllFieldsQuery.must(QueryBuilders
+                    .matchQuery("otherIds.nomsNumber", searchOptions.getNomsNumber()));
+        }
 
         return matchingAllFieldsQuery;
     }

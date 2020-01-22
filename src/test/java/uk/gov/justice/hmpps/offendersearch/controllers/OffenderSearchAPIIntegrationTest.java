@@ -71,6 +71,26 @@ public class OffenderSearchAPIIntegrationTest extends AbstractTestExecutionListe
     }
 
     @Test
+    public void prisonNumberSearch() {
+
+        final var results = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"nomsNumber\":\"G8020GG\"}")
+                .when()
+                .get("/search")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(OffenderDetail[].class);
+
+        assertThat(results).hasSize(1);
+        assertThat(results).extracting("firstName").containsExactly("John");
+    }
+
+    @Test
     public void allParameters() {
 
         final var results = given()
