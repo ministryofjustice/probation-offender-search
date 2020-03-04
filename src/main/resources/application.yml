@@ -37,6 +37,9 @@ management:
     info:
       cache:
         time-to-live: 2000ms
+  health:
+    elasticsearch:
+      enabled: false
 
 azure:
   application-insights:
