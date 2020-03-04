@@ -11,8 +11,8 @@ API to provides searching of offender records in Delius via Elastic search
 
 #### Health
 
-- `/health/ping`: will respond `pong` to all requests.  This should be used by dependent systems to check connectivity to the offender search service.
-- `/health`: provides information about the application health and its dependencies.  This should only be used the notm-montor & PagerDuty.
+- `/health/ping`: will respond `{ status: "UP" }` to all requests.  This should be used by dependent systems to check connectivity to the offender search service.
+- `/health`: provides information about the application health and its dependencies.  This should be used the notm-montor & PagerDuty.
 - `/info`: provides information about the version of the deployed application, used by the notm-monitor.
 
 ## Running localstack to provide elasticSearch for tests
