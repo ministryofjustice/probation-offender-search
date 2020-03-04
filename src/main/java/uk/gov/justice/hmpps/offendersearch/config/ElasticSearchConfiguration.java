@@ -29,7 +29,7 @@ public class ElasticSearchConfiguration {
     private String awsRegion;
 
     @Bean
-    public RestHighLevelClient client(){
+    public RestHighLevelClient elasticSearchClient(){
 
         if (shouldSignRequests) {
             var signer = new AWS4Signer();
