@@ -27,15 +27,19 @@ management:
     web:
       base-path: /
       exposure:
-        include: 'info, health, ping'
+        include: 'info, health'
   endpoint:
     health:
       cache:
         time-to-live: 2000ms
       show-components: always
+      show-details: always
     info:
       cache:
         time-to-live: 2000ms
+  health:
+    elasticsearch:
+      enabled: false
 
 azure:
   application-insights:

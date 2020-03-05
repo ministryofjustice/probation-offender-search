@@ -26,11 +26,12 @@ import java.util.List;
 @Slf4j
 public class SearchService {
 
+    private static int MAX_SEARCH_RESULTS = 100;
     private RestHighLevelClient hlClient;
     private ObjectMapper mapper;
 
     @Autowired
-    public SearchService(@Qualifier("client") final RestHighLevelClient hlClient, final ObjectMapper mapper) {
+    public SearchService(@Qualifier("elasticSearchClient") final RestHighLevelClient hlClient, final ObjectMapper mapper) {
         this.hlClient = hlClient;
         this.mapper = mapper;
     }
@@ -42,13 +43,14 @@ public class SearchService {
         SearchRequest searchRequest = new SearchRequest("offender");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
+        // Set the maximum search result size (the default would otherwise be 10)
+        searchSourceBuilder.size(MAX_SEARCH_RESULTS);
 
         final var matchingAllFieldsQuery = buildMatchWithAllProvidedParameters(searchOptions);
 
         searchSourceBuilder.query(matchingAllFieldsQuery);
         searchRequest.source(searchSourceBuilder);
-        SearchResponse response =
-                hlClient.search(searchRequest);
+        SearchResponse response = hlClient.search(searchRequest);
 
         return getSearchResult(response);
     }
