@@ -8,6 +8,7 @@ import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers
 import org.junit.*
 import org.junit.jupiter.api.AfterAll
@@ -55,7 +56,7 @@ class OffenderSearchAPITest {
   fun setup() {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-        ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, s: String? -> objectMapper })
+        ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
   }
 
   @Test
@@ -73,8 +74,8 @@ class OffenderSearchAPITest {
         .extract()
         .body()
         .`as`(Array<OffenderDetail>::class.java)
-    Assertions.assertThat(results).hasSize(1)
-    Assertions.assertThat(results).extracting("firstName").containsOnly("John")
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsOnly("John")
   }
 
   @Test

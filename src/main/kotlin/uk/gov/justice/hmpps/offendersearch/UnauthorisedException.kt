@@ -1,3 +1,3 @@
 package uk.gov.justice.hmpps.offendersearch
 
-class UnauthorisedException(msg: String?) : RuntimeException(msg)
+class UnauthorisedException(msg: String) : RuntimeException(msg)

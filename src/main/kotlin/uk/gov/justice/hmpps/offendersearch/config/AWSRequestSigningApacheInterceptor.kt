@@ -105,7 +105,7 @@ class AWSRequestSigningApacheInterceptor
     private fun nvpToMapParams(params: List<NameValuePair>): Map<String, MutableList<String>> {
       val parameterMap: MutableMap<String, MutableList<String>> = TreeMap(java.lang.String.CASE_INSENSITIVE_ORDER)
       for (nvp in params) {
-        val argsList = parameterMap.computeIfAbsent(nvp.name) { k: String? -> ArrayList() }
+        val argsList = parameterMap.computeIfAbsent(nvp.name) { _: String? -> ArrayList() }
         argsList.add(nvp.value)
       }
       return parameterMap

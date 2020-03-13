@@ -5,6 +5,7 @@ import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.CoreMatchers
 import org.junit.Test
@@ -37,9 +38,9 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
     val objectMapper = testContext.applicationContext.getBean(ObjectMapper::class.java)
     val esClient = testContext.applicationContext.getBean(RestHighLevelClient::class.java)
     LocalStackHelper(esClient).loadData()
-    RestAssured.port = Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port")).toInt()
+    RestAssured.port = Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port"))!!.toInt()
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-        ObjectMapperConfig().jackson2ObjectMapperFactory { aClass: Type?, s: String? -> objectMapper })
+        ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
   }
 
   @Test
@@ -55,8 +56,8 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
         .extract()
         .body()
         .`as`(Array<OffenderDetail>::class.java)
-    Assertions.assertThat(results).hasSize(2)
-    Assertions.assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane")
+    assertThat(results).hasSize(2)
+    assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane")
   }
 
   @Test
@@ -72,8 +73,8 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
         .extract()
         .body()
         .`as`(Array<OffenderDetail>::class.java)
-    Assertions.assertThat(results).hasSize(1)
-    Assertions.assertThat(results).extracting("firstName").containsExactly("John")
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("John")
   }
 
   @Test
@@ -89,8 +90,8 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
         .extract()
         .body()
         .`as`(Array<OffenderDetail>::class.java)
-    Assertions.assertThat(results).hasSize(1)
-    Assertions.assertThat(results).extracting("firstName").containsExactly("John")
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("John")
   }
 
   @Test
@@ -118,6 +119,6 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
         .statusCode(200)
         .extract()
         .`as`(Array<OffenderDetail>::class.java)
-    Assertions.assertThat(results).hasSize(0)
+    assertThat(results).hasSize(0)
   }
 }
