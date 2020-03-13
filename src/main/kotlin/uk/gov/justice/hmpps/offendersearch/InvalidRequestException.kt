@@ -1,7 +1,3 @@
-package uk.gov.justice.hmpps.offendersearch;
+package uk.gov.justice.hmpps.offendersearch
 
-public class InvalidRequestException extends RuntimeException {
-    public InvalidRequestException(String msg) {
-        super(msg);
-    }
-}
+class InvalidRequestException(msg: String?) : RuntimeException(msg)

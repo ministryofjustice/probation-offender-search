@@ -1,37 +1,21 @@
-package uk.gov.justice.hmpps.offendersearch.utils;
+package uk.gov.justice.hmpps.offendersearch.utils
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import org.springframework.core.annotation.Order
+import org.springframework.http.HttpHeaders
+import org.springframework.stereotype.Component
+import javax.servlet.*
+import javax.servlet.http.HttpServletRequest
 
 @Component
-@Slf4j
 @Order(4)
-public class UserContextFilter implements Filter {
-    @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain)
-            throws IOException, ServletException {
+class UserContextFilter : Filter {
+  override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
+    val httpServletRequest = servletRequest as HttpServletRequest
+    val authToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
+    UserContext.setAuthToken(authToken)
+    filterChain.doFilter(httpServletRequest, servletResponse)
+  }
 
-
-        final var httpServletRequest = (HttpServletRequest) servletRequest;
-
-        final var authToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-
-        UserContext.setAuthToken(authToken);
-
-        filterChain.doFilter(httpServletRequest, servletResponse);
-    }
-
-    @Override
-    public void init(final FilterConfig filterConfig) {
-    }
-
-    @Override
-    public void destroy() {
-    }
+  override fun init(filterConfig: FilterConfig) {}
+  override fun destroy() {}
 }

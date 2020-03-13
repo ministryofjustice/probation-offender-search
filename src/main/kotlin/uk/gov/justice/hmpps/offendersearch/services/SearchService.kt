@@ -1,127 +1,104 @@
-package uk.gov.justice.hmpps.offendersearch.services;
+package uk.gov.justice.hmpps.offendersearch.services
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import uk.gov.justice.hmpps.offendersearch.BadRequestException;
-import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail;
-import uk.gov.justice.hmpps.offendersearch.dto.SearchDto;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.apache.commons.lang3.StringUtils
+import org.elasticsearch.action.search.SearchRequest
+import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.index.query.BoolQueryBuilder
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.SearchHit
+import org.elasticsearch.search.builder.SearchSourceBuilder
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Service
+import uk.gov.justice.hmpps.offendersearch.BadRequestException
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
+import java.util.*
 
 @Service
-@Slf4j
-public class SearchService {
+class SearchService @Autowired constructor(@param:Qualifier("elasticSearchClient") private val hlClient: RestHighLevelClient, private val mapper: ObjectMapper) {
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+    private const val MAX_SEARCH_RESULTS = 100
+  }
 
-    private static int MAX_SEARCH_RESULTS = 100;
-    private RestHighLevelClient hlClient;
-    private ObjectMapper mapper;
+  fun performSearch(searchOptions: SearchDto): List<OffenderDetail> {
+    validateSearchForm(searchOptions)
+    val searchRequest = SearchRequest("offender")
+    val searchSourceBuilder = SearchSourceBuilder()
+    // Set the maximum search result size (the default would otherwise be 10)
+    searchSourceBuilder.size(MAX_SEARCH_RESULTS)
+    val matchingAllFieldsQuery = buildMatchWithAllProvidedParameters(searchOptions)
+    searchSourceBuilder.query(matchingAllFieldsQuery)
+    searchRequest.source(searchSourceBuilder)
+    val response = hlClient.search(searchRequest)
+    return getSearchResult(response)
+  }
 
-    @Autowired
-    public SearchService(@Qualifier("elasticSearchClient") final RestHighLevelClient hlClient, final ObjectMapper mapper) {
-        this.hlClient = hlClient;
-        this.mapper = mapper;
+  protected fun buildMatchWithAllProvidedParameters(searchOptions: SearchDto): BoolQueryBuilder {
+    val matchingAllFieldsQuery = QueryBuilders
+        .boolQuery()
+    if (StringUtils.isNotBlank(searchOptions.surname)) {
+      matchingAllFieldsQuery.must(QueryBuilders
+          .matchQuery("surname", searchOptions.surname))
     }
-
-    public List<OffenderDetail> performSearch(SearchDto searchOptions) throws IOException {
-
-        validateSearchForm(searchOptions);
-
-        SearchRequest searchRequest = new SearchRequest("offender");
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-        // Set the maximum search result size (the default would otherwise be 10)
-        searchSourceBuilder.size(MAX_SEARCH_RESULTS);
-
-        final var matchingAllFieldsQuery = buildMatchWithAllProvidedParameters(searchOptions);
-
-        searchSourceBuilder.query(matchingAllFieldsQuery);
-        searchRequest.source(searchSourceBuilder);
-        SearchResponse response = hlClient.search(searchRequest);
-
-        return getSearchResult(response);
+    if (StringUtils.isNotBlank(searchOptions.firstName)) {
+      matchingAllFieldsQuery.must(QueryBuilders
+          .matchQuery("firstName", searchOptions.firstName))
     }
-
-    protected BoolQueryBuilder buildMatchWithAllProvidedParameters(SearchDto searchOptions){
-
-        var matchingAllFieldsQuery = QueryBuilders
-                .boolQuery();
-
-        if (StringUtils.isNotBlank(searchOptions.getSurname()) ){
-            matchingAllFieldsQuery.must(QueryBuilders
-                    .matchQuery("surname", searchOptions.getSurname()));
-        }
-        if (StringUtils.isNotBlank(searchOptions.getFirstName()) ){
-            matchingAllFieldsQuery.must(QueryBuilders
-                    .matchQuery("firstName", searchOptions.getFirstName()));
-        }
-        if (searchOptions.getDateOfBirth() !=  null ){
-            matchingAllFieldsQuery.must(QueryBuilders
-                    .matchQuery("dateOfBirth", searchOptions.getDateOfBirth()));
-        }
-        if (StringUtils.isNotBlank(searchOptions.getCrn())){
-            matchingAllFieldsQuery.must(QueryBuilders
-                    .matchQuery("otherIds.crn", searchOptions.getCrn()));
-        }
-        if (StringUtils.isNotBlank(searchOptions.getCroNumber())){
-            matchingAllFieldsQuery.must(QueryBuilders
-                    .matchQuery("otherIds.croNumber", searchOptions.getCroNumber()));
-        }
-        if (StringUtils.isNotBlank(searchOptions.getPncNumber())){
-            matchingAllFieldsQuery.must(QueryBuilders
-                    .matchQuery("otherIds.pncNumber", searchOptions.getPncNumber()));
-        }
-        if (StringUtils.isNotBlank(searchOptions.getNomsNumber())){
-            matchingAllFieldsQuery.must(QueryBuilders
-                    .matchQuery("otherIds.nomsNumber", searchOptions.getNomsNumber()));
-        }
-
-        return matchingAllFieldsQuery;
+    if (searchOptions.dateOfBirth != null) {
+      matchingAllFieldsQuery.must(QueryBuilders
+          .matchQuery("dateOfBirth", searchOptions.dateOfBirth))
     }
-
-    private void validateSearchForm(SearchDto searchOptions) {
-        if (!searchOptions.isValid()){
-            log.warn("Invalid search  - no criteria provided");
-            throw new BadRequestException("Invalid search  - please provide at least 1 search parameter");
-        }
+    if (StringUtils.isNotBlank(searchOptions.crn)) {
+      matchingAllFieldsQuery.must(QueryBuilders
+          .matchQuery("otherIds.crn", searchOptions.crn))
     }
-
-
-    private List<OffenderDetail> getSearchResult(SearchResponse response) {
-
-        SearchHit[] searchHit = response.getHits().getHits();
-
-        var offenderDetailList = new ArrayList<OffenderDetail>();
-
-        if (searchHit.length > 0) {
-
-            Arrays.stream(searchHit)
-                    .forEach(hit -> offenderDetailList
-                            .add(parseOffenderDetail(hit.getSourceAsString())));
-        }
-
-        return offenderDetailList;
+    if (StringUtils.isNotBlank(searchOptions.croNumber)) {
+      matchingAllFieldsQuery.must(QueryBuilders
+          .matchQuery("otherIds.croNumber", searchOptions.croNumber))
     }
-
-    private OffenderDetail parseOffenderDetail(String src) {
-        try {
-            return mapper.readValue(src, OffenderDetail.class);
-        } catch(Throwable t) {
-            throw new RuntimeException(t);
-        }
+    if (StringUtils.isNotBlank(searchOptions.pncNumber)) {
+      matchingAllFieldsQuery.must(QueryBuilders
+          .matchQuery("otherIds.pncNumber", searchOptions.pncNumber))
     }
+    if (StringUtils.isNotBlank(searchOptions.nomsNumber)) {
+      matchingAllFieldsQuery.must(QueryBuilders
+          .matchQuery("otherIds.nomsNumber", searchOptions.nomsNumber))
+    }
+    return matchingAllFieldsQuery
+  }
+
+  private fun validateSearchForm(searchOptions: SearchDto) {
+    if (!searchOptions.isValid) {
+      log.warn("Invalid search  - no criteria provided")
+      throw BadRequestException("Invalid search  - please provide at least 1 search parameter")
+    }
+  }
+
+  private fun getSearchResult(response: SearchResponse): List<OffenderDetail> {
+    val searchHit = response.hits.hits
+    val offenderDetailList = ArrayList<OffenderDetail>()
+    if (searchHit.isNotEmpty()) {
+      Arrays.stream(searchHit)
+          .forEach { hit: SearchHit ->
+            offenderDetailList
+                .add(parseOffenderDetail(hit.sourceAsString))
+          }
+    }
+    return offenderDetailList
+  }
+
+  private fun parseOffenderDetail(src: String): OffenderDetail {
+    return try {
+      mapper.readValue(src, OffenderDetail::class.java)
+    } catch (t: Throwable) {
+      throw RuntimeException(t)
+    }
+  }
 
 }

@@ -1,19 +1,8 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ContactDetails {
-    private List<PhoneNumber> phoneNumbers;
-    private List<String> emailAddresses;
-    private Boolean allowSMS;
-    private List<Address> addresses;
-}
+data class ContactDetails(
+    val phoneNumbers: List<PhoneNumber>? = null,
+    val emailAddresses: List<String>? = null,
+    val allowSMS: Boolean? = null,
+    val addresses: List<Address>? = null
+)

@@ -3,6 +3,17 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 import java.time.Instant
 import java.time.LocalDate
 
+buildscript {
+    ext.kotlin_version = '1.3.70'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.2.5.RELEASE'
@@ -10,6 +21,8 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.27.0'
     id 'org.owasp.dependencycheck' version '5.2.4'
 }
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
 
 def isNonStable = { String version ->
     def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
@@ -28,6 +41,13 @@ repositories {
     mavenCentral()
 }
 
+compileKotlin {
+    kotlinOptions.jvmTarget = '11'
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = '11'
+}
 configurations {
     agentDeps
     agentDeps.transitive = false
@@ -82,7 +102,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok:1.18.8'
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
@@ -123,8 +142,6 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk:1.11.720'
 
     testAnnotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
-    testCompileOnly 'org.projectlombok:lombok:1.18.10'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.tngtech.java:junit-dataprovider:1.13.1'
@@ -133,6 +150,8 @@ dependencies {
     testImplementation 'com.github.tomakehurst:wiremock-standalone:2.26.0'
     testImplementation 'io.rest-assured:rest-assured:3.3.0'
     testImplementation 'io.rest-assured:spring-mock-mvc:3.3.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
 }
 
 task copyAgent(type: Copy) {
@@ -141,4 +160,5 @@ task copyAgent(type: Copy) {
 }
 
 assemble.dependsOn copyAgent
+
 

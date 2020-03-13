@@ -1,24 +1,14 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.annotations.ApiModelProperty
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Institution {
-    @ApiModelProperty(required = true)
-    private Long institutionId;
-    private Boolean isEstablishment;
-    private String code;
-    private String description;
-    private String institutionName;
-    private KeyValue establishmentType;
-    private Boolean isPrivate;
-    @ApiModelProperty(value = "Prison institution code in NOMIS")
-    private String nomsPrisonInstitutionCode;
-}
+data class Institution(
+    @ApiModelProperty(required = true) val institutionId: Long? = null,
+    val isEstablishment: Boolean? = null,
+    val code: String? = null,
+    val description: String? = null,
+    val institutionName: String? = null,
+    val establishmentType: KeyValue? = null,
+    val isPrivate: Boolean? = null,
+    @ApiModelProperty(value = "Prison institution code in NOMIS") val nomsPrisonInstitutionCode: String? = null
+)

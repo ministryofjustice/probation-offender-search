@@ -1,19 +1,11 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+data class PhoneNumber(
+    val number: String? = null,
+    val type: PhoneTypes? = null
+) {
 
-import java.util.Optional;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PhoneNumber {
-    private PhoneTypes type;
-    private Optional<String> number;
-
-    public enum PhoneTypes {TELEPHONE, MOBILE}
+  enum class PhoneTypes {
+    TELEPHONE, MOBILE
+  }
 }

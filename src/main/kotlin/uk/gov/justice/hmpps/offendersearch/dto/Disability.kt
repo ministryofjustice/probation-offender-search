@@ -1,20 +1,11 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDate
 
-import java.time.LocalDate;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Disability {
-    private Long disabilityId;
-    private KeyValue disabilityType;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String notes;
-}
+data class Disability(
+    val disabilityId: Long? = null,
+    val disabilityType: KeyValue? = null,
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
+    val notes: String? = null
+)

@@ -1,18 +1,8 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.annotations.ApiModelProperty
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Human {
-    @ApiModelProperty(value = "Given names", example = "Sheila Linda")    
-    private String forenames;
-    @ApiModelProperty(value = "Family name", example = "Hancock")    
-    private String surname;
-}
+data class Human(
+    @ApiModelProperty(value = "Given names", example = "Sheila Linda") val forenames: String? = null,
+    @ApiModelProperty(value = "Family name", example = "Hancock") val surname: String? = null
+)

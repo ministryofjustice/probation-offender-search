@@ -1,18 +1,12 @@
-package uk.gov.justice.hmpps.offendersearch.utils;
+package uk.gov.justice.hmpps.offendersearch.utils
 
-import org.springframework.stereotype.Component;
+object UserContext {
+  private val authToken = ThreadLocal<String>()
+  fun getAuthToken(): String {
+    return authToken.get()
+  }
 
-
-@Component
-public class UserContext {
-
-    private static final ThreadLocal<String> authToken = new ThreadLocal<>();
-
-    static String getAuthToken() {
-        return authToken.get();
-    }
-
-    static void setAuthToken(final String aToken) {
-        authToken.set(aToken);
-    }
+  fun setAuthToken(aToken: String) {
+    authToken.set(aToken)
+  }
 }

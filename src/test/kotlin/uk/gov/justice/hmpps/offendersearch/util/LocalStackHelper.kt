@@ -1,99 +1,95 @@
-package uk.gov.justice.hmpps.offendersearch.util;
+package uk.gov.justice.hmpps.offendersearch.util
 
-import com.amazonaws.util.IOUtils;
-import com.google.gson.JsonParser;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpHeaders;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-import org.elasticsearch.client.ResponseException;
-import org.elasticsearch.client.RestHighLevelClient;
+import com.amazonaws.util.IOUtils
+import com.google.gson.JsonParser
+import org.apache.http.HttpHeaders
+import org.apache.http.entity.StringEntity
+import org.apache.http.message.BasicHeader
+import org.elasticsearch.client.ResponseException
+import org.elasticsearch.client.RestHighLevelClient
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.*
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
+class LocalStackHelper(var esClient: RestHighLevelClient) {
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
 
-@Slf4j
-public class LocalStackHelper {
+  fun loadData() {
+    destroyIndex()
+    destroyPipeline()
+    buildPipeline()
+    buildIndex()
+    loadOffender("1", loadFile("src/test/resources/elasticsearchdata/john-smith.json"))
+    loadOffender("2", loadFile("src/test/resources/elasticsearchdata/jane-smith.json"))
+    loadOffender("3", loadFile("src/test/resources/elasticsearchdata/sam-jones-deleted.json"))
+    loadOffender("4", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-n01.json"))
+    loadOffender("5", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-n02.json"))
+    loadOffender("6", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-n03.json"))
+    loadOffender("7", loadFile("src/test/resources/elasticsearchdata/anne-gramsci-n02.json"))
+    loadOffender("8", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-c20.json"))
+    waitForOffenderLoading()
+  }
 
-    RestHighLevelClient esClient;
-
-    public LocalStackHelper(RestHighLevelClient esClient) {
-        this.esClient = esClient;
+  private fun waitForOffenderLoading() {
+    var count = 0
+    while (count < 8) { //check offenders have been loaded before continuing with the test
+      val something = esClient.lowLevelClient.performRequest("get", "/offender/_count", BasicHeader("any", "any"))
+      count = JsonParser.parseString(IOUtils.toString(something.entity.content)).asJsonObject["count"].asInt
+      log.debug("Offenders loaded count: {}", count)
+      try {
+        Thread.sleep(500)
+      } catch (e: InterruptedException) {
+        e.printStackTrace()
+      }
     }
+  }
 
-    public void loadData() throws IOException {
+  @Throws(IOException::class)
+  private fun loadOffender(key: String, offender: String) {
+    log.debug("Loading offender: {}", offender)
+    esClient.lowLevelClient.performRequest("put", "/offender/document/$key?pipeline=pnc-pipeline", HashMap(), StringEntity(offender), BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"))
+  }
 
-        destroyIndex();
-        destroyPipeline();
-        buildPipeline();
-        buildIndex();
-
-        loadOffender("1", loadFile("src/test/resources/elasticsearchdata/john-smith.json"));
-        loadOffender("2", loadFile("src/test/resources/elasticsearchdata/jane-smith.json"));
-        loadOffender("3", loadFile("src/test/resources/elasticsearchdata/sam-jones-deleted.json"));
-        loadOffender("4", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-n01.json"));
-        loadOffender("5", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-n02.json"));
-        loadOffender("6", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-n03.json"));
-        loadOffender("7", loadFile("src/test/resources/elasticsearchdata/anne-gramsci-n02.json"));
-        loadOffender("8", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-c20.json"));
-
-        waitForOffenderLoading();
-
+  @Throws(IOException::class)
+  private fun destroyIndex() {
+    log.debug("Dropping offender index")
+    try {
+      esClient.lowLevelClient.performRequest("delete", "/offender", BasicHeader("any", "any"))
+    } catch (e: ResponseException) {
+      log.debug("destroyIndex returned ", e)
     }
+  }
 
-    private void waitForOffenderLoading() throws IOException {
-        var count = 0;
-        while (count < 8 ) {
-            //check offenders have been loaded before continuing with the test
-            var something = esClient.getLowLevelClient().performRequest("get", "/offender/_count", new BasicHeader("any", "any"));
-            count = JsonParser.parseString(IOUtils.toString(something.getEntity().getContent())).getAsJsonObject().get("count").getAsInt();
-            log.debug("Offenders loaded count: {}", count);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+  @Throws(IOException::class)
+  private fun destroyPipeline() {
+    try {
+      log.debug("destroy pipeline")
+      esClient.lowLevelClient.performRequest("delete", "/_ingest/pipeline/pnc-pipeline", BasicHeader("any", "any"))
+    } catch (e: ResponseException) {
+      log.debug("destroyPipeline returned ", e)
     }
+  }
 
-    private void loadOffender(String key, String offender) throws IOException {
-        log.debug("Loading offender: {}", offender);
+  @Throws(IOException::class)
+  private fun buildIndex() {
+    log.debug("Build index")
+    esClient.lowLevelClient.performRequest("put", "/offender", HashMap(), StringEntity(loadFile("src/test/resources/elasticsearchdata/create-index.json")), BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"))
+  }
 
-        esClient.getLowLevelClient().performRequest("put", "/offender/document/" + key + "?pipeline=pnc-pipeline", new HashMap<>(), new StringEntity(offender), new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"));
-    }
+  @Throws(IOException::class)
+  private fun buildPipeline() {
+    log.debug("Build pipeline")
+    esClient.lowLevelClient.performRequest("put", "/_ingest/pipeline/pnc-pipeline", HashMap(), StringEntity(loadFile("src/test/resources/elasticsearchdata/create-pipeline.json")), BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"))
+  }
 
-    private void destroyIndex() throws IOException {
-        log.debug("Dropping offender index");
-        try {
-            esClient.getLowLevelClient().performRequest("delete", "/offender", new BasicHeader("any", "any"));
-        } catch (ResponseException e) {
-            log.debug("destroyIndex returned ", e);
-        }
-    }
+  @Throws(IOException::class)
+  private fun loadFile(file: String): String {
+    return Files.readString(Paths.get(file))
+  }
 
-    private void destroyPipeline() throws IOException {
-        try {
-            log.debug("destroy pipeline");
-            esClient.getLowLevelClient().performRequest("delete", "/_ingest/pipeline/pnc-pipeline", new BasicHeader("any", "any"));
-        } catch (ResponseException e) {
-            log.debug("destroyPipeline returned ", e);
-        }
-    }
-
-    private void buildIndex() throws IOException {
-        log.debug("Build index");
-
-        esClient.getLowLevelClient().performRequest("put", "/offender", new HashMap<>(), new StringEntity(loadFile("src/test/resources/elasticsearchdata/create-index.json")), new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"));
-    }
-
-    private void buildPipeline() throws IOException {
-        log.debug("Build pipeline");
-        esClient.getLowLevelClient().performRequest("put", "/_ingest/pipeline/pnc-pipeline", new HashMap<>(), new StringEntity(loadFile("src/test/resources/elasticsearchdata/create-pipeline.json")), new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"));
-    }
-
-    private String loadFile(String file) throws IOException {
-        return Files.readString(Paths.get(file));
-    }
 }

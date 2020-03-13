@@ -1,22 +1,17 @@
-package uk.gov.justice.hmpps.offendersearch.utils;
+package uk.gov.justice.hmpps.offendersearch.utils
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpRequest
+import org.springframework.http.client.ClientHttpRequestExecution
+import org.springframework.http.client.ClientHttpRequestInterceptor
+import org.springframework.http.client.ClientHttpResponse
+import java.io.IOException
 
-import java.io.IOException;
-
-public class JwtAuthInterceptor implements ClientHttpRequestInterceptor {
-
-    @Override
-    public ClientHttpResponse intercept(
-            final HttpRequest request, final byte[] body, final ClientHttpRequestExecution execution)
-            throws IOException {
-
-        final var headers = request.getHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, UserContext.getAuthToken());
-        return execution.execute(request, body);
-    }
+class JwtAuthInterceptor : ClientHttpRequestInterceptor {
+  override fun intercept(
+      request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
+    val headers = request.headers
+    headers.add(HttpHeaders.AUTHORIZATION, UserContext.getAuthToken())
+    return execution.execute(request, body)
+  }
 }

@@ -1,30 +1,20 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.annotations.ApiModelProperty
+import java.time.LocalDate
 
-import java.time.LocalDate;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Address {
-    @ApiModelProperty(required = true)
-    private LocalDate from;
-    private LocalDate to;
-    private Boolean noFixedAbode;
-    private String notes;
-    private String addressNumber;
-    private String buildingName;
-    private String streetName;
-    private String district;
-    private String town;
-    private String county;
-    private String postcode;
-    private String telephoneNumber;
-    private KeyValue status;
-}
+data class Address(
+    @ApiModelProperty(required = true) val from: LocalDate? = null,
+    val to: LocalDate? = null,
+    val noFixedAbode: Boolean? = null,
+    val notes: String? = null,
+    val addressNumber: String? = null,
+    val buildingName: String? = null,
+    val streetName: String? = null,
+    val district: String? = null,
+    val town: String? = null,
+    val county: String? = null,
+    val postcode: String? = null,
+    val telephoneNumber: String? = null,
+    val status: KeyValue? = null
+)

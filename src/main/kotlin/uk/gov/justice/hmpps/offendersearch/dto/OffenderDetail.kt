@@ -1,39 +1,27 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.annotations.ApiModelProperty
+import java.time.LocalDate
 
-import java.time.LocalDate;
-import java.util.List;
-
-@Data
-@Builder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class OffenderDetail {
-    @ApiModelProperty(required = true)
-    private Long offenderId;
-    private String title;
-    private String firstName;
-    private List<String> middleNames;
-    private String surname;
-    private String previousSurname;
-    private LocalDate dateOfBirth;
-    private String gender;
-    private IDs otherIds;
-    private ContactDetails contactDetails;
-    private OffenderProfile offenderProfile;
-    private List<OffenderAlias> offenderAliases;
-    private List<OffenderManager> offenderManagers;
-    private Boolean softDeleted;
-    private String currentDisposal;
-    private String partitionArea;
-    private Boolean currentRestriction;
-    private String restrictionMessage;
-    private Boolean currentExclusion;
-    private String exclusionMessage;
-}
+data class OffenderDetail(
+    val previousSurname: String? = null,
+    @ApiModelProperty(required = true) val offenderId: Long? = null,
+    val title: String? = null,
+    val firstName: String? = null,
+    val middleNames: List<String>? = null,
+    val surname: String? = null,
+    val dateOfBirth: LocalDate? = null,
+    val gender: String? = null,
+    val otherIds: IDs? = null,
+    val contactDetails: ContactDetails? = null,
+    val offenderProfile: OffenderProfile? = null,
+    val offenderAliases: List<OffenderAlias>? = null,
+    val offenderManagers: List<OffenderManager>? = null,
+    val softDeleted: Boolean? = null,
+    val currentDisposal: String? = null,
+    val partitionArea: String? = null,
+    val currentRestriction: Boolean? = null,
+    val restrictionMessage: String? = null,
+    val currentExclusion: Boolean? = null,
+    val exclusionMessage: String? = null
+)

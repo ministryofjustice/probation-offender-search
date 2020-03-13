@@ -1,53 +1,37 @@
-package uk.gov.justice.hmpps.offendersearch.utils;
+package uk.gov.justice.hmpps.offendersearch.utils
 
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-import uk.gov.justice.hmpps.offendersearch.config.SecurityUserContext;
+import org.slf4j.MDC
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.annotation.Order
+import org.springframework.stereotype.Component
+import uk.gov.justice.hmpps.offendersearch.config.SecurityUserContext
+import javax.servlet.*
 
-import javax.servlet.*;
-import java.io.IOException;
-
-@Slf4j
 @Component
 @Order(1)
-public class UserMdcFilter implements Filter {
-    private static final String USER_ID_HEADER = "userId";
+class UserMdcFilter @Autowired constructor(private val securityUserContext: SecurityUserContext) : Filter {
+  override fun init(filterConfig: FilterConfig) { // Initialise - no functionality
+  }
 
-    private final SecurityUserContext securityUserContext;
-
-    @Autowired
-    public UserMdcFilter(final SecurityUserContext securityUserContext) {
-        this.securityUserContext = securityUserContext;
+  override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+    val currentUsername = securityUserContext.currentUsername
+    try {
+      if (currentUsername != null) {
+        MDC.put(USER_ID_HEADER, currentUsername)
+      }
+      chain.doFilter(request, response)
+    } finally {
+      if (currentUsername != null) {
+        MDC.remove(USER_ID_HEADER)
+      }
     }
+  }
 
-    @Override
-    public void init(final FilterConfig filterConfig) {
-        // Initialise - no functionality
-    }
+  override fun destroy() { // Destroy - no functionality
+  }
 
-    @Override
-    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
-            throws IOException, ServletException {
+  companion object {
+    private const val USER_ID_HEADER = "userId"
+  }
 
-        final var currentUsername = securityUserContext.getCurrentUsername();
-
-        try {
-            if (currentUsername != null) {
-                MDC.put(USER_ID_HEADER, currentUsername);
-            }
-            chain.doFilter(request, response);
-        } finally {
-            if (currentUsername != null) {
-                MDC.remove(USER_ID_HEADER);
-            }
-        }
-    }
-
-    @Override
-    public void destroy() {
-        // Destroy - no functionality
-    }
 }

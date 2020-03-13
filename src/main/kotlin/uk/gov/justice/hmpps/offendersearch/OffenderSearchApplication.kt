@@ -1,14 +1,15 @@
-package uk.gov.justice.hmpps.offendersearch;
+@file:Suppress("DEPRECATION")
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+package uk.gov.justice.hmpps.offendersearch
+
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer
 
 @SpringBootApplication
 @EnableResourceServer
-public class OffenderSearchApplication {
-    public static void main(final String[] args) {
-        SpringApplication.run(OffenderSearchApplication.class, args);
-    }
+class OffenderSearchApplication
 
+fun main(args: Array<String>) {
+  runApplication<OffenderSearchApplication>(*args)
 }

@@ -1,24 +1,14 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.annotations.ApiModelProperty
 
-import java.util.List;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProbationArea {
-    @ApiModelProperty(required = true)
-    private Long probationAreaId;
-    private String code;
-    private String description;
-    private Boolean nps;
-    private KeyValue organisation;
-    private Institution institution;
-    private List<AllTeam> teams;
+data class ProbationArea(
+    @ApiModelProperty(required = true) val probationAreaId: Long? = null,
+    val code: String? = null,
+    val description: String? = null,
+    val nps: Boolean? = null,
+    val organisation: KeyValue? = null,
+    val institution: Institution? = null,
+    val teams: List<AllTeam>? = null
+) {
 }

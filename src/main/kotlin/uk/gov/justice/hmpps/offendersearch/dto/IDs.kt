@@ -1,22 +1,13 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.annotations.ApiModelProperty
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class IDs {
-    @ApiModelProperty(required = true)
-    private String crn;
-    private String pncNumber;
-    private String croNumber;
-    private String niNumber;
-    private String nomsNumber;
-    private String immigrationNumber;
-    private String mostRecentPrisonerNumber;
-}
+data class IDs(
+    @ApiModelProperty(required = true) val crn: String? = null,
+    val pncNumber: String? = null,
+    val croNumber: String? = null,
+    val niNumber: String? = null,
+    val nomsNumber: String? = null,
+    val immigrationNumber: String? = null,
+    val mostRecentPrisonerNumber: String? = null
+)

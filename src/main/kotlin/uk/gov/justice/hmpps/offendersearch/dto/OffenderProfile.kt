@@ -1,27 +1,16 @@
-package uk.gov.justice.hmpps.offendersearch.dto;
+package uk.gov.justice.hmpps.offendersearch.dto
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class OffenderProfile {
-    private String ethnicity;
-    private String nationality;
-    private String secondaryNationality;
-    private String notes;
-    private String immigrationStatus;
-    private OffenderLanguages offenderLanguages;
-    private String religion;
-    private String sexualOrientation;
-    private String remandStatus;
-    private PreviousConviction previousConviction;
-    private String riskColour;
-    private List<Disability> disabilities;
-}
+data class OffenderProfile(
+    val ethnicity: String? = null,
+    val nationality: String? = null,
+    val secondaryNationality: String? = null,
+    val notes: String? = null,
+    val immigrationStatus: String? = null,
+    val offenderLanguages: OffenderLanguages? = null,
+    val religion: String? = null,
+    val sexualOrientation: String? = null,
+    val remandStatus: String? = null,
+    val previousConviction: PreviousConviction? = null,
+    val riskColour: String? = null,
+    val disabilities: List<Disability>? = null
+)

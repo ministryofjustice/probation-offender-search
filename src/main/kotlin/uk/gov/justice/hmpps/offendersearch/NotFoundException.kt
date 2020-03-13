@@ -1,7 +1,3 @@
-package uk.gov.justice.hmpps.offendersearch;
+package uk.gov.justice.hmpps.offendersearch
 
-public class NotFoundException extends RuntimeException {
-    public NotFoundException(String msg) {
-        super(msg);
-    }
-}
+class NotFoundException(msg: String?) : RuntimeException(msg)
