@@ -6,7 +6,7 @@ object UserContext {
     return authToken.get()
   }
 
-  fun setAuthToken(aToken: String) {
+  fun setAuthToken(aToken: String?) {
     authToken.set(aToken)
   }
 }

@@ -2,9 +2,9 @@ package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
+import io.restassured.RestAssured.given
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.CoreMatchers
@@ -44,8 +44,35 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
   }
 
   @Test
+  fun `can access info without valid token` () {
+    given()
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .`when`()["/info"]
+        .then()
+        .statusCode(200)
+  }
+
+  @Test
+  fun `can access health without valid token` () {
+    given()
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .`when`()["/health"]
+        .then()
+        .statusCode(200)
+  }
+
+  @Test
+  fun `can access ping without valid token` () {
+    given()
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .`when`()["/health/ping"]
+        .then()
+        .statusCode(200)
+  }
+
+  @Test
   fun surnameSearch() {
-    val results = RestAssured.given()
+    val results = given()
         .auth()
         .oauth2(validOauthToken)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -62,7 +89,7 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
 
   @Test
   fun prisonNumberSearch() {
-    val results = RestAssured.given()
+    val results = given()
         .auth()
         .oauth2(validOauthToken)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -79,7 +106,7 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
 
   @Test
   fun allParameters() {
-    val results = RestAssured.given()
+    val results = given()
         .auth()
         .oauth2(validOauthToken)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -96,7 +123,7 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
 
   @Test
   fun noSearchParameters_badRequest() {
-    RestAssured.given()
+    given()
         .auth()
         .oauth2(validOauthToken)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -109,7 +136,7 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
 
   @Test
   fun noResults() {
-    val results = RestAssured.given()
+    val results = given()
         .auth()
         .oauth2(validOauthToken)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
