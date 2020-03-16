@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest
 class UserContextFilter : Filter {
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
     val httpServletRequest = servletRequest as HttpServletRequest
-    val authToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
+    val authToken : String? = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
     UserContext.setAuthToken(authToken)
     filterChain.doFilter(httpServletRequest, servletResponse)
   }
