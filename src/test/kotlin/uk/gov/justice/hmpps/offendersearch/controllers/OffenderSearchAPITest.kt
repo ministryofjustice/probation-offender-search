@@ -22,20 +22,21 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import java.lang.reflect.Type
 import java.nio.file.Files
 import java.nio.file.Paths
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev,wiremock")
+@ActiveProfiles("test,wiremock")
 @RunWith(SpringJUnit4ClassRunner::class)
 class OffenderSearchAPITest {
   @LocalServerPort
   var port = 0
   @Autowired
   private lateinit var objectMapper: ObjectMapper
-  @Value("\${test.token.good}")
-  private val validOauthToken: String? = null
+  @Autowired
+  private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 
   companion object {
     private val wireMock = WireMockRule(WireMockConfiguration.wireMockConfig().port(4444).jettyStopTimeout(10000L))
@@ -65,7 +66,7 @@ class OffenderSearchAPITest {
         WireMock.okForContentType("application/json", response("src/test/resources/elasticsearchdata/singleMatch.json"))))
     val results = RestAssured.given()
         .auth()
-        .oauth2(validOauthToken)
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\":\"smith\"}")
         .`when`()["/search"]
@@ -82,7 +83,7 @@ class OffenderSearchAPITest {
   fun noSearchParameters_badRequest() {
     RestAssured.given()
         .auth()
-        .oauth2(validOauthToken)
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{}")
         .`when`()["/search"]
@@ -95,7 +96,7 @@ class OffenderSearchAPITest {
   fun invalidDateOfBirthFormat_badRequest() {
     RestAssured.given()
         .auth()
-        .oauth2(validOauthToken)
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"dateOfBirth\":\"23/11/1976\"}")
         .`when`()["/search"]
