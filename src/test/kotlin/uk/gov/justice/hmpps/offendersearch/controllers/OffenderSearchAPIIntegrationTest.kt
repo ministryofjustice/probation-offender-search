@@ -10,7 +10,7 @@ import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.CoreMatchers
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
@@ -21,18 +21,19 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.support.AbstractTestExecutionListener
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import java.lang.reflect.Type
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev,localstack")
+@ActiveProfiles("test,localstack")
 @RunWith(SpringJUnit4ClassRunner::class)
 @TestExecutionListeners(listeners = [DependencyInjectionTestExecutionListener::class, OffenderSearchAPIIntegrationTest::class])
 @ContextConfiguration
 class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
-  @Value("\${test.token.good}")
-  private lateinit var validOauthToken: String
+  @Autowired
+  private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 
   override fun beforeTestClass(testContext: TestContext) {
     val objectMapper = testContext.applicationContext.getBean(ObjectMapper::class.java)
@@ -71,10 +72,22 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
   }
 
   @Test
+  fun `not allowed to do a search without COMMUNITY role` () {
+    given()
+        .auth()
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body("{\"surname\":\"smith\"}")
+        .`when`()["/search"]
+        .then()
+        .statusCode(403)
+  }
+
+  @Test
   fun surnameSearch() {
     val results = given()
         .auth()
-        .oauth2(validOauthToken)
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\":\"smith\"}")
         .`when`()["/search"]
@@ -91,7 +104,7 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
   fun prisonNumberSearch() {
     val results = given()
         .auth()
-        .oauth2(validOauthToken)
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"nomsNumber\":\"G8020GG\"}")
         .`when`()["/search"]
@@ -108,7 +121,7 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
   fun allParameters() {
     val results = given()
         .auth()
-        .oauth2(validOauthToken)
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"smith\",\"firstName\": \"John\",\"crn\": \"X00001\",\"croNumber\": \"SF80/655108T\", \"nomsNumber\": \"G8020GG\",\"pncNumber\": \"2018/0123456X\"}\n")
         .`when`()["/search"]
@@ -125,7 +138,7 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
   fun noSearchParameters_badRequest() {
     given()
         .auth()
-        .oauth2(validOauthToken)
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{}")
         .`when`()["/search"]
@@ -138,7 +151,7 @@ class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
   fun noResults() {
     val results = given()
         .auth()
-        .oauth2(validOauthToken)
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\":\"potter\"}")
         .`when`()["/search"]
