@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
-import java.io.IOException
-import java.io.InputStream
 import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.KeyStore
@@ -24,6 +22,10 @@ class JwtAuthenticationHelper(@Value("\${jwt.signing.key.pair}") privateKeyPair:
                               @Value("\${jwt.keystore.password}") keystorePassword: String,
                               @Value("\${jwt.keystore.alias}") keystoreAlias: String) {
   private val keyPair: KeyPair
+
+  init {
+    keyPair = getKeyPair(ByteArrayResource(Base64.decodeBase64(privateKeyPair)), keystoreAlias, keystorePassword.toCharArray())
+  }
 
   fun createJwt(vararg roles: String): String {
     return createJwt(JwtParameters(
@@ -59,28 +61,14 @@ class JwtAuthenticationHelper(@Value("\${jwt.signing.key.pair}") privateKeyPair:
   )
 
   private fun getKeyPair(resource: Resource, alias: String, password: CharArray): KeyPair {
-    var inputStream: InputStream? = null
-    val store: KeyStore
-    return try {
-      store = KeyStore.getInstance("jks")
-      inputStream = resource.inputStream
-      store.load(inputStream, password)
+    val store = KeyStore.getInstance("jks")
+
+    resource.inputStream.use {
+      store.load(it, password)
       val key = store.getKey(alias, password) as RSAPrivateCrtKey
       val spec = RSAPublicKeySpec(key.modulus, key.publicExponent)
       val publicKey = KeyFactory.getInstance("RSA").generatePublic(spec)
-      KeyPair(publicKey, key)
-    } catch (e: Exception) {
-      throw IllegalStateException("Cannot load keys from store: $resource", e)
-    } finally {
-      try {
-        inputStream?.close()
-      } catch (e: IOException) {
-        throw IllegalStateException("Cannot close open stream: ", e)
-      }
+      return KeyPair(publicKey, key)
     }
-  }
-
-  init {
-    keyPair = getKeyPair(ByteArrayResource(Base64.decodeBase64(privateKeyPair)), keystoreAlias, keystorePassword.toCharArray())
   }
 }
