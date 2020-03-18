@@ -34,7 +34,7 @@ class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
       val claimAuthorities = (jwt.claims["authorities"] as Collection<String>).toList()
       authorities.addAll(claimAuthorities.map(::SimpleGrantedAuthority))
     }
-    return authorities
+    return authorities.toSet()
   }
 }
 
