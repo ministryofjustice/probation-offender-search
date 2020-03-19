@@ -30,7 +30,7 @@ import java.nio.file.Paths
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test,wiremock")
 @RunWith(SpringJUnit4ClassRunner::class)
-class OffenderSearchAPITest {
+class OffenderSearchControllerTest {
   @LocalServerPort
   var port = 0
   @Autowired

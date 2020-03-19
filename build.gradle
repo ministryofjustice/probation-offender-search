@@ -95,6 +95,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-devtools'
 
     implementation 'net.logstash.logback:logstash-logback-encoder:6.3'
     implementation 'com.microsoft.azure:applicationinsights-spring-boot-starter:2.6.0-BETA'
@@ -145,6 +146,9 @@ task copyAgent(type: Copy) {
     into "$buildDir/libs"
 }
 
+test {
+    useJUnitPlatform()
+}
 assemble.dependsOn copyAgent
 
 
