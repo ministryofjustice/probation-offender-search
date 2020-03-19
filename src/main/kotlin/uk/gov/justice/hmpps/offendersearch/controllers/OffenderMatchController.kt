@@ -11,25 +11,27 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.NotFoundException
+import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
-import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
-import uk.gov.justice.hmpps.offendersearch.services.SearchService
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatch
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
+import javax.validation.Valid
 
-@Api(tags = ["offender-search"], authorizations = [Authorization("ROLE_COMMUNITY")], description = "Provides offender search features for Delius elastic search")
+@Api(tags = ["offender-match"], authorizations = [Authorization("ROLE_COMMUNITY")], description = "Provides offender matching features for Delius elastic search")
 @RestController
-@RequestMapping(value = ["search"], produces = [MediaType.APPLICATION_JSON_VALUE])
-class OffenderSearchController(private val searchService: SearchService) {
+@RequestMapping(value = ["match"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+class OffenderMatchController {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  @ApiOperation(value = "Search for an offender in Delius ElasticSearch. Only offenders matching all request attributes will be returned", notes = "Specify the request criteria to match against", authorizations = [Authorization("ROLE_COMMUNITY")], nickname = "search")
+  @ApiOperation(value = "Match for an offender in Delius ElasticSearch. It will return the best group of matching offenders based on the request", notes = "Specify the request criteria to match against", authorizations = [Authorization("ROLE_COMMUNITY")], nickname = "match")
   @ApiResponses(value = [ApiResponse(code = 200, message = "OK", response = OffenderDetail::class, responseContainer = "List"), ApiResponse(code = 400, message = "Invalid Request", response = BadRequestException::class), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)])
-  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @GetMapping
-  fun searchOffenders(@RequestBody searchForm: SearchDto): List<OffenderDetail?>? {
-    log.info("Search called with {}", searchForm)
-    return searchService.performSearch(searchForm)
+  fun matchOffenders(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches {
+    log.info("Match called with {}", matchRequest)
+    return OffenderMatches(listOf(OffenderMatch(OffenderDetail(surname = "Smith"))))
   }
 
 }

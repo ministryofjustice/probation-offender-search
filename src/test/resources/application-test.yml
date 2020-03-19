@@ -1,4 +1,9 @@
 graceful.shutdown.enabled: false
+elasticsearch.provider: none
+elasticsearch.port: 4444
+elasticsearch.scheme: http
+elasticsearch.host: localhost
+elasticsearch.aws.signrequests: false
 
 jwt:
   public:
