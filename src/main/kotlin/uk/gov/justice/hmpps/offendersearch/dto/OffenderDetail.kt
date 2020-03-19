@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 data class OffenderDetail(
     val previousSurname: String? = null,
-    @ApiModelProperty(required = true) val offenderId: Long? = null,
+    @ApiModelProperty(required = true) val offenderId: Long,
     val title: String? = null,
     val firstName: String? = null,
     val middleNames: List<String>? = null,

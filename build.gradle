@@ -137,6 +137,8 @@ dependencies {
     testImplementation 'com.github.tomakehurst:wiremock-standalone:2.26.0'
     testImplementation 'io.rest-assured:rest-assured:3.3.0'
     testImplementation 'io.rest-assured:spring-mock-mvc:3.3.0'
+    testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.6.0'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 }

@@ -7,6 +7,7 @@ interface OffenderDetailHelper {
   companion object {
     fun anOffender(): OffenderDetail? {
       return OffenderDetail(
+          offenderId = 1,
           otherIds = IDs(crn = "crn123", croNumber = "cro1234", niNumber = "nx12345A", nomsNumber = "AN00AB", immigrationNumber = "QS122", mostRecentPrisonerNumber = "12345", pncNumber = "pnc123"),
             dateOfBirth = LocalDate.of(1970, 1, 1),
             exclusionMessage  = "exclusion message",
