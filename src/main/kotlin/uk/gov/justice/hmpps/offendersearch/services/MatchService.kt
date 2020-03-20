@@ -9,7 +9,6 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
@@ -19,7 +18,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
 import java.time.LocalDate
 
 @Service
-class MatchService @Autowired constructor(
+class MatchService(
     @param:Qualifier("elasticSearchClient") private val elasticSearchClient: RestHighLevelClient,
     private val mapper: ObjectMapper
 ) {

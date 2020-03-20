@@ -1,9 +1,10 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.check
-import com.nhaarman.mockito_kotlin.whenever
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.check
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
@@ -19,24 +20,20 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Mockito.verify
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.junit.jupiter.MockitoSettings
+import org.mockito.quality.Strictness
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import java.time.LocalDate
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@ActiveProfiles("test")
-@ExtendWith(SpringExtension::class)
+@ExtendWith(MockitoExtension::class)
 internal class MatchServiceTest {
 
-  lateinit var service: MatchService
+  private lateinit var service: MatchService
 
-  @Autowired
-  private lateinit var objectMapper: ObjectMapper
+  private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
 
   @Mock
@@ -45,7 +42,7 @@ internal class MatchServiceTest {
   @BeforeEach
   fun setUp() {
     service = MatchService(restHighLevelClient, objectMapper)
-    whenever(restHighLevelClient.search(any())).thenReturn(resultsOf())
+    whenever(restHighLevelClient.search(any())).thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88)))
   }
 
   @Test
@@ -157,15 +154,19 @@ internal class MatchServiceTest {
   }
 
   @Test
+  @MockitoSettings(strictness = Strictness.LENIENT)
   fun `will return matches`() {
-    whenever(restHighLevelClient.search(any())).thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88)))
+    whenever(restHighLevelClient.search(any())).thenReturn(resultsOf(
+        OffenderDetail(surname = "smith", offenderId = 99),
+        OffenderDetail(surname = "smith", offenderId = 88)
+    ))
 
     val results = service.match(MatchRequest(surname = "smith"))
     assertThat(results.matches).hasSize(2)
   }
 
   private fun resultsOf(vararg offenders: OffenderDetail): SearchResponse {
-    val searchHits = offenders.map { SearchHit(it.offenderId?.toInt() ?: 99).apply { sourceRef(BytesArray(objectMapper.writeValueAsBytes(it))) } }
+    val searchHits = offenders.map { SearchHit(it.offenderId.toInt()).apply { sourceRef(BytesArray(objectMapper.writeValueAsBytes(it))) } }
     val hits = SearchHits(searchHits.toTypedArray(), offenders.size.toLong(), 10f)
     val searchResponseSections = SearchResponseSections(hits, null, null, false, null, null, 5)
     return SearchResponse(searchResponseSections, null, 8, 8, 0, 8, arrayOf())
