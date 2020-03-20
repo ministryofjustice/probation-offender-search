@@ -1,8 +1,8 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.whenever
 import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
