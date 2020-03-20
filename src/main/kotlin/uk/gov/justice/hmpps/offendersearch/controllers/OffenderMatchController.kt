@@ -13,15 +13,15 @@ import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.NotFoundException
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
-import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatch
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
+import uk.gov.justice.hmpps.offendersearch.services.MatchService
 import javax.validation.Valid
 
 @Api(tags = ["offender-match"], authorizations = [Authorization("ROLE_COMMUNITY")], description = "Provides offender matching features for Delius elastic search")
 @RestController
 @RequestMapping(value = ["match"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-class OffenderMatchController {
+class OffenderMatchController(private val matchService: MatchService) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
@@ -31,7 +31,7 @@ class OffenderMatchController {
   @GetMapping
   fun matchOffenders(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches {
     log.info("Match called with {}", matchRequest)
-    return OffenderMatches(listOf(OffenderMatch(OffenderDetail(surname = "Smith"))))
+    return matchService.match(matchRequest)
   }
 
 }

@@ -31,7 +31,7 @@ import java.util.*
 @RunWith(SpringJUnit4ClassRunner::class)
 @TestExecutionListeners(listeners = [DependencyInjectionTestExecutionListener::class, OffenderSearchAPIIntegrationTest::class])
 @ContextConfiguration
-class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
+internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
   @Autowired
   private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 

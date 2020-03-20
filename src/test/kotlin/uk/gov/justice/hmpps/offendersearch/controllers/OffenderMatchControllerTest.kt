@@ -1,6 +1,8 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.whenever
 import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
@@ -10,10 +12,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
+import uk.gov.justice.hmpps.offendersearch.services.MatchService
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import java.lang.reflect.Type
 
@@ -27,12 +32,15 @@ internal class OffenderMatchControllerTest {
   private lateinit var objectMapper: ObjectMapper
   @Autowired
   private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
+  @MockBean
+  private lateinit var matchService: MatchService
 
   @BeforeEach
   fun setUp() {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
         ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
+    whenever(matchService.match(any())).thenReturn(OffenderMatches(listOf()))
   }
 
   @Test
