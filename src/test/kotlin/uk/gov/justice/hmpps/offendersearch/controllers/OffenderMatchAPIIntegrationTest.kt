@@ -51,7 +51,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"Smith\"}")
-        .When()["/match"]
+        .post("/match")
         .then()
         .statusCode(200)
   }
@@ -63,7 +63,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"Smith\"}")
-        .When()["/match"]
+        .post("/match")
         .then()
         .statusCode(403)
   }
@@ -75,7 +75,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(MatchRequest(surname = "gramsci", firstName = "anne", dateOfBirth = LocalDate.of(1988, 1, 6)))
-        .When()["/match"]
+        .post("/match")
         .then()
         .statusCode(200)
         .body("matches.findall.size()", equalTo(1))
