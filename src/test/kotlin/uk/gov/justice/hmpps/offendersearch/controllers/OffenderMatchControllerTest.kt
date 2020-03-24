@@ -50,7 +50,7 @@ internal class OffenderMatchControllerTest {
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{}")
-        .When()["/match"]
+        .post("/match")
         .then()
         .statusCode(400)
         .body("developerMessage", containsString("Surname is required"))
@@ -63,7 +63,7 @@ internal class OffenderMatchControllerTest {
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"Smith\", \"dateOfBirth\":\"2199-07-02\"}")
-        .When()["/match"]
+        .post("/match")
         .then()
         .statusCode(400)
         .body("developerMessage", containsString("Date of birth must be in the past"))
@@ -76,7 +76,7 @@ internal class OffenderMatchControllerTest {
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"Smith\"}")
-        .When()["/match"]
+        .post("/match")
         .then()
         .statusCode(200)
   }
