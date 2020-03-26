@@ -10,6 +10,7 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
@@ -20,6 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.support.AbstractTestExecutionListener
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import java.lang.reflect.Type
@@ -34,6 +36,13 @@ import java.util.*
 internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecutionListener() {
   @Autowired
   private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
+
+  @Autowired
+  @Qualifier("elasticSearchClient")
+  private lateinit var esClient: RestHighLevelClient
+
+  @Autowired
+  private lateinit var objectMapper: ObjectMapper
 
   override fun beforeTestClass(testContext: TestContext) {
     val objectMapper = testContext.applicationContext.getBean(ObjectMapper::class.java)
@@ -70,11 +79,36 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
 
   @Test
   internal fun `should match when a single offender has all matching attributes`() {
+    loadOffenders(
+        OffenderIdentification(
+            surname = "gramsci",
+            firstName = "anne",
+            dateOfBirth = LocalDate.of(1988, 1, 6),
+            crn = "X00007",
+            nomsNumber = "G5555TT",
+            croNumber = "SF80/655108T",
+            pncNumber = "2018/x"
+        ),
+        OffenderIdentification(
+            surname = "smith",
+            firstName = "john",
+            dateOfBirth = LocalDate.of(1921, 1, 6),
+            crn = "X00001"
+        )
+    )
+
     given()
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body(MatchRequest(surname = "gramsci", firstName = "anne", dateOfBirth = LocalDate.of(1988, 1, 6)))
+        .body(MatchRequest(
+            surname = "gramsci",
+            firstName = "anne",
+            dateOfBirth = LocalDate.of(1988, 1, 6),
+            nomsNumber = "G5555TT",
+            croNumber = "SF80/655108T",
+            pncNumber = "2018/0123456"
+        ))
         .post("/match")
         .then()
         .statusCode(200)
@@ -82,5 +116,40 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
         .body("matches[0].offender.otherIds.crn", equalTo("X00007"))
   }
 
+  private fun loadOffenders(vararg offenders: OffenderIdentification) {
+    val template = "/elasticsearchdata/offender-template.json".readResourceAsText()
+    val templateOffender = objectMapper.readValue(template, OffenderDetail::class.java)
+
+    val offendersToLoad = offenders.map {
+      templateOffender.copy(
+          surname = it.surname,
+          firstName = it.firstName,
+          dateOfBirth = it.dateOfBirth,
+          otherIds = templateOffender.otherIds?.copy(
+              crn = it.crn,
+              nomsNumber = it.nomsNumber,
+              croNumber = it.croNumber,
+              pncNumber = it.pncNumber
+          )
+
+      )
+    }.map { objectMapper.writeValueAsString(it) }
+
+    LocalStackHelper(esClient).loadData(offendersToLoad)
+  }
+
 }
 
+private fun String.readResourceAsText(): String {
+  return OffenderDetail::class.java.getResource(this).readText()
+}
+
+data class OffenderIdentification(
+    val surname: String,
+    val firstName: String,
+    val dateOfBirth: LocalDate,
+    val crn: String,
+    val nomsNumber: String? = null,
+    val croNumber: String? = null,
+    val pncNumber: String? = null
+)

@@ -139,6 +139,7 @@ dependencies {
     testImplementation 'io.rest-assured:spring-mock-mvc:3.3.0'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     testImplementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.+'
+    testImplementation "org.awaitility:awaitility-kotlin:4.0.2"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.jetbrains.kotlin:kotlin-reflect'

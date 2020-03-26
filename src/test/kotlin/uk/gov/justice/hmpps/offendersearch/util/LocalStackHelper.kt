@@ -5,11 +5,13 @@ import com.google.gson.JsonParser
 import org.apache.http.HttpHeaders
 import org.apache.http.entity.StringEntity
 import org.apache.http.message.BasicHeader
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.matches
+import org.awaitility.kotlin.untilCallTo
 import org.elasticsearch.client.ResponseException
 import org.elasticsearch.client.RestHighLevelClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -20,10 +22,7 @@ class LocalStackHelper(var esClient: RestHighLevelClient) {
   }
 
   fun loadData() {
-    destroyIndex()
-    destroyPipeline()
-    buildPipeline()
-    buildIndex()
+    rebuildIndex()
     loadOffender("1", loadFile("src/test/resources/elasticsearchdata/john-smith.json"))
     loadOffender("2", loadFile("src/test/resources/elasticsearchdata/jane-smith.json"))
     loadOffender("3", loadFile("src/test/resources/elasticsearchdata/sam-jones-deleted.json"))
@@ -32,30 +31,38 @@ class LocalStackHelper(var esClient: RestHighLevelClient) {
     loadOffender("6", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-n03.json"))
     loadOffender("7", loadFile("src/test/resources/elasticsearchdata/anne-gramsci-n02.json"))
     loadOffender("8", loadFile("src/test/resources/elasticsearchdata/antonio-gramsci-c20.json"))
-    waitForOffenderLoading()
+    waitForOffenderLoading(8)
   }
 
-  private fun waitForOffenderLoading() {
-    var count = 0
-    while (count < 8) { //check offenders have been loaded before continuing with the test
-      val something = esClient.lowLevelClient.performRequest("get", "/offender/_count", BasicHeader("any", "any"))
-      count = JsonParser.parseString(IOUtils.toString(something.entity.content)).asJsonObject["count"].asInt
-      log.debug("Offenders loaded count: {}", count)
-      try {
-        Thread.sleep(500)
-      } catch (e: InterruptedException) {
-        e.printStackTrace()
-      }
+  fun loadData(offenders : List<String>) {
+    rebuildIndex()
+
+    offenders.forEach {
+      loadOffender(UUID.randomUUID().toString(), it)
     }
+
+    waitForOffenderLoading(offenders.size)
   }
 
-  @Throws(IOException::class)
+  private fun rebuildIndex() {
+    destroyIndex()
+    destroyPipeline()
+    buildPipeline()
+    buildIndex()
+  }
+
+  private fun waitForOffenderLoading(expectedCount: Int) {
+    await untilCallTo {
+      val response = esClient.lowLevelClient.performRequest("get", "/offender/_count", BasicHeader("any", "any"))
+      JsonParser.parseString(IOUtils.toString(response.entity.content)).asJsonObject["count"].asInt
+    } matches { it == expectedCount }
+  }
+
   private fun loadOffender(key: String, offender: String) {
     log.debug("Loading offender: {}", offender)
     esClient.lowLevelClient.performRequest("put", "/offender/document/$key?pipeline=pnc-pipeline", HashMap(), StringEntity(offender), BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"))
   }
 
-  @Throws(IOException::class)
   private fun destroyIndex() {
     log.debug("Dropping offender index")
     try {
@@ -65,7 +72,6 @@ class LocalStackHelper(var esClient: RestHighLevelClient) {
     }
   }
 
-  @Throws(IOException::class)
   private fun destroyPipeline() {
     try {
       log.debug("destroy pipeline")
@@ -75,19 +81,16 @@ class LocalStackHelper(var esClient: RestHighLevelClient) {
     }
   }
 
-  @Throws(IOException::class)
   private fun buildIndex() {
     log.debug("Build index")
     esClient.lowLevelClient.performRequest("put", "/offender", HashMap(), StringEntity(loadFile("src/test/resources/elasticsearchdata/create-index.json")), BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"))
   }
 
-  @Throws(IOException::class)
   private fun buildPipeline() {
     log.debug("Build pipeline")
     esClient.lowLevelClient.performRequest("put", "/_ingest/pipeline/pnc-pipeline", HashMap(), StringEntity(loadFile("src/test/resources/elasticsearchdata/create-pipeline.json")), BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"))
   }
 
-  @Throws(IOException::class)
   private fun loadFile(file: String): String {
     return Files.readString(Paths.get(file))
   }
