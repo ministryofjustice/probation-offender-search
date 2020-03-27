@@ -13,6 +13,7 @@ import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.bytes.BytesArray
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.MatchQueryBuilder
+import org.elasticsearch.index.query.MultiMatchQueryBuilder
 import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.SearchHits
 import org.junit.jupiter.api.BeforeEach
@@ -50,7 +51,7 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith"))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "softDeleted" to false))
     })
   }
 
@@ -59,7 +60,7 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", firstName = "John"))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "firstName" to "John"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "firstName" to "John", "softDeleted" to false))
     })
   }
 
@@ -68,7 +69,7 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", firstName = ""))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "softDeleted" to false))
     })
   }
 
@@ -77,7 +78,7 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", dateOfBirth = LocalDate.of(1965, 7, 19)))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "dateOfBirth" to LocalDate.of(1965, 7, 19)))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "dateOfBirth" to LocalDate.of(1965, 7, 19), "softDeleted" to false))
     })
   }
 
@@ -86,7 +87,7 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", croNumber = "SF80/655108T"))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "otherIds.croNumber" to "SF80/655108T"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "otherIds.croNumber" to "SF80/655108T", "softDeleted" to false))
     })
   }
 
@@ -95,16 +96,17 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", croNumber = ""))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "softDeleted" to false))
     })
   }
 
   @Test
-  fun `PNC will be added to query when present`() {
-    service.match(MatchRequest(surname = "smith", pncNumber = "2018/0123456X"))
+  fun `only PNC Number in canonical form will be added to query when present`() {
+    service.match(MatchRequest(surname = "smith", pncNumber = "2018/0003456X"))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "otherIds.pncNumber" to "2018/0123456X"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("softDeleted" to false))
+      assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf("2018/3456x" to listOf("otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")))
     })
   }
 
@@ -113,16 +115,16 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", pncNumber = ""))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "softDeleted" to false))
     })
   }
 
   @Test
-  fun `NOMS Number will be added to query when present`() {
+  fun `only NOMS Number will be added to query when present`() {
     service.match(MatchRequest(surname = "smith", nomsNumber = "G5555TT"))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "otherIds.nomsNumber" to "G5555TT"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("otherIds.nomsNumber" to "G5555TT", "softDeleted" to false))
     })
   }
 
@@ -131,7 +133,7 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", nomsNumber = ""))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "softDeleted" to false))
     })
   }
 
@@ -140,7 +142,7 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", activeSentence = true))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "currentDisposal" to "1"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "currentDisposal" to "1", "softDeleted" to false))
     })
   }
 
@@ -149,7 +151,7 @@ internal class MatchServiceTest {
     service.match(MatchRequest(surname = "smith", activeSentence = false))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "softDeleted" to false))
     })
   }
 
@@ -176,5 +178,10 @@ internal class MatchServiceTest {
 
 fun SearchRequest.mustNames(): Map<String, Any> {
   val query = source().query() as BoolQueryBuilder
-  return query.must().map { (it as MatchQueryBuilder).fieldName() to it.value() }.toMap()
+  return query.must().filterIsInstance<MatchQueryBuilder>().map { it.fieldName() to it.value() }.toMap()
+}
+
+fun SearchRequest.mustMultiMatchNames(): Map<String, Any> {
+  val query = source().query() as BoolQueryBuilder
+  return query.must().filterIsInstance<MultiMatchQueryBuilder>().map { it.value() as String to it.fields().keys.toList() }.toMap()
 }
