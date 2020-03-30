@@ -1,3 +1,5 @@
+@file:Suppress("ClassName")
+
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -7,6 +9,8 @@ import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.Matchers.equalTo
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,67 +57,171 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
         ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
   }
 
-  @Test
-  internal fun `access allowed with ROLE_COMMUNITY`() {
-    given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"surname\": \"Smith\"}")
-        .post("/match")
-        .then()
-        .statusCode(200)
+  @Nested
+  inner class `basic operation` {
+    @Test
+    internal fun `access allowed with ROLE_COMMUNITY`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("{\"surname\": \"Smith\"}")
+          .post("/match")
+          .then()
+          .statusCode(200)
+    }
+
+    @Test
+    internal fun `without ROLE_COMMUNITY access is denied`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("{\"surname\": \"Smith\"}")
+          .post("/match")
+          .then()
+          .statusCode(403)
+    }
+
+    @Test
+    internal fun `should match when a single offender has all matching attributes`() {
+      loadOffenders(
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "anne",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X00007",
+              nomsNumber = "G5555TT",
+              croNumber = "SF80/655108T",
+              pncNumber = "2018/0123456"
+          ),
+          OffenderIdentification(
+              surname = "smith",
+              firstName = "john",
+              dateOfBirth = LocalDate.of(1921, 1, 6),
+              crn = "X00001"
+          )
+      )
+
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "gramsci",
+              firstName = "anne",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              nomsNumber = "G5555TT",
+              croNumber = "SF80/655108T",
+              pncNumber = "2018/0123456",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00007"))
+    }
   }
 
-  @Test
-  internal fun `without ROLE_COMMUNITY access is denied`() {
-    given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"surname\": \"Smith\"}")
-        .post("/match")
-        .then()
-        .statusCode(403)
-  }
+  @Nested
+  inner class `PNC key data` {
+    @BeforeEach
+    internal fun setup() {
+      loadOffenders(
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "jan",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X00001",
+              pncNumber = "2015/0123456X"
+          ),
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "jan",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X888888",
+              pncNumber = "2015/0123456X",
+              deleted = true
+          ),
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X999999",
+              pncNumber = "2015/0123456X",
+              activeSentence = false
+          ),
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "jill",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X00002",
+              pncNumber = "2015/0123456Z",
+              nomsNumber = "G5555TT"
+          )
+      )
+    }
+    @Test
+    internal fun `should match using PNC number ignoring deleted and inactive sentences`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              pncNumber = "2015/0123456X",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+    @Test
+    internal fun `should match using short form of PNC number`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              pncNumber = "15/123456X",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
 
-  @Test
-  internal fun `should match when a single offender has all matching attributes`() {
-    loadOffenders(
-        OffenderIdentification(
-            surname = "gramsci",
-            firstName = "anne",
-            dateOfBirth = LocalDate.of(1988, 1, 6),
-            crn = "X00007",
-            nomsNumber = "G5555TT",
-            croNumber = "SF80/655108T",
-            pncNumber = "2018/x"
-        ),
-        OffenderIdentification(
-            surname = "smith",
-            firstName = "john",
-            dateOfBirth = LocalDate.of(1921, 1, 6),
-            crn = "X00001"
-        )
-    )
+    @Test
+    internal fun `noms number takes precedence over PNC Number when present`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              pncNumber = "2015/0123456X",
+              activeSentence = true,
+              nomsNumber = "G5555TT"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00002"))
+    }
 
-    given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body(MatchRequest(
-            surname = "gramsci",
-            firstName = "anne",
-            dateOfBirth = LocalDate.of(1988, 1, 6),
-            nomsNumber = "G5555TT",
-            croNumber = "SF80/655108T",
-            pncNumber = "2018/0123456"
-        ))
-        .post("/match")
-        .then()
-        .statusCode(200)
-        .body("matches.findall.size()", equalTo(1))
-        .body("matches[0].offender.otherIds.crn", equalTo("X00007"))
   }
 
   private fun loadOffenders(vararg offenders: OffenderIdentification) {
@@ -125,6 +233,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           surname = it.surname,
           firstName = it.firstName,
           dateOfBirth = it.dateOfBirth,
+          currentDisposal = if (it.activeSentence) "1" else "0",
+          softDeleted = it.deleted,
           otherIds = templateOffender.otherIds?.copy(
               crn = it.crn,
               nomsNumber = it.nomsNumber,
@@ -149,6 +259,8 @@ data class OffenderIdentification(
     val firstName: String,
     val dateOfBirth: LocalDate,
     val crn: String,
+    val activeSentence: Boolean = true,
+    val deleted: Boolean = false,
     val nomsNumber: String? = null,
     val croNumber: String? = null,
     val pncNumber: String? = null
