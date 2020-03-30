@@ -1,5 +1,3 @@
-@file:Suppress("ClassName")
-
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -58,7 +56,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
   }
 
   @Nested
-  inner class `basic operation` {
+  inner class BasicOperation {
     @Test
     internal fun `access allowed with ROLE_COMMUNITY`() {
       given()
@@ -125,7 +123,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
   }
 
   @Nested
-  inner class `PNC key data` {
+  inner class PNCNumberMatching {
     @BeforeEach
     internal fun setup() {
       loadOffenders(
@@ -220,6 +218,199 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .statusCode(200)
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00002"))
+    }
+    @Test
+    internal fun `should not match using PNC number if no other data matches the record other then PNC number`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "ahankara",
+              firstName = "adi",
+              dateOfBirth = LocalDate.of(1977, 1, 6),
+              pncNumber = "2015/0123456X",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(0))
+    }
+    @Test
+    internal fun `should match using PNC number if PNC and surname match`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1977, 1, 6),
+              pncNumber = "2015/0123456X",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+    @Test
+    internal fun `should match using PNC number if PNC and date of birth match`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "ahankara",
+              firstName = "adi",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              pncNumber = "2015/0123456X",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+
+  }
+
+  @Nested
+  inner class CRONumberMatching {
+    @BeforeEach
+    internal fun setup() {
+      loadOffenders(
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "jan",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X00001",
+              croNumber = "SF80/655108T"
+          ),
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "jan",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X888888",
+              croNumber = "SF80/655108T",
+              deleted = true
+          ),
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X999999",
+              croNumber = "SF80/655108T",
+              activeSentence = false
+          ),
+          OffenderIdentification(
+              surname = "gramsci",
+              firstName = "jill",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              crn = "X00002",
+              croNumber = "SF79/666108T",
+              nomsNumber = "G5555TT"
+          )
+      )
+    }
+    @Test
+    internal fun `should match using CRO number ignoring deleted and inactive sentences`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              croNumber = "SF80/655108T",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+
+    @Test
+    internal fun `noms number takes precedence over CRO Number when present`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              croNumber = "SF80/655108T",
+              activeSentence = true,
+              nomsNumber = "G5555TT"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00002"))
+    }
+    @Test
+    internal fun `should not match using CRO number if no other data matches the record other then PNC number`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "ahankara",
+              firstName = "adi",
+              dateOfBirth = LocalDate.of(1977, 1, 6),
+              croNumber = "SF80/655108T",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(0))
+    }
+    @Test
+    internal fun `should match using CRO number if CRO and surname match`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "gramsci",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1977, 1, 6),
+              croNumber = "SF80/655108T",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+    @Test
+    internal fun `should match using CRO number if CRO and date of birth match`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "ahankara",
+              firstName = "adi",
+              dateOfBirth = LocalDate.of(1988, 1, 6),
+              croNumber = "SF80/655108T",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
 
   }

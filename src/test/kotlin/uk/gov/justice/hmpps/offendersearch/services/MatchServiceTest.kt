@@ -83,11 +83,22 @@ internal class MatchServiceTest {
   }
 
   @Test
-  fun `CRO will be added to query when present`() {
+  fun `CRO will be added as lowercase to query when present`() {
     service.match(MatchRequest(surname = "smith", croNumber = "SF80/655108T"))
 
     verify(restHighLevelClient).search(check {
-      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "otherIds.croNumber" to "SF80/655108T", "softDeleted" to false))
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("otherIds.croNumberLowercase" to "sf80/655108t", "softDeleted" to false))
+      assertThat(it.nestedMustShouldNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+    })
+  }
+
+  @Test
+  fun `when CRO present only surname and date of birth will also be matched`() {
+    service.match(MatchRequest(firstName = "john",  surname = "smith", croNumber = "SF80/655108T", dateOfBirth = LocalDate.of(1995, 10, 4)))
+
+    verify(restHighLevelClient).search(check {
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("otherIds.croNumberLowercase" to "sf80/655108t", "softDeleted" to false))
+      assertThat(it.nestedMustShouldNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "dateOfBirth" to LocalDate.of(1995, 10, 4)))
     })
   }
 
@@ -107,6 +118,18 @@ internal class MatchServiceTest {
     verify(restHighLevelClient).search(check {
       assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("softDeleted" to false))
       assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf("2018/3456x" to listOf("otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")))
+      assertThat(it.nestedMustShouldNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+    })
+  }
+
+  @Test
+  fun `when PNC present only surname and date of birth will also be matched`() {
+    service.match(MatchRequest(firstName = "john",  surname = "smith", pncNumber = "2018/0003456X", dateOfBirth = LocalDate.of(1995, 10, 4)))
+
+    verify(restHighLevelClient).search(check {
+      assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("softDeleted" to false))
+      assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf("2018/3456x" to listOf("otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")))
+      assertThat(it.nestedMustShouldNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "dateOfBirth" to LocalDate.of(1995, 10, 4)))
     })
   }
 
@@ -179,6 +202,11 @@ internal class MatchServiceTest {
 fun SearchRequest.mustNames(): Map<String, Any> {
   val query = source().query() as BoolQueryBuilder
   return query.must().filterIsInstance<MatchQueryBuilder>().map { it.fieldName() to it.value() }.toMap()
+}
+
+fun SearchRequest.nestedMustShouldNames(): Map<String, Any> {
+  val query = source().query() as BoolQueryBuilder
+  return query.must().filterIsInstance<BoolQueryBuilder>().flatMap { it.should().filterIsInstance<MatchQueryBuilder>() }.map { it.fieldName() to it.value() }.toMap()
 }
 
 fun SearchRequest.mustMultiMatchNames(): Map<String, Any> {
