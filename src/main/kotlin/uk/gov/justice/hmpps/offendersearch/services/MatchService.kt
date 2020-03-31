@@ -17,7 +17,6 @@ import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatch
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
-import java.time.LocalDate
 
 @Service
 class MatchService(
@@ -53,8 +52,8 @@ class MatchService(
         return QueryBuilders.boolQuery()
             .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
             .must(QueryBuilders.boolQuery()
-                .shouldWhenPresent("surname", surname)
-                .shouldWhenPresent("dateOfBirth", dateOfBirth))
+                .shouldMultiMatch(surname, "surname", "offenderAliases.surname")
+                .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth"))
       }
     }
   }
@@ -65,8 +64,8 @@ class MatchService(
         return QueryBuilders.boolQuery()
             .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
             .must(QueryBuilders.boolQuery()
-                .shouldWhenPresent("surname", surname)
-                .shouldWhenPresent("dateOfBirth", dateOfBirth))
+                .shouldMultiMatch(surname, "surname", "offenderAliases.surname")
+                .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth"))
       }
     }
   }
@@ -112,30 +111,26 @@ class MatchService(
 
 }
 
-fun BoolQueryBuilder.mustWhenPresent(query: String, value: String?): BoolQueryBuilder {
-  value.takeIf { !it.isNullOrBlank() }?.let {
+fun BoolQueryBuilder.mustWhenPresent(query: String, value: Any?): BoolQueryBuilder {
+  value.takeIf {
+    when(it) {
+      is String -> it.isNotBlank()
+      else -> true
+    }
+  }?.let {
     this.must(matchQuery(query, it))
   }
   return this
 }
 
-fun BoolQueryBuilder.shouldWhenPresent(query: String, value: String?): BoolQueryBuilder {
-  value.takeIf { !it.isNullOrBlank() }?.let {
-    this.should(matchQuery(query, it))
-  }
-  return this
-}
-
-fun BoolQueryBuilder.mustWhenPresent(query: String, value: LocalDate?): BoolQueryBuilder {
-  value?.let {
-    this.must(matchQuery(query, it))
-  }
-  return this
-}
-
-fun BoolQueryBuilder.shouldWhenPresent(query: String, value: LocalDate?): BoolQueryBuilder {
-  value?.let {
-    this.should(matchQuery(query, it))
+fun BoolQueryBuilder.shouldMultiMatch(value: Any?, vararg query: String): BoolQueryBuilder {
+  value.takeIf {
+    when(it) {
+      is String -> it.isNotBlank()
+      else -> true
+    }
+  }?.let {
+    this.should().add(multiMatchQuery(value, *query))
   }
   return this
 }
@@ -158,6 +153,7 @@ fun BoolQueryBuilder.mustMultiMatchKeyword(value: String, vararg query: String):
   )
   return this
 }
+
 
 fun BoolQueryBuilder.mustKeyword(value: String, query: String): BoolQueryBuilder {
   return this.must(matchQuery(query, value).analyzer("keyword"))
