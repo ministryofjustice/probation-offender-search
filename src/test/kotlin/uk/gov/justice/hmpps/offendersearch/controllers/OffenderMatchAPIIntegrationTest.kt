@@ -92,7 +92,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
               crn = "X00007",
               nomsNumber = "G5555TT",
               croNumber = "SF80/655108T",
-              pncNumber = "2018/0123456"
+              pncNumber = "2018/0123456X"
           ),
           OffenderIdentification(
               surname = "smith",
@@ -112,12 +112,13 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
               dateOfBirth = LocalDate.of(1988, 1, 6),
               nomsNumber = "G5555TT",
               croNumber = "SF80/655108T",
-              pncNumber = "2018/0123456",
+              pncNumber = "2018/0123456X",
               activeSentence = true
           ))
           .post("/match")
           .then()
           .statusCode(200)
+          .body("matchedBy", equalTo("ALL_SUPPLIED"))
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00007"))
     }
@@ -178,6 +179,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .post("/match")
           .then()
           .statusCode(200)
+          .body("matchedBy", equalTo("EXTERNAL_KEY"))
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
@@ -218,6 +220,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .post("/match")
           .then()
           .statusCode(200)
+          .body("matchedBy", equalTo("HMPPS_KEY"))
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00002"))
     }
@@ -374,6 +377,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .post("/match")
           .then()
           .statusCode(200)
+          .body("matchedBy", equalTo("EXTERNAL_KEY"))
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
@@ -395,11 +399,12 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .post("/match")
           .then()
           .statusCode(200)
+          .body("matchedBy", equalTo("HMPPS_KEY"))
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00002"))
     }
     @Test
-    internal fun `should not match using CRO number if no other data matches the record other then PNC number`() {
+    internal fun `should not match using CRO number if no other data matches the record other then CRO number`() {
       given()
           .auth()
           .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
