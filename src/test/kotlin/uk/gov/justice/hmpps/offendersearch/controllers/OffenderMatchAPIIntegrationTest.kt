@@ -23,6 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.support.AbstractTestExecutionListener
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
@@ -132,7 +133,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
               firstName = "jan",
               dateOfBirth = LocalDate.of(1988, 1, 6),
               crn = "X00001",
-              pncNumber = "2015/0123456X"
+              pncNumber = "2015/0123456X",
+              aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1) ))
           ),
           OffenderIdentification(
               surname = "gramsci",
@@ -276,6 +278,45 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
 
+    @Test
+    internal fun `should match using PNC number if PNC and surname alias match`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "abbagnano",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1977, 1, 6),
+              pncNumber = "2015/0123456X",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+    @Test
+    internal fun `should match using PNC number if PNC and date of birth alias match`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "ahankara",
+              firstName = "adi",
+              dateOfBirth = LocalDate.of(1990, 9, 1),
+              pncNumber = "2015/0123456X",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+
   }
 
   @Nested
@@ -288,7 +329,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
               firstName = "jan",
               dateOfBirth = LocalDate.of(1988, 1, 6),
               crn = "X00001",
-              croNumber = "SF80/655108T"
+              croNumber = "SF80/655108T",
+              aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1) ))
           ),
           OffenderIdentification(
               surname = "gramsci",
@@ -413,6 +455,45 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
 
+    @Test
+    internal fun `should match using CRO number if CRO and alias surname match`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "abbagnano",
+              firstName = "june",
+              dateOfBirth = LocalDate.of(1977, 1, 6),
+              croNumber = "SF80/655108T",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+    @Test
+    internal fun `should match using CRO number if CRO and alias date of birth match`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "ahankara",
+              firstName = "adi",
+              dateOfBirth = LocalDate.of(1990, 9, 1),
+              croNumber = "SF80/655108T",
+              activeSentence = true
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+
   }
 
   private fun loadOffenders(vararg offenders: OffenderIdentification) {
@@ -431,8 +512,12 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
               nomsNumber = it.nomsNumber,
               croNumber = it.croNumber,
               pncNumber = it.pncNumber
-          )
-
+          ),
+          offenderAliases = it.aliases.map { alias ->  OffenderAlias(
+              firstName = alias.firstName,
+              surname = alias.surname,
+              dateOfBirth = alias.dateOfBirth
+          ) }
       )
     }.map { objectMapper.writeValueAsString(it) }
 
@@ -452,7 +537,14 @@ data class OffenderIdentification(
     val crn: String,
     val activeSentence: Boolean = true,
     val deleted: Boolean = false,
+    val aliases: List<Alias> = listOf(),
     val nomsNumber: String? = null,
     val croNumber: String? = null,
     val pncNumber: String? = null
+)
+
+data class Alias(
+    val surname: String,
+    val firstName: String,
+    val dateOfBirth: LocalDate
 )

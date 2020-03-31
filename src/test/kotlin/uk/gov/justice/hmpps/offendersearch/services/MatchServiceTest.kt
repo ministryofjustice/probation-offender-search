@@ -88,7 +88,7 @@ internal class MatchServiceTest {
 
     verify(restHighLevelClient).search(check {
       assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("otherIds.croNumberLowercase" to "sf80/655108t", "softDeleted" to false))
-      assertThat(it.nestedMustShouldNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+      assertThat(it.nestedShouldMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf("smith" to listOf("surname", "offenderAliases.surname").sorted()))
     })
   }
 
@@ -98,7 +98,11 @@ internal class MatchServiceTest {
 
     verify(restHighLevelClient).search(check {
       assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("otherIds.croNumberLowercase" to "sf80/655108t", "softDeleted" to false))
-      assertThat(it.nestedMustShouldNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "dateOfBirth" to LocalDate.of(1995, 10, 4)))
+      assertThat(it.nestedShouldMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(
+          mapOf(
+              "smith" to listOf("surname", "offenderAliases.surname").sorted(),
+              LocalDate.of(1995, 10, 4) to listOf("dateOfBirth", "offenderAliases.dateOfBirth").sorted()
+          ))
     })
   }
 
@@ -118,7 +122,7 @@ internal class MatchServiceTest {
     verify(restHighLevelClient).search(check {
       assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("softDeleted" to false))
       assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf("2018/3456x" to listOf("otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")))
-      assertThat(it.nestedMustShouldNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith"))
+      assertThat(it.nestedShouldMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf("smith" to listOf("surname", "offenderAliases.surname").sorted()))
     })
   }
 
@@ -129,7 +133,12 @@ internal class MatchServiceTest {
     verify(restHighLevelClient).search(check {
       assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("softDeleted" to false))
       assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf("2018/3456x" to listOf("otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")))
-      assertThat(it.nestedMustShouldNames()).containsExactlyInAnyOrderEntriesOf(mapOf("surname" to "smith", "dateOfBirth" to LocalDate.of(1995, 10, 4)))
+      assertThat(it.nestedShouldMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(
+          mapOf(
+              "smith" to listOf("surname", "offenderAliases.surname").sorted(),
+              LocalDate.of(1995, 10, 4) to listOf("dateOfBirth", "offenderAliases.dateOfBirth").sorted()
+          ))
+
     })
   }
 
@@ -204,12 +213,12 @@ fun SearchRequest.mustNames(): Map<String, Any> {
   return query.must().filterIsInstance<MatchQueryBuilder>().map { it.fieldName() to it.value() }.toMap()
 }
 
-fun SearchRequest.nestedMustShouldNames(): Map<String, Any> {
+fun SearchRequest.nestedShouldMultiMatchNames(): Map<Any, List<String>> {
   val query = source().query() as BoolQueryBuilder
-  return query.must().filterIsInstance<BoolQueryBuilder>().flatMap { it.should().filterIsInstance<MatchQueryBuilder>() }.map { it.fieldName() to it.value() }.toMap()
+  return query.must().filterIsInstance<BoolQueryBuilder>().flatMap { it.should().filterIsInstance<MultiMatchQueryBuilder>() }.map { it.value() to it.fields().keys.toList().sorted()  }.toMap()
 }
 
 fun SearchRequest.mustMultiMatchNames(): Map<String, Any> {
   val query = source().query() as BoolQueryBuilder
-  return query.must().filterIsInstance<MultiMatchQueryBuilder>().map { it.value() as String to it.fields().keys.toList() }.toMap()
+  return query.must().filterIsInstance<MultiMatchQueryBuilder>().map { it.value() as String to it.fields().keys.toList().sorted() }.toMap()
 }
