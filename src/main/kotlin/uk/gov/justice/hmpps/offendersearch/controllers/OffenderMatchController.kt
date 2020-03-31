@@ -28,7 +28,7 @@ class OffenderMatchController(private val matchService: MatchService) {
   }
 
   @ApiOperation(value = "Match for an offender in Delius ElasticSearch. It will return the best group of matching offenders based on the request", notes = "Specify the request criteria to match against", authorizations = [Authorization("ROLE_COMMUNITY")], nickname = "match")
-  @ApiResponses(value = [ApiResponse(code = 200, message = "OK", response = OffenderDetail::class, responseContainer = "List"), ApiResponse(code = 400, message = "Invalid Request", response = BadRequestException::class), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)])
+  @ApiResponses(value = [ApiResponse(code = 200, message = "OK", response = OffenderMatches::class), ApiResponse(code = 400, message = "Invalid Request", response = BadRequestException::class), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)])
   @PostMapping
   fun matchOffenders(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches {
     log.info("Match called with {}", matchRequest)

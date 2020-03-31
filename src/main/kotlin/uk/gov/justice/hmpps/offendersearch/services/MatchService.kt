@@ -6,14 +6,15 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.index.query.QueryBuilders.matchQuery
-import org.elasticsearch.index.query.QueryBuilders.multiMatchQuery
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
+import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED
+import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.EXTERNAL_KEY
+import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.HMPPS_KEY
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatch
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
@@ -28,13 +29,10 @@ class MatchService(
   }
 
   fun match(matchRequest: MatchRequest): OffenderMatches {
-    matchBy(matchRequest) { nomsNumber(it) } onMatch { return it.matches }
-    matchBy(matchRequest) { croNumber(it) } onMatch { return it.matches }
-    matchBy(matchRequest) { pncNumber(it) } onMatch { return it.matches }
-
-    // TODO remove this fallback once the full matching algorithm has been completed
-    matchBy(matchRequest) { fallback(it) } onMatch { return it.matches }
-
+    matchBy(matchRequest) { fullMatch(it) } onMatch { return OffenderMatches(it.matches, ALL_SUPPLIED) }
+    matchBy(matchRequest) { nomsNumber(it) } onMatch { return OffenderMatches(it.matches, HMPPS_KEY) }
+    matchBy(matchRequest) { croNumber(it) } onMatch { return OffenderMatches(it.matches, EXTERNAL_KEY) }
+    matchBy(matchRequest) { pncNumber(it) } onMatch { return OffenderMatches(it.matches, EXTERNAL_KEY) }
     return OffenderMatches()
   }
 
@@ -70,8 +68,17 @@ class MatchService(
     }
   }
 
-  private fun fallback(matchRequest: MatchRequest): BoolQueryBuilder? {
-    return buildMatchWithAllProvidedParameters(matchRequest)
+  private fun fullMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
+    with(matchRequest) {
+      return QueryBuilders.boolQuery()
+          .mustMultiMatch(surname, "surname", "offenderAliases.surname")
+          .mustMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
+          .mustMultiMatch(firstName, "firstName", "offenderAliases.firstName")
+          .mustKeyword(croNumber?.toLowerCase(), "otherIds.croNumberLowercase")
+          .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+          .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
+          .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
+    }
   }
 
 
@@ -83,86 +90,24 @@ class MatchService(
       }
       val searchRequest = SearchRequest(arrayOf("offender"), searchSourceBuilder)
       val offenderMatches = getSearchResult(elasticSearchClient.search(searchRequest))
-      return if (offenderMatches.isEmpty) Result.NoMatch else Result.Match(offenderMatches)
+      return if (offenderMatches.isEmpty()) Result.NoMatch else Result.Match(offenderMatches)
     } ?: Result.NoMatch
   }
 
-  fun buildMatchWithAllProvidedParameters(matchRequest: MatchRequest): BoolQueryBuilder {
-    with(matchRequest) {
-      return QueryBuilders.boolQuery()
-          .must(matchQuery("surname", surname))
-          .mustWhenPresent("dateOfBirth", dateOfBirth)
-          .mustWhenPresent("firstName", firstName)
-          .mustWhenPresent("otherIds.croNumber", croNumber)
-          .mustWhenPresent("otherIds.pncNumber", pncNumber)
-          .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
-          .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
-    }
-  }
-
-  private fun getSearchResult(response: SearchResponse): OffenderMatches {
+  private fun getSearchResult(response: SearchResponse): List<OffenderMatch> {
     val searchHits = response.hits.hits.asList()
     log.debug("search found ${searchHits.size} hits")
-    val matchingOffenders = searchHits.map { OffenderMatch(toOffenderDetail(it.sourceAsString)) }
-    return OffenderMatches(matchingOffenders)
+    return searchHits.map { OffenderMatch(toOffenderDetail(it.sourceAsString)) }
   }
 
   private fun toOffenderDetail(src: String) = mapper.readValue(src, OffenderDetail::class.java)
 
 }
 
-fun BoolQueryBuilder.mustWhenPresent(query: String, value: Any?): BoolQueryBuilder {
-  value.takeIf {
-    when(it) {
-      is String -> it.isNotBlank()
-      else -> true
-    }
-  }?.let {
-    this.must(matchQuery(query, it))
-  }
-  return this
-}
-
-fun BoolQueryBuilder.shouldMultiMatch(value: Any?, vararg query: String): BoolQueryBuilder {
-  value.takeIf {
-    when(it) {
-      is String -> it.isNotBlank()
-      else -> true
-    }
-  }?.let {
-    this.should().add(multiMatchQuery(value, *query))
-  }
-  return this
-}
-
-fun BoolQueryBuilder.must(query: String, value: Any): BoolQueryBuilder {
-  this.must(matchQuery(query, value))
-  return this
-}
-
-fun BoolQueryBuilder.mustWhenTrue(predicate: () -> Boolean, query: String, value: String): BoolQueryBuilder {
-  value.takeIf { predicate() }?.let {
-    this.must(matchQuery(query, it))
-  }
-  return this
-}
-
-fun BoolQueryBuilder.mustMultiMatchKeyword(value: String, vararg query: String): BoolQueryBuilder {
-  this.must().add(multiMatchQuery(value, *query)
-      .analyzer("keyword")
-  )
-  return this
-}
-
-
-fun BoolQueryBuilder.mustKeyword(value: String, query: String): BoolQueryBuilder {
-  return this.must(matchQuery(query, value).analyzer("keyword"))
-}
-
 
 sealed class Result {
   object NoMatch : Result()
-  data class Match(val matches: OffenderMatches) : Result()
+  data class Match(val matches: List<OffenderMatch>) : Result()
 }
 
 inline infix fun Result.onMatch(block: (Result.Match) -> Nothing): Unit? {
