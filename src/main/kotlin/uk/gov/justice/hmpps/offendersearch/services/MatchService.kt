@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.index.query.QueryBuilders.matchQuery
 import org.elasticsearch.index.query.QueryBuilders.multiMatchQuery
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
@@ -29,25 +30,44 @@ class MatchService(
 
   fun match(matchRequest: MatchRequest): OffenderMatches {
     matchBy(matchRequest) { nomsNumber(it) } onMatch { return it.matches }
+    matchBy(matchRequest) { croNumber(it) } onMatch { return it.matches }
     matchBy(matchRequest) { pncNumber(it) } onMatch { return it.matches }
 
     // TODO remove this fallback once the full matching algorithm has been completed
-    matchBy(matchRequest) { fallback(it)} onMatch { return it.matches }
+    matchBy(matchRequest) { fallback(it) } onMatch { return it.matches }
 
     return OffenderMatches()
   }
 
   private fun nomsNumber(matchRequest: MatchRequest): BoolQueryBuilder? {
-    return matchRequest.nomsNumber.takeIf { !it.isNullOrBlank() } ?.let {
+    return matchRequest.nomsNumber.takeIf { !it.isNullOrBlank() }?.let {
+      // NOMS number is a special case since a human has already matched so trust that judgement
       return QueryBuilders.boolQuery()
           .mustWhenPresent("otherIds.nomsNumber", it)
     }
   }
 
   private fun pncNumber(matchRequest: MatchRequest): BoolQueryBuilder? {
-    return matchRequest.pncNumber.takeIf { !it.isNullOrBlank() }?.let {
-      return QueryBuilders.boolQuery()
-          .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+    with(matchRequest) {
+      return pncNumber.takeIf { !it.isNullOrBlank() }?.let {
+        return QueryBuilders.boolQuery()
+            .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+            .must(QueryBuilders.boolQuery()
+                .shouldWhenPresent("surname", surname)
+                .shouldWhenPresent("dateOfBirth", dateOfBirth))
+      }
+    }
+  }
+
+  private fun croNumber(matchRequest: MatchRequest): BoolQueryBuilder? {
+    with(matchRequest) {
+      return croNumber.takeIf { !it.isNullOrBlank() }?.let {
+        return QueryBuilders.boolQuery()
+            .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
+            .must(QueryBuilders.boolQuery()
+                .shouldWhenPresent("surname", surname)
+                .shouldWhenPresent("dateOfBirth", dateOfBirth))
+      }
     }
   }
 
@@ -56,7 +76,7 @@ class MatchService(
   }
 
 
-  private fun matchBy(matchRequest: MatchRequest, queryBuilder: (matchRequest: MatchRequest) -> BoolQueryBuilder?): Result<Unit, OffenderMatches> {
+  private fun matchBy(matchRequest: MatchRequest, queryBuilder: (matchRequest: MatchRequest) -> BoolQueryBuilder?): Result {
     val matchQuery = queryBuilder(matchRequest)
     return matchQuery?.let {
       val searchSourceBuilder = SearchSourceBuilder().apply {
@@ -64,14 +84,14 @@ class MatchService(
       }
       val searchRequest = SearchRequest(arrayOf("offender"), searchSourceBuilder)
       val offenderMatches = getSearchResult(elasticSearchClient.search(searchRequest))
-      return if (offenderMatches.isEmpty) Result.NoMatch() else Result.Match(offenderMatches)
-    } ?: Result.NoMatch()
+      return if (offenderMatches.isEmpty) Result.NoMatch else Result.Match(offenderMatches)
+    } ?: Result.NoMatch
   }
 
   fun buildMatchWithAllProvidedParameters(matchRequest: MatchRequest): BoolQueryBuilder {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .must(QueryBuilders.matchQuery("surname", surname))
+          .must(matchQuery("surname", surname))
           .mustWhenPresent("dateOfBirth", dateOfBirth)
           .mustWhenPresent("firstName", firstName)
           .mustWhenPresent("otherIds.croNumber", croNumber)
@@ -94,50 +114,66 @@ class MatchService(
 
 fun BoolQueryBuilder.mustWhenPresent(query: String, value: String?): BoolQueryBuilder {
   value.takeIf { !it.isNullOrBlank() }?.let {
-    this.must(QueryBuilders
-        .matchQuery(query, it))
+    this.must(matchQuery(query, it))
+  }
+  return this
+}
+
+fun BoolQueryBuilder.shouldWhenPresent(query: String, value: String?): BoolQueryBuilder {
+  value.takeIf { !it.isNullOrBlank() }?.let {
+    this.should(matchQuery(query, it))
   }
   return this
 }
 
 fun BoolQueryBuilder.mustWhenPresent(query: String, value: LocalDate?): BoolQueryBuilder {
   value?.let {
-    this.must(QueryBuilders
-        .matchQuery(query, it))
+    this.must(matchQuery(query, it))
+  }
+  return this
+}
+
+fun BoolQueryBuilder.shouldWhenPresent(query: String, value: LocalDate?): BoolQueryBuilder {
+  value?.let {
+    this.should(matchQuery(query, it))
   }
   return this
 }
 
 fun BoolQueryBuilder.must(query: String, value: Any): BoolQueryBuilder {
-  this.must(QueryBuilders.matchQuery(query, value))
+  this.must(matchQuery(query, value))
   return this
 }
 
 fun BoolQueryBuilder.mustWhenTrue(predicate: () -> Boolean, query: String, value: String): BoolQueryBuilder {
   value.takeIf { predicate() }?.let {
-    this.must(QueryBuilders
-        .matchQuery(query, it))
+    this.must(matchQuery(query, it))
   }
   return this
 }
 
 fun BoolQueryBuilder.mustMultiMatchKeyword(value: String, vararg query: String): BoolQueryBuilder {
   this.must().add(multiMatchQuery(value, *query)
-      .analyzer("whitespace")
+      .analyzer("keyword")
   )
   return this
 }
 
-
-sealed class Result<out T, out M> {
-  data class NoMatch<out T>(val value: T? = null) : Result<T, Nothing>()
-  data class Match<out M>(val matches: M) : Result<Nothing, M>()
+fun BoolQueryBuilder.mustKeyword(value: String, query: String): BoolQueryBuilder {
+  return this.must(matchQuery(query, value).analyzer("keyword"))
 }
 
-inline infix fun <T, M> Result<T, M>.onMatch(block: (Result.Match<M>) -> Nothing): T? {
+
+sealed class Result {
+  object NoMatch : Result()
+  data class Match(val matches: OffenderMatches) : Result()
+}
+
+inline infix fun Result.onMatch(block: (Result.Match) -> Nothing): Unit? {
   return when (this) {
-    is Result.NoMatch<T> -> value
-    is Result.Match<M> -> block(this)
+    is Result.NoMatch -> {
+    }
+    is Result.Match -> block(this)
   }
 }
 
