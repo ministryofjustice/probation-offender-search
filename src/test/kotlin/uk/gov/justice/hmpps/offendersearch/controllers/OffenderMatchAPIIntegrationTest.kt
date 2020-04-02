@@ -501,6 +501,249 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
 
   }
 
+  @Nested
+  inner class NameMatching {
+    @BeforeEach
+    internal fun setup() {
+      loadOffenders(
+          OffenderIdentification(
+              surname = "Adorno",
+              firstName = "Theodor",
+              dateOfBirth = LocalDate.of(1903, 11, 11),
+              crn = "X00001",
+              aliases = listOf(
+                  Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1) ),
+                  Alias(firstName = "Bhimrao", surname = "Ambedkar", dateOfBirth = LocalDate.of(1891, 4, 14) )
+              )
+          )
+      )
+    }
+
+    @Test
+    internal fun `should match using name and date of birth`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "adorno",
+              firstName = "theodor",
+              dateOfBirth = LocalDate.of(1903, 11, 11),
+              croNumber = "SF80/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("NAME"))
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+
+    @Test
+    internal fun `should match using any alias name and date of birth`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "Abbagnano",
+              firstName = "Nicola",
+              dateOfBirth = LocalDate.of(1990, 9, 1),
+              croNumber = "SF80/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("NAME"))
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "Ambedkar",
+              firstName = "Bhimrao",
+              dateOfBirth = LocalDate.of(1891, 4, 14),
+              croNumber = "SF80/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("NAME"))
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+    @Test
+    internal fun `should not cross match across aliases and primary names and date of births`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "Abbagnano",
+              firstName = "Bhimrao",
+              dateOfBirth = LocalDate.of(1903, 11, 11),
+              croNumber = "SF80/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("NOTHING"))
+          .body("matches.findall.size()", equalTo(0))
+    }
+
+    @Test
+    internal fun `should not anything when nothing matches`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "roger",
+              firstName = "rabbit",
+              dateOfBirth = LocalDate.of(2013, 12, 7),
+              croNumber = "SF55/765108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(0))
+          .body("matchedBy", equalTo("NOTHING"))
+    }
+
+  }
+  @Nested
+  inner class PartialNameMatching {
+    @BeforeEach
+    internal fun setup() {
+      loadOffenders(
+          OffenderIdentification(
+              surname = "Adorno",
+              firstName = "Theodor",
+              dateOfBirth = LocalDate.of(1903, 11, 11),
+              crn = "X00001"
+          )
+      )
+    }
+
+    @Test
+    internal fun `should match using surname and date of birth`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "adorno",
+              firstName = "bobby",
+              dateOfBirth = LocalDate.of(1903, 11, 11),
+              croNumber = "SF80/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("PARTIAL_NAME"))
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+
+
+    @Test
+    internal fun `should not match when just surname matches`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "adorno",
+              firstName = "rabbit",
+              dateOfBirth = LocalDate.of(2013, 12, 7),
+              croNumber = "SF55/765108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(0))
+          .body("matchedBy", equalTo("NOTHING"))
+    }
+  }
+
+  @Nested
+  inner class PartialNameDOBLenientMatching {
+    @BeforeEach
+    internal fun setup() {
+      loadOffenders(
+          OffenderIdentification(
+              surname = "Adorno",
+              firstName = "Theodor",
+              dateOfBirth = LocalDate.of(1903, 11, 7),
+              crn = "X00001"
+          )
+      )
+    }
+
+    @Test
+    internal fun `should match using surname and date of birth with swapped day month`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "adorno",
+              firstName = "Theodor",
+              dateOfBirth = LocalDate.of(1903, 7, 11),
+              croNumber = "SF80/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("PARTIAL_NAME_DOB_LENIENT"))
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+
+    @Test
+    internal fun `should match using surname and date of birth with different day`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "adorno",
+              firstName = "Theodor",
+              dateOfBirth = LocalDate.of(1903, 11, 8),
+              croNumber = "SF80/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("PARTIAL_NAME_DOB_LENIENT"))
+          .body("matches.findall.size()", equalTo(1))
+          .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
+    }
+
+
+    @Test
+    internal fun `should not match when just surname matches`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "adorno",
+              firstName = "rabbit",
+              dateOfBirth = LocalDate.of(2013, 12, 7),
+              croNumber = "SF55/765108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matches.findall.size()", equalTo(0))
+          .body("matchedBy", equalTo("NOTHING"))
+    }
+  }
+
   private fun loadOffenders(vararg offenders: OffenderIdentification) {
     val template = "/elasticsearchdata/offender-template.json".readResourceAsText()
     val templateOffender = objectMapper.readValue(template, OffenderDetail::class.java)
