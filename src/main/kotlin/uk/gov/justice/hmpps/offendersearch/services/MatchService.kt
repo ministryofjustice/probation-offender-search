@@ -15,9 +15,14 @@ import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.EXTERNAL_KEY
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.HMPPS_KEY
+import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.NAME
+import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.PARTIAL_NAME
+import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.PARTIAL_NAME_DOB_LENIENT
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatch
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
+import java.time.DateTimeException
+import java.time.LocalDate
 
 @Service
 class MatchService(
@@ -33,6 +38,9 @@ class MatchService(
     matchBy(matchRequest) { nomsNumber(it) } onMatch { return OffenderMatches(it.matches, HMPPS_KEY) }
     matchBy(matchRequest) { croNumber(it) } onMatch { return OffenderMatches(it.matches, EXTERNAL_KEY) }
     matchBy(matchRequest) { pncNumber(it) } onMatch { return OffenderMatches(it.matches, EXTERNAL_KEY) }
+    matchBy(matchRequest) { nameMatch(it) } onMatch { return OffenderMatches(it.matches, NAME) }
+    matchBy(matchRequest) { partialNameMatch(it) } onMatch { return OffenderMatches(it.matches, PARTIAL_NAME) }
+    matchBy(matchRequest) { partialNameMatchDateOfBirthLenient(it) } onMatch { return OffenderMatches(it.matches, PARTIAL_NAME_DOB_LENIENT) }
     return OffenderMatches()
   }
 
@@ -79,6 +87,69 @@ class MatchService(
           .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
           .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
     }
+  }
+
+  private fun nameMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
+    with(matchRequest) {
+      return QueryBuilders.boolQuery()
+          .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
+          .must(QueryBuilders.boolQuery()
+              .should(QueryBuilders.boolQuery()
+                  .mustWhenPresent("surname", surname)
+                  .mustWhenPresent("firstName", firstName)
+                  .mustWhenPresent("dateOfBirth", dateOfBirth)
+              )
+              .should(QueryBuilders.boolQuery()
+                  .mustWhenPresent("offenderAliases.surname", surname)
+                  .mustWhenPresent("offenderAliases.firstName", firstName)
+                  .mustWhenPresent("offenderAliases.dateOfBirth", dateOfBirth)
+              )
+          )
+    }
+  }
+
+  private fun partialNameMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
+    with(matchRequest) {
+      return QueryBuilders.boolQuery()
+          .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
+          .mustWhenPresent("surname", surname)
+          .mustWhenPresent("dateOfBirth", dateOfBirth)
+    }
+  }
+
+
+  private fun partialNameMatchDateOfBirthLenient(matchRequest: MatchRequest): BoolQueryBuilder? {
+    with(matchRequest) {
+      return dateOfBirth?.let {
+        QueryBuilders.boolQuery()
+            .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
+            .mustMultiMatch(firstName, "firstName", "offenderAliases.firstName")
+            .mustWhenPresent("surname", surname)
+            .mustMatchOneOf("dateOfBirth", allLenientDateVariations(dateOfBirth))
+      }
+    }
+  }
+
+  private fun allLenientDateVariations(date:  LocalDate) : List<LocalDate> {
+    return swapMonthDay(date) + everyOtherValidMonth(date) + aroundDateInSameMonth(date)
+  }
+
+  private fun aroundDateInSameMonth(date: LocalDate) =
+      listOf(date.minusDays(1), date.minusDays(-1), date).filter { it.month == date.month }
+
+  private fun everyOtherValidMonth(date: LocalDate): List<LocalDate> =
+      (1..13).filterNot { date.monthValue == it }.mapNotNull { setMonthDay(date, it) }
+
+  private fun swapMonthDay(date: LocalDate): List<LocalDate> = try {
+    listOf(LocalDate.of(date.year, date.dayOfMonth, date.monthValue))
+  } catch (e: DateTimeException) {
+    listOf()
+  }
+
+  private fun setMonthDay(date: LocalDate, monthValue: Int): LocalDate? = try {
+    LocalDate.of(date.year, monthValue, date.dayOfMonth)
+  } catch (e: DateTimeException) {
+    null
   }
 
 
