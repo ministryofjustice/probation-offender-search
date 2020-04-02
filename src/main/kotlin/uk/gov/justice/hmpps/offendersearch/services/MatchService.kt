@@ -138,7 +138,7 @@ class MatchService(
       listOf(date.minusDays(1), date.minusDays(-1), date).filter { it.month == date.month }
 
   private fun everyOtherValidMonth(date: LocalDate): List<LocalDate> =
-      (1..13).filterNot { date.monthValue == it }.mapNotNull { setMonthDay(date, it) }
+      (1..12).filterNot { date.monthValue == it }.mapNotNull { setMonthDay(date, it) }
 
   private fun swapMonthDay(date: LocalDate): List<LocalDate> = try {
     listOf(LocalDate.of(date.year, date.dayOfMonth, date.monthValue))

@@ -589,7 +589,8 @@ fun SearchRequest.mustMultiMatchNames(): Map<Any, List<String>> {
 }
 
 fun QueryBuilder.mustNames(): Map<String, Any> {
-  with(this as BoolQueryBuilder) {
-    return this.must().filterIsInstance<MatchQueryBuilder>().map { it.fieldName() to it.value() }.toMap()
+  return when(this) {
+      is BoolQueryBuilder -> this.must().filterIsInstance<MatchQueryBuilder>().map { it.fieldName() to it.value() }.toMap()
+    else -> mapOf()
   }
 }
