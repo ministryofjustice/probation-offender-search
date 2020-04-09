@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "app.fullname" . }}
@@ -22,6 +22,8 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        iam.amazonaws.com/role: {{ .Values.elasticSearch.roleArn }}
       labels:
         app: {{ template "app.name" . }}
         release: {{ .Release.Name }}
