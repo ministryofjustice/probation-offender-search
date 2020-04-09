@@ -11,7 +11,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchResponseSections
-import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.bytes.BytesArray
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.MatchQueryBuilder
@@ -43,25 +42,25 @@ internal class MatchServiceTest {
 
 
   @Mock
-  lateinit var restHighLevelClient: RestHighLevelClient
+  lateinit var searchClient: SearchClient
 
   @BeforeEach
   fun setUp() {
-    service = MatchService(restHighLevelClient, objectMapper)
+    service = MatchService(searchClient, objectMapper)
   }
 
   @Nested
   inner class FullMatchAttempt {
     @BeforeEach
     fun setUp() {
-      whenever(restHighLevelClient.search(any())).thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88)))
+      whenever(searchClient.search(any())).thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88)))
     }
 
     @Test
     fun `surname will be added to query when present`() {
       service.match(MatchRequest(surname = "smith"))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted()
         ))
@@ -73,7 +72,7 @@ internal class MatchServiceTest {
     fun `First name will be added to query when present`() {
       service.match(MatchRequest(surname = "smith", firstName = "John"))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted(),
             "John" to listOf("firstName", "offenderAliases.firstName").sorted()
@@ -86,7 +85,7 @@ internal class MatchServiceTest {
     fun `First name will be not be added to query when blank`() {
       service.match(MatchRequest(surname = "smith", firstName = ""))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted()
         ))
@@ -98,7 +97,7 @@ internal class MatchServiceTest {
     fun `Date of birth will be added to query when present`() {
       service.match(MatchRequest(surname = "smith", dateOfBirth = LocalDate.of(1965, 7, 19)))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted(),
             LocalDate.of(1965, 7, 19) to listOf("dateOfBirth", "offenderAliases.dateOfBirth").sorted()
@@ -111,7 +110,7 @@ internal class MatchServiceTest {
     fun `CRO number will be added as lowercase to query when present`() {
       service.match(MatchRequest(surname = "smith", croNumber = "SF80/655108T"))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "otherIds.croNumberLowercase" to "sf80/655108t",
             "softDeleted" to false
@@ -123,7 +122,7 @@ internal class MatchServiceTest {
     fun `CRO number will be not be added to query when blank`() {
       service.match(MatchRequest(surname = "smith", croNumber = ""))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted()
         ))
@@ -135,7 +134,7 @@ internal class MatchServiceTest {
     fun `only PNC Number in canonical form will be added to query when present`() {
       service.match(MatchRequest(surname = "smith", pncNumber = "2018/0003456X"))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("softDeleted" to false))
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "2018/3456x" to listOf("otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear").sorted(),
@@ -148,7 +147,7 @@ internal class MatchServiceTest {
     fun `PNC Number will be not be added to query when blank`() {
       service.match(MatchRequest(surname = "smith", pncNumber = ""))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted()
         ))
@@ -160,7 +159,7 @@ internal class MatchServiceTest {
     fun `NOMS Number will be added to query when present`() {
       service.match(MatchRequest(surname = "smith", nomsNumber = "G5555TT"))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted()
         ))
@@ -175,7 +174,7 @@ internal class MatchServiceTest {
     fun `NOMS Number will be not be added to query when blank`() {
       service.match(MatchRequest(surname = "smith", nomsNumber = ""))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted()
         ))
@@ -187,7 +186,7 @@ internal class MatchServiceTest {
     fun `disposal filter will be added to query when sentence filter present`() {
       service.match(MatchRequest(surname = "smith", activeSentence = true))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted()
         ))
@@ -202,7 +201,7 @@ internal class MatchServiceTest {
     fun `disposal filter will be not be added to query when sentence filter not present`() {
       service.match(MatchRequest(surname = "smith", activeSentence = false))
 
-      verify(restHighLevelClient).search(check {
+      verify(searchClient).search(check {
         assertThat(it.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
             "smith" to listOf("surname", "offenderAliases.surname").sorted()
         ))
@@ -216,7 +215,7 @@ internal class MatchServiceTest {
   inner class CRONumberMatching {
     @BeforeEach
     fun setup() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match results
           .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88)))
     }
@@ -227,7 +226,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(restHighLevelClient, times(2)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(2)).search(searchRequestCaptor.capture())
 
       assertThat(searchRequestCaptor.secondValue.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("otherIds.croNumberLowercase" to "sf80/655108t", "softDeleted" to false))
       assertThat(searchRequestCaptor.secondValue.nestedShouldMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(
@@ -242,7 +241,7 @@ internal class MatchServiceTest {
   inner class PNCNumberMatch {
     @BeforeEach
     fun setup() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match results
           .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88)))
     }
@@ -253,7 +252,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(restHighLevelClient, times(2)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(2)).search(searchRequestCaptor.capture())
 
       assertThat(searchRequestCaptor.secondValue.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("softDeleted" to false))
       assertThat(searchRequestCaptor.secondValue.mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(mapOf("2018/3456x" to listOf("otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")))
@@ -269,7 +268,7 @@ internal class MatchServiceTest {
   inner class NOMSNumberMatch {
     @BeforeEach
     fun setup() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match results
           .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88)))
     }
@@ -280,7 +279,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(restHighLevelClient, times(2)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(2)).search(searchRequestCaptor.capture())
 
       assertThat(searchRequestCaptor.secondValue.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("otherIds.nomsNumber" to "G5555TT", "softDeleted" to false))
     }
@@ -299,7 +298,7 @@ internal class MatchServiceTest {
 
     @BeforeEach
     fun setUp() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match results
           .thenReturn(resultsOf()) // NOMS Number results
           .thenReturn(resultsOf()) // CRO Number results
@@ -313,7 +312,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(restHighLevelClient, times(5)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(5)).search(searchRequestCaptor.capture())
 
       with(searchRequestCaptor.lastValue) {
         val query = source().query() as BoolQueryBuilder
@@ -339,7 +338,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(restHighLevelClient, times(5)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(5)).search(searchRequestCaptor.capture())
 
       assertThat(searchRequestCaptor.lastValue.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
           "currentDisposal" to "1",
@@ -353,7 +352,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(restHighLevelClient, times(5)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(5)).search(searchRequestCaptor.capture())
 
       assertThat(searchRequestCaptor.lastValue.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf("softDeleted" to false))
     }
@@ -372,7 +371,7 @@ internal class MatchServiceTest {
 
     @BeforeEach
     fun setUp() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match results
           .thenReturn(resultsOf()) // NOMS Number results
           .thenReturn(resultsOf()) // CRO Number results
@@ -387,7 +386,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(restHighLevelClient, times(6)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(6)).search(searchRequestCaptor.capture())
 
       assertThat(searchRequestCaptor.lastValue.mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
           "surname" to "smith",
@@ -402,7 +401,7 @@ internal class MatchServiceTest {
 
     @BeforeEach
     fun setUp() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match results
           .thenReturn(resultsOf()) // NOMS Number results
           .thenReturn(resultsOf()) // CRO Number results
@@ -425,7 +424,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(restHighLevelClient, times(7)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(7)).search(searchRequestCaptor.capture())
 
       with(searchRequestCaptor.lastValue) {
         assertThat(mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -470,7 +469,7 @@ internal class MatchServiceTest {
       ))
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
-      verify(restHighLevelClient, times(7)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(7)).search(searchRequestCaptor.capture())
 
       val query = searchRequestCaptor.lastValue.source().query() as BoolQueryBuilder
       val dateMatches = query.must().filterIsInstance<BoolQueryBuilder>().first().should()
@@ -506,7 +505,7 @@ internal class MatchServiceTest {
 
     @Test
     fun `will return matches`() {
-      whenever(restHighLevelClient.search(any())).thenReturn(resultsOf(
+      whenever(searchClient.search(any())).thenReturn(resultsOf(
           OffenderDetail(surname = "smith", offenderId = 99),
           OffenderDetail(surname = "smith", offenderId = 88)
       ))
@@ -517,7 +516,7 @@ internal class MatchServiceTest {
 
     @Test
     fun `will return matched by ALL_MATCHED when matching all parameters`() {
-      whenever(restHighLevelClient.search(any())).thenReturn(resultsOf(
+      whenever(searchClient.search(any())).thenReturn(resultsOf(
           OffenderDetail(surname = "smith", offenderId = 99)
       ))
 
@@ -527,7 +526,7 @@ internal class MatchServiceTest {
 
     @Test
     fun `will return matched by HMPPS_KEY when matching on NOMS number`() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match
           .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99)
           ))
@@ -538,7 +537,7 @@ internal class MatchServiceTest {
 
     @Test
     fun `will return matched by EXTERNAL_KEY when matching on CRO number`() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match
           .thenReturn(resultsOf()) // NOMS number match
           .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99)
@@ -550,7 +549,7 @@ internal class MatchServiceTest {
 
     @Test
     fun `will return matched by EXTERNAL_KEY when matching on PNC number`() {
-      whenever(restHighLevelClient.search(any()))
+      whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match
           .thenReturn(resultsOf()) // NOMS number match
           .thenReturn(resultsOf()) // CRO number match

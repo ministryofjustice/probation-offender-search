@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.lang3.StringUtils
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.SearchHit
@@ -12,7 +11,6 @@ import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
@@ -20,7 +18,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
 import java.util.*
 
 @Service
-class SearchService @Autowired constructor(@param:Qualifier("elasticSearchClient") private val hlClient: RestHighLevelClient, private val mapper: ObjectMapper) {
+class SearchService @Autowired constructor(private val hlClient: SearchClient, private val mapper: ObjectMapper) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     private const val MAX_SEARCH_RESULTS = 100
