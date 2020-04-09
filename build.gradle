@@ -48,7 +48,8 @@ project.targetCompatibility = 11
 
 dependencyCheck {
     failBuildOnCVSS = 5
-    suppressionFiles = ['dependency-check-suppress-spring.xml']
+    // Elastic Search required due 6.7.2 is the highest version we can upgrade to
+    suppressionFiles = ['dependency-check-suppress-spring.xml', 'dependency-check-suppress-es.xml']
     format = 'ALL'
     analyzers {
         assemblyEnabled = false
@@ -94,6 +95,7 @@ dependencyManagement {
         mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
     }
 }
+ext ['spring-security.version'] = '5.3.1.RELEASE' // pinned due to CVE-2018-1258 in 5.2.2.RELEASE brought in by spring-boot-starter-oauth2-resource-server-2.2.5.RELEASE
 
 dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -133,10 +135,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.guava:guava:28.2-jre'
 
-    // elasticsearch version must match the aws cluster version (6)
-    implementation 'org.elasticsearch:elasticsearch:6.8.8'
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.0.1'
-    implementation 'org.elasticsearch.client:elasticsearch-rest-client:6.0.1'
+    // elasticsearch version must match the aws cluster version (6.7)
+    implementation 'org.elasticsearch:elasticsearch:6.7.2'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.2'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-client:6.7.2'
     implementation 'com.amazonaws:aws-java-sdk-core:1.11.762'
 
     testAnnotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
