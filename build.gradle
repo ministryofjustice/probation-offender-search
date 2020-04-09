@@ -106,6 +106,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-devtools'
 
+    implementation 'com.nimbusds:nimbus-jose-jwt:8.11'
+
     implementation 'net.logstash.logback:logstash-logback-encoder:6.3'
     implementation 'com.microsoft.azure:applicationinsights-spring-boot-starter:2.6.0'
     implementation 'com.microsoft.azure:applicationinsights-logging-logback:2.6.0'
@@ -132,10 +134,10 @@ dependencies {
     implementation 'com.google.guava:guava:28.2-jre'
 
     // elasticsearch version must match the aws cluster version (6)
-    implementation 'org.elasticsearch:elasticsearch:6.0.1'
+    implementation 'org.elasticsearch:elasticsearch:6.8.8'
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.0.1'
     implementation 'org.elasticsearch.client:elasticsearch-rest-client:6.0.1'
-    implementation 'com.amazonaws:aws-java-sdk:1.11.762'
+    implementation 'com.amazonaws:aws-java-sdk-core:1.11.762'
 
     testAnnotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

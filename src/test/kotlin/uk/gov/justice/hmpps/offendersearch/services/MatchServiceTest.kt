@@ -566,7 +566,7 @@ internal class MatchServiceTest {
     val searchHits = offenders.map { SearchHit(it.offenderId.toInt()).apply { sourceRef(BytesArray(objectMapper.writeValueAsBytes(it))) } }
     val hits = SearchHits(searchHits.toTypedArray(), offenders.size.toLong(), 10f)
     val searchResponseSections = SearchResponseSections(hits, null, null, false, null, null, 5)
-    return SearchResponse(searchResponseSections, null, 8, 8, 0, 8, arrayOf())
+    return SearchResponse(searchResponseSections, null, 8, 8, 0, 8, arrayOf(), null)
   }
 
 }
