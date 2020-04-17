@@ -34,13 +34,13 @@ env:
   - name: ELASTICSEARCH_SCHEME
     value: "{{ .Values.elasticSearch.scheme }}"
 
-  - name: ELASTICSEARCH_ROLE_ARN
+  - name: AWS_ROLE_ARN
     valueFrom:
       secretKeyRef:
         name: offender-search-delius-elastic-search-secret
         key: arn
 
-  - name: ELASTICSEARCH_ROLESESSIONNAME
+  - name: AWS_ROLESESSIONNAME
     valueFrom:
       secretKeyRef:
         name: offender-search-delius-elastic-search-secret
