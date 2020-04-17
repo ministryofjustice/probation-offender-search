@@ -31,6 +31,6 @@ the build pipeline too.
 Note the required localstack container for both tests and local running.
 
 ```$bash
-$ ./gradlew clean install test
+$ ./gradlew clean build
 $ ./gradlew bootRun --args='--spring.profiles.active=dev,localstack'
 ```

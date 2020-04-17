@@ -1,7 +1,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 0
+replicaCount: 1
 
 image:
   repository: docker.io/mojdigitalstudio/offender-search
@@ -24,6 +24,7 @@ env:
   JAVA_OPTS: "-Xmx512m"
 
 elasticSearch:
-  roleArn: pending
-#  Should be something like:
-#  roleArn: arn:aws:iam::11111111:role/my-namespace-app-iam-role
+  roleArn: arn:aws:iam::754256621582:role/offender-search-elastic-search-delius-dev
+    host: vpc-newtech-search-5vp7augmc5vncprjjbczf23g5q.eu-west-2.es.amazonaws.com
+    port: 443
+    scheme: https
