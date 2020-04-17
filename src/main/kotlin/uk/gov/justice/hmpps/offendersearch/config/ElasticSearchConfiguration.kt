@@ -40,7 +40,7 @@ class ElasticSearchConfiguration {
     if (shouldSignRequests) {
 
       val stsClient: AWSSecurityTokenService = AWSSecurityTokenServiceClientBuilder.standard()
-              .withCredentials(ProfileCredentialsProvider())
+              .withCredentials(DefaultAWSCredentialsProviderChain())
               .withRegion(awsRegion)
               .build()
 
