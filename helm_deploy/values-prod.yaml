@@ -33,6 +33,6 @@ whitelist:
 
 elasticSearch:
   roleArn: arn:aws:iam::754256621582:role/offender-search-elastic-search-delius-prod
-    host: vpc-newtech-search-w5lgwhvxg5tv6tukdg65g7iwaa.eu-west-2.es.amazonaws.com
-    port: 443
-    scheme: https
+  host: vpc-newtech-search-w5lgwhvxg5tv6tukdg65g7iwaa.eu-west-2.es.amazonaws.com
+  port: 443
+  scheme: https
