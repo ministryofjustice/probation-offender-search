@@ -24,7 +24,6 @@ env:
   JAVA_OPTS: "-Xmx512m"
 
 elasticSearch:
-  roleArn: arn:aws:iam::754256621582:role/offender-search-elastic-search-delius-dev
   host: vpc-newtech-search-5vp7augmc5vncprjjbczf23g5q.eu-west-2.es.amazonaws.com
   port: 443
   scheme: https

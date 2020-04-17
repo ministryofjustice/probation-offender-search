@@ -32,7 +32,6 @@ whitelist:
   cloudplatform-live1-3: "35.177.252.54/32"
 
 elasticSearch:
-  roleArn: arn:aws:iam::754256621582:role/offender-search-elastic-search-delius-pre-prod
   host: vpc-newtech-search-2zhrbjdmz4jbqx4i42f4brgoji.eu-west-2.es.amazonaws.com
   port: 443
   scheme: https
