@@ -175,7 +175,7 @@ workflows:
             - build
           filters:
             branches:
-              only: master
+              only: PIC-375-assume-IAM-role
       - deploy_dev:
           requires:
             - build_docker

@@ -8,7 +8,10 @@ env:
     value: "{{ .Values.env.JAVA_OPTS }}"
 
   - name: SPRING_PROFILES_ACTIVE
-    value: "elasticsearch"
+    value: "elasticsearch,stdout"
+
+  - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
+    value: "https://gateway.t3.nomis-api.hmpps.dsd.io/auth/.well-known/jwks.json"
 
   - name: JWT_PUBLIC_KEY
     value: "{{ .Values.env.JWT_PUBLIC_KEY }}"
