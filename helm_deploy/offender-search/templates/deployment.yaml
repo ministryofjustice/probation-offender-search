@@ -23,7 +23,7 @@ spec:
   template:
     metadata:
       annotations:
-        iam.amazonaws.com/role: "{{ .Values.elasticSearch.roleArn }}"
+        iam.amazonaws.com/role: "offender-search-elastic-search-delius-dev"
       labels:
         app: {{ template "app.name" . }}
         release: {{ .Release.Name }}
