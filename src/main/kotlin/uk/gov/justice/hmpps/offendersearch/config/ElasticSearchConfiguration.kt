@@ -2,7 +2,7 @@ package uk.gov.justice.hmpps.offendersearch.config
 
 import com.amazonaws.auth.AWS4Signer
 import com.amazonaws.auth.BasicSessionCredentials
-import com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper
+import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider
 import com.amazonaws.auth.STSSessionCredentialsProvider
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
@@ -39,7 +39,7 @@ class ElasticSearchConfiguration {
     if (shouldSignRequests) {
 
       val stsClient: AWSSecurityTokenService = AWSSecurityTokenServiceClientBuilder.standard()
-              .withCredentials(EC2ContainerCredentialsProviderWrapper())
+              .withCredentials(STSAssumeRoleSessionCredentialsProvider(roleARN, roleSessionName))
               .withRegion(awsRegion)
               .build()
 
