@@ -34,13 +34,18 @@ env:
   - name: ELASTICSEARCH_SCHEME
     value: "{{ .Values.elasticSearch.scheme }}"
 
-  - name: AWS_ROLE_ARN
+  - name: AWS_ROLEARN
     valueFrom:
       secretKeyRef:
         name: offender-search-delius-elastic-search-secret
         key: arn
 
+  - name: ELASTICSEARCH_ROLEARN
+    value: "arn:aws:iam::723123699647:role/cp-offender-search-service-role-delius-core-dev"
+
   - name: AWS_ROLESESSIONNAME
-    value: "kiam-kiam"
+    valueFrom:
+     fieldRef:
+       fieldPath: metadata.name
 
 {{- end -}}

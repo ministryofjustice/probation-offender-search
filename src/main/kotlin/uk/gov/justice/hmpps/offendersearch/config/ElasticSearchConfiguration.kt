@@ -31,9 +31,9 @@ class ElasticSearchConfiguration {
   private val shouldSignRequests = false
   @Value("\${aws.region:eu-west-2}")
   private val awsRegion: String? = null
-  @Value("\${aws.roleArn:test-role-arn}")
+  @Value("\${elasticsearch.roleArn:test-arn}")
   private val roleARN: String? = null
-  @Value("\${aws.roleSessionName:test-role-session}")
+  @Value("\${aws.roleSessionName:test-role-session-name}")
   private val roleSessionName: String? = null
 
   @Bean
