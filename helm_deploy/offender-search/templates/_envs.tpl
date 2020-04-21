@@ -41,9 +41,6 @@ env:
         key: arn
 
   - name: AWS_ROLESESSIONNAME
-    valueFrom:
-      secretKeyRef:
-        name: offender-search-delius-elastic-search-secret
-        key: name
+    value: "kiam-kiam"
 
 {{- end -}}
