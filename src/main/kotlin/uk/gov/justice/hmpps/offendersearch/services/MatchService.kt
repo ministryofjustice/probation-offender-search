@@ -3,13 +3,11 @@ package uk.gov.justice.hmpps.offendersearch.services
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED
@@ -26,7 +24,7 @@ import java.time.LocalDate
 
 @Service
 class MatchService(
-    @param:Qualifier("elasticSearchClient") private val elasticSearchClient: RestHighLevelClient,
+    private val elasticSearchClient: SearchClient,
     private val mapper: ObjectMapper
 ) {
   companion object {

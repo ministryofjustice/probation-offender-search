@@ -62,7 +62,7 @@ class OffenderSearchControllerTest {
 
   @Test
   fun offenderSearch() {
-    wireMock.stubFor(WireMock.get(WireMock.anyUrl()).willReturn(
+    wireMock.stubFor(WireMock.post(WireMock.anyUrl()).willReturn(
         WireMock.okForContentType("application/json", response("src/test/resources/elasticsearchdata/singleMatch.json"))))
     val results = RestAssured.given()
         .auth()
