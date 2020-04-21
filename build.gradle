@@ -126,7 +126,7 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:6.0.1'
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.0.1'
     implementation 'org.elasticsearch.client:elasticsearch-rest-client:6.0.1'
-    implementation 'com.amazonaws:aws-java-sdk:1.11.745'
+    implementation 'com.amazonaws:aws-java-sdk:1.11.765'
 
     testAnnotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
