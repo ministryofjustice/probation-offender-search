@@ -1,9 +1,11 @@
 package uk.gov.justice.hmpps.offendersearch.config
 
+import com.amazonaws.ClientConfiguration
 import com.amazonaws.auth.AWS4Signer
 import com.amazonaws.auth.BasicSessionCredentials
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
 import com.amazonaws.auth.STSSessionCredentialsProvider
+import com.amazonaws.retry.PredefinedRetryPolicies
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest
@@ -39,6 +41,10 @@ class ElasticSearchConfiguration {
     if (shouldSignRequests) {
 
       val stsClient: AWSSecurityTokenService = AWSSecurityTokenServiceClientBuilder.standard()
+              .withClientConfiguration(ClientConfiguration()
+                      .withThrottledRetries(true)
+                      .withConnectionTimeout(5000)
+                      .withRetryPolicy(PredefinedRetryPolicies.NO_RETRY_POLICY))
               .withCredentials(DefaultAWSCredentialsProviderChain())
               .withRegion(awsRegion)
               .build()
