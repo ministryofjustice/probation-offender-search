@@ -1,11 +1,9 @@
 package uk.gov.justice.hmpps.offendersearch.config
 
-import com.amazonaws.ClientConfiguration
 import com.amazonaws.auth.AWS4Signer
+import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicSessionCredentials
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
-import com.amazonaws.auth.STSSessionCredentialsProvider
-import com.amazonaws.retry.PredefinedRetryPolicies
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest
@@ -61,7 +59,7 @@ class ElasticSearchConfiguration {
       signer.regionName = awsRegion
       val clientBuilder = RestClient.builder(HttpHost(host, port, scheme)).setHttpClientConfigCallback { callback: HttpAsyncClientBuilder ->
         callback.addInterceptorLast(
-            AWSRequestSigningApacheInterceptor(SERVICE_NAME, signer, STSSessionCredentialsProvider(awsCredentials)))
+            AWSRequestSigningApacheInterceptor(SERVICE_NAME, signer, AWSStaticCredentialsProvider(awsCredentials)))
       }
       return RestHighLevelClient(clientBuilder)
     }
