@@ -23,11 +23,7 @@ spec:
   template:
     metadata:
       annotations:
-        iam.amazonaws.com/role:
-          valueFrom:
-            secretKeyRef:
-              name: offender-search-delius-elastic-search-secret
-              key: arn
+        iam.amazonaws.com/role: {{ .Values.kiam.roleArn }}
       labels:
         app: {{ template "app.name" . }}
         release: {{ .Release.Name }}

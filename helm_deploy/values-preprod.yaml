@@ -30,6 +30,9 @@ whitelist:
   cloudplatform-live1-2: "3.8.51.207/32"
   cloudplatform-live1-3: "35.177.252.54/32"
 
+kiam:
+  roleArn: arn:aws:iam::754256621582:role/offender-search-elastic-search-delius-pre-prod
+
 elasticSearch:
   deliusRoleArn: arn:aws:iam::010587221707:role/cp-offender-search-service-role-delius-pre-prod
   host: vpc-newtech-search-2zhrbjdmz4jbqx4i42f4brgoji.eu-west-2.es.amazonaws.com
