@@ -22,6 +22,12 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        iam.amazonaws.com/role:
+          valueFrom:
+            secretKeyRef:
+              name: offender-search-delius-elastic-search-secret
+              key: arn
       labels:
         app: {{ template "app.name" . }}
         release: {{ .Release.Name }}
@@ -54,7 +60,7 @@ spec:
             failureThreshold: 10
           readinessProbe:
             httpGet:
-              path: /ping
+              path: /health
               port: {{ .Values.image.port }}
             periodSeconds: 20
             initialDelaySeconds: 60

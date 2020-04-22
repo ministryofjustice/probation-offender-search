@@ -29,3 +29,12 @@ whitelist:
   cloudplatform-live1-1: "35.178.209.113/32"
   cloudplatform-live1-2: "3.8.51.207/32"
   cloudplatform-live1-3: "35.177.252.54/32"
+
+elasticSearch:
+  deliusRoleArn: arn:aws:iam::010587221707:role/cp-offender-search-service-role-delius-pre-prod
+  host: vpc-newtech-search-2zhrbjdmz4jbqx4i42f4brgoji.eu-west-2.es.amazonaws.com
+  port: 443
+  scheme: https
+
+nomisOAuth:
+  JWT_JWK_SET_URI: https://gateway.t3.nomis-api.hmpps.dsd.io/auth/.well-known/jwks.json
