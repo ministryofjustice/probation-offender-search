@@ -40,4 +40,4 @@ elasticSearch:
   scheme: https
 
 nomisOAuth:
-  JWT_JWK_SET_URI: https://gateway.t3.nomis-api.hmpps.dsd.io/auth/.well-known/jwks.json
+  JWT_JWK_SET_URI: https://gateway.prod.nomis-api.service.hmpps.dsd.io/auth/.well-known/jwks.json
