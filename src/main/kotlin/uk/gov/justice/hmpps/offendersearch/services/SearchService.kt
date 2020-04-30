@@ -50,13 +50,9 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
       }
       matchingAllFieldsQuery
           .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
-      matchingAllFieldsQuery
           .mustWhenPresent("otherIds.crn", crn)
-      matchingAllFieldsQuery
           .mustWhenPresent("firstName", firstName)
-      matchingAllFieldsQuery
           .mustWhenPresent("surname", surname)
-      matchingAllFieldsQuery
           .mustWhenPresent("dateOfBirth", dateOfBirth)
     }
 
