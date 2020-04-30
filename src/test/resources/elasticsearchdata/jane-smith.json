@@ -3,7 +3,9 @@
   "softDeleted": false,
 
   "otherIds": {
-    "crn": "X00002"
+    "crn": "X00002",
+    "pncNumber": "2018/0654321X",
+    "croNumber": "SF80/777108T"
   },
 
   "title": "Ms",

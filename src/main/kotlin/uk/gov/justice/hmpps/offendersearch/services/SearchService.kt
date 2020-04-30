@@ -1,7 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.apache.commons.lang3.StringUtils
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.index.query.BoolQueryBuilder
@@ -40,34 +39,23 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
   protected fun buildMatchWithAllProvidedParameters(searchOptions: SearchDto): BoolQueryBuilder {
     val matchingAllFieldsQuery = QueryBuilders
         .boolQuery()
-    if (StringUtils.isNotBlank(searchOptions.surname)) {
-      matchingAllFieldsQuery.must(QueryBuilders
-          .matchQuery("surname", searchOptions.surname))
+    with(searchOptions) {
+      croNumber.takeIf { !it.isNullOrBlank() }?.let {
+        matchingAllFieldsQuery
+            .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
+      }
+      pncNumber.takeIf { !it.isNullOrBlank() }?.let {
+        matchingAllFieldsQuery
+            .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+      }
+      matchingAllFieldsQuery
+          .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
+          .mustWhenPresent("otherIds.crn", crn)
+          .mustWhenPresent("firstName", firstName)
+          .mustWhenPresent("surname", surname)
+          .mustWhenPresent("dateOfBirth", dateOfBirth)
     }
-    if (StringUtils.isNotBlank(searchOptions.firstName)) {
-      matchingAllFieldsQuery.must(QueryBuilders
-          .matchQuery("firstName", searchOptions.firstName))
-    }
-    if (searchOptions.dateOfBirth != null) {
-      matchingAllFieldsQuery.must(QueryBuilders
-          .matchQuery("dateOfBirth", searchOptions.dateOfBirth))
-    }
-    if (StringUtils.isNotBlank(searchOptions.crn)) {
-      matchingAllFieldsQuery.must(QueryBuilders
-          .matchQuery("otherIds.crn", searchOptions.crn))
-    }
-    if (StringUtils.isNotBlank(searchOptions.croNumber)) {
-      matchingAllFieldsQuery.must(QueryBuilders
-          .matchQuery("otherIds.croNumber", searchOptions.croNumber))
-    }
-    if (StringUtils.isNotBlank(searchOptions.pncNumber)) {
-      matchingAllFieldsQuery.must(QueryBuilders
-          .matchQuery("otherIds.pncNumber", searchOptions.pncNumber))
-    }
-    if (StringUtils.isNotBlank(searchOptions.nomsNumber)) {
-      matchingAllFieldsQuery.must(QueryBuilders
-          .matchQuery("otherIds.nomsNumber", searchOptions.nomsNumber))
-    }
+
     return matchingAllFieldsQuery
   }
 
