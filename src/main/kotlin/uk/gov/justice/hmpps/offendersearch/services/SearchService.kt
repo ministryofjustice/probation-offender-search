@@ -38,26 +38,26 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
 
   protected fun buildMatchWithAllProvidedParameters(searchOptions: SearchDto): BoolQueryBuilder {
     val matchingAllFieldsQuery = QueryBuilders
-            .boolQuery()
+        .boolQuery()
     with(searchOptions) {
       croNumber.takeIf { !it.isNullOrBlank() }?.let {
         matchingAllFieldsQuery
-                .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
+            .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
       }
       pncNumber.takeIf { !it.isNullOrBlank() }?.let {
         matchingAllFieldsQuery
-                .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+            .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
       }
       matchingAllFieldsQuery
-              .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
+          .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
       matchingAllFieldsQuery
-              .mustWhenPresent("otherIds.crn", crn)
+          .mustWhenPresent("otherIds.crn", crn)
       matchingAllFieldsQuery
-              .mustWhenPresent("firstName", firstName)
+          .mustWhenPresent("firstName", firstName)
       matchingAllFieldsQuery
-              .mustWhenPresent("surname", surname)
+          .mustWhenPresent("surname", surname)
       matchingAllFieldsQuery
-              .mustWhenPresent("dateOfBirth", dateOfBirth)
+          .mustWhenPresent("dateOfBirth", dateOfBirth)
     }
 
     return matchingAllFieldsQuery
@@ -75,10 +75,10 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
     val offenderDetailList = ArrayList<OffenderDetail>()
     if (searchHit.isNotEmpty()) {
       Arrays.stream(searchHit)
-              .forEach { hit: SearchHit ->
-                offenderDetailList
-                        .add(parseOffenderDetail(hit.sourceAsString))
-              }
+          .forEach { hit: SearchHit ->
+            offenderDetailList
+                .add(parseOffenderDetail(hit.sourceAsString))
+          }
     }
     return offenderDetailList
   }
