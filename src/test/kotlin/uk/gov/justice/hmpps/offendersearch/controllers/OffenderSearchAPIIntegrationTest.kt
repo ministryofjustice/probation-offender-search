@@ -86,27 +86,179 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   @Test
   fun surnameSearch() {
     val results = given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"surname\":\"smith\"}")
-        .`when`()["/search"]
-        .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .`as`(Array<OffenderDetail>::class.java)
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"surname\":\"smith\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(2)
     assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane")
   }
 
   @Test
+  fun nomsNumberSearch() {
+    val results = given()
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"nomsNumber\":\"G8020GG\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("John")
+  }
+
+  @Test
   fun prisonNumberSearch() {
+    val results = given()
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"nomsNumber\":\"G8020GG\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("John")
+  }
+
+  @Test
+  fun dateOfBirthSearch() {
+    val results = given()
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"dateOfBirth\": \"1978-01-06\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("John")
+  }
+
+  @Test
+  fun pncNumberShortFormatSearch() {
+    val results = given()
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"pncNumber\":\"18/123456X\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("John")
+  }
+
+  @Test
+    fun pncNumberLongFormatSearch() {
+      val results = given()
+              .auth()
+              .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+              .contentType(MediaType.APPLICATION_JSON_VALUE)
+              .body("{\"pncNumber\":\"2018/0123456X\"}")
+              .`when`()["/search"]
+              .then()
+              .statusCode(200)
+              .extract()
+              .body()
+              .`as`(Array<OffenderDetail>::class.java)
+      assertThat(results).hasSize(1)
+      assertThat(results).extracting("firstName").containsExactly("John")
+  }
+
+  @Test
+  fun croNumberLongFormatSearch() {
+    val results = given()
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"croNumber\":\"SF80/777108T\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("Jane")
+  }
+
+  @Test
+  fun croNumberLongFormatSearchAndSurname() {
+    val results = given()
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"croNumber\":\"SF80/777108T\",\"surname\":\"SMITH\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("Jane")
+  }
+
+  @Test
+    fun pncNumberLongFormatSearchAndSurname() {
+      val results = given()
+              .auth()
+              .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+              .contentType(MediaType.APPLICATION_JSON_VALUE)
+              .body("{\"pncNumber\":\"2018/0123456X\", \"surname\":\"SMITH\"}")
+              .`when`()["/search"]
+              .then()
+              .statusCode(200)
+              .extract()
+              .body()
+              .`as`(Array<OffenderDetail>::class.java)
+      assertThat(results).hasSize(1)
+      assertThat(results).extracting("firstName").containsExactly("John")
+  }
+
+  @Test
+  fun pncNumberLongFormatSearchAndWrongSurname() {
+    val results = given()
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"pncNumber\":\"2018/0123456X\", \"surname\":\"Denton\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(0)
+  }
+
+  @Test
+  fun allParameters() {
     val results = given()
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"nomsNumber\":\"G8020GG\"}")
+        .body("{\"surname\": \"smith\",\"firstName\": \"John\",\"crn\": \"X00001\",\"croNumber\": \"SF80/655108T\", \"nomsNumber\": \"G8020GG\",\"pncNumber\": \"2018/0123456X\", \"dateOfBirth\": \"1978-01-06\"}\n")
         .`when`()["/search"]
         .then()
         .statusCode(200)
@@ -118,18 +270,18 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   }
 
   @Test
-  fun allParameters() {
+  fun blanksShouldBeIgnored() {
     val results = given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"surname\": \"smith\",\"firstName\": \"John\",\"crn\": \"X00001\",\"croNumber\": \"SF80/655108T\", \"nomsNumber\": \"G8020GG\",\"pncNumber\": \"2018/0123456X\"}\n")
-        .`when`()["/search"]
-        .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .`as`(Array<OffenderDetail>::class.java)
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"surname\": \" \",\"firstName\": \" \",\"crn\": \" \",\"croNumber\": \" \", \"nomsNumber\": \" \",\"pncNumber\": \" \", \"dateOfBirth\": \"1978-01-06\"}\n")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(1)
     assertThat(results).extracting("firstName").containsExactly("John")
   }
