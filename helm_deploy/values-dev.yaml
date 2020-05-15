@@ -4,7 +4,7 @@
 replicaCount: 0
 
 image:
-  repository: docker.io/mojdigitalstudio/offender-search
+  repository: quay.io/hmpps/offender-search
   tag: latest
   pullPolicy: Always
   port: 8080
