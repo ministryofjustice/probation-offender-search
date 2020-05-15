@@ -108,4 +108,4 @@ workflows:
                 - master
     jobs:
       - owasp/gradle_owasp_dependency_check:
-          executor: validator
+          executor: hmpps/java
