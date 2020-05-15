@@ -1,3 +1,13 @@
+FROM openjdk:11-slim AS builder
+
+ARG BUILD_NUMBER
+ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
+
+WORKDIR /app
+ADD . .
+RUN ./gradlew assemble -Dorg.gradle.daemon=false
+
+
 FROM openjdk:11-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
@@ -13,11 +23,10 @@ RUN addgroup --gid 2000 --system appgroup && \
 
 WORKDIR /app
 
-COPY --chown=appuser:appgroup build/libs/offender-search*.jar /app/app.jar
-COPY --chown=appuser:appgroup build/libs/applicationinsights-agent*.jar /app/agent.jar
-COPY --chown=appuser:appgroup run.sh /app
-COPY --chown=appuser:appgroup AI-Agent.xml /app
+COPY --from=builder --chown=appuser:appgroup /app/build/libs/offender-search*.jar /app/app.jar
+COPY --from=builder --chown=appuser:appgroup /app/build/libs/applicationinsights-agent*.jar /app/agent.jar
+COPY --from=builder --chown=appuser:appgroup /app/AI-Agent.xml /app
 
 USER 2000
 
-ENTRYPOINT ["/bin/sh", "/app/run.sh"]
+ENTRYPOINT ["java", "-javaagent:/app/agent.jar", "-jar", "/app/app.jar"]
