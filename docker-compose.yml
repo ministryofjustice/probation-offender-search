@@ -1,7 +1,7 @@
 version: "3"
 services:
   offender-search:
-    image: mojdigitalstudio/offender-search:latest
+    image: quay.io/hmpps/offender-search:latest
     networks:
       - hmpps
     container_name: offender-search
@@ -16,7 +16,7 @@ services:
       - SPRING_PROFILES_ACTIVE=localstack,dev
 
   oauth:
-    image: mojdigitalstudio/nomis-oauth2-server:latest
+    image: quay.io/hmpps/nomis-oauth2-server:latest
     networks:
       - hmpps
     container_name: oauth
