@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.3.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.0"
   kotlin("plugin.spring") version "1.3.72"
 }
 
@@ -36,7 +36,7 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.2")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:6.7.2")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.11.783")
+  implementation("com.amazonaws:aws-java-sdk-core:1.11.790")
 
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
@@ -47,7 +47,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.17.0")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
   testImplementation("org.testcontainers:localstack:1.13.0")
-  testImplementation("org.awaitility:awaitility-kotlin:4.0.2")
+  testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
 
   testImplementation("io.rest-assured:rest-assured:3.3.0")
   testImplementation("io.rest-assured:spring-mock-mvc:3.3.0")
