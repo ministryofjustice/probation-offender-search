@@ -32,7 +32,7 @@ import java.time.LocalDate
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test,localstack")
+@ActiveProfiles(profiles = ["test", "localstack"])
 @ExtendWith(SpringExtension::class)
 @TestExecutionListeners(listeners = [DependencyInjectionTestExecutionListener::class, OffenderMatchControllerAPIIntegrationTest::class])
 @ContextConfiguration

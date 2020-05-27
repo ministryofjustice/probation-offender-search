@@ -27,7 +27,7 @@ import java.lang.reflect.Type
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test,localstack")
+@ActiveProfiles(profiles = ["test", "localstack"])
 @RunWith(SpringJUnit4ClassRunner::class)
 @TestExecutionListeners(listeners = [DependencyInjectionTestExecutionListener::class, OffenderSearchAPIIntegrationTest::class])
 @ContextConfiguration

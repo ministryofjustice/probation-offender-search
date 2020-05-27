@@ -28,7 +28,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test,wiremock")
+@ActiveProfiles(profiles = ["test", "wiremock"])
 @RunWith(SpringJUnit4ClassRunner::class)
 class OffenderSearchControllerTest {
   @LocalServerPort

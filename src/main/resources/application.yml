@@ -11,10 +11,11 @@ server:
   port: 8080
   servlet:
     context-path: /
-  use-forward-headers: true
   tomcat:
-    remote-ip-header: x-forwarded-for
-    protocol_header: x-forwarded-proto
+    remoteip:
+      protocol-header: x-forwarded-proto
+      remote-ip-header: x-forwarded-for
+  forward-headers-strategy: native
 
 logging:
   level:
