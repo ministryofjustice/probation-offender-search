@@ -6,7 +6,6 @@ replicaCount: 0
 image:
   repository: quay.io/hmpps/offender-search
   tag: latest
-  pullPolicy: Always
   port: 8080
 
 ingress:
