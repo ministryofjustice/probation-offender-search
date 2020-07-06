@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.2"
   kotlin("plugin.spring") version "1.3.72"
 }
 
@@ -29,24 +29,24 @@ dependencies {
   implementation("org.apache.commons:commons-lang3:3.10")
   implementation("org.apache.commons:commons-text:1.8")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1")
 
   // elasticsearch version must match the aws cluster version (6.7)
   implementation("org.elasticsearch:elasticsearch:6.7.2")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.2")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:6.7.2")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.11.790")
+  implementation("com.amazonaws:aws-java-sdk-core:1.11.816")
 
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
   implementation("io.springfox:springfox-bean-validators:2.9.2")
 
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.github.tomakehurst:wiremock-standalone:2.26.3")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.17.0")
+  testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.18.1")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
-  testImplementation("org.testcontainers:localstack:1.13.0")
+  testImplementation("org.testcontainers:localstack:1.14.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
 
   testImplementation("io.rest-assured:rest-assured:3.3.0")
