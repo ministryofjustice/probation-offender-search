@@ -16,7 +16,7 @@ services:
       - SPRING_PROFILES_ACTIVE=localstack,dev
 
   oauth:
-    image: quay.io/hmpps/nomis-oauth2-server:latest
+    image: quay.io/hmpps/hmpps-auth:latest
     networks:
       - hmpps
     container_name: oauth
