@@ -101,6 +101,22 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   }
 
   @Test
+  fun shouldFilterOutSoftDeletedRecords() {
+    val results = given()
+            .auth()
+            .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("{\"surname\":\"Jones\"}")
+            .`when`()["/search"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(0)
+  }
+
+  @Test
   fun nomsNumberSearch() {
     val results = given()
         .auth()
