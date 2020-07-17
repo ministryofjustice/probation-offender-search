@@ -30,7 +30,7 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
     // Set the maximum search result size (the default would otherwise be 10)
     searchSourceBuilder.size(MAX_SEARCH_RESULTS)
     val matchingAllFieldsQuery = buildMatchWithAllProvidedParameters(searchOptions)
-    searchSourceBuilder.query(matchingAllFieldsQuery)
+    searchSourceBuilder.query(matchingAllFieldsQuery.withDefaults(searchRequest))
     searchRequest.source(searchSourceBuilder)
     val response = hlClient.search(searchRequest)
     return getSearchResult(response)
@@ -85,6 +85,11 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
     } catch (t: Throwable) {
       throw RuntimeException(t)
     }
+  }
+
+  private fun BoolQueryBuilder.withDefaults(matchRequest: SearchRequest): BoolQueryBuilder? {
+    return this
+            .must("softDeleted", false)
   }
 
 }
