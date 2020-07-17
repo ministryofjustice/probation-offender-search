@@ -89,7 +89,7 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
 
   private fun BoolQueryBuilder.withDefaults(matchRequest: SearchRequest): BoolQueryBuilder? {
     return this
-            .must("softDeleted", false)
+      .must("softDeleted", false)
   }
 
 }

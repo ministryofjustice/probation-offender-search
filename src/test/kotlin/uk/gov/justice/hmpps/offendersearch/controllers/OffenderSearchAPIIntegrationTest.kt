@@ -163,7 +163,8 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
         .extract()
         .body()
         .`as`(Array<OffenderDetail>::class.java)
-    assertThat(results).hasSize(0)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").containsExactly("John")
   }
 
   @Test
