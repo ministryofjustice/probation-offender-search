@@ -20,7 +20,6 @@ class HealthInfo : HealthIndicator {
   private val buildProperties: BuildProperties? = null
 
   override fun health(): Health {
-    log.info("****** Called the custom healthCheck ******")
     return try { // TODO: Ping the remote Delius elasticSearch service when this is catered for
       Health.up().withDetail("version", version).build()
     } catch (e: RestClientException) {
