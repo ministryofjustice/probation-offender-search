@@ -1,4 +1,8 @@
-# offender-search
+# probation-offender-search
+
+[![CircleCI](https://circleci.com/gh/ministryofjustice/probation-offender-search/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/probation-offender-search)
+[![Docker](https://quay.io/repository/hmpps/probation-offender-search/status)](https://quay.io/repository/hmpps/probation-offender-search/status)
+
 API to provides searching of offender records in Delius via Elastic search
 
 ##Intellij setup
