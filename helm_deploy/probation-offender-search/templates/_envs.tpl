@@ -10,8 +10,8 @@ env:
   - name: SPRING_PROFILES_ACTIVE
     value: "elasticsearch"
 
-  - name: JWT_PUBLIC_KEY
-    value: "{{ .Values.env.JWT_PUBLIC_KEY }}"
+  - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
+    value: "{{ .Values.env.SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI }}"
 
   - name: APPINSIGHTS_INSTRUMENTATIONKEY
     valueFrom:
@@ -21,5 +21,20 @@ env:
 
   - name: AWS_REGION
     value: "eu-west-2"
+
+  - name: ELASTICSEARCH_PORT
+    value: "9200"
+
+  - name: ELASTICSEARCH_SCHEME
+    value: "http"
+
+  - name: ELASTICSEARCH_HOST
+    value: "aws-es-proxy-service"
+
+  - name: ELASTICSEARCH_AWS_SIGNREQUESTS
+    value: "false"
+
+  - name: ELASTICSEARCH_PROVIDER
+    value: "aws"
 
 {{- end -}}

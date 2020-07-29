@@ -1,6 +1,6 @@
 spring:
   application:
-    name: offender-search
+    name: probation-offender-search
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"

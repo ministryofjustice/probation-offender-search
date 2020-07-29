@@ -64,14 +64,14 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
           filters:
             branches:
               only:
-                - master
+                - main
           requires:
             - validate
             - helm_lint
@@ -83,7 +83,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
-          context: offender-search-preprod
+          context: probation-offender-search-preprod
           requires:
             - request-preprod-approval
       - request-prod-approval:
@@ -94,7 +94,7 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
-          context: offender-search-prod
+          context: probation-offender-search-prod
           requires:
             - request-prod-approval
 
@@ -105,7 +105,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - owasp/gradle_owasp_dependency_check:
           executor: hmpps/java
