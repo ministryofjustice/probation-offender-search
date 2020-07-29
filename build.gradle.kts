@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.7"
   kotlin("plugin.spring") version "1.3.72"
 }
 
@@ -26,8 +26,8 @@ dependencies {
   implementation("com.sun.xml.bind:jaxb-impl:2.3.3")
   implementation("com.sun.xml.bind:jaxb-core:2.3.0.1")
   implementation("com.google.code.gson:gson:2.8.6")
-  implementation("org.apache.commons:commons-lang3:3.10")
-  implementation("org.apache.commons:commons-text:1.8")
+  implementation("org.apache.commons:commons-lang3:3.11")
+  implementation("org.apache.commons:commons-text:1.9")
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1")
 
@@ -36,7 +36,7 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.2")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:6.7.2")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.11.816")
+  implementation("com.amazonaws:aws-java-sdk-core:1.11.829")
 
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
