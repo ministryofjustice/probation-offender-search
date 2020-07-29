@@ -14,8 +14,8 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: "nginx"
   hosts:
-    - host: offender-search-dev.prison.service.justice.gov.uk
-      cert_secret: offender-search-cert
+    - host: probation-offender-search-dev.prison.service.justice.gov.uk
+      cert_secret: probation-offender-search-cert
   path: /
 
 env:
