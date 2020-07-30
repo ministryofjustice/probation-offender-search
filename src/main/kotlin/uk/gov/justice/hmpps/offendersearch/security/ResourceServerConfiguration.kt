@@ -19,7 +19,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
         .and().csrf().disable()
         .authorizeRequests { auth ->
           auth.antMatchers("/webjars/**", "/favicon.ico", "/csrf",
-              "/health", "/health/ping", "/info", "/health/liveness", "/health/readiness",
+              "/health/**", "/info",
               "/v2/api-docs",
               "/swagger-ui.html", "/swagger-resources", "/swagger-resources/configuration/ui",
               "/swagger-resources/configuration/security")
