@@ -81,9 +81,7 @@ class MatchService(
   private fun fullMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .mustMultiMatch(surname, "surname", "offenderAliases.surname")
-          .mustMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
-          .mustMultiMatch(firstName, "firstName", "offenderAliases.firstName")
+          .must(nameQuery(matchRequest))
           .mustKeyword(croNumber?.toLowerCase(), "otherIds.croNumberLowercase")
           .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
           .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
@@ -100,8 +98,8 @@ class MatchService(
   }
   private fun nameQuery(matchRequest: MatchRequest): BoolQueryBuilder? {
     return when(mappingVersion) {
-      "2" -> nameQueryV2(matchRequest)
-      else -> nameQueryV1(matchRequest)
+      "1" -> nameQueryV1(matchRequest)
+      else -> nameQueryV2(matchRequest)
     }
   }
 
