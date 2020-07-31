@@ -46,7 +46,7 @@ internal class MatchServiceTest {
 
   @BeforeEach
   fun setUp() {
-    service = MatchService(searchClient, objectMapper)
+    service = MatchService(searchClient, objectMapper, "1")
   }
 
   @Nested

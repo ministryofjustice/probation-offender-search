@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.apache.lucene.search.join.ScoreMode
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.index.query.BoolQueryBuilder
@@ -8,6 +9,7 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED
@@ -25,7 +27,9 @@ import java.time.LocalDate
 @Service
 class MatchService(
     private val elasticSearchClient: SearchClient,
-    private val mapper: ObjectMapper
+    private val mapper: ObjectMapper,
+    @Value("\${search.supported.mapping.version}")
+    private val mappingVersion: String
 ) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -77,13 +81,19 @@ class MatchService(
   private fun fullMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .mustMultiMatch(surname, "surname", "offenderAliases.surname")
-          .mustMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
-          .mustMultiMatch(firstName, "firstName", "offenderAliases.firstName")
           .mustKeyword(croNumber?.toLowerCase(), "otherIds.croNumberLowercase")
           .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
           .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
-          .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
+          .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
+            when (mappingVersion) {
+              "1" -> this
+                  .mustMultiMatch(surname, "surname", "offenderAliases.surname")
+                  .mustMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
+                  .mustMultiMatch(firstName, "firstName", "offenderAliases.firstName")
+
+              else -> this.must(nameQueryV2(matchRequest))
+            }
+          }
     }
   }
 
@@ -91,18 +101,50 @@ class MatchService(
     with(matchRequest) {
       return QueryBuilders.boolQuery()
           .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
-          .must(QueryBuilders.boolQuery()
-              .should(QueryBuilders.boolQuery()
-                  .mustWhenPresent("surname", surname)
-                  .mustWhenPresent("firstName", firstName)
-                  .mustWhenPresent("dateOfBirth", dateOfBirth)
-              )
-              .should(QueryBuilders.boolQuery()
+          .must(nameQuery(matchRequest))
+    }
+  }
+
+  private fun nameQuery(matchRequest: MatchRequest): BoolQueryBuilder? {
+    return when (mappingVersion) {
+      "1" -> nameQueryV1(matchRequest)
+      else -> nameQueryV2(matchRequest)
+    }
+  }
+
+  private fun nameQueryV1(matchRequest: MatchRequest): BoolQueryBuilder {
+    with(matchRequest) {
+      return QueryBuilders.boolQuery()
+          .should(QueryBuilders.boolQuery()
+              .mustWhenPresent("surname", surname)
+              .mustWhenPresent("firstName", firstName)
+              .mustWhenPresent("dateOfBirth", dateOfBirth)
+          )
+          .should(QueryBuilders.boolQuery()
+              .mustWhenPresent("offenderAliases.surname", surname)
+              .mustWhenPresent("offenderAliases.firstName", firstName)
+              .mustWhenPresent("offenderAliases.dateOfBirth", dateOfBirth)
+          )
+
+    }
+  }
+
+  private fun nameQueryV2(matchRequest: MatchRequest): BoolQueryBuilder? {
+    with(matchRequest) {
+      return QueryBuilders.boolQuery()
+          .should(QueryBuilders.boolQuery()
+              .mustWhenPresent("surname", surname)
+              .mustWhenPresent("firstName", firstName)
+              .mustWhenPresent("dateOfBirth", dateOfBirth)
+          )
+          .should(QueryBuilders.nestedQuery(
+              "offenderAliases",
+              QueryBuilders.boolQuery()
                   .mustWhenPresent("offenderAliases.surname", surname)
                   .mustWhenPresent("offenderAliases.firstName", firstName)
-                  .mustWhenPresent("offenderAliases.dateOfBirth", dateOfBirth)
-              )
-          )
+                  .mustWhenPresent("offenderAliases.dateOfBirth", dateOfBirth),
+              ScoreMode.Max
+          ))
     }
   }
 
@@ -128,7 +170,7 @@ class MatchService(
     }
   }
 
-  private fun allLenientDateVariations(date:  LocalDate) : List<LocalDate> {
+  private fun allLenientDateVariations(date: LocalDate): List<LocalDate> {
     return swapMonthDay(date) + everyOtherValidMonth(date) + aroundDateInSameMonth(date)
   }
 

@@ -36,7 +36,7 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.2")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:6.7.2")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.11.829")
+  implementation("com.amazonaws:aws-java-sdk-core:1.11.830")
 
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
