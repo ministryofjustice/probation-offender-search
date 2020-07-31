@@ -37,4 +37,7 @@ env:
   - name: ELASTICSEARCH_PROVIDER
     value: "aws"
 
+  - name: SEARCH_SUPPORTED_MAPPING_VERSION
+    value: "2"
+
 {{- end -}}

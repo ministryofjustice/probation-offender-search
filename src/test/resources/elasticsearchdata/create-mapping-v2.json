@@ -19,11 +19,11 @@
         "probationArea.code": {
           "type": "keyword"
         }
-      },
-      "offenderAliases": {
-        "type": "nested",
-        "include_in_root": true
       }
+    },
+    "offenderAliases": {
+      "include_in_root": true,
+      "type": "nested"
     }
   }
 }

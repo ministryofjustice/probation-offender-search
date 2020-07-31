@@ -1,61 +1,15 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.restassured.RestAssured
 import io.restassured.RestAssured.given
-import io.restassured.config.ObjectMapperConfig
-import io.restassured.config.RestAssuredConfig
-import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.TestContext
-import org.springframework.test.context.TestExecutionListeners
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.context.support.AbstractTestExecutionListener
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
-import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
-import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
-import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
-import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
-import java.lang.reflect.Type
 import java.time.LocalDate
-import java.util.*
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(profiles = ["test", "localstack"])
-@ExtendWith(SpringExtension::class)
-@TestExecutionListeners(listeners = [DependencyInjectionTestExecutionListener::class, OffenderMatchControllerAPIIntegrationTest::class])
-@ContextConfiguration
-internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecutionListener() {
-  @Autowired
-  private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
-
-  @Autowired
-  @Qualifier("elasticSearchClient")
-  private lateinit var esClient: RestHighLevelClient
-
-  @Autowired
-  private lateinit var objectMapper: ObjectMapper
-
-  override fun beforeTestClass(testContext: TestContext) {
-    val objectMapper = testContext.applicationContext.getBean(ObjectMapper::class.java)
-    val esClient = testContext.applicationContext.getBean(RestHighLevelClient::class.java)
-    LocalStackHelper(esClient).loadData()
-    RestAssured.port = Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port"))!!.toInt()
-    RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-        ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
-  }
-
+internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIIntegrationBase() {
   @Nested
   inner class BasicOperation {
     @Test
@@ -135,7 +89,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
               dateOfBirth = LocalDate.of(1988, 1, 6),
               crn = "X00001",
               pncNumber = "2015/0123456X",
-              aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1) ))
+              aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1)))
           ),
           OffenderIdentification(
               surname = "gramsci",
@@ -163,6 +117,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           )
       )
     }
+
     @Test
     internal fun `should match using PNC number ignoring deleted and inactive sentences`() {
       given()
@@ -183,6 +138,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
+
     @Test
     internal fun `should match using short form of PNC number`() {
       given()
@@ -224,6 +180,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00002"))
     }
+
     @Test
     internal fun `should not match using PNC number if no other data matches the record other then PNC number`() {
       given()
@@ -242,6 +199,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .statusCode(200)
           .body("matches.findall.size()", equalTo(0))
     }
+
     @Test
     internal fun `should match using PNC number if PNC and surname match`() {
       given()
@@ -261,6 +219,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
+
     @Test
     internal fun `should match using PNC number if PNC and date of birth match`() {
       given()
@@ -300,6 +259,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
+
     @Test
     internal fun `should match using PNC number if PNC and date of birth alias match`() {
       given()
@@ -333,7 +293,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
               dateOfBirth = LocalDate.of(1988, 1, 6),
               crn = "X00001",
               croNumber = "SF80/655108T",
-              aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1) ))
+              aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1)))
           ),
           OffenderIdentification(
               surname = "gramsci",
@@ -361,6 +321,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           )
       )
     }
+
     @Test
     internal fun `should match using CRO number ignoring deleted and inactive sentences`() {
       given()
@@ -403,6 +364,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00002"))
     }
+
     @Test
     internal fun `should not match using CRO number if no other data matches the record other then CRO number`() {
       given()
@@ -421,6 +383,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .statusCode(200)
           .body("matches.findall.size()", equalTo(0))
     }
+
     @Test
     internal fun `should match using CRO number if CRO and surname match`() {
       given()
@@ -440,6 +403,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
+
     @Test
     internal fun `should match using CRO number if CRO and date of birth match`() {
       given()
@@ -479,6 +443,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
+
     @Test
     internal fun `should match using CRO number if CRO and alias date of birth match`() {
       given()
@@ -512,8 +477,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
               dateOfBirth = LocalDate.of(1903, 11, 11),
               crn = "X00001",
               aliases = listOf(
-                  Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1) ),
-                  Alias(firstName = "Bhimrao", surname = "Ambedkar", dateOfBirth = LocalDate.of(1891, 4, 14) )
+                  Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1)),
+                  Alias(firstName = "Bhimrao", surname = "Ambedkar", dateOfBirth = LocalDate.of(1891, 4, 14))
               )
           )
       )
@@ -575,6 +540,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matches.findall.size()", equalTo(1))
           .body("matches[0].offender.otherIds.crn", equalTo("X00001"))
     }
+
     @Test
     internal fun `should not cross match across aliases and primary names and date of births`() {
       given()
@@ -614,6 +580,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
     }
 
   }
+
   @Nested
   inner class PartialNameMatching {
     @BeforeEach
@@ -743,56 +710,5 @@ internal class OffenderMatchControllerAPIIntegrationTest : AbstractTestExecution
           .body("matchedBy", equalTo("NOTHING"))
     }
   }
-
-  private fun loadOffenders(vararg offenders: OffenderIdentification) {
-    val template = "/elasticsearchdata/offender-template.json".readResourceAsText()
-    val templateOffender = objectMapper.readValue(template, OffenderDetail::class.java)
-
-    val offendersToLoad = offenders.map {
-      templateOffender.copy(
-          surname = it.surname,
-          firstName = it.firstName,
-          dateOfBirth = it.dateOfBirth,
-          currentDisposal = if (it.activeSentence) "1" else "0",
-          softDeleted = it.deleted,
-          otherIds = templateOffender.otherIds?.copy(
-              crn = it.crn,
-              nomsNumber = it.nomsNumber,
-              croNumber = it.croNumber,
-              pncNumber = it.pncNumber
-          ),
-          offenderAliases = it.aliases.map { alias ->  OffenderAlias(
-              firstName = alias.firstName,
-              surname = alias.surname,
-              dateOfBirth = alias.dateOfBirth
-          ) }
-      )
-    }.map { objectMapper.writeValueAsString(it) }
-
-    LocalStackHelper(esClient).loadData(offendersToLoad)
-  }
-
 }
 
-private fun String.readResourceAsText(): String {
-  return OffenderDetail::class.java.getResource(this).readText()
-}
-
-data class OffenderIdentification(
-    val surname: String,
-    val firstName: String,
-    val dateOfBirth: LocalDate,
-    val crn: String,
-    val activeSentence: Boolean = true,
-    val deleted: Boolean = false,
-    val aliases: List<Alias> = listOf(),
-    val nomsNumber: String? = null,
-    val croNumber: String? = null,
-    val pncNumber: String? = null
-)
-
-data class Alias(
-    val surname: String,
-    val firstName: String,
-    val dateOfBirth: LocalDate
-)
