@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
+import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
+import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import java.util.*
 
 @Service
@@ -90,6 +92,11 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
   private fun BoolQueryBuilder.withDefaults(matchRequest: SearchRequest): BoolQueryBuilder? {
     return this
       .must("softDeleted", false)
+  }
+
+  fun performSearch(searchOptions: SearchPhraseFilter): SearchPhraseResults {
+    // TODO Implementation!
+    return SearchPhraseResults(listOf(), 0, listOf(), null)
   }
 
 }
