@@ -31,10 +31,7 @@ dependencies {
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.2")
 
-  implementation("org.elasticsearch:elasticsearch:7.4.1")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.1")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.4.1")
-
+  implementation("com.amazonaws:aws-java-sdk-elasticsearch:1.11.809")
   implementation("com.amazonaws:aws-java-sdk-core:1.11.839")
 
   implementation("io.springfox:springfox-swagger2:2.9.2")
