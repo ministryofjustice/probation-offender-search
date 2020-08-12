@@ -29,14 +29,13 @@ dependencies {
   implementation("org.apache.commons:commons-lang3:3.11")
   implementation("org.apache.commons:commons-text:1.9")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.2")
 
-  // elasticsearch version must match the aws cluster version (6.7)
-  implementation("org.elasticsearch:elasticsearch:6.7.2")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.2")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:6.7.2")
+  implementation("org.elasticsearch:elasticsearch:7.4.1")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.1")
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.4.1")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.11.830")
+  implementation("com.amazonaws:aws-java-sdk-core:1.11.839")
 
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")

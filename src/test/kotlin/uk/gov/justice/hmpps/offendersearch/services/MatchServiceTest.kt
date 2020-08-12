@@ -7,6 +7,8 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.check
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.whenever
+import org.apache.lucene.search.TotalHits
+import org.apache.lucene.search.TotalHits.Relation.EQUAL_TO
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
@@ -563,7 +565,7 @@ internal class MatchServiceTest {
 
   private fun resultsOf(vararg offenders: OffenderDetail): SearchResponse {
     val searchHits = offenders.map { SearchHit(it.offenderId.toInt()).apply { sourceRef(BytesArray(objectMapper.writeValueAsBytes(it))) } }
-    val hits = SearchHits(searchHits.toTypedArray(), offenders.size.toLong(), 10f)
+    val hits = SearchHits(searchHits.toTypedArray(), TotalHits(offenders.size.toLong(), EQUAL_TO), 10f)
     val searchResponseSections = SearchResponseSections(hits, null, null, false, null, null, 5)
     return SearchResponse(searchResponseSections, null, 8, 8, 0, 8, arrayOf(), null)
   }

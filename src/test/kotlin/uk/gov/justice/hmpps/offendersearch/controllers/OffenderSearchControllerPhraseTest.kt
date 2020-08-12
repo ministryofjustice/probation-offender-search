@@ -10,10 +10,9 @@ import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.common.text.Text
+import org.elasticsearch.search.suggest.SortBy.SCORE
 import org.elasticsearch.search.suggest.Suggest
-import org.elasticsearch.search.suggest.Suggest.Suggestion
-import org.elasticsearch.search.suggest.Suggest.Suggestion.Entry
-import org.elasticsearch.search.suggest.Suggest.Suggestion.Entry.Option
+import org.elasticsearch.search.suggest.term.TermSuggestion
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -329,11 +328,11 @@ class OffenderSearchControllerPhraseTest {
 
   @Test
   internal fun `will return suggestions`() {
-    val suggestion: Suggestion<Entry<Option>> = Suggestion<Entry<Option>>("firstName", 5).apply {
-      this.addTerm(Entry<Option>(Text("smyth"), 0, 5).apply {
-        this.addOption(Option(Text("smith"), 0.8f))
-        this.addOption(Option(Text("smita"), 0.8f))
-        this.addOption(Option(Text("sumith"), 0.8f))
+    val suggestion: TermSuggestion = TermSuggestion("firstName", 5, SCORE).apply {
+      this.addTerm(TermSuggestion.Entry(Text("smyth"), 0, 5).apply {
+        this.addOption(TermSuggestion.Entry.Option(Text("smith"), 1, 0.8f))
+        this.addOption(TermSuggestion.Entry.Option(Text("smita"), 1, 0.8f))
+        this.addOption(TermSuggestion.Entry.Option(Text("sumith"), 1, 0.8f))
       })
     }
     whenever(searchService.performSearch(any<SearchPhraseFilter>())).thenReturn(SearchPhraseResults(
