@@ -46,6 +46,7 @@ services:
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - $PWD/src/test/resources/localstack:/docker-entrypoint-initaws.d
 
 networks:
   hmpps:

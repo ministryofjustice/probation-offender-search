@@ -102,7 +102,7 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
   fun performSearch(searchPhraseFilter: SearchPhraseFilter): SearchPhraseResults {
     log.info("Search was: \"${searchPhraseFilter.phrase}\"")
     // TODO correct implementation!
-    // for now do a very basic search so that we can test the unit tests
+    // Implement enough so we can start writing the integration tests
     val searchRequest = SearchRequest("offender")
         .source(SearchSourceBuilder()
             .query(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("surname", searchPhraseFilter.phrase)))
@@ -127,7 +127,7 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
     val results = getSearchResult(response)
     return SearchPhraseResults(
         results,
-        response.hits.totalHits.value,
+        response.hits.totalHits?.value ?: 0,
         extractProbationAreaAggregation(response.aggregations),
         response.suggest
     )
