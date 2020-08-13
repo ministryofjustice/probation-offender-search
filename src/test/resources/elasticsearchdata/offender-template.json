@@ -73,7 +73,7 @@
       },
       "team": {
         "district": {
-          "code": "N01IAV",
+          "code": "N02IAV",
           "description": "Inactive Level 3(N02)"
         },
         "description": "Inactive Team(N02)",
@@ -86,6 +86,40 @@
       "probationArea": {
         "code": "N02",
         "description": "NPS North East"
+      }
+    },
+    {
+      "fromDate": "2016-06-30",
+      "toDate": "2017-06-30",
+      "allocationReason": {
+        "code": "IA",
+        "description": "Inactive Offender"
+      },
+      "partitionArea": "National Data",
+      "trustOfficer": {
+        "surname": "Staff",
+        "forenames": "Inactive Staff(N02)"
+      },
+      "active": false,
+      "staff": {
+        "surname": "Staff",
+        "forenames": "Inactive Staff(N02)"
+      },
+      "team": {
+        "district": {
+          "code": "N01IAV",
+          "description": "Inactive Level 3(N01)"
+        },
+        "description": "Inactive Team(N01)",
+        "borough": {
+          "code": "N01IAV",
+          "description": "Inactive Level 2(N01)"
+        }
+      },
+      "softDeleted": false,
+      "probationArea": {
+        "code": "N01",
+        "description": "NPS North West"
       }
     }
   ],
