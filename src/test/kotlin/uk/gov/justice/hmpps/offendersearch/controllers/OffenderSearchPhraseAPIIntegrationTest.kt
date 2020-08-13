@@ -2,43 +2,28 @@ package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
-import io.restassured.config.ObjectMapperConfig
-import io.restassured.config.RestAssuredConfig
 import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.notNullValue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.TestContext
-import org.springframework.test.context.TestExecutionListeners
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.context.support.AbstractTestExecutionListener
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
-import java.lang.reflect.Type
 import java.time.LocalDate
-import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
-@ExtendWith(SpringExtension::class)
-@TestExecutionListeners(listeners = [DependencyInjectionTestExecutionListener::class, OffenderSearchPhraseAPIIntegrationTest::class])
-@ContextConfiguration
-@DirtiesContext
-class OffenderSearchPhraseAPIIntegrationTest : AbstractTestExecutionListener() {
+class OffenderSearchPhraseAPIIntegrationTest {
   @Autowired
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 
@@ -52,15 +37,12 @@ class OffenderSearchPhraseAPIIntegrationTest : AbstractTestExecutionListener() {
   @Value("\${search.supported.mapping.version}")
   private lateinit var mappingVersion: String
 
-  override fun beforeTestClass(testContext: TestContext) {
-    val objectMapper = testContext.applicationContext.getBean(ObjectMapper::class.java)
-    val esClient = testContext.applicationContext.getBean(RestHighLevelClient::class.java)
-    val mappingVersion = testContext.applicationContext.environment.getProperty("search.supported.mapping.version")
-    LocalStackHelper(esClient, "v${mappingVersion}").loadData()
-    RestAssured.port = Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port"))!!
-        .toInt()
-    RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-        ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
+  @Value("\${local.server.port}")
+  private var port: Int = 0
+
+  @BeforeEach
+  internal fun before() {
+    RestAssured.port = port
   }
 
   @Test
@@ -92,6 +74,7 @@ class OffenderSearchPhraseAPIIntegrationTest : AbstractTestExecutionListener() {
         .body("suggestions", notNullValue())
         .body("offenders.size()", equalTo(1))
         .body("offenders[0].otherIds.crn", equalTo("X00007"))
+        .body("offenders[0].dateOfBirth", equalTo("1988-01-06"))
   }
 
   fun loadOffenders(vararg offenders: OffenderReplacement) {
