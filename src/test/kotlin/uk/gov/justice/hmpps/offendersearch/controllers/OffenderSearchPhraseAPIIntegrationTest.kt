@@ -4,10 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
 import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.Matchers.equalTo
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -63,101 +69,132 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
   @Nested
   @Disabled("waiting for implementation")
+  @TestInstance(PER_CLASS)
   inner class SingleTermMatching {
-    private var loaded = false
+    @Suppress("unused")
+    fun matchAllTerms() = listOf(
+        Arguments.of(false),
+        Arguments.of(true)
+    )
 
-    @BeforeEach
+    @BeforeAll
     internal fun setUp() {
-      if (!loaded) {
-        loaded = loadOffenders(
-            OffenderReplacement(crn = "X00001"),
-            OffenderReplacement(
-                surname = "Gramsci",
-                firstName = "Anne",
-                gender = "Female",
-                middleNames = listOf("Jane", "Jo"),
-                dateOfBirth = LocalDate.parse("1988-01-06"),
-                crn = "X99999",
-                nomsNumber = "G5555TT",
-                croNumber = "SF80/655108T",
-                pncNumber = "2018/0123456X",
-                niNumber = "NE112233X",
-                aliases = listOf(AliasReplacement(surname = "Mouse", firstName = "Mini")),
-                streetName = "23 Hyde Park Road",
-                town = "Southampton",
-                county = "Hampshire",
-                postcode = "H1 1WA",
-                offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London"))
-            ))
-      }
+      loadOffenders(
+          OffenderReplacement(crn = "X00001"),
+          OffenderReplacement(
+              surname = "Gramsci",
+              firstName = "Anne",
+              gender = "Female",
+              middleNames = listOf("Jane", "Jo"),
+              dateOfBirth = LocalDate.parse("1988-01-06"),
+              crn = "X99999",
+              nomsNumber = "G5555TT",
+              croNumber = "SF80/655108T",
+              pncNumber = "2018/0123456X",
+              niNumber = "NE112233X",
+              aliases = listOf(AliasReplacement(surname = "Mouse", firstName = "Mini")),
+              streetName = "23 Hyde Park Road",
+              town = "Southampton",
+              county = "Hampshire",
+              postcode = "H1 1WA",
+              offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London"))
+          ))
     }
 
-    @Test
-    internal fun `can match by surname`() {
-      hasSingleMatch(phrase = "gramsci", crn = "X99999")
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by surname`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "gramsci", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by first name`() {
-      hasSingleMatch(phrase = "Anne", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by first name`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "Anne", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by any middle name`() {
-      hasSingleMatch(phrase = "Jane", crn = "X99999")
-      hasSingleMatch(phrase = "Jo", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by any middle name`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "Jane", crn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "Jo", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by date of birth`() {
-      hasSingleMatch(phrase = "1988-01-06", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by date of birth`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "1988-01-06", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by gender`() {
-      hasSingleMatch(phrase = "Female", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by gender`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "Female", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by crn`() {
-      hasSingleMatch(phrase = "X99999", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by crn`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "X99999", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by noms number`() {
-      hasSingleMatch(phrase = "G5555TT", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by noms number`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "G5555TT", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by pnc number`() {
-      hasSingleMatch(phrase = "2018/0123456X", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by pnc number`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "2018/0123456X", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by cro number`() {
-      hasSingleMatch(phrase = "SF80/655108T", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by cro number`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "SF80/655108T", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by national insurance number`() {
-      hasSingleMatch(phrase = "NE112233X", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by national insurance number`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "NE112233X", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by partial street name`() {
-      hasSingleMatch(phrase = "Hyde", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by partial street name`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "Hyde", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by town name`() {
-      hasSingleMatch(phrase = "Southampton", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by town name`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "Southampton", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by Hampshire name`() {
-      hasSingleMatch(phrase = "Southampton", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by Hampshire name`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "Southampton", crn = "X99999", matchAllTerms = matchAllTerms)
     }
-    @Test
-    internal fun `can match by post code name`() {
-      hasSingleMatch(phrase = "H1 1WA", crn = "X99999")
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by post code name`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "H1 1WA", crn = "X99999", matchAllTerms = matchAllTerms)
     }
   }
 
-  private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") crn: String) {
+  private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") crn: String, matchAllTerms: Boolean = false) {
     RestAssured.given()
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(SearchPhraseFilter(
-            phrase = phrase
+            phrase = phrase,
+            matchAllTerms = matchAllTerms
         ))
         .post("/phrase")
         .then()
@@ -166,7 +203,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
         .body("offenders[0].otherIds.crn", equalTo(crn))
   }
 
-  fun loadOffenders(vararg offenders: OffenderReplacement): Boolean {
+  fun loadOffenders(vararg offenders: OffenderReplacement) {
     val template = "/elasticsearchdata/offender-template.json".readResourceAsText()
     val templateOffender = objectMapper.readValue(template, OffenderDetail::class.java)
 
@@ -216,8 +253,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
     }.map { objectMapper.writeValueAsString(it) }
 
     LocalStackHelper(esClient, "v${mappingVersion}").loadData(offendersToLoad)
-
-    return true
   }
 
 }
