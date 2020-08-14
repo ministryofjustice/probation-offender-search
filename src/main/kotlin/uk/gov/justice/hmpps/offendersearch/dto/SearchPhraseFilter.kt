@@ -9,5 +9,5 @@ data class SearchPhraseFilter(
     @ApiModelProperty(required = false, value = "When true, only match offenders that match all terms. Analogous to AND versus OR") val matchAllTerms: Boolean = false,
     @ApiModelProperty(required = false, value = "Filter of probation area codes. Only offenders that have an active offender manager in one of the areas will be returned", example = "[\"N01\",\"N02\"]") val probationAreasFilter: List<String> = listOf(),
     @ApiModelProperty(required = false, value = "Size of page for offender results", example = "20") val size: Int = 10,
-    @ApiModelProperty(required = false, value = "Page number for offender results. First page is page 1", example = "5") val page: Int = 1
+    @ApiModelProperty(required = false, value = "Page number for offender results. First page is page 0", example = "5") val page: Int = 0
 )

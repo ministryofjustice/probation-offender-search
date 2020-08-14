@@ -113,7 +113,7 @@ class OffenderSearchControllerPhraseTest {
   }
 
   @Test
-  internal fun `will default page to one`() {
+  internal fun `will default page to zero`() {
     RestAssured.given()
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -126,7 +126,7 @@ class OffenderSearchControllerPhraseTest {
         .statusCode(200)
 
     verify(searchService).performSearch(check<SearchPhraseFilter> {
-      assertThat(it.page).isEqualTo(1)
+      assertThat(it.page).isEqualTo(0)
     })
   }
 

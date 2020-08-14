@@ -28,6 +28,7 @@ import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
@@ -590,6 +591,58 @@ class OffenderSearchPhraseAPIIntegrationTest {
     }
   }
 
+  @Nested
+  @TestInstance(PER_CLASS)
+  inner class Paging {
+    @BeforeAll
+    internal fun loadLotsOfOffenders() {
+      val offenders = (1..101).map {
+        OffenderReplacement(offenderId = it.toLong(), crn = it.toCrn(), firstName = "Antonio", surname = "Gramsci")
+      }.toTypedArray()
+      loadOffenders(*offenders)
+    }
+
+    @Test
+    internal fun `by default will return a page of 10 offenders along with total`() {
+      doSearch("antonio gramsci")
+          .body("offenders.size()", equalTo(10))
+          .body("total", equalTo(101))
+    }
+    @Test
+    internal fun `can specify page size`() {
+      doSearch("antonio gramsci", size = 20)
+          .body("offenders.size()", equalTo(20))
+          .body("total", equalTo(101))
+    }
+    @Test
+    internal fun `when results are identical order will be by offender id desc`() {
+      doSearch("antonio gramsci", size = 101, page = 0)
+          .body("offenders.size()", equalTo(101))
+          .body("offenders[0].offenderId", equalTo(101))
+          .body("offenders[1].offenderId", equalTo(100))
+          .body("offenders[99].offenderId", equalTo(2))
+          .body("offenders[100].offenderId", equalTo(1))
+          .body("total", equalTo(101))
+    }
+    @Test
+    internal fun `can page through the results`() {
+      doSearch("antonio gramsci", size = 10)
+          .body("total", equalTo(101))
+          .body("offenders.size()", equalTo(10))
+          .body("offenders[0].otherIds.crn", equalTo("X00101"))
+          .body("offenders[9].otherIds.crn", equalTo("X00092"))
+      doSearch("antonio gramsci", size = 10, page = 1)
+          .body("total", equalTo(101))
+          .body("offenders.size()", equalTo(10))
+          .body("offenders[0].otherIds.crn", equalTo("X00091"))
+          .body("offenders[9].otherIds.crn", equalTo("X00082"))
+      doSearch("antonio gramsci", size = 10, page = 10)
+          .body("total", equalTo(101))
+          .body("offenders.size()", equalTo(1))
+          .body("offenders[0].otherIds.crn", equalTo("X00001"))
+    }
+  }
+
   private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
     doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
         .body("total", equalTo(1))
@@ -613,15 +666,21 @@ class OffenderSearchPhraseAPIIntegrationTest {
         .body("total", equalTo(0))
   }
 
-  private fun doSearch(phrase: String, matchAllTerms: Boolean = false): ValidatableResponse {
+  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null): ValidatableResponse {
+    val filter = SearchPhraseFilter(
+        phrase = phrase,
+        matchAllTerms = matchAllTerms
+    ).let {filter ->
+      size?.let {filter.copy(size = it)}?:filter
+    }.let {filter ->
+      page?.let {filter.copy(page = it)}?:filter
+    }
+
     return RestAssured.given()
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body(SearchPhraseFilter(
-            phrase = phrase,
-            matchAllTerms = matchAllTerms
-        ))
+        .body(filter)
         .post("/phrase")
         .then()
         .statusCode(200)
@@ -633,6 +692,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
     val offendersToLoad = offenders.map {
       templateOffender.copy(
+          offenderId = it.offenderId,
           surname = it.surname,
           firstName = it.firstName,
           middleNames = it.middleNames,
@@ -686,6 +746,7 @@ private fun String.readResourceAsText(): String {
 }
 
 data class OffenderReplacement(
+    val offenderId: Long = Random(0).nextLong(),
     val surname: String = "Smith",
     val firstName: String = "John",
     val middleNames: List<String> = listOf(),
@@ -717,4 +778,4 @@ data class OffenderManagerReplacement(
     val active: Boolean = true
 )
 
-
+fun Int.toCrn() = "X%05d".format(this)

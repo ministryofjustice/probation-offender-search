@@ -9,6 +9,7 @@ import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.aggregations.AggregationBuilders
 import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.builder.SearchSourceBuilder
+import org.elasticsearch.search.sort.SortOrder.DESC
 import org.elasticsearch.search.suggest.SuggestBuilder
 import org.elasticsearch.search.suggest.term.TermSuggestionBuilder
 import org.slf4j.Logger
@@ -107,7 +108,9 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
         .source(SearchSourceBuilder()
             .query(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("surname", searchPhraseFilter.phrase)))
             .size(searchPhraseFilter.size)
-            .from(searchPhraseFilter.page - 1)
+            .from(searchPhraseFilter.page * searchPhraseFilter.size)
+            .sort("_score")
+            .sort("offenderId", DESC)
             .aggregation(AggregationBuilders
                 .nested("offenderManagers", "offenderManagers")
                 .subAggregation(AggregationBuilders
