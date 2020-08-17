@@ -9,11 +9,13 @@ import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.aggregations.AggregationBuilders
 import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.builder.SearchSourceBuilder
+import org.elasticsearch.search.sort.SortOrder.DESC
 import org.elasticsearch.search.suggest.SuggestBuilder
 import org.elasticsearch.search.suggest.term.TermSuggestionBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
@@ -99,15 +101,17 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
       .must("softDeleted", false)
   }
 
-  fun performSearch(searchPhraseFilter: SearchPhraseFilter): SearchPhraseResults {
+  fun performSearch(searchPhraseFilter: SearchPhraseFilter, pageable: Pageable): SearchPhraseResults {
     log.info("Search was: \"${searchPhraseFilter.phrase}\"")
     // TODO correct implementation!
     // Implement enough so we can start writing the integration tests
     val searchRequest = SearchRequest("offender")
         .source(SearchSourceBuilder()
             .query(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("surname", searchPhraseFilter.phrase)))
-            .size(searchPhraseFilter.size)
-            .from(searchPhraseFilter.page - 1)
+            .size(pageable.pageSize)
+            .from(pageable.offset.toInt())
+            .sort("_score")
+            .sort("offenderId", DESC)
             .aggregation(AggregationBuilders
                 .nested("offenderManagers", "offenderManagers")
                 .subAggregation(AggregationBuilders
@@ -126,10 +130,11 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
     val response = hlClient.search(searchRequest)
     val results = getSearchResult(response)
     return SearchPhraseResults(
-        results,
-        response.hits.totalHits?.value ?: 0,
-        extractProbationAreaAggregation(response.aggregations),
-        response.suggest
+        content = results,
+        pageable = pageable,
+        total = response.hits.totalHits?.value ?: 0,
+        probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
+        suggestions = response.suggest
     )
   }
 

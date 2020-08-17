@@ -1,8 +1,16 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
-import io.swagger.annotations.*
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiImplicitParam
+import io.swagger.annotations.ApiImplicitParams
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
+import io.swagger.annotations.Authorization
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -65,9 +73,16 @@ class OffenderSearchController(private val searchService: SearchService) {
     ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
   ])
   @PostMapping("/phrase")
-  fun searchOffendersByPhrase(@Valid @RequestBody searchPhraseFilter: SearchPhraseFilter): SearchPhraseResults {
+  @ApiImplicitParams(
+      ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
+      ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
+  )
+  fun searchOffendersByPhrase(
+      @Valid @RequestBody searchPhraseFilter: SearchPhraseFilter,
+      @PageableDefault  pageable: Pageable
+  ): SearchPhraseResults {
     log.info("Search called with {}", searchPhraseFilter)
-    return searchService.performSearch(searchPhraseFilter)
+    return searchService.performSearch(searchPhraseFilter, pageable)
   }
 
 }

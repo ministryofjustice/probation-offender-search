@@ -23,11 +23,11 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
-import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
@@ -590,10 +590,69 @@ class OffenderSearchPhraseAPIIntegrationTest {
     }
   }
 
+  @Nested
+  @TestInstance(PER_CLASS)
+  inner class Paging {
+    @BeforeAll
+    internal fun loadLotsOfOffenders() {
+      val offenders = (1..101).map {
+        OffenderReplacement(offenderId = it.toLong(), crn = it.toCrn(), firstName = "Antonio", surname = "Gramsci")
+      }.toTypedArray()
+      loadOffenders(*offenders)
+    }
+
+    @Test
+    internal fun `by default will return a page of 10 offenders along with totals`() {
+      doSearch("antonio gramsci")
+          .body("content.size()", equalTo(10))
+          .body("size", equalTo(10))
+          .body("numberOfElements", equalTo(10))
+          .body("totalElements", equalTo(101))
+          .body("totalPages", equalTo(11))
+    }
+    @Test
+    internal fun `can specify page size`() {
+      doSearch("antonio gramsci", size = 20)
+          .body("content.size()", equalTo(20))
+          .body("numberOfElements", equalTo(20))
+          .body("totalElements", equalTo(101))
+    }
+    @Test
+    internal fun `when results are identical order will be by offender id desc`() {
+      doSearch("antonio gramsci", size = 101, page = 0)
+          .body("content.size()", equalTo(101))
+          .body("content[0].offenderId", equalTo(101))
+          .body("content[1].offenderId", equalTo(100))
+          .body("content[99].offenderId", equalTo(2))
+          .body("content[100].offenderId", equalTo(1))
+          .body("totalElements", equalTo(101))
+    }
+    @Test
+    internal fun `can page through the results`() {
+      doSearch("antonio gramsci", size = 10)
+          .body("totalElements", equalTo(101))
+          .body("content.size()", equalTo(10))
+          .body("number", equalTo(0))
+          .body("content[0].otherIds.crn", equalTo("X00101"))
+          .body("content[9].otherIds.crn", equalTo("X00092"))
+      doSearch("antonio gramsci", size = 10, page = 1)
+          .body("totalElements", equalTo(101))
+          .body("content.size()", equalTo(10))
+          .body("number", equalTo(1))
+          .body("content[0].otherIds.crn", equalTo("X00091"))
+          .body("content[9].otherIds.crn", equalTo("X00082"))
+      doSearch("antonio gramsci", size = 10, page = 10)
+          .body("totalElements", equalTo(101))
+          .body("number", equalTo(10))
+          .body("content.size()", equalTo(1))
+          .body("content[0].otherIds.crn", equalTo("X00001"))
+    }
+  }
+
   private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
     doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
-        .body("total", equalTo(1))
-        .body("offenders[0].otherIds.crn", equalTo(expectedCrn))
+        .body("totalElements", equalTo(1))
+        .body("content[0].otherIds.crn", equalTo(expectedCrn))
   }
 
   private fun hasMatches(phrase: String, matchAllTerms: Boolean = false, expectedCrns: List<String>) {
@@ -601,27 +660,34 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
     expectedCrns.forEach {
       response
-          .body("offenders.find { it.otherIds.crn == \"$it\" }.otherIds.crn", equalTo(it))
+          .body("content.find { it.otherIds.crn == \"$it\" }.otherIds.crn", equalTo(it))
     }
 
     response
-        .body("total", equalTo(expectedCrns.size))
+        .body("totalElements", equalTo(expectedCrns.size))
   }
 
   private fun hasNoMatch(phrase: String, matchAllTerms: Boolean = false) {
     doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
-        .body("total", equalTo(0))
+        .body("totalElements", equalTo(0))
   }
 
-  private fun doSearch(phrase: String, matchAllTerms: Boolean = false): ValidatableResponse {
-    return RestAssured.given()
+  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null): ValidatableResponse {
+    val request = RestAssured.given()
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body(SearchPhraseFilter(
-            phrase = phrase,
-            matchAllTerms = matchAllTerms
-        ))
+        .body("""
+          {
+            "phrase": "$phrase",
+            "matchAllTerms": $matchAllTerms
+          }
+        """.trimIndent()).apply {
+          size?.also {this.queryParam("size", it)}
+          page?.also {this.queryParam("page", it)}
+        }
+
+    return request
         .post("/phrase")
         .then()
         .statusCode(200)
@@ -633,6 +699,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
     val offendersToLoad = offenders.map {
       templateOffender.copy(
+          offenderId = it.offenderId,
           surname = it.surname,
           firstName = it.firstName,
           middleNames = it.middleNames,
@@ -686,6 +753,7 @@ private fun String.readResourceAsText(): String {
 }
 
 data class OffenderReplacement(
+    val offenderId: Long = Random(0).nextLong(),
     val surname: String = "Smith",
     val firstName: String = "John",
     val middleNames: List<String> = listOf(),
@@ -717,4 +785,4 @@ data class OffenderManagerReplacement(
     val active: Boolean = true
 )
 
-
+fun Int.toCrn() = "X%05d".format(this)
