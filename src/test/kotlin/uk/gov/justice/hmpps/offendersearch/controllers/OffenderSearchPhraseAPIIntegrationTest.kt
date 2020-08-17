@@ -610,6 +610,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("totalElements", equalTo(101))
           .body("totalPages", equalTo(11))
     }
+
     @Test
     internal fun `can specify page size`() {
       doSearch("antonio gramsci", size = 20)
@@ -617,6 +618,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("numberOfElements", equalTo(20))
           .body("totalElements", equalTo(101))
     }
+
     @Test
     internal fun `when results are identical order will be by offender id desc`() {
       doSearch("antonio gramsci", size = 101, page = 0)
@@ -627,25 +629,343 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("content[100].offenderId", equalTo(1))
           .body("totalElements", equalTo(101))
     }
+
     @Test
     internal fun `can page through the results`() {
       doSearch("antonio gramsci", size = 10)
           .body("totalElements", equalTo(101))
           .body("content.size()", equalTo(10))
+          .body("numberOfElements", equalTo(10))
+          .body("size", equalTo(10))
           .body("number", equalTo(0))
           .body("content[0].otherIds.crn", equalTo("X00101"))
           .body("content[9].otherIds.crn", equalTo("X00092"))
       doSearch("antonio gramsci", size = 10, page = 1)
           .body("totalElements", equalTo(101))
           .body("content.size()", equalTo(10))
+          .body("numberOfElements", equalTo(10))
+          .body("size", equalTo(10))
           .body("number", equalTo(1))
           .body("content[0].otherIds.crn", equalTo("X00091"))
           .body("content[9].otherIds.crn", equalTo("X00082"))
       doSearch("antonio gramsci", size = 10, page = 10)
           .body("totalElements", equalTo(101))
-          .body("number", equalTo(10))
           .body("content.size()", equalTo(1))
+          .body("numberOfElements", equalTo(1))
+          .body("size", equalTo(10))
+          .body("number", equalTo(10))
           .body("content[0].otherIds.crn", equalTo("X00001"))
+    }
+  }
+
+  @Nested
+  @TestInstance(PER_CLASS)
+  inner class Suggestions {
+    @BeforeAll
+    internal fun loadLotsOfOffenders() {
+      val offenders = (1..10).map {
+        OffenderReplacement(offenderId = it.toLong(), crn = it.toCrn(), firstName = "Fred", surname = "Jones")
+      }.toTypedArray()
+      loadOffenders(*offenders)
+    }
+
+    @Test
+    internal fun `should not get any suggestions when we have it correct with no other offenders`() {
+      doSearch("fred jones")
+          .body("suggestions.suggest.firstName.find { it.text == \"fred\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.firstName.find { it.text == \"jones\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.surname.find { it.text == \"fred\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.surname.find { it.text == \"jones\" }.options.size()", equalTo(0))
+    }
+
+    @Test
+    internal fun `will get first name suggestions when nearly correct`() {
+      doSearch("frod jones")
+          .body("suggestions.suggest.firstName.find { it.text == \"frod\" }.options.size()", equalTo(1))
+          .body("suggestions.suggest.firstName.find { it.text == \"frod\" }.options[0].text", equalTo("fred"))
+          .body("suggestions.suggest.firstName.find { it.text == \"jones\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.surname.find { it.text == \"frod\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.surname.find { it.text == \"jones\" }.options.size()", equalTo(0))
+    }
+
+    @Test
+    internal fun `will get surname suggestions when nearly correct`() {
+      doSearch("fred janes")
+          .body("suggestions.suggest.firstName.find { it.text == \"fred\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.firstName.find { it.text == \"janes\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.surname.find { it.text == \"fred\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.surname.find { it.text == \"janes\" }.options.size()", equalTo(1))
+          .body("suggestions.suggest.surname.find { it.text == \"janes\" }.options[0].text", equalTo("jones"))
+    }
+
+    @Test
+    internal fun `can get suggestions for both first name and surname at the same time`() {
+      doSearch("frod janes")
+          .body("suggestions.suggest.firstName.find { it.text == \"frod\" }.options.size()", equalTo(1))
+          .body("suggestions.suggest.firstName.find { it.text == \"frod\" }.options[0].text", equalTo("fred"))
+          .body("suggestions.suggest.firstName.find { it.text == \"janes\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.surname.find { it.text == \"frod\" }.options.size()", equalTo(0))
+          .body("suggestions.suggest.surname.find { it.text == \"janes\" }.options.size()", equalTo(1))
+          .body("suggestions.suggest.surname.find { it.text == \"janes\" }.options[0].text", equalTo("jones"))
+    }
+  }
+
+  @Nested
+  @Disabled
+  @TestInstance(PER_CLASS)
+  inner class WeightingWithOrdering {
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class MainNames {
+      @Suppress("unused")
+      fun matchAllTerms() = listOf(false, true)
+
+      @BeforeAll
+      internal fun loadLotsOfOffenders() {
+        loadOffenders(
+            OffenderReplacement(
+                offenderId = 1,
+                crn = "X00001",
+                aliases = listOf(AliasReplacement(firstName = "Fred", surname = "Jones")),
+                firstName = "Antonio",
+                surname = "Gramsci"
+            ),
+            OffenderReplacement(
+                offenderId = 2,
+                crn = "X00002",
+                aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "Gramsci")),
+                surname = "Jones",
+                firstName = "Fred"
+            ),
+            OffenderReplacement(
+                offenderId = 3,
+                crn = "X00003",
+                aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "Jones")),
+                firstName = "Fred",
+                surname = "Gramsci"
+            ),
+            OffenderReplacement(
+                offenderId = 4,
+                crn = "X00004",
+                aliases = listOf(AliasReplacement(firstName = "Fred", surname = "Gramsci")),
+                firstName = "Antonio",
+                surname = "Jones"
+            )
+        )
+      }
+
+      @ParameterizedTest
+      @MethodSource("matchAllTerms")
+      internal fun `offender alias surname has lower ranking than real surname`(matchAllTerms: Boolean) {
+        doSearch("antonio gramsci", matchAllTerms)
+            .body("content.size()", equalTo(4))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00004"))
+            .body("content[2].otherIds.crn", equalTo("X00003"))
+            .body("content[3].otherIds.crn", equalTo("X00002"))
+
+        doSearch("fred jones", matchAllTerms)
+            .body("content.size()", equalTo(4))
+            .body("content[0].otherIds.crn", equalTo("X00002"))
+            .body("content[1].otherIds.crn", equalTo("X00004"))
+            .body("content[2].otherIds.crn", equalTo("X00003"))
+            .body("content[3].otherIds.crn", equalTo("X00001"))
+      }
+
+      @ParameterizedTest
+      @MethodSource("matchAllTerms")
+      internal fun `offender alias first name has lower ranking than real first name`(matchAllTerms: Boolean) {
+        doSearch("fred gramsci", matchAllTerms)
+            .body("content.size()", equalTo(4))
+            .body("content[0].otherIds.crn", equalTo("X00003"))
+
+        doSearch("antonio jones", matchAllTerms)
+            .body("content.size()", equalTo(4))
+            .body("content[0].otherIds.crn", equalTo("X00004"))
+      }
+    }
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class MiddleNames {
+      @Suppress("unused")
+      fun matchAllTerms() = listOf(false, true)
+
+      @BeforeAll
+      internal fun loadLotsOfOffenders() {
+        loadOffenders(
+            OffenderReplacement(
+                offenderId = 1,
+                crn = "X00001",
+                firstName = "Antonio",
+                surname = "Gramsci"
+            ),
+            OffenderReplacement(
+                offenderId = 2,
+                crn = "X00002",
+                firstName = "Fred",
+                middleNames = listOf("Antonio"),
+                surname = "Gramsci"
+            )
+        )
+      }
+
+      @ParameterizedTest
+      @MethodSource("matchAllTerms")
+      internal fun `offender alias surname has lower ranking than real surname`(matchAllTerms: Boolean) {
+        doSearch("antonio gramsci", matchAllTerms)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00002"))
+
+        doSearch("fred gramsci", matchAllTerms)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00002"))
+            .body("content[1].otherIds.crn", equalTo("X00001"))
+      }
+    }
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class Address {
+      @Suppress("unused")
+      fun matchAllTerms() = listOf(false, true)
+
+      @BeforeAll
+      internal fun loadLotsOfOffenders() {
+        loadOffenders(
+            OffenderReplacement(
+                offenderId = 1,
+                crn = "X00001",
+                surname = "Gramsci",
+                streetName = "1 Main Street",
+                postcode = "S10 2BJ"
+            ),
+            OffenderReplacement(
+                offenderId = 2,
+                crn = "X00002",
+                surname = "Gramsci",
+                streetName = "9 High Road",
+                postcode = "N17 3NH"
+            )
+        )
+      }
+
+      @Test
+      internal fun `address postcode has higher ranking then street name`() {
+        doSearch("gramsci Main", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00002"))
+
+        doSearch("gramsci N17 3NH Main", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00002"))
+            .body("content[1].otherIds.crn", equalTo("X00001"))
+      }
+    }
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class DateOfBirth {
+      @Suppress("unused")
+      fun matchAllTerms() = listOf(false, true)
+
+      @BeforeAll
+      internal fun loadLotsOfOffenders() {
+        loadOffenders(
+            OffenderReplacement(
+                offenderId = 1,
+                crn = "X00001",
+                firstName = "Antonio",
+                surname = "Gramsci",
+                dateOfBirth = LocalDate.parse("1987-01-29")
+            ),
+            OffenderReplacement(
+                offenderId = 2,
+                crn = "X00002",
+                firstName = "Antonio",
+                surname = "Smith",
+                dateOfBirth = LocalDate.parse("1984-02-21")
+            )
+        )
+      }
+
+      @Test
+      internal fun `date of birth has higher ranking than names`() {
+        doSearch("antonio smith 1987-01-29", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00002"))
+
+        doSearch("antonio gramsci 1984-02-21", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00002"))
+            .body("content[1].otherIds.crn", equalTo("X00001"))
+      }
+    }
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class IDs {
+      @Suppress("unused")
+      fun matchAllTerms() = listOf(false, true)
+
+      @BeforeAll
+      internal fun loadLotsOfOffenders() {
+        loadOffenders(
+            OffenderReplacement(
+                offenderId = 1,
+                crn = "X00001",
+                aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "gramsci")),
+                pncNumber = "2019/1X",
+                croNumber = "CRO123",
+                nomsNumber = "A1234X"
+            ),
+            OffenderReplacement(
+                offenderId = 2,
+                crn = "X00002",
+                aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "gramsci"))
+            )
+        )
+      }
+
+      @Test
+      internal fun `sorted by offender id when scores the same`() {
+        doSearch("antonio smith", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00002"))
+            .body("content[1].otherIds.crn", equalTo("X00001"))
+      }
+      @Test
+      internal fun `pnc number boosts order`() {
+        doSearch("antonio smith 2019/1X", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00002"))
+      }
+      @Test
+      internal fun `cro number boosts order`() {
+        doSearch("antonio smith CRO123", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00002"))
+      }
+      @Test
+      internal fun `noms number boosts order`() {
+        doSearch("antonio smith A1234X", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00002"))
+      }
+      @Test
+      internal fun `crn boosts order`() {
+        doSearch("antonio smith X00001", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00002"))
+
+        doSearch("antonio smith X00002", false)
+            .body("content.size()", equalTo(2))
+            .body("content[0].otherIds.crn", equalTo("X00002"))
+            .body("content[1].otherIds.crn", equalTo("X00001"))
+      }
     }
   }
 
@@ -682,9 +1002,10 @@ class OffenderSearchPhraseAPIIntegrationTest {
             "phrase": "$phrase",
             "matchAllTerms": $matchAllTerms
           }
-        """.trimIndent()).apply {
-          size?.also {this.queryParam("size", it)}
-          page?.also {this.queryParam("page", it)}
+        """.trimIndent())
+        .apply {
+          size?.also { this.queryParam("size", it) }
+          page?.also { this.queryParam("page", it) }
         }
 
     return request
