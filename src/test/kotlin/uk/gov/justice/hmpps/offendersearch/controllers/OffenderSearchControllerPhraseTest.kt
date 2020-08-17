@@ -22,13 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.gov.justice.hmpps.offendersearch.dto.IDs
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationAreaAggregation
-import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import uk.gov.justice.hmpps.offendersearch.services.SearchService
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
@@ -56,7 +56,7 @@ class OffenderSearchControllerPhraseTest {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
         ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
-    whenever(searchService.performSearch(any<SearchPhraseFilter>())).thenReturn(SearchPhraseResults(listOf(), 0, listOf(), null))
+    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(content = listOf(), total = 0, pageable = PageRequest.of(0, 10), probationAreaAggregations = listOf(), suggestions = null))
   }
 
   @Test
@@ -125,8 +125,8 @@ class OffenderSearchControllerPhraseTest {
         .then()
         .statusCode(200)
 
-    verify(searchService).performSearch(check<SearchPhraseFilter> {
-      assertThat(it.page).isEqualTo(0)
+    verify(searchService).performSearch(any(), check {
+      assertThat(it.pageNumber).isEqualTo(0)
     })
   }
 
@@ -136,16 +136,16 @@ class OffenderSearchControllerPhraseTest {
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .queryParam("page", 28)
         .body("""{
-          | "phrase": "john smith 19/7/1965",
-          | "page": 28
+          | "phrase": "john smith 19/7/1965"
           |}""".trimMargin())
         .post("/phrase")
         .then()
         .statusCode(200)
 
-    verify(searchService).performSearch(check<SearchPhraseFilter> {
-      assertThat(it.page).isEqualTo(28)
+    verify(searchService).performSearch(any(), check {
+      assertThat(it.pageNumber).isEqualTo(28)
     })
   }
 
@@ -162,8 +162,8 @@ class OffenderSearchControllerPhraseTest {
         .then()
         .statusCode(200)
 
-    verify(searchService).performSearch(check<SearchPhraseFilter> {
-      assertThat(it.size).isEqualTo(10)
+    verify(searchService).performSearch(any(), check {
+      assertThat(it.pageSize).isEqualTo(10)
     })
   }
 
@@ -173,16 +173,16 @@ class OffenderSearchControllerPhraseTest {
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .queryParam("size", 99)
         .body("""{
-          | "phrase": "john smith 19/7/1965",
-          | "size": 99
+          | "phrase": "john smith 19/7/1965"
           |}""".trimMargin())
         .post("/phrase")
         .then()
         .statusCode(200)
 
-    verify(searchService).performSearch(check<SearchPhraseFilter> {
-      assertThat(it.size).isEqualTo(99)
+    verify(searchService).performSearch(any(), check {
+      assertThat(it.pageSize).isEqualTo(99)
     })
   }
 
@@ -199,9 +199,9 @@ class OffenderSearchControllerPhraseTest {
         .then()
         .statusCode(200)
 
-    verify(searchService).performSearch(check<SearchPhraseFilter> {
+    verify(searchService).performSearch(check {
       assertThat(it.matchAllTerms).isFalse()
-    })
+    }, any())
   }
 
   @Test
@@ -218,9 +218,9 @@ class OffenderSearchControllerPhraseTest {
         .then()
         .statusCode(200)
 
-    verify(searchService).performSearch(check<SearchPhraseFilter> {
+    verify(searchService).performSearch(check {
       assertThat(it.matchAllTerms).isTrue()
-    })
+    }, any())
   }
 
   @Test
@@ -236,9 +236,9 @@ class OffenderSearchControllerPhraseTest {
         .then()
         .statusCode(200)
 
-    verify(searchService).performSearch(check<SearchPhraseFilter> {
+    verify(searchService).performSearch(check {
       assertThat(it.probationAreasFilter).isEmpty()
-    })
+    }, any())
   }
 
   @Test
@@ -258,18 +258,19 @@ class OffenderSearchControllerPhraseTest {
         .then()
         .statusCode(200)
 
-    verify(searchService).performSearch(check<SearchPhraseFilter> {
+    verify(searchService).performSearch(check {
       assertThat(it.probationAreasFilter).containsExactly("N01", "N02")
-    })
+    }, any())
   }
 
   @Test
   internal fun `will return results when matched`() {
-    whenever(searchService.performSearch(any<SearchPhraseFilter>())).thenReturn(SearchPhraseResults(
-        offenders = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
+    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+        content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(),
-        suggestions = null
+        suggestions = null,
+        pageable = PageRequest.of(0, 10)
     ))
 
     RestAssured.given()
@@ -282,18 +283,18 @@ class OffenderSearchControllerPhraseTest {
         .post("/phrase")
         .then()
         .statusCode(200)
-        .body("total", equalTo(1))
-        .body("offenders.size()", equalTo(1))
-        .body("offenders[0].offenderId", equalTo(99))
-        .body("offenders[0].surname", equalTo("Smith"))
-        .body("offenders[0].dateOfBirth", equalTo("1965-07-19"))
-        .body("offenders[0].otherIds.crn", equalTo("X123456"))
+        .body("totalElements", equalTo(1))
+        .body("content.size()", equalTo(1))
+        .body("content[0].offenderId", equalTo(99))
+        .body("content[0].surname", equalTo("Smith"))
+        .body("content[0].dateOfBirth", equalTo("1965-07-19"))
+        .body("content[0].otherIds.crn", equalTo("X123456"))
   }
 
   @Test
   internal fun `will return probation area aggregations`() {
-    whenever(searchService.performSearch(any<SearchPhraseFilter>())).thenReturn(SearchPhraseResults(
-        offenders = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
+    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+        content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(
             ProbationAreaAggregation(
@@ -307,7 +308,8 @@ class OffenderSearchControllerPhraseTest {
                 count = 2
             )
         ),
-        suggestions = null
+        suggestions = null,
+        pageable = PageRequest.of(0, 10)
     ))
 
     RestAssured.given()
@@ -320,7 +322,7 @@ class OffenderSearchControllerPhraseTest {
         .post("/phrase")
         .then()
         .statusCode(200)
-        .body("total", equalTo(1))
+        .body("totalElements", equalTo(1))
         .body("probationAreaAggregations.size()", equalTo(2))
         .body("probationAreaAggregations[0].code", equalTo("N01"))
         .body("probationAreaAggregations[1].code", equalTo("N02"))
@@ -335,11 +337,12 @@ class OffenderSearchControllerPhraseTest {
         this.addOption(TermSuggestion.Entry.Option(Text("sumith"), 1, 0.8f))
       })
     }
-    whenever(searchService.performSearch(any<SearchPhraseFilter>())).thenReturn(SearchPhraseResults(
-        offenders = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
+    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+        content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(),
-        suggestions = Suggest(listOf(suggestion))
+        suggestions = Suggest(listOf(suggestion)),
+        pageable = PageRequest.of(0, 10)
     ))
 
 
