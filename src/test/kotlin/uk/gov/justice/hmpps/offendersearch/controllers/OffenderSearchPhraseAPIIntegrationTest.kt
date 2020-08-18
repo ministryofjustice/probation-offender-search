@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
 import io.restassured.response.ValidatableResponse
 import org.elasticsearch.client.RestHighLevelClient
+import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
@@ -23,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
+import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import java.time.LocalDate
@@ -969,14 +971,109 @@ class OffenderSearchPhraseAPIIntegrationTest {
     }
   }
 
+  @Nested
+  @Disabled
+  @TestInstance(PER_CLASS)
+  inner class AggregationAndFiltering {
+    @Suppress("unused")
+    fun matchAllTerms() = listOf(false, true)
+
+    @BeforeAll
+    internal fun loadOffendersDistributedInAreas() {
+      loadOffenders(
+          OffenderReplacement(
+              crn = "X00001",
+              surname = "Gramsci",
+              offenderManagers = listOf(OffenderManagerReplacement(code = "N01", description = "NPS North West", active = true))
+          ),
+          OffenderReplacement(
+              crn = "X00002",
+              surname = "Gramsci",
+              offenderManagers = listOf(OffenderManagerReplacement(code = "N01", description = "NPS North West", active = true))
+          ),
+          OffenderReplacement(
+              crn = "X00003",
+              surname = "Gramsci",
+              offenderManagers = listOf(OffenderManagerReplacement(code = "N01", description = "NPS North West", active = true))
+          ),
+          OffenderReplacement(
+              crn = "X00004",
+              surname = "Gramsci",
+              offenderManagers = listOf(OffenderManagerReplacement(code = "N02", description = "NPS North East", active = true))
+          ),
+          OffenderReplacement(
+              crn = "X00005",
+              surname = "Smith",
+              offenderManagers = listOf(OffenderManagerReplacement(code = "N03", description = "NPS Midlands", active = true))
+          ),
+          OffenderReplacement(
+              crn = "X00006",
+              surname = "Gramsci",
+              offenderManagers = listOf(OffenderManagerReplacement(code = "N07", description = "NPS London", active = true))
+          ),
+          OffenderReplacement(
+              crn = "X00007",
+              surname = "Gramsci",
+              offenderManagers = listOf(
+                  OffenderManagerReplacement(code = "N01", description = "NPS North West", active = false),
+                  OffenderManagerReplacement(code = "N07", description = "NPS London", active = true)
+              )
+          )
+      )
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `will aggregate by active offender manager area ordered by count descending`(matchAllTerms: Boolean) {
+      doSearch("Gramsci", matchAllTerms)
+          .body("content.size()", equalTo(6))
+          .body("probationAreaAggregations.size()", CoreMatchers.equalTo(3))
+
+          .body("probationAreaAggregations[0].code", CoreMatchers.equalTo("N01"))
+          .body("probationAreaAggregations[0].description", CoreMatchers.equalTo("NPS North East"))
+          .body("probationAreaAggregations[0].count", CoreMatchers.equalTo(3))
+
+          .body("probationAreaAggregations[1].code", CoreMatchers.equalTo("N07"))
+          .body("probationAreaAggregations[1].description", CoreMatchers.equalTo("NPS London"))
+          .body("probationAreaAggregations[1].count", CoreMatchers.equalTo(2))
+
+          .body("probationAreaAggregations[2].code", CoreMatchers.equalTo("N02"))
+          .body("probationAreaAggregations[2].description", CoreMatchers.equalTo("NPS North West"))
+          .body("probationAreaAggregations[2].count", CoreMatchers.equalTo(1))
+    }
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can filter by probation area`(matchAllTerms: Boolean) {
+      hasMatches("Gramsci", matchAllTerms, listOf("X00001", "X00002", "X00003"), filter = listOf("N01"))
+    }
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can filter by more than one probation area`(matchAllTerms: Boolean) {
+      hasMatches("Gramsci", matchAllTerms, listOf("X00001", "X00002", "X00003", "X00004"), filter = listOf("N01", "N02"))
+    }
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `will return aggregations for all areas even when filtered`(matchAllTerms: Boolean) {
+      doSearch("Gramsci", matchAllTerms, filter = listOf("N01"))
+          .body("content.size()", equalTo(6))
+          .body("probationAreaAggregations.size()", CoreMatchers.equalTo(3))
+          .body("probationAreaAggregations[0].code", CoreMatchers.equalTo("N01"))
+          .body("probationAreaAggregations[0].count", CoreMatchers.equalTo(3))
+          .body("probationAreaAggregations[1].code", CoreMatchers.equalTo("N07"))
+          .body("probationAreaAggregations[1].count", CoreMatchers.equalTo(2))
+          .body("probationAreaAggregations[2].code", CoreMatchers.equalTo("N02"))
+          .body("probationAreaAggregations[2].count", CoreMatchers.equalTo(1))
+    }
+  }
+
   private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
     doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
         .body("totalElements", equalTo(1))
         .body("content[0].otherIds.crn", equalTo(expectedCrn))
   }
 
-  private fun hasMatches(phrase: String, matchAllTerms: Boolean = false, expectedCrns: List<String>) {
-    val response = doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
+  private fun hasMatches(phrase: String, matchAllTerms: Boolean = false, expectedCrns: List<String>, filter: List<String> = listOf()) {
+    val response = doSearch(phrase = phrase, matchAllTerms = matchAllTerms, filter = filter)
 
     expectedCrns.forEach {
       response
@@ -992,17 +1089,13 @@ class OffenderSearchPhraseAPIIntegrationTest {
         .body("totalElements", equalTo(0))
   }
 
-  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null): ValidatableResponse {
+  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null, filter: List<String> = listOf() ): ValidatableResponse {
+    val searchPhraseFilter = SearchPhraseFilter(phrase = phrase, matchAllTerms = matchAllTerms, probationAreasFilter = filter)
     val request = RestAssured.given()
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("""
-          {
-            "phrase": "$phrase",
-            "matchAllTerms": $matchAllTerms
-          }
-        """.trimIndent())
+        .body(searchPhraseFilter)
         .apply {
           size?.also { this.queryParam("size", it) }
           page?.also { this.queryParam("page", it) }
