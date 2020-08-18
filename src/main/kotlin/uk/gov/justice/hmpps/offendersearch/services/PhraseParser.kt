@@ -7,7 +7,7 @@ fun extractDateLikeTerms(phrase: String): List<String> {
   return phrase
       .split(" ")
       .filterNot(String::isEmpty)
-      .mapNotNull(String::convertToDate)
+      .mapNotNull(String::convertToDateOrNull)
       .map { it.format(DateTimeFormatter.ISO_DATE) }
 
 }
@@ -39,14 +39,14 @@ fun extractSearchableSimpleTerms(phrase: String): List<String> {
       .toList()
 }
 
-private fun String.convertToDate(): LocalDate? {
+private fun String.convertToDateOrNull(): LocalDate? {
   return supportedDateFormatters
       .asSequence()
       .tryOrRemove { LocalDate.parse(this, it) }
       .firstOrNull()
 }
 
-private fun String.isDate(): Boolean = this.convertToDate()?.let { true } ?: false
+private fun String.isDate(): Boolean = this.convertToDateOrNull()?.let { true } ?: false
 
 private val supportedDateFormats: List<String> = listOf(
     "dd/MM/yyyy",
