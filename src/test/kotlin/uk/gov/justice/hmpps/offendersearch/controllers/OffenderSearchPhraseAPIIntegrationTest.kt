@@ -1065,8 +1065,87 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("probationAreaAggregations[2].count", CoreMatchers.equalTo(1))
     }
   }
+  @Nested
+  @Disabled
+  @TestInstance(PER_CLASS)
+  inner class WordHighlighting {
+    @Suppress("unused")
+    fun matchAllTerms() = listOf(false, true)
 
-  private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
+    @BeforeAll
+    internal fun loadOffenders() {
+      loadOffenders(
+          OffenderReplacement(
+              crn = "X00001",
+              surname = "Smith",
+              firstName = "John",
+              dateOfBirth = LocalDate.parse("1999-12-22")
+          ),
+          OffenderReplacement(
+              crn = "X00002",
+              surname = "John",
+              firstName = "Smith"
+          ),
+          OffenderReplacement(
+              crn = "X00003",
+              surname = "Jones",
+              firstName = "Fred",
+              aliases = listOf(
+                  AliasReplacement(surname = "Smith", firstName = "John"),
+                  AliasReplacement(surname = "SMITH", firstName = "Jim"),
+                  AliasReplacement(surname = "John", firstName = "Smith")
+              )
+          ),
+          OffenderReplacement(
+              surname = "Jones",
+              crn = "X00004",
+              streetName = "28 Smith Street"
+          )
+      )
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `will return highlights for each offender for the word matched`(matchAllTerms: Boolean) {
+      doSearch("smith", matchAllTerms)
+          .body("content.size()", equalTo(4))
+          .body("content.find { it.otherIds.crn == \"X00001\" }.highlight.surname.size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00001\" }.highlight.surname[0]", equalTo("Smith"))
+
+          .body("content.find { it.otherIds.crn == \"X00002\" }.highlight.firstName.size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00002\" }.highlight.firstName[0]", equalTo("Smith"))
+
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.firstName.size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.firstName[0]", equalTo("Smith"))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.surname.size()", equalTo(2))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.surname[0]", equalTo("Smith"))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.surname[1]", equalTo("SMITH"))
+
+          .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.contactDetails.addresses.town.size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.contactDetails.addresses.town[0]]", equalTo("Smith"))
+    }
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `will return highlights for date of birth regardless of format searched for`(matchAllTerms: Boolean) {
+      doSearch("1999-12-22", matchAllTerms)
+          .body("content.size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00001\" }.highlight.dateOfBirth.size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00001\" }.highlight.dateOfBirth[0]", equalTo("1999-12-22"))
+
+      doSearch("22-12-1999", matchAllTerms)
+          .body("content.size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00001\" }.highlight.dateOfBirth.size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00001\" }.highlight.dateOfBirth[0]", equalTo("1999-12-22"))
+    }
+  }
+
+    @Nested
+    @Disabled
+    @TestInstance(PER_CLASS)
+    inner class ExclusionAndInclusions {
+      // TODO - feature specification needed
+    }
+    private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
     doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
         .body("totalElements", equalTo(1))
         .body("content[0].otherIds.crn", equalTo(expectedCrn))
