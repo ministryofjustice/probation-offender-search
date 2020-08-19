@@ -27,7 +27,7 @@ fun extractCRONumberLikeTerms(phrase: String): List<String> {
       .mapNotNull(String::canonicalCRONumberOrNull)
 }
 
-fun extractSearchableSimpleTerms(phrase: String): List<String> {
+fun extractSearchableSimpleTerms(phrase: String): String {
   return phrase
       .split(" ")
       .asSequence()
@@ -36,7 +36,7 @@ fun extractSearchableSimpleTerms(phrase: String): List<String> {
       .filterNot { it.length == 1 }
       .filterNot { it.contains("/".toRegex())}
       .map(String::toLowerCase)
-      .toList()
+      .joinToString(" ")
 }
 
 private fun String.convertToDateOrNull(): LocalDate? {
