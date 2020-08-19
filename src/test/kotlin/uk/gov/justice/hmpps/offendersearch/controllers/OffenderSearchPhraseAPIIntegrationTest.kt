@@ -71,7 +71,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled("waiting for implementation")
   @TestInstance(PER_CLASS)
   inner class SingleTermMatching {
     @Suppress("unused")

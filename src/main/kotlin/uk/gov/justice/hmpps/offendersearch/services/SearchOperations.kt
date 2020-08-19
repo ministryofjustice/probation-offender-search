@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
 import org.elasticsearch.index.query.BoolQueryBuilder
+import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 
 fun BoolQueryBuilder.mustWhenPresent(query: String, value: Any?): BoolQueryBuilder {
@@ -80,7 +81,23 @@ fun BoolQueryBuilder.mustKeyword(value: Any?, query: String): BoolQueryBuilder {
 
 
 fun BoolQueryBuilder.mustMatchOneOf(query: String, values: List<Any>): BoolQueryBuilder {
-  val nestedQuery = QueryBuilders.boolQuery();
+  val nestedQuery = QueryBuilders.boolQuery()
   values.forEach { nestedQuery.should(QueryBuilders.boolQuery().must(query, it)) }
-  return this.must(nestedQuery);
+  return this.must(nestedQuery)
 }
+
+fun BoolQueryBuilder.mustIfPresent(maybeSimpleTermQuery: QueryBuilder?): BoolQueryBuilder {
+  maybeSimpleTermQuery
+      ?.let {
+        this.must().add(it)
+      }
+  return this
+}
+
+fun BoolQueryBuilder.mustAll(queries: List<QueryBuilder>): BoolQueryBuilder {
+  queries.forEach {
+    this.must().add(it)
+  }
+  return this
+}
+

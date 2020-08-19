@@ -107,7 +107,7 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
     // Implement enough so we can start writing the integration tests
     val searchRequest = SearchRequest("offender")
         .source(SearchSourceBuilder()
-            .query(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("surname", searchPhraseFilter.phrase)))
+            .query(buildQuery(searchPhraseFilter.phrase, searchPhraseFilter.matchAllTerms))
             .size(pageable.pageSize)
             .from(pageable.offset.toInt())
             .sort("_score")

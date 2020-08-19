@@ -167,31 +167,31 @@ internal class PhraseParserKtTest {
     @Test
     internal fun `will extract terms that are not dates`() {
       val terms = extractSearchableSimpleTerms("19/07/1965 1-Aug-1965 john smith")
-      assertThat(terms).containsExactly("john", "smith")
+      assertThat(terms).isEqualTo("john smith")
     }
 
     @Test
     internal fun `will convert terms to lowercase`() {
       val terms = extractSearchableSimpleTerms("John SMITH")
-      assertThat(terms).containsExactly("john", "smith")
+      assertThat(terms).isEqualTo("john smith")
     }
 
     @Test
     internal fun `will ignore terms that are just single letters`() {
       val terms = extractSearchableSimpleTerms("j b SMITH")
-      assertThat(terms).containsExactly("smith")
+      assertThat(terms).isEqualTo("smith")
     }
 
     @Test
     internal fun `will ignore terms that look like references with slashes in`() {
       val terms = extractSearchableSimpleTerms("12345/99Z 2003/0004567A 20/20 smith")
-      assertThat(terms).containsExactly("smith")
+      assertThat(terms).isEqualTo("smith")
     }
 
     @Test
     internal fun `will extract even with all combinations`() {
       val terms = extractSearchableSimpleTerms("12345/99Z 2003/0004567A 20/20 SmItH a 19/5/1987 2001-01-12")
-      assertThat(terms).containsExactly("smith")
+      assertThat(terms).isEqualTo("smith")
     }
   }
 }
