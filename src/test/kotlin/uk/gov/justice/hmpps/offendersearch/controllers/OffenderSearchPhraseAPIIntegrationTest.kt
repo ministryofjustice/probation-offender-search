@@ -187,7 +187,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled("waiting for implementation")
   @TestInstance(PER_CLASS)
   inner class MatchingMultipleOffenders {
     @Suppress("unused")
@@ -322,7 +321,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled("waiting for implementation")
   @TestInstance(PER_CLASS)
   inner class MultipleTermTermMatching {
     @Suppress("unused")
@@ -439,7 +437,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled("waiting for implementation")
   @TestInstance(PER_CLASS)
   inner class DateOfBirthMatching {
     @BeforeAll
@@ -497,7 +494,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled("waiting for implementation")
   @TestInstance(PER_CLASS)
   inner class PNCNumberMatching {
     @BeforeAll
@@ -530,7 +526,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled("waiting for implementation")
   @TestInstance(PER_CLASS)
   inner class FirstNamePrefixMatching {
     @BeforeAll
@@ -564,7 +559,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled("waiting for implementation")
   @TestInstance(PER_CLASS)
   inner class DeletedOffenders {
     @Suppress("unused")
@@ -712,7 +706,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled
   @TestInstance(PER_CLASS)
   inner class WeightingWithOrdering {
     @Nested
@@ -785,6 +778,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
             .body("content[0].otherIds.crn", equalTo("X00004"))
       }
     }
+
     @Nested
     @TestInstance(PER_CLASS)
     inner class MiddleNames {
@@ -824,6 +818,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
             .body("content[1].otherIds.crn", equalTo("X00001"))
       }
     }
+
     @Nested
     @TestInstance(PER_CLASS)
     inner class Address {
@@ -863,6 +858,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
             .body("content[1].otherIds.crn", equalTo("X00001"))
       }
     }
+
     @Nested
     @TestInstance(PER_CLASS)
     inner class DateOfBirth {
@@ -902,6 +898,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
             .body("content[1].otherIds.crn", equalTo("X00001"))
       }
     }
+
     @Nested
     @TestInstance(PER_CLASS)
     inner class IDs {
@@ -934,6 +931,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
             .body("content[0].otherIds.crn", equalTo("X00002"))
             .body("content[1].otherIds.crn", equalTo("X00001"))
       }
+
       @Test
       internal fun `pnc number boosts order`() {
         doSearch("antonio smith 2019/1X", false)
@@ -941,6 +939,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
             .body("content[0].otherIds.crn", equalTo("X00001"))
             .body("content[1].otherIds.crn", equalTo("X00002"))
       }
+
       @Test
       internal fun `cro number boosts order`() {
         doSearch("antonio smith CRO123", false)
@@ -948,6 +947,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
             .body("content[0].otherIds.crn", equalTo("X00001"))
             .body("content[1].otherIds.crn", equalTo("X00002"))
       }
+
       @Test
       internal fun `noms number boosts order`() {
         doSearch("antonio smith A1234X", false)
@@ -955,6 +955,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
             .body("content[0].otherIds.crn", equalTo("X00001"))
             .body("content[1].otherIds.crn", equalTo("X00002"))
       }
+
       @Test
       internal fun `crn boosts order`() {
         doSearch("antonio smith X00001", false)
@@ -1040,16 +1041,19 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("probationAreaAggregations[2].description", CoreMatchers.equalTo("NPS North West"))
           .body("probationAreaAggregations[2].count", CoreMatchers.equalTo(1))
     }
+
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can filter by probation area`(matchAllTerms: Boolean) {
       hasMatches("Gramsci", matchAllTerms, listOf("X00001", "X00002", "X00003"), filter = listOf("N01"))
     }
+
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can filter by more than one probation area`(matchAllTerms: Boolean) {
       hasMatches("Gramsci", matchAllTerms, listOf("X00001", "X00002", "X00003", "X00004"), filter = listOf("N01", "N02"))
     }
+
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `will return aggregations for all areas even when filtered`(matchAllTerms: Boolean) {
@@ -1064,6 +1068,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("probationAreaAggregations[2].count", CoreMatchers.equalTo(1))
     }
   }
+
   @Nested
   @Disabled
   @TestInstance(PER_CLASS)
@@ -1123,6 +1128,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.contactDetails.addresses.town.size()", equalTo(1))
           .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.contactDetails.addresses.town[0]]", equalTo("Smith"))
     }
+
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `will return highlights for date of birth regardless of format searched for`(matchAllTerms: Boolean) {
@@ -1138,13 +1144,14 @@ class OffenderSearchPhraseAPIIntegrationTest {
     }
   }
 
-    @Nested
-    @Disabled
-    @TestInstance(PER_CLASS)
-    inner class ExclusionAndInclusions {
-      // TODO - feature specification needed
-    }
-    private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
+  @Nested
+  @Disabled
+  @TestInstance(PER_CLASS)
+  inner class ExclusionAndInclusions {
+    // TODO - feature specification needed
+  }
+
+  private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
     doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
         .body("totalElements", equalTo(1))
         .body("content[0].otherIds.crn", equalTo(expectedCrn))
@@ -1167,7 +1174,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
         .body("totalElements", equalTo(0))
   }
 
-  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null, filter: List<String> = listOf() ): ValidatableResponse {
+  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null, filter: List<String> = listOf()): ValidatableResponse {
     val searchPhraseFilter = SearchPhraseFilter(phrase = phrase, matchAllTerms = matchAllTerms, probationAreasFilter = filter)
     val request = RestAssured.given()
         .auth()

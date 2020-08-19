@@ -1,29 +1,54 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
-import org.elasticsearch.index.query.MultiMatchQueryBuilder
+import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.CROSS_FIELDS
+import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.MOST_FIELDS
 import org.elasticsearch.index.query.Operator
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 
 fun buildQuery(phrase: String, matchAllTerms: Boolean): QueryBuilder =
-  QueryBuilders.boolQuery()
-      .mustIfPresent(maybeSimpleTermQuery(phrase))
-      .mustAll(CRONumberQueries(phrase))
-      .mustAll(PNCNumberQueries(phrase))
-      .mustAll(dateQueries(phrase))
 
-fun maybeSimpleTermQuery(phrase: String): QueryBuilder? =
+  if (matchAllTerms) {
+    QueryBuilders.boolQuery()
+        .mustIfPresent(maybeSimpleTermAndQuery(phrase))
+        .mustAll(croNumberQueries(phrase))
+        .mustAll(pncNumberQueries(phrase))
+        .mustAll(dateQueries(phrase))
+  } else {
+    QueryBuilders.boolQuery()
+        .shouldIfPresent(maybeSimpleTermOrQueryCrossFields(phrase))
+        .shouldIfPresent(maybeSimpleTermOrQueryMostFields(phrase))
+        .shouldAll(croNumberQueries(phrase))
+        .shouldAll(pncNumberQueries(phrase))
+        .shouldAll(dateQueries(phrase))
+  }
+
+private fun maybeSimpleTermAndQuery(phrase: String): QueryBuilder? =
   extractSearchableSimpleTerms(phrase)
       .takeIf { it.isNotEmpty() }
       ?.let {
-        simpleTermQuery(it)
+        simpleTermAndQuery(it)
       }
 
-private fun CRONumberQueries(phrase: String): List<QueryBuilder> =
+private fun maybeSimpleTermOrQueryCrossFields(phrase: String): QueryBuilder? =
+  extractSearchableSimpleTerms(phrase)
+      .takeIf { it.isNotEmpty() }
+      ?.let {
+        simpleTermOrQueryCrossFields(it)
+      }
+
+private fun maybeSimpleTermOrQueryMostFields(phrase: String): QueryBuilder? =
+  extractSearchableSimpleTerms(phrase)
+      .takeIf { it.isNotEmpty() }
+      ?.let {
+        simpleTermOrQueryMostFields(it)
+      }
+
+private fun croNumberQueries(phrase: String): List<QueryBuilder> =
     extractCRONumberLikeTerms(phrase)
         .map { croNumberQuery(it) }
 
-private fun PNCNumberQueries(phrase: String): List<QueryBuilder> =
+private fun pncNumberQueries(phrase: String): List<QueryBuilder> =
     extractPNCNumberLikeTerms(phrase)
         .map { pncNumberQuery(it) }
 
@@ -47,7 +72,7 @@ private fun croNumberQuery(phrase: String): QueryBuilder =
         .boost(10f)
         .analyzer("whitespace")
 
-private fun simpleTermQuery(phrase: String): QueryBuilder =
+private fun simpleTermAndQuery(phrase: String): QueryBuilder =
     QueryBuilders.multiMatchQuery(phrase)
         .field("firstName", 10f)
         .field("surname", 10f)
@@ -63,4 +88,25 @@ private fun simpleTermQuery(phrase: String): QueryBuilder =
         .field("otherIds.nomsNumber", 10f)
         .field("otherIds.niNumber", 10f)
         .operator(Operator.AND)
-        .type(MultiMatchQueryBuilder.Type.CROSS_FIELDS)
+        .type(CROSS_FIELDS)
+
+private fun simpleTermOrQueryCrossFields(phrase: String): QueryBuilder =
+    QueryBuilders.multiMatchQuery(phrase)
+        .field("firstName", 10f)
+        .field("surname", 10f)
+        .field("middleNames", 8f)
+        .field("offenderAliases.firstName", 8f)
+        .field("offenderAliases.surname", 8f)
+        .field("contactDetails.addresses.town")
+        .type(CROSS_FIELDS)
+
+private fun simpleTermOrQueryMostFields(phrase: String): QueryBuilder =
+    QueryBuilders.multiMatchQuery(phrase)
+        .field("gender")
+        .field("otherIds.crn", 10f)
+        .field("otherIds.nomsNumber", 10f)
+        .field("otherIds.niNumber", 10f)
+        .field("contactDetails.addresses.streetName")
+        .field("contactDetails.addresses.county")
+        .field("contactDetails.addresses.postcode", 10f)
+        .type(MOST_FIELDS)
