@@ -84,7 +84,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
               surname = "Gramsci",
               firstName = "Anne",
               gender = "Female",
-              middleNames = listOf("Jane", "Jo"),
+              middleNames = listOf("Jane", "Joanna"),
               dateOfBirth = LocalDate.parse("1988-01-06"),
               crn = "X99999",
               nomsNumber = "G5555TT",
@@ -116,7 +116,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
     @MethodSource("matchAllTerms")
     internal fun `can match by any middle name`(matchAllTerms: Boolean) {
       hasSingleMatch(phrase = "Jane", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
-      hasSingleMatch(phrase = "Jo", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "Joanna", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
@@ -200,7 +200,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
               surname = "Gramsci",
               firstName = "Anne",
               gender = "Female",
-              middleNames = listOf("Jane", "Jo"),
+              middleNames = listOf("Jane", "Joanna"),
               dateOfBirth = LocalDate.parse("1988-01-06"),
               crn = "X99999",
               nomsNumber = "G5555TT",
@@ -218,7 +218,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
               surname = "Gramsci",
               firstName = "Anne",
               gender = "Female",
-              middleNames = listOf("Jane", "Jo"),
+              middleNames = listOf("Jane", "Joanna"),
               dateOfBirth = LocalDate.parse("1988-01-06"),
               crn = "X88888",
               nomsNumber = "G5555TT",
@@ -250,7 +250,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
     @MethodSource("matchAllTerms")
     internal fun `can match by any middle name`(matchAllTerms: Boolean) {
       hasMatches(phrase = "Jane", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X88888"))
-      hasMatches(phrase = "Jo", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X88888"))
+      hasMatches(phrase = "Joanna", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X88888"))
     }
 
     @ParameterizedTest
@@ -334,7 +334,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
               surname = "Gramsci",
               firstName = "Anne",
               gender = "Female",
-              middleNames = listOf("Jane", "Jo"),
+              middleNames = listOf("Jane", "Joanna"),
               dateOfBirth = LocalDate.parse("1988-01-06"),
               crn = "X99999",
               nomsNumber = "G5555TT",
@@ -366,7 +366,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
     @MethodSource("matchAllTerms")
     internal fun `can match by any middle name`(matchAllTerms: Boolean) {
       hasSingleMatch(phrase = "Jane X99999", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
-      hasSingleMatch(phrase = "Jo X99999", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "Joanna X99999", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
@@ -432,7 +432,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by all terms`(matchAllTerms: Boolean) {
-      hasSingleMatch(phrase = "gramsci Anne Jane Jo 1988-01-06 Female X99999 G5555TT 2018/0123456X SF80/655108T NE112233X Hyde Southampton Hampshire H1 1WA", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "gramsci Anne Jane Joanna 1988-01-06 Female X99999 G5555TT 2018/0123456X SF80/655108T NE112233X Hyde Southampton Hampshire H1 1WA", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
     }
   }
 
@@ -546,8 +546,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
         "Anton",
         "Anto",
         "Ant",
-        "An",
-        "A")
+        "An")
 
 
     @ParameterizedTest
@@ -556,10 +555,23 @@ class OffenderSearchPhraseAPIIntegrationTest {
       hasSingleMatch(phrase = firstName, expectedCrn = "X99999", matchAllTerms = false)
       hasNoMatch(phrase = firstName, matchAllTerms = true)
     }
+
+    @Test
+    internal fun `can match first name using first letter name`() {
+      hasSingleMatch(phrase = "A", expectedCrn = "X99999", matchAllTerms = false)
+    }
+
+    @Test
+    // we think this is bug, but we have copied like for like existing functionality from the Newtech application
+    internal fun `will (incorrectly) return all offenders when searching by single letter when matching all terms`() {
+      hasMatches(phrase = "A", expectedCrns = listOf("X99999", "X00001"), matchAllTerms = true)
+    }
+
   }
 
   @Nested
   @TestInstance(PER_CLASS)
+  @Disabled("Not implemented yet")
   inner class DeletedOffenders {
     @Suppress("unused")
     fun matchAllTerms() = listOf(false, true)
@@ -750,6 +762,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
       @ParameterizedTest
       @MethodSource("matchAllTerms")
+      @Disabled("DT-963 investigating bug")
       internal fun `offender alias surname has lower ranking than real surname`(matchAllTerms: Boolean) {
         doSearch("antonio gramsci", matchAllTerms)
             .body("content.size()", equalTo(4))
@@ -792,6 +805,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
                 offenderId = 1,
                 crn = "X00001",
                 firstName = "Antonio",
+                middleNames = listOf("Fred"),
                 surname = "Gramsci"
             ),
             OffenderReplacement(
@@ -806,7 +820,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
       @ParameterizedTest
       @MethodSource("matchAllTerms")
-      internal fun `offender alias surname has lower ranking than real surname`(matchAllTerms: Boolean) {
+      internal fun `offender middle name has lower ranking than first name`(matchAllTerms: Boolean) {
         doSearch("antonio gramsci", matchAllTerms)
             .body("content.size()", equalTo(2))
             .body("content[0].otherIds.crn", equalTo("X00001"))
@@ -913,7 +927,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
                 crn = "X00001",
                 aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "gramsci")),
                 pncNumber = "2019/1X",
-                croNumber = "CRO123",
+                croNumber = "123456/99a",
                 nomsNumber = "A1234X"
             ),
             OffenderReplacement(
@@ -942,7 +956,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
       @Test
       internal fun `cro number boosts order`() {
-        doSearch("antonio smith CRO123", false)
+        doSearch("antonio smith 123456/99A", false)
             .body("content.size()", equalTo(2))
             .body("content[0].otherIds.crn", equalTo("X00001"))
             .body("content[1].otherIds.crn", equalTo("X00002"))

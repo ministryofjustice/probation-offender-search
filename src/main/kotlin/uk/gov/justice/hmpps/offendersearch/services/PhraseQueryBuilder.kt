@@ -21,6 +21,7 @@ fun buildQuery(phrase: String, matchAllTerms: Boolean): QueryBuilder =
         .shouldAll(croNumberQueries(phrase))
         .shouldAll(pncNumberQueries(phrase))
         .shouldAll(dateQueries(phrase))
+        .shouldAll(simpleTermsWithSingleLetters(phrase))
   }
 
 private fun maybeSimpleTermAndQuery(phrase: String): QueryBuilder? =
@@ -44,6 +45,10 @@ private fun maybeSimpleTermOrQueryMostFields(phrase: String): QueryBuilder? =
         simpleTermOrQueryMostFields(it)
       }
 
+private fun simpleTermsWithSingleLetters(phrase: String): List<QueryBuilder> =
+    extractSearchableSimpleTermsWithSingleLetters(phrase)
+        .map { simpleTermsPrefixQuery(it) }
+
 private fun croNumberQueries(phrase: String): List<QueryBuilder> =
     extractCRONumberLikeTerms(phrase)
         .map { croNumberQuery(it) }
@@ -56,19 +61,19 @@ private fun dateQueries(phrase: String): List<QueryBuilder> =
     extractDateLikeTerms(phrase)
         .map { dateOfBirthQuery(it) }
 
-private fun dateOfBirthQuery(phrase: String): QueryBuilder =
-    QueryBuilders.matchQuery("dateOfBirth", phrase)
+private fun dateOfBirthQuery(term: String): QueryBuilder =
+    QueryBuilders.matchQuery("dateOfBirth", term)
         .boost(11f)
         .lenient(true)
 
-private fun pncNumberQuery(phrase: String): QueryBuilder =
-    QueryBuilders.multiMatchQuery(phrase)
+private fun pncNumberQuery(term: String): QueryBuilder =
+    QueryBuilders.multiMatchQuery(term)
         .field("otherIds.pncNumberLongYear", 10f)
         .field("otherIds.pncNumberShortYear", 10f)
         .analyzer("whitespace")
 
-private fun croNumberQuery(phrase: String): QueryBuilder =
-    QueryBuilders.matchQuery("otherIds.croNumberLowercase", phrase)
+private fun croNumberQuery(term: String): QueryBuilder =
+    QueryBuilders.matchQuery("otherIds.croNumberLowercase", term)
         .boost(10f)
         .analyzer("whitespace")
 
@@ -110,3 +115,6 @@ private fun simpleTermOrQueryMostFields(phrase: String): QueryBuilder =
         .field("contactDetails.addresses.county")
         .field("contactDetails.addresses.postcode", 10f)
         .type(MOST_FIELDS)
+
+fun simpleTermsPrefixQuery(term: String): QueryBuilder =
+  QueryBuilders.prefixQuery("firstName", term.toLowerCase()).boost(11f)
