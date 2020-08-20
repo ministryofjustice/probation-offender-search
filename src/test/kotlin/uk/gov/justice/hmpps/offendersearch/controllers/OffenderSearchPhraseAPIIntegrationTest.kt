@@ -571,7 +571,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
   @Nested
   @TestInstance(PER_CLASS)
-  @Disabled("Not implemented yet")
   inner class DeletedOffenders {
     @Suppress("unused")
     fun matchAllTerms() = listOf(false, true)
@@ -581,11 +580,11 @@ class OffenderSearchPhraseAPIIntegrationTest {
       loadOffenders(
           OffenderReplacement(
               crn = "X99999",
-              deleted = false
+              deleted = true
           ),
           OffenderReplacement(
               crn = "X88888",
-              deleted = true
+              deleted = false
           ))
     }
 
@@ -593,7 +592,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
     @MethodSource("matchAllTerms")
     internal fun `will not find deleted offenders`(matchAllTerms: Boolean) {
       hasNoMatch(phrase = "X99999", matchAllTerms = matchAllTerms)
-      hasSingleMatch(phrase = "X88888", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "X88888", expectedCrn = "X88888", matchAllTerms = matchAllTerms)
     }
   }
 

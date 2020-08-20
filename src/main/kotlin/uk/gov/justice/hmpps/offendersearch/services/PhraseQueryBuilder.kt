@@ -22,7 +22,7 @@ fun buildQuery(phrase: String, matchAllTerms: Boolean): QueryBuilder =
         .shouldAll(pncNumberQueries(phrase))
         .shouldAll(dateQueries(phrase))
         .shouldAll(simpleTermsWithSingleLetters(phrase))
-  }
+  }.mustNot(QueryBuilders.termQuery("softDeleted", true))
 
 private fun maybeSimpleTermAndQuery(phrase: String): QueryBuilder? =
   extractSearchableSimpleTerms(phrase)
