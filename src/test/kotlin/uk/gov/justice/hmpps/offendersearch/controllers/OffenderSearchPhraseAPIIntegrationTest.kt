@@ -760,22 +760,41 @@ class OffenderSearchPhraseAPIIntegrationTest {
         )
       }
 
-      @ParameterizedTest
-      @MethodSource("matchAllTerms")
-      @Disabled("DT-963 investigating bug")
-      internal fun `offender alias surname has lower ranking than real surname`(matchAllTerms: Boolean) {
-        doSearch("antonio gramsci", matchAllTerms)
+
+      @Test
+      internal fun `offender alias surname has lower ranking than real surname when matching all terms`() {
+        doSearch("antonio gramsci", true)
             .body("content.size()", equalTo(4))
             .body("content[0].otherIds.crn", equalTo("X00001"))
             .body("content[1].otherIds.crn", equalTo("X00004"))
             .body("content[2].otherIds.crn", equalTo("X00003"))
             .body("content[3].otherIds.crn", equalTo("X00002"))
 
-        doSearch("fred jones", matchAllTerms)
+        doSearch("fred jones", true)
             .body("content.size()", equalTo(4))
             .body("content[0].otherIds.crn", equalTo("X00002"))
             .body("content[1].otherIds.crn", equalTo("X00004"))
             .body("content[2].otherIds.crn", equalTo("X00003"))
+            .body("content[3].otherIds.crn", equalTo("X00001"))
+      }
+
+      @Test
+      // this test shows what we think is a bug; whereby when first name it supplied it is matched twice in the cross field query
+      // and the prefix query. This artificially boosts it's importance. Since this is a like for like conversion of the exitsing
+      // NewTech algorithum this replicates that "feature"
+      internal fun `first name is (incorrectly) boosted higher than surname when not matching all terms due to the additional prefix matching`() {
+        doSearch("antonio gramsci", false)
+            .body("content.size()", equalTo(4))
+            .body("content[0].otherIds.crn", equalTo("X00001"))
+            .body("content[1].otherIds.crn", equalTo("X00004"))
+            .body("content[2].otherIds.crn", equalTo("X00003"))
+            .body("content[3].otherIds.crn", equalTo("X00002"))
+
+        doSearch("fred jones", false)
+            .body("content.size()", equalTo(4))
+            .body("content[0].otherIds.crn", equalTo("X00002"))
+            .body("content[1].otherIds.crn", equalTo("X00003"))
+            .body("content[2].otherIds.crn", equalTo("X00004"))
             .body("content[3].otherIds.crn", equalTo("X00001"))
       }
 

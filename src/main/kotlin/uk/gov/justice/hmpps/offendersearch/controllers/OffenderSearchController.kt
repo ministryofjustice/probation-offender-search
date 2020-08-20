@@ -64,6 +64,11 @@ class OffenderSearchController(private val searchService: SearchService) {
         - Recorded gender
         
         Both primary and alias names will be searched.
+        
+        When using this API be aware of a few anomalies between searching using all terms or not (e.g AND versus OR query) :
+         - A phrase that contain just single letter will result in all records being matched since essentially single letters for the AND query are discarded
+         - first name when matched is artificially boosted in the result sort order for OR queries, due to how first names are also searched as if it is a prefix as well a complete match
+         
       """,
       nickname = "searchByPhrase"
   )

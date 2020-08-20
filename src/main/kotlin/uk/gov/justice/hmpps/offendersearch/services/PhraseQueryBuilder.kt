@@ -103,6 +103,7 @@ private fun simpleTermOrQueryCrossFields(phrase: String): QueryBuilder =
         .field("offenderAliases.firstName", 8f)
         .field("offenderAliases.surname", 8f)
         .field("contactDetails.addresses.town")
+        .operator(Operator.OR)
         .type(CROSS_FIELDS)
 
 private fun simpleTermOrQueryMostFields(phrase: String): QueryBuilder =
@@ -114,6 +115,7 @@ private fun simpleTermOrQueryMostFields(phrase: String): QueryBuilder =
         .field("contactDetails.addresses.streetName")
         .field("contactDetails.addresses.county")
         .field("contactDetails.addresses.postcode", 10f)
+        .operator(Operator.OR)
         .type(MOST_FIELDS)
 
 fun simpleTermsPrefixQuery(term: String): QueryBuilder =
