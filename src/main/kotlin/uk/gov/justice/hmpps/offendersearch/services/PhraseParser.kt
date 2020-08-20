@@ -39,6 +39,17 @@ fun extractSearchableSimpleTerms(phrase: String): String {
       .joinToString(" ")
 }
 
+fun extractSearchableSimpleTermsWithSingleLetters(phrase: String): List<String> {
+  return phrase
+      .split(" ")
+      .asSequence()
+      .filterNot(String::isEmpty)
+      .filterNot(String::isDate)
+      .filterNot { it.contains("/".toRegex())}
+      .map(String::toLowerCase)
+      .toList()
+}
+
 private fun String.convertToDateOrNull(): LocalDate? {
   return supportedDateFormatters
       .asSequence()

@@ -101,3 +101,18 @@ fun BoolQueryBuilder.mustAll(queries: List<QueryBuilder>): BoolQueryBuilder {
   return this
 }
 
+fun BoolQueryBuilder.shouldIfPresent(maybeSimpleTermQuery: QueryBuilder?): BoolQueryBuilder {
+  maybeSimpleTermQuery
+      ?.let {
+        this.should().add(it)
+      }
+  return this
+}
+
+fun BoolQueryBuilder.shouldAll(queries: List<QueryBuilder>): BoolQueryBuilder {
+  queries.forEach {
+    this.should().add(it)
+  }
+  return this
+}
+
