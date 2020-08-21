@@ -1,5 +1,9 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
+import org.apache.lucene.search.join.ScoreMode.None
+import org.elasticsearch.index.query.BoolQueryBuilder
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.index.query.QueryBuilders.nestedQuery
 import org.elasticsearch.search.aggregations.AggregationBuilders
 import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.aggregations.bucket.nested.Nested
@@ -37,3 +41,19 @@ internal fun extractProbationAreaAggregation(aggregations: Aggregations): List<P
   } ?: listOf()
 }
 
+internal fun buildProbationAreaFilter(probationAreasCodes: List<String>): BoolQueryBuilder? {
+  return probationAreasCodes
+      .takeIf { it.isNotEmpty() }
+      ?.let { probationAreaFilter(it) }
+}
+
+private fun probationAreaFilter(probationAreasCodes: List<String>): BoolQueryBuilder =
+    QueryBuilders
+        .boolQuery()
+        .shouldAll(probationAreasCodes
+            .map {
+              nestedQuery("offenderManagers", QueryBuilders.boolQuery().apply {
+                must(QueryBuilders.termQuery("offenderManagers.active", true))
+                must(QueryBuilders.termQuery("offenderManagers.probationArea.code", it))
+              }, None)
+            })

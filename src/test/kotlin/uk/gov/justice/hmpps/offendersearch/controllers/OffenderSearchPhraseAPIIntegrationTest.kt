@@ -1084,9 +1084,15 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
+    internal fun `empty filter should return all matching results`(matchAllTerms: Boolean) {
+      hasMatches("Gramsci", matchAllTerms, listOf("X00001", "X00002", "X00003", "X00004", "X00006", "X00007"), filter = listOf())
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
     internal fun `will return aggregations for all areas even when filtered`(matchAllTerms: Boolean) {
       doSearch("Gramsci", matchAllTerms, filter = listOf("N01"))
-          .body("content.size()", equalTo(6))
+          .body("content.size()", equalTo(3))
           .body("probationAreaAggregations.size()", CoreMatchers.equalTo(3))
           .body("probationAreaAggregations[0].code", CoreMatchers.equalTo("N01"))
           .body("probationAreaAggregations[0].count", CoreMatchers.equalTo(3))

@@ -110,7 +110,9 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
             .aggregation(buildAggregationRequest())
             .suggest(SuggestBuilder()
                 .addSuggestion("surname", TermSuggestionBuilder("surname").text(searchPhraseFilter.phrase))
-                .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase)))
+                .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase))).apply {
+              buildProbationAreaFilter(searchPhraseFilter.probationAreasFilter)?.run { postFilter(this) }
+            }
         )
     val response = hlClient.search(searchRequest)
     val results = getSearchResult(response)

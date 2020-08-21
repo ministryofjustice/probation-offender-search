@@ -8,6 +8,10 @@ import org.elasticsearch.common.xcontent.NamedXContentRegistry
 import org.elasticsearch.common.xcontent.NamedXContentRegistry.Entry
 import org.elasticsearch.common.xcontent.XContentParser
 import org.elasticsearch.common.xcontent.XContentType.JSON
+import org.elasticsearch.index.query.BoolQueryBuilder
+import org.elasticsearch.index.query.NestedQueryBuilder
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.index.query.TermQueryBuilder
 import org.elasticsearch.search.aggregations.Aggregation
 import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder
@@ -189,6 +193,29 @@ internal class ExtractProbationAreaAggregation {
             }
           }""".toAggregation()
     assertThat(extractProbationAreaAggregation(aggregations)).isEmpty()
+  }
+}
+
+internal class BuildProbationAreaFilter {
+  @Test
+  internal fun `will return null if supplied filter is empty`() {
+    assertThat(buildProbationAreaFilter(listOf())).isNull()
+  }
+  @Test
+  internal fun `will return a query with a "should" for each probation area supplied`() {
+    assertThat(buildProbationAreaFilter(listOf("N01", "N02"))?.should()).hasSize(2)
+  }
+  @Test
+  internal fun `will filter only for active offender managers`() {
+    val nestedQuery = buildProbationAreaFilter(listOf("N01"))?.should()?.first() as NestedQueryBuilder
+    val termQueries = nestedQuery.query() as BoolQueryBuilder
+    assertThat(termQueries.must()).contains(QueryBuilders.termQuery("offenderManagers.active", true))
+  }
+  @Test
+  internal fun `will filter offender managers probation area code`() {
+    val nestedQuery = buildProbationAreaFilter(listOf("N01"))?.should()?.first() as NestedQueryBuilder
+    val termQueries = nestedQuery.query() as BoolQueryBuilder
+    assertThat(termQueries.must()).contains(QueryBuilders.termQuery("offenderManagers.probationArea.code", "N01"))
   }
 }
 
