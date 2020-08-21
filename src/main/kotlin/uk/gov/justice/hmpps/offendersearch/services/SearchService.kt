@@ -6,8 +6,6 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.SearchHit
-import org.elasticsearch.search.aggregations.AggregationBuilders
-import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.SortOrder.DESC
 import org.elasticsearch.search.suggest.SuggestBuilder
@@ -19,7 +17,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
-import uk.gov.justice.hmpps.offendersearch.dto.ProbationAreaAggregation
 import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
@@ -98,13 +95,11 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
 
   private fun BoolQueryBuilder.withDefaults(): BoolQueryBuilder? {
     return this
-      .must("softDeleted", false)
+        .must("softDeleted", false)
   }
 
   fun performSearch(searchPhraseFilter: SearchPhraseFilter, pageable: Pageable): SearchPhraseResults {
     log.info("Search was: \"${searchPhraseFilter.phrase}\"")
-    // TODO correct implementation!
-    // Implement enough so we can start writing the integration tests
     val searchRequest = SearchRequest("offender")
         .source(SearchSourceBuilder()
             .query(buildQuery(searchPhraseFilter.phrase, searchPhraseFilter.matchAllTerms))
@@ -112,20 +107,12 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
             .from(pageable.offset.toInt())
             .sort("_score")
             .sort("offenderId", DESC)
-            .aggregation(AggregationBuilders
-                .nested("offenderManagers", "offenderManagers")
-                .subAggregation(AggregationBuilders
-                    .terms("active")
-                    .field("offenderManagers.active").subAggregation(
-                        AggregationBuilders
-                            .terms("byProbationAreaCode").size(1000)
-                            .field("offenderManagers.probationArea.code")
-                    )
-                )
-            )
+            .aggregation(buildAggregationRequest())
             .suggest(SuggestBuilder()
                 .addSuggestion("surname", TermSuggestionBuilder("surname").text(searchPhraseFilter.phrase))
-                .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase)))
+                .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase))).apply {
+              buildProbationAreaFilter(searchPhraseFilter.probationAreasFilter)?.run { postFilter(this) }
+            }
         )
     val response = hlClient.search(searchRequest)
     val results = getSearchResult(response)
@@ -136,9 +123,5 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
         probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
         suggestions = response.suggest
     )
-  }
-
-  private fun extractProbationAreaAggregation(@Suppress("UNUSED_PARAMETER") aggregations: Aggregations) : List<ProbationAreaAggregation> {
-    return listOf()
   }
 }

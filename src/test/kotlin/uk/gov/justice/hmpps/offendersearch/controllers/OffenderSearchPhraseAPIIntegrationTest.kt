@@ -571,7 +571,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
   @Nested
   @TestInstance(PER_CLASS)
-  @Disabled("Not implemented yet")
   inner class DeletedOffenders {
     @Suppress("unused")
     fun matchAllTerms() = listOf(false, true)
@@ -581,11 +580,11 @@ class OffenderSearchPhraseAPIIntegrationTest {
       loadOffenders(
           OffenderReplacement(
               crn = "X99999",
-              deleted = false
+              deleted = true
           ),
           OffenderReplacement(
               crn = "X88888",
-              deleted = true
+              deleted = false
           ))
     }
 
@@ -593,7 +592,7 @@ class OffenderSearchPhraseAPIIntegrationTest {
     @MethodSource("matchAllTerms")
     internal fun `will not find deleted offenders`(matchAllTerms: Boolean) {
       hasNoMatch(phrase = "X99999", matchAllTerms = matchAllTerms)
-      hasSingleMatch(phrase = "X88888", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "X88888", expectedCrn = "X88888", matchAllTerms = matchAllTerms)
     }
   }
 
@@ -1005,7 +1004,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled
   @TestInstance(PER_CLASS)
   inner class AggregationAndFiltering {
     @Suppress("unused")
@@ -1063,15 +1061,12 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("probationAreaAggregations.size()", CoreMatchers.equalTo(3))
 
           .body("probationAreaAggregations[0].code", CoreMatchers.equalTo("N01"))
-          .body("probationAreaAggregations[0].description", CoreMatchers.equalTo("NPS North East"))
           .body("probationAreaAggregations[0].count", CoreMatchers.equalTo(3))
 
           .body("probationAreaAggregations[1].code", CoreMatchers.equalTo("N07"))
-          .body("probationAreaAggregations[1].description", CoreMatchers.equalTo("NPS London"))
           .body("probationAreaAggregations[1].count", CoreMatchers.equalTo(2))
 
           .body("probationAreaAggregations[2].code", CoreMatchers.equalTo("N02"))
-          .body("probationAreaAggregations[2].description", CoreMatchers.equalTo("NPS North West"))
           .body("probationAreaAggregations[2].count", CoreMatchers.equalTo(1))
     }
 
@@ -1089,9 +1084,15 @@ class OffenderSearchPhraseAPIIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
+    internal fun `empty filter should return all matching results`(matchAllTerms: Boolean) {
+      hasMatches("Gramsci", matchAllTerms, listOf("X00001", "X00002", "X00003", "X00004", "X00006", "X00007"), filter = listOf())
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
     internal fun `will return aggregations for all areas even when filtered`(matchAllTerms: Boolean) {
       doSearch("Gramsci", matchAllTerms, filter = listOf("N01"))
-          .body("content.size()", equalTo(6))
+          .body("content.size()", equalTo(3))
           .body("probationAreaAggregations.size()", CoreMatchers.equalTo(3))
           .body("probationAreaAggregations[0].code", CoreMatchers.equalTo("N01"))
           .body("probationAreaAggregations[0].count", CoreMatchers.equalTo(3))

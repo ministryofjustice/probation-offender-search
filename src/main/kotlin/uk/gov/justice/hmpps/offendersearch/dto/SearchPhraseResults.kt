@@ -19,7 +19,6 @@ class SearchPhraseResults(
 
 data class ProbationAreaAggregation(
     @ApiModelProperty(value = "Probation area code", example = "N02") val code: String,
-    @ApiModelProperty(value = "Probation area description", example = "NPS North East") val description: String,
     @ApiModelProperty(value = "Count of matching offenders in this area", example = "78") val count: Long
 )
 
