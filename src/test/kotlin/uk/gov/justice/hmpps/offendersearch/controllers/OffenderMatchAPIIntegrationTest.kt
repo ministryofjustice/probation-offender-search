@@ -14,6 +14,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
   inner class BasicOperation {
     @Test
     internal fun `access allowed with ROLE_COMMUNITY`() {
+      loadOffenders()
       given()
           .auth()
           .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
