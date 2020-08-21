@@ -1004,7 +1004,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled
   @TestInstance(PER_CLASS)
   inner class AggregationAndFiltering {
     @Suppress("unused")
@@ -1062,15 +1061,12 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("probationAreaAggregations.size()", CoreMatchers.equalTo(3))
 
           .body("probationAreaAggregations[0].code", CoreMatchers.equalTo("N01"))
-          .body("probationAreaAggregations[0].description", CoreMatchers.equalTo("NPS North East"))
           .body("probationAreaAggregations[0].count", CoreMatchers.equalTo(3))
 
           .body("probationAreaAggregations[1].code", CoreMatchers.equalTo("N07"))
-          .body("probationAreaAggregations[1].description", CoreMatchers.equalTo("NPS London"))
           .body("probationAreaAggregations[1].count", CoreMatchers.equalTo(2))
 
           .body("probationAreaAggregations[2].code", CoreMatchers.equalTo("N02"))
-          .body("probationAreaAggregations[2].description", CoreMatchers.equalTo("NPS North West"))
           .body("probationAreaAggregations[2].count", CoreMatchers.equalTo(1))
     }
 
