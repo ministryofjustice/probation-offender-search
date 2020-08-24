@@ -16,6 +16,7 @@ import org.elasticsearch.search.suggest.term.TermSuggestion
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -56,7 +57,7 @@ class OffenderSearchControllerPhraseTest {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
         ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
-    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(content = listOf(), total = 0, pageable = PageRequest.of(0, 10), probationAreaAggregations = listOf(), suggestions = null))
+    whenever(searchService.performSearch(any(), any(), any())).thenReturn(SearchPhraseResults(content = listOf(), total = 0, pageable = PageRequest.of(0, 10), probationAreaAggregations = listOf(), suggestions = null))
   }
 
   @Test
@@ -127,7 +128,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(any(), check {
       assertThat(it.pageNumber).isEqualTo(0)
-    })
+    }, any())
   }
 
   @Test
@@ -146,7 +147,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(any(), check {
       assertThat(it.pageNumber).isEqualTo(28)
-    })
+    }, any())
   }
 
   @Test
@@ -164,7 +165,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(any(), check {
       assertThat(it.pageSize).isEqualTo(10)
-    })
+    }, any())
   }
 
   @Test
@@ -183,7 +184,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(any(), check {
       assertThat(it.pageSize).isEqualTo(99)
-    })
+    }, any())
   }
 
   @Test
@@ -201,7 +202,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(check {
       assertThat(it.matchAllTerms).isFalse()
-    }, any())
+    }, any(), any())
   }
 
   @Test
@@ -220,7 +221,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(check {
       assertThat(it.matchAllTerms).isTrue()
-    }, any())
+    }, any(), any())
   }
 
   @Test
@@ -238,7 +239,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(check {
       assertThat(it.probationAreasFilter).isEmpty()
-    }, any())
+    }, any(), any())
   }
 
   @Test
@@ -260,12 +261,12 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(check {
       assertThat(it.probationAreasFilter).containsExactly("N01", "N02")
-    }, any())
+    }, any(), any())
   }
 
   @Test
   internal fun `will return results when matched`() {
-    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+    whenever(searchService.performSearch(any(), any(), any())).thenReturn(SearchPhraseResults(
         content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(),
@@ -293,7 +294,7 @@ class OffenderSearchControllerPhraseTest {
 
   @Test
   internal fun `will return probation area aggregations`() {
-    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+    whenever(searchService.performSearch(any(), any(), any())).thenReturn(SearchPhraseResults(
         content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(
@@ -335,7 +336,7 @@ class OffenderSearchControllerPhraseTest {
         this.addOption(TermSuggestion.Entry.Option(Text("sumith"), 1, 0.8f))
       })
     }
-    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+    whenever(searchService.performSearch(any(), any(), any())).thenReturn(SearchPhraseResults(
         content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(),
@@ -355,5 +356,45 @@ class OffenderSearchControllerPhraseTest {
         .then()
         .statusCode(200)
         .body("suggestions.suggest.firstName[0].options.size()", equalTo(3))
+  }
+
+  @Nested
+  @ExtendWith(SpringExtension::class)
+  inner class ScopesAndAccess {
+    @Test
+    internal fun `will denyExclusionsWhenUserNotPresent will be true when no scopes`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes())
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.accessExclusionsAlways).isTrue()
+      })
+    }
+    @Test
+    internal fun `will denyExclusionsWhenUserNotPresent will be true when no scope includes access_exclusions_always`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes("access_exclusions_always"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.accessExclusionsAlways).isFalse()
+      })
+    }
+
   }
 }

@@ -35,6 +35,14 @@ class JwtAuthenticationHelper(@Value("\${jwt.signing.key.pair}") privateKeyPair:
         expiryTime = Duration.ofDays(1)))
   }
 
+  fun createCommunityJwtWithScopes(vararg scopes: String): String {
+    return createJwt(JwtParameters(
+        username = "prison-to-probation",
+        roles = listOf("ROLE_COMMUNITY"),
+        scope = listOf(*scopes),
+        expiryTime = Duration.ofDays(1)))
+  }
+
   fun createJwt(parameters: JwtParameters): String {
     val claims = mapOf(
         "user_name" to parameters.username,
