@@ -1104,7 +1104,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled
   @TestInstance(PER_CLASS)
   inner class WordHighlighting {
     @Suppress("unused")
@@ -1153,14 +1152,14 @@ class OffenderSearchPhraseAPIIntegrationTest {
           .body("content.find { it.otherIds.crn == \"X00002\" }.highlight.firstName.size()", equalTo(1))
           .body("content.find { it.otherIds.crn == \"X00002\" }.highlight.firstName[0]", equalTo("Smith"))
 
-          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.firstName.size()", equalTo(1))
-          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.firstName[0]", equalTo("Smith"))
-          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.surname.size()", equalTo(2))
-          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.surname[0]", equalTo("Smith"))
-          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.offenderAliases.surname[1]", equalTo("SMITH"))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.firstName\".size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.firstName\"[0]", equalTo("Smith"))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\".size()", equalTo(2))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\"[0]", equalTo("Smith"))
+          .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\"[1]", equalTo("SMITH"))
 
-          .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.contactDetails.addresses.town.size()", equalTo(1))
-          .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.contactDetails.addresses.town[0]]", equalTo("Smith"))
+          .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.\"contactDetails.addresses.streetName\".size()", equalTo(1))
+          .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.\"contactDetails.addresses.streetName\"[0]", equalTo("28 Smith Street"))
     }
 
     @ParameterizedTest

@@ -108,16 +108,21 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
             .sort("_score")
             .sort("offenderId", DESC)
             .aggregation(buildAggregationRequest())
+            .highlighter(buildHighlightRequest())
             .suggest(SuggestBuilder()
                 .addSuggestion("surname", TermSuggestionBuilder("surname").text(searchPhraseFilter.phrase))
-                .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase))).apply {
+                .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase)))
+            .apply {
               buildProbationAreaFilter(searchPhraseFilter.probationAreasFilter)?.run { postFilter(this) }
             }
         )
     val response = hlClient.search(searchRequest)
-    val results = getSearchResult(response)
     return SearchPhraseResults(
-        content = results,
+        content = extractOffenderDetailList(
+            hits = response.hits.hits,
+            phrase = searchPhraseFilter.phrase,
+            offenderParser = ::parseOffenderDetail
+        ),
         pageable = pageable,
         total = response.hits.totalHits?.value ?: 0,
         probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
