@@ -6,6 +6,7 @@ import io.restassured.response.ValidatableResponse
 import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,11 +28,16 @@ import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
+import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper.ClientUser
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
+import uk.gov.justice.hmpps.offendersearch.wiremock.CommunityApiExtension
+import uk.gov.justice.hmpps.offendersearch.wiremock.ElasticSearchExtension
+import uk.gov.justice.hmpps.offendersearch.wiremock.OAuthExtension
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
+@ExtendWith(OAuthExtension::class, CommunityApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
 class OffenderSearchPhraseAPIIntegrationTest {
@@ -1181,7 +1188,337 @@ class OffenderSearchPhraseAPIIntegrationTest {
   @Disabled
   @TestInstance(PER_CLASS)
   inner class ExclusionAndInclusions {
-    // TODO - feature specification needed
+    @BeforeAll
+    internal fun loadOffenders() {
+      loadOffenders(
+          OffenderReplacement(
+              crn = "X00001",
+              surname = "Smith",
+              firstName = "John",
+              currentRestriction = false,
+              currentExclusion = false
+          ),
+          OffenderReplacement(
+              crn = "X00002",
+              surname = "Smith",
+              firstName = "John",
+              currentRestriction = true,
+              currentExclusion = false
+          ),
+          OffenderReplacement(
+              crn = "X00003",
+              surname = "Smith",
+              firstName = "John",
+              currentRestriction = true,
+              currentExclusion = false
+          ),
+          OffenderReplacement(
+              crn = "X00004",
+              surname = "Smith",
+              firstName = "John",
+              currentRestriction = false,
+              currentExclusion = true
+          ),
+          OffenderReplacement(
+              crn = "X00005",
+              surname = "Smith",
+              firstName = "John",
+              currentRestriction = false,
+              currentExclusion = true
+          ),
+      )
+      CommunityApiExtension.communityApi.stubUserAccess(crn = "X00002", response = """
+        {
+            "userRestricted": true,
+            "userExcluded": false
+        }
+      """.trimIndent())
+      CommunityApiExtension.communityApi.stubUserAccess(crn = "X00003", response = """
+        {
+            "userRestricted": false,
+            "userExcluded": false
+        }
+      """.trimIndent())
+      CommunityApiExtension.communityApi.stubUserAccess(crn = "X00004", response = """
+        {
+            "userRestricted": false,
+            "userExcluded": true
+        }
+      """.trimIndent())
+      CommunityApiExtension.communityApi.stubUserAccess(crn = "X00005", response = """
+        {
+            "userRestricted": false,
+            "userExcluded": false
+        }
+      """.trimIndent())
+    }
+
+    @Nested
+    inner class WithClientHonoringBothList {
+      @Nested
+      inner class WithDeliusUserPresent {
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblacknps", username = "maryblacknps", authSource = "delius"), "read")
+
+        @Test
+        internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
+          doSearch("X00001", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00001"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be denied access to offenders that have inclusion lists that current user is not on`() {
+          doSearch("X00002", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00002"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have inclusion lists that current user is on`() {
+          doSearch("X00003", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00003"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be denied access to offenders that have exclusion lists that current user is on`() {
+          doSearch("X00004", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00004"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have exclusion lists that current user is not on`() {
+          doSearch("X00005", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00005"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+      }
+
+      @Nested
+      inner class WithDeliusUserNotPresent {
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblackdps", username = "maryblackdps", authSource = "nomis"), "read")
+
+        @Test
+        internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
+          doSearch("X00001", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00001"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be denied access to offenders that have inclusion lists that can not be checked`() {
+          doSearch("X00002", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00002"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+          doSearch("X00003", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00003"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+        }
+        @Test
+        internal fun `will be denied access to offenders that have exclusion lists that can not be checked`() {
+          doSearch("X00004", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00004"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+          doSearch("X00005", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00005"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+        }
+      }
+    }
+    @Nested
+    inner class WithClientHonoringInclusionListOnly {
+      @Nested
+      inner class WithDeliusUserPresent {
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblacknps", username = "maryblacknps", authSource = "delius"), "read", "ignore_delius_exclusions_always")
+
+        @Test
+        internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
+          doSearch("X00001", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00001"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be denied access to offenders that have inclusion lists that current user is not on`() {
+          doSearch("X00002", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00002"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have inclusion lists that current user is on`() {
+          doSearch("X00003", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00003"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have exclusion lists even though current user is on list`() {
+          doSearch("X00004", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00004"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have exclusion lists that current user is not on`() {
+          doSearch("X00005", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00005"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+      }
+
+      @Nested
+      inner class WithDeliusUserNotPresent {
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblackdps", username = "maryblackdps", authSource = "nomis"), "read", "ignore_delius_exclusions_always")
+
+        @Test
+        internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
+          doSearch("X00001", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00001"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be denied access to offenders that have inclusion lists that can not be checked`() {
+          doSearch("X00002", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00002"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+          doSearch("X00003", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00003"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+        }
+
+        @Test
+        internal fun `will be allowed access to offenders that have exclusion lists even though they can not be checked`() {
+          doSearch("X00004", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00004"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+          doSearch("X00005", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00005"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+      }
+    }
+    @Nested
+    inner class WithClientHonoringExclusionListOnly {
+      @Nested
+      inner class WithDeliusUserPresent {
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblacknps", username = "maryblacknps", authSource = "delius"), "read", "ignore_delius_inclusions_always")
+
+        @Test
+        internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
+          doSearch("X00001", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00001"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have inclusion lists event though current user is not on list`() {
+          doSearch("X00002", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00002"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have inclusion lists that current user is on`() {
+          doSearch("X00003", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00003"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be denied access to offenders that have exclusion lists that current user is on`() {
+          doSearch("X00004", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00004"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have exclusion lists that current user is not on`() {
+          doSearch("X00005", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00005"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+      }
+
+      @Nested
+      inner class WithDeliusUserNotPresent {
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblackdps", username = "maryblackdps", authSource = "nomis"), "read", "ignore_delius_inclusions_always")
+
+        @Test
+        internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
+          doSearch("X00001", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00001"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+        @Test
+        internal fun `will be allowed access to offenders that have inclusion lists even though they can not be checked`() {
+          doSearch("X00002", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00002"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+          doSearch("X00003", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00003"))
+              .body("content[0].firstName", equalTo("John"))
+              .body("content[0].surname", equalTo("Smith"))
+              .body("content[0].accessDenied", nullValue())
+        }
+
+        @Test
+        internal fun `will be denied access to offenders that have exclusion lists that can not be checked`() {
+          doSearch("X00004", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00004"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+          doSearch("X00005", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00005"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+        }
+      }
+    }
   }
 
   private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
@@ -1207,11 +1544,11 @@ class OffenderSearchPhraseAPIIntegrationTest {
         .body("totalElements", equalTo(0))
   }
 
-  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null, filter: List<String> = listOf()): ValidatableResponse {
+  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null, filter: List<String> = listOf(), token: String = jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY")): ValidatableResponse {
     val searchPhraseFilter = SearchPhraseFilter(phrase = phrase, matchAllTerms = matchAllTerms, probationAreasFilter = filter)
     val request = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(token)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(searchPhraseFilter)
         .apply {
@@ -1269,9 +1606,9 @@ class OffenderSearchPhraseAPIIntegrationTest {
                       probationArea = ProbationArea(code = matchingReplacement?.code, description = matchingReplacement?.description)
                   )
                 }
-          }
-
-
+          },
+          currentExclusion = it.currentExclusion,
+          currentRestriction = it.currentRestriction
       )
     }.map { objectMapper.writeValueAsString(it) }
 
@@ -1302,7 +1639,9 @@ data class OffenderReplacement(
     val town: String = "Sheffield",
     val county: String = "South Yorkshire",
     val postcode: String = "S29 1TT",
-    val offenderManagers: List<OffenderManagerReplacement> = listOf(OffenderManagerReplacement())
+    val offenderManagers: List<OffenderManagerReplacement> = listOf(OffenderManagerReplacement()),
+    val currentRestriction: Boolean = false,
+    val currentExclusion: Boolean = false
 )
 
 data class AliasReplacement(

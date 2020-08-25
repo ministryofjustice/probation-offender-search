@@ -31,7 +31,7 @@ class CommunityApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCal
 
 class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 8096
+    private const val WIREMOCK_PORT = 9091
   }
 
   fun getCountFor(url: String) = CommunityApiExtension.communityApi.findAll(getRequestedFor(urlEqualTo(url))).count()
@@ -42,6 +42,13 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
         .withBody(if (status == 200) "pong" else "some error")
         .withStatus(status)))
 
+  }
+
+  fun stubUserAccess(crn: String, response: String) {
+    stubFor(get("/secure/offenders/crn/$crn/userAccess").willReturn(aResponse()
+        .withHeader("Content-Type", "application/json")
+        .withBody(response)
+        .withStatus(200)))
   }
 }
 
