@@ -27,7 +27,7 @@ services:
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
-      -
+
   community-api:
     image: quay.io/hmpps/community-api:latest
     networks:
