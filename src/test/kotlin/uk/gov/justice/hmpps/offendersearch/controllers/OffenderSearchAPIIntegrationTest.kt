@@ -54,15 +54,6 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   }
 
   @Test
-  fun `can access health without valid token`() {
-    given()
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .`when`()["/health"]
-        .then()
-        .statusCode(200)
-  }
-
-  @Test
   fun `can access ping without valid token`() {
     given()
         .contentType(MediaType.APPLICATION_JSON_VALUE)
