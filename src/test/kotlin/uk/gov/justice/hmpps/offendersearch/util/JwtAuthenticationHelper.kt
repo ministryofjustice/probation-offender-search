@@ -18,15 +18,7 @@ import java.util.*
 
 
 @Component
-class JwtAuthenticationHelper(@Value("\${jwt.signing.key.pair}") privateKeyPair: String,
-                              @Value("\${jwt.keystore.password}") keystorePassword: String,
-                              @Value("\${jwt.keystore.alias}") keystoreAlias: String) {
-  private val keyPair: KeyPair
-
-  init {
-    keyPair = getKeyPair(ByteArrayResource(Base64.decodeBase64(privateKeyPair)), keystoreAlias, keystorePassword.toCharArray())
-  }
-
+class JwtAuthenticationHelper(private val keyPair: KeyPair) {
   fun createJwt(vararg roles: String): String {
     return createJwt(JwtParameters(
         subject = "new-tech",
@@ -65,6 +57,7 @@ class JwtAuthenticationHelper(@Value("\${jwt.signing.key.pair}") privateKeyPair:
     ).apply {
       parameters.username?.run {this + ("user_name" to parameters.username)}
     }
+
     return Jwts.builder()
         .setId(UUID.randomUUID().toString())
         .setSubject(parameters.subject)

@@ -10,15 +10,10 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClientException
 
 @Component
-class HealthInfo : HealthIndicator {
+class HealthInfo(@param:Autowired(required = false) private val buildProperties: BuildProperties?) : HealthIndicator {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
-
-  // private final RestTemplate restTemplate;
-  @Autowired(required = false)
-  private val buildProperties: BuildProperties? = null
-
   override fun health(): Health {
     return try { // TODO: Ping the remote Delius elasticSearch service when this is catered for
       Health.up().withDetail("version", version).build()
