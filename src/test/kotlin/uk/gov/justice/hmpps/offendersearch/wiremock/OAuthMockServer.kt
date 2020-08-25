@@ -34,7 +34,7 @@ class OAuthExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
 
 class OAuthMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 8090
+    private const val WIREMOCK_PORT = 9090
   }
 
   fun stubGrantToken() {

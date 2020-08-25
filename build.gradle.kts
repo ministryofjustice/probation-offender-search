@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.8"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.0"
   kotlin("plugin.spring") version "1.3.72"
 }
 
@@ -38,7 +38,7 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.1")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:7.4.1")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.11.839")
+  implementation("com.amazonaws:aws-java-sdk-core:1.11.848")
 
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
