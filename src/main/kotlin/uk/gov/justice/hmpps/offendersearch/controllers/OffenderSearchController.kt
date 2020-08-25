@@ -20,17 +20,19 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.NotFoundException
+import uk.gov.justice.hmpps.offendersearch.config.SecurityUserContext
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
+import uk.gov.justice.hmpps.offendersearch.security.getOffenderUserAccessFromScopes
 import uk.gov.justice.hmpps.offendersearch.services.SearchService
 import javax.validation.Valid
 
 @Api(tags = ["offender-search"], authorizations = [Authorization("ROLE_COMMUNITY")], description = "Provides offender search features for Delius elastic search")
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-class OffenderSearchController(private val searchService: SearchService) {
+class OffenderSearchController(private val searchService: SearchService, private val securityUserContext: SecurityUserContext) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
@@ -87,7 +89,7 @@ class OffenderSearchController(private val searchService: SearchService) {
       @PageableDefault  pageable: Pageable
   ): SearchPhraseResults {
     log.info("Search called with {}", searchPhraseFilter)
-    return searchService.performSearch(searchPhraseFilter, pageable)
+    return searchService.performSearch(searchPhraseFilter, pageable, getOffenderUserAccessFromScopes(securityUserContext))
   }
 
 }

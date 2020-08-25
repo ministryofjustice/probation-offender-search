@@ -16,8 +16,10 @@ import org.elasticsearch.search.suggest.term.TermSuggestion
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -32,6 +34,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.ProbationAreaAggregation
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import uk.gov.justice.hmpps.offendersearch.services.SearchService
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
+import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper.ClientUser
 import java.lang.reflect.Type
 import java.time.LocalDate
 
@@ -56,7 +59,7 @@ class OffenderSearchControllerPhraseTest {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
         ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
-    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(content = listOf(), total = 0, pageable = PageRequest.of(0, 10), probationAreaAggregations = listOf(), suggestions = null))
+    whenever(searchService.performSearch(any(), any(), any())).thenReturn(SearchPhraseResults(content = listOf(), total = 0, pageable = PageRequest.of(0, 10), probationAreaAggregations = listOf(), suggestions = null))
   }
 
   @Test
@@ -127,7 +130,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(any(), check {
       assertThat(it.pageNumber).isEqualTo(0)
-    })
+    }, any())
   }
 
   @Test
@@ -146,7 +149,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(any(), check {
       assertThat(it.pageNumber).isEqualTo(28)
-    })
+    }, any())
   }
 
   @Test
@@ -164,7 +167,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(any(), check {
       assertThat(it.pageSize).isEqualTo(10)
-    })
+    }, any())
   }
 
   @Test
@@ -183,7 +186,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(any(), check {
       assertThat(it.pageSize).isEqualTo(99)
-    })
+    }, any())
   }
 
   @Test
@@ -201,7 +204,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(check {
       assertThat(it.matchAllTerms).isFalse()
-    }, any())
+    }, any(), any())
   }
 
   @Test
@@ -220,7 +223,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(check {
       assertThat(it.matchAllTerms).isTrue()
-    }, any())
+    }, any(), any())
   }
 
   @Test
@@ -238,7 +241,7 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(check {
       assertThat(it.probationAreasFilter).isEmpty()
-    }, any())
+    }, any(), any())
   }
 
   @Test
@@ -260,12 +263,12 @@ class OffenderSearchControllerPhraseTest {
 
     verify(searchService).performSearch(check {
       assertThat(it.probationAreasFilter).containsExactly("N01", "N02")
-    }, any())
+    }, any(), any())
   }
 
   @Test
   internal fun `will return results when matched`() {
-    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+    whenever(searchService.performSearch(any(), any(), any())).thenReturn(SearchPhraseResults(
         content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(),
@@ -293,7 +296,7 @@ class OffenderSearchControllerPhraseTest {
 
   @Test
   internal fun `will return probation area aggregations`() {
-    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+    whenever(searchService.performSearch(any(), any(), any())).thenReturn(SearchPhraseResults(
         content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(
@@ -335,7 +338,7 @@ class OffenderSearchControllerPhraseTest {
         this.addOption(TermSuggestion.Entry.Option(Text("sumith"), 1, 0.8f))
       })
     }
-    whenever(searchService.performSearch(any(), any())).thenReturn(SearchPhraseResults(
+    whenever(searchService.performSearch(any(), any(), any())).thenReturn(SearchPhraseResults(
         content = listOf(OffenderDetail(offenderId = 99, firstName = "John", surname = "Smith", dateOfBirth = LocalDate.parse("1965-07-19"), otherIds = IDs(crn = "X123456"))),
         total = 1,
         probationAreaAggregations = listOf(),
@@ -355,5 +358,207 @@ class OffenderSearchControllerPhraseTest {
         .then()
         .statusCode(200)
         .body("suggestions.suggest.firstName[0].options.size()", equalTo(3))
+  }
+
+  @Nested
+  inner class ScopesAndAccess {
+    @BeforeEach
+    internal fun setUp() {
+      Mockito.reset(searchService)
+    }
+
+    @Test
+    internal fun `ignoreInclusionsAlways will be false when no scopes`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes())
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.ignoreInclusionsAlways).isFalse()
+      })
+    }
+
+    @Test
+    internal fun `ignoreInclusionsAlways will be true when scope includes ignore_delius_inclusions_always`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes("ignore_delius_inclusions_always"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.ignoreInclusionsAlways).isTrue()
+      })
+    }
+    @Test
+    internal fun `ignoreExclusionsAlways will be false when no scopes`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes())
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.ignoreExclusionsAlways).isFalse()
+      })
+    }
+
+    @Test
+    internal fun `ignoreExclusionsAlways will be true when scope includes ignore_delius_exclusions_always`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes("ignore_delius_exclusions_always"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.ignoreExclusionsAlways).isTrue()
+      })
+    }
+
+    @Test
+    internal fun `allowWhenExclusionMatched will be false when no scopes`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes())
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.allowWhenExclusionMatched).isFalse()
+      })
+    }
+
+    @Test
+    internal fun `allowWhenExclusionMatched will be true when scope includes allow_when_delius_exclusion_matched`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes("allow_when_delius_exclusion_matched"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.allowWhenExclusionMatched).isTrue()
+      })
+    }
+    @Test
+    internal fun `allowWhenInclusionNotMatched will be false when no scopes`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes())
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.allowWhenInclusionNotMatched).isFalse()
+      })
+    }
+
+    @Test
+    internal fun `allowWhenInclusionNotMatched will be true when scope includes allow_when_delius_inclusion_not_matched`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes("allow_when_delius_inclusion_not_matched"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.allowWhenInclusionNotMatched).isTrue()
+      })
+    }
+
+    @Test
+    internal fun `when clientId is the subject there is no username`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(subject = "new-tech", username = null, clientId = "new-tech", authSource = "none"), "allow_when_inclusion_not_matched"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.username).isNull()
+      })
+    }
+    @Test
+    internal fun `when a delius username is supplied with different clientId username is used`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(subject = "karenblacknps", username = "karenblacknps", clientId = "new-tech", authSource = "delius"), "allow_when_inclusion_not_matched"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.username).isEqualTo("karenblacknps")
+      })
+    }
+    @Test
+    internal fun `when a nomis username is supplied with different clientId username is null`() {
+      RestAssured.given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(subject = "karenblacknps", username = "karenblacknps", clientId = "new-tech", authSource = "nomis"), "allow_when_inclusion_not_matched"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body("""{
+          | "phrase": "john smith 19/7/1965"
+          |}""".trimMargin())
+          .post("/phrase")
+          .then()
+          .statusCode(200)
+
+      verify(searchService).performSearch(any(), any(), check {
+        assertThat(it.username).isNull()
+      })
+    }
   }
 }

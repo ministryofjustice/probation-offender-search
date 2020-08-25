@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderUserAccess
 import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
@@ -98,7 +99,7 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
         .must("softDeleted", false)
   }
 
-  fun performSearch(searchPhraseFilter: SearchPhraseFilter, pageable: Pageable): SearchPhraseResults {
+  fun performSearch(searchPhraseFilter: SearchPhraseFilter, pageable: Pageable, offenderUserAccess: OffenderUserAccess): SearchPhraseResults {
     log.info("Search was: \"${searchPhraseFilter.phrase}\"")
     val searchRequest = SearchRequest("offender")
         .source(SearchSourceBuilder()

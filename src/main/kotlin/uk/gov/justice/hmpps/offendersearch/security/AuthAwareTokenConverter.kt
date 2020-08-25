@@ -13,18 +13,13 @@ class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
   private val jwtGrantedAuthoritiesConverter: Converter<Jwt, Collection<GrantedAuthority>> = JwtGrantedAuthoritiesConverter()
 
   override fun convert(jwt: Jwt): AbstractAuthenticationToken {
-    val claims = jwt.claims
-    val principal = findPrincipal(claims)
-    val authorities = extractAuthorities(jwt)
-    return AuthAwareAuthenticationToken(jwt, principal, authorities)
-  }
-
-  private fun findPrincipal(claims: Map<String, Any?>): String {
-    return if (claims.containsKey("user_name")) {
-      claims["user_name"] as String
-    } else {
-      claims["client_id"] as String
-    }
+    return AuthAwareAuthenticationToken(
+        jwt = jwt,
+        clientOnly = jwt.subject == jwt.claims["client_id"],
+        subject = jwt.subject,
+        deliusUser = "delius" == jwt.claims["auth_source"],
+        authorities = extractAuthorities(jwt)
+    )
   }
 
   private fun extractAuthorities(jwt: Jwt): Collection<GrantedAuthority> {
@@ -40,10 +35,8 @@ class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
 
 class AuthAwareAuthenticationToken(
     jwt: Jwt,
-    private val aPrincipal: String,
+    val clientOnly: Boolean,
+    val deliusUser: Boolean,
+    val subject: String,
     authorities: Collection<GrantedAuthority>
-) : JwtAuthenticationToken(jwt, authorities) {
-  override fun getPrincipal(): Any {
-    return aPrincipal
-  }
-}
+) : JwtAuthenticationToken(jwt, authorities)
