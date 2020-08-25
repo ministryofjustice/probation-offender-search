@@ -7,7 +7,12 @@ import uk.gov.justice.hmpps.offendersearch.security.AuthAwareAuthenticationToken
 @Component
 class SecurityUserContext {
   val authentication: AuthAwareAuthenticationToken?
-    get() = SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken
+    get() = with(SecurityContextHolder.getContext().authentication) {
+      when (this) {
+        is AuthAwareAuthenticationToken -> this
+        else -> null
+      }
+    }
 
   val currentUsername: String?
     get() = authentication?.takeUnless { it.clientOnly }?.subject
