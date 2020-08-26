@@ -18,4 +18,6 @@ class SecurityUserContext {
     get() = authentication?.takeUnless { it.clientOnly }?.subject
   val currentDeliusUsername: String?
     get() = authentication?.takeUnless { it.clientOnly }?.takeIf { it.deliusUser }?.subject
+  val token: String?
+    get() = authentication?.token?.tokenValue
 }

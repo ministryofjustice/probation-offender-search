@@ -24,7 +24,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import java.util.*
 
 @Service
-class SearchService @Autowired constructor(private val hlClient: SearchClient, private val mapper: ObjectMapper) {
+class SearchService @Autowired constructor(private val offenderAccessService: OffenderAccessService, private val hlClient: SearchClient, private val mapper: ObjectMapper) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     private const val MAX_SEARCH_RESULTS = 100
@@ -102,7 +102,7 @@ class SearchService @Autowired constructor(private val hlClient: SearchClient, p
   fun performSearch(searchPhraseFilter: SearchPhraseFilter, pageable: Pageable, offenderUserAccess: OffenderUserAccess): SearchPhraseResults {
 
     fun canAccessOffender(offenderDetail: OffenderDetail): Boolean {
-      return true
+      return offenderAccessService.canAccessOffender(offenderDetail, offenderUserAccess)
     }
 
     log.info("Search was: \"${searchPhraseFilter.phrase}\"")
