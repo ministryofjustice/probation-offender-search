@@ -33,12 +33,11 @@ import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper.ClientUser
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import uk.gov.justice.hmpps.offendersearch.wiremock.CommunityApiExtension
-import uk.gov.justice.hmpps.offendersearch.wiremock.OAuthExtension
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
-@ExtendWith(OAuthExtension::class, CommunityApiExtension::class)
+@ExtendWith(CommunityApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
 class OffenderSearchPhraseAPIIntegrationTest {

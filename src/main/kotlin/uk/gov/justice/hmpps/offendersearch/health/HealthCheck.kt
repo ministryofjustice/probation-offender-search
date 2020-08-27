@@ -29,7 +29,4 @@ abstract class HealthCheck(private val webClient: WebClient, private val timeout
 class CommunityApiHealth
 constructor(@Qualifier("communityApiHealthWebClient") webClient: WebClient, @Value("\${api.health-timeout:2s}") timeout: Duration) : HealthCheck(webClient, timeout)
 
-@Component
-class OAuthApiHealth
-constructor(@Qualifier("oauthApiHealthWebClient") webClient: WebClient, @Value("\${api.health-timeout:2s}") timeout: Duration) : HealthCheck(webClient, timeout)
 

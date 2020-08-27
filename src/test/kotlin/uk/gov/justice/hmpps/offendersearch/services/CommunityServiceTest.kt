@@ -20,13 +20,12 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.hmpps.offendersearch.security.AuthAwareTokenConverter
 import uk.gov.justice.hmpps.offendersearch.wiremock.CommunityApiExtension
-import uk.gov.justice.hmpps.offendersearch.wiremock.OAuthExtension
 import java.security.KeyPair
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
 
-@ExtendWith(OAuthExtension::class, CommunityApiExtension::class)
+@ExtendWith(CommunityApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test"])
 internal class CommunityServiceTest {

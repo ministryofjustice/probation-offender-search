@@ -8,10 +8,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.hmpps.offendersearch.wiremock.CommunityApiExtension
 import uk.gov.justice.hmpps.offendersearch.wiremock.ElasticSearchExtension
-import uk.gov.justice.hmpps.offendersearch.wiremock.OAuthExtension
 
 
-@ExtendWith(OAuthExtension::class, CommunityApiExtension::class, ElasticSearchExtension::class)
+@ExtendWith(CommunityApiExtension::class, ElasticSearchExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test"])
 class HealthCheckTest {
@@ -29,7 +28,6 @@ class HealthCheckTest {
         .expectStatus()
         .isOk()
         .expectBody()
-        .jsonPath("components.OAuthApiHealth.details.HttpStatus").isEqualTo("OK")
         .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("OK")
         .jsonPath("status").isEqualTo("UP")
   }
@@ -84,7 +82,6 @@ class HealthCheckTest {
         .is5xxServerError
         .expectBody()
         .jsonPath("status").isEqualTo("DOWN")
-        .jsonPath("components.OAuthApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
         .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
   }
 
@@ -98,14 +95,12 @@ class HealthCheckTest {
         .expectStatus()
         .is5xxServerError
         .expectBody()
-        .jsonPath("components.OAuthApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
         .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
         .jsonPath("status").isEqualTo("DOWN")
   }
 
 
   private fun stubPingWithResponse(status: Int) {
-    OAuthExtension.oAuthApi.stubHealthPing(status)
     CommunityApiExtension.communityApi.stubHealthPing(status)
     ElasticSearchExtension.elasticSearch.stubHealth(status)
   }
