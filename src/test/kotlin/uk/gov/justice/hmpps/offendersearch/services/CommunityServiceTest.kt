@@ -16,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.hmpps.offendersearch.security.AuthAwareTokenConverter
@@ -28,6 +30,7 @@ import java.util.*
 @ExtendWith(CommunityApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test"])
+@DirtiesContext(classMode = BEFORE_CLASS)
 internal class CommunityServiceTest {
   @Autowired
   private lateinit var service: CommunityService
