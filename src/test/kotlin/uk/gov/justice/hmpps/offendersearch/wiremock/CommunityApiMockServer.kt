@@ -3,12 +3,11 @@ package uk.gov.justice.hmpps.offendersearch.wiremock
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
-import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
+import java.net.HttpURLConnection
 
 class CommunityApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
   companion object {
@@ -34,8 +33,6 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 9091
   }
 
-  fun getCountFor(url: String) = CommunityApiExtension.communityApi.findAll(getRequestedFor(urlEqualTo(url))).count()
-
   fun stubHealthPing(status: Int) {
     stubFor(get("/health/ping").willReturn(aResponse()
         .withHeader("Content-Type", "application/json")
@@ -49,6 +46,23 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
         .withHeader("Content-Type", "application/json")
         .withBody(response)
         .withStatus(200)))
+  }
+  fun stubUserAccessDenied(crn: String, response: String) {
+    stubFor(get("/secure/offenders/crn/$crn/userAccess").willReturn(aResponse()
+        .withHeader("Content-Type", "application/json")
+        .withBody(response)
+        .withStatus(403)))
+  }
+  fun stubUserAccessNotFound(crn: String) {
+    stubFor(get("/secure/offenders/crn/$crn/userAccess").willReturn(aResponse()
+        .withHeader("Content-Type", "application/json")
+        .withBody("{\"error\": \"not found\"}")
+        .withStatus(HttpURLConnection.HTTP_NOT_FOUND)))
+  }
+  fun stubUserAccessError(crn: String) {
+    stubFor(get("/secure/offenders/crn/$crn/userAccess").willReturn(aResponse()
+        .withHeader("Content-Type", "application/json")
+        .withStatus(HttpURLConnection.HTTP_INTERNAL_ERROR)))
   }
 }
 

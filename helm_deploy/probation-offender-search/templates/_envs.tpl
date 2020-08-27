@@ -13,23 +13,8 @@ env:
   - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
     value: "{{ .Values.env.SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI }}"
 
-  - name: OAUTH_ENDPOINT_URL
-    value: "{{ .Values.env.OAUTH_ENDPOINT_URL }}"
-
   - name: COMMUNITY_ENDPOINT_URL
     value: "{{ .Values.env.COMMUNITY_ENDPOINT_URL }}"
-
-  - name: OAUTH_CLIENT_ID
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: OAUTH_CLIENT_ID
-
-  - name: OAUTH_CLIENT_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: OAUTH_CLIENT_SECRET
 
   - name: APPINSIGHTS_INSTRUMENTATIONKEY
     valueFrom:

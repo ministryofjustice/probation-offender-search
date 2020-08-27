@@ -1,6 +1,8 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.nhaarman.mockito_kotlin.verify
 import io.restassured.RestAssured
 import io.restassured.response.ValidatableResponse
 import org.elasticsearch.client.RestHighLevelClient
@@ -31,13 +33,11 @@ import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper.ClientUser
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import uk.gov.justice.hmpps.offendersearch.wiremock.CommunityApiExtension
-import uk.gov.justice.hmpps.offendersearch.wiremock.ElasticSearchExtension
-import uk.gov.justice.hmpps.offendersearch.wiremock.OAuthExtension
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
-@ExtendWith(OAuthExtension::class, CommunityApiExtension::class)
+@ExtendWith(CommunityApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
 class OffenderSearchPhraseAPIIntegrationTest {
@@ -1185,7 +1185,6 @@ class OffenderSearchPhraseAPIIntegrationTest {
   }
 
   @Nested
-  @Disabled
   @TestInstance(PER_CLASS)
   inner class ExclusionAndInclusions {
     @BeforeAll
@@ -1298,6 +1297,18 @@ class OffenderSearchPhraseAPIIntegrationTest {
               .body("content[0].firstName", equalTo("John"))
               .body("content[0].surname", equalTo("Smith"))
               .body("content[0].accessDenied", nullValue())
+        }
+
+        @Test
+        internal fun `will pass jwt token through to community-api when checking access restrictions`() {
+          doSearch("X00004", token = token)
+              .body("content[0].otherIds.crn", equalTo("X00004"))
+              .body("content[0].firstName", nullValue())
+              .body("content[0].surname", nullValue())
+              .body("content[0].accessDenied", equalTo(true))
+
+          CommunityApiExtension.communityApi.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/secure/offenders/crn/X00004/userAccess"))
+              .withHeader("Authorization", WireMock.equalTo("Bearer $token")))
         }
       }
 

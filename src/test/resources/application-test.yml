@@ -17,11 +17,5 @@ management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
 
-oauth:
-  endpoint.url: http://localhost:9090/auth
-  client:
-    id: client
-    secret: secret
-
 community:
   endpoint.url: http://localhost:9091

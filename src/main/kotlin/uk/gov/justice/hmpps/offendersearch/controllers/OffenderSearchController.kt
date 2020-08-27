@@ -71,6 +71,12 @@ class OffenderSearchController(private val searchService: SearchService, private
          - A phrase that contain just single letter will result in all records being matched since essentially single letters for the AND query are discarded
          - first name when matched is artificially boosted in the result sort order for OR queries, due to how first names are also searched as if it is a prefix as well a complete match
          
+         Roles and scopes:
+          - client must have ROLE_COMMUNITY
+          - by default any offenders that are restricted or have exclusion lists for staff will be redacted in the response (the crn and offender managers will still be visible) with these exceptions
+            - there is a Delius user in context (username in JWT token along with an auth source of Delius) and they are allowed to view the offender, e.g. not on the exclusion list or is on the restricted list
+            - the client has the scopes to allow it to ignore these lists; the two scopes to bypass this feature are "ignore_delius_exclusions_always" and "ignore_delius_inclusions_always"
+         
       """,
       nickname = "searchByPhrase"
   )

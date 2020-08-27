@@ -28,7 +28,8 @@ data class OffenderDetail(
     val currentExclusion: Boolean? = null,
     val exclusionMessage: String? = null,
     @ApiModelProperty(value = "map of fields which matched a search term (Only return for phrase searching)", example = "{surname: [\"Smith\"], offenderAliases.surname: [\"SMITH\"]}")
-    val highlight: Map<String, List<String>>? = null
+    val highlight: Map<String, List<String>>? = null,
+    val accessDenied: Boolean? = null
 ) {
     val age: Int? get() = dateOfBirth?.let { Period.between(it, LocalDate.now()).years }
 }

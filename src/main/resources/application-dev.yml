@@ -6,11 +6,5 @@ spring:
         jwt:
           public-key-location: classpath:local-public-key.pub
 
-oauth:
-  endpoint.url: http://localhost:8090/auth
-  client:
-    id: probation-offender-search-client
-    secret: clientsecret
-
 community:
   endpoint.url: http://localhost:8096

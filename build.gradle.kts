@@ -48,6 +48,7 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.18.1")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
+  testImplementation("org.mockito:mockito-inline:3.4.6")
   testImplementation("org.testcontainers:localstack:1.14.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
 
