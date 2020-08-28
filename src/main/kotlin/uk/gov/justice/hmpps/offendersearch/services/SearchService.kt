@@ -113,6 +113,7 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
             .from(pageable.offset.toInt())
             .sort("_score")
             .sort("offenderId", DESC)
+            .trackTotalHits(true)
             .aggregation(buildAggregationRequest())
             .highlighter(buildHighlightRequest())
             .suggest(SuggestBuilder()
