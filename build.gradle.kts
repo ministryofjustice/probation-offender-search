@@ -1,9 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.0"
-  kotlin("plugin.spring") version "1.3.72"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.2"
+  kotlin("plugin.spring") version "1.4.0"
 }
-
-extra["spring-security.version"] = "5.3.2.RELEASE" // Updated since spring-boot-starter-oauth2-resource-server-2.2.7.RELEASE only pulls in 5.2.4.RELEASE (still affected by CVE-2018-1258 though)
 
 configurations {
   implementation { exclude(group = "tomcat-jdbc") }
@@ -34,11 +32,11 @@ dependencies {
 
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.2")
 
-  implementation("org.elasticsearch:elasticsearch:7.4.1")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.1")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.4.1")
+  implementation("org.elasticsearch:elasticsearch:7.9.0")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.9.0")
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.9.0")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.11.848")
+  implementation("com.amazonaws:aws-java-sdk-core:1.11.854")
 
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
@@ -48,7 +46,7 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.18.1")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
-  testImplementation("org.mockito:mockito-inline:3.4.6")
+  testImplementation("org.mockito:mockito-inline:3.5.9")
   testImplementation("org.testcontainers:localstack:1.14.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
 
