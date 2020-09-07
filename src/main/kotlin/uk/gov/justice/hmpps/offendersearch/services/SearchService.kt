@@ -137,4 +137,26 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
         suggestions = response.suggest
     )
   }
+
+  fun findByListOfCRNs(crnList: List<String>): List<OffenderDetail> {
+    val searchRequest = SearchRequest("offender")
+    val searchSourceBuilder = SearchSourceBuilder()
+
+    searchSourceBuilder.size(crnList.size)
+
+    val outerMustQuery = QueryBuilders
+        .boolQuery()
+
+    val matchingAllFieldsQuery = QueryBuilders
+        .boolQuery()
+    crnList.forEach {
+      matchingAllFieldsQuery
+          .should(QueryBuilders.matchQuery("otherIds.crn", it))
+    }
+    outerMustQuery.must(matchingAllFieldsQuery)
+    searchSourceBuilder.query(outerMustQuery.withDefaults())
+    searchRequest.source(searchSourceBuilder)
+    val response = hlClient.search(searchRequest)
+    return getSearchResult(response)
+  }
 }

@@ -1,12 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiImplicitParam
-import io.swagger.annotations.ApiImplicitParams
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
-import io.swagger.annotations.Authorization
+import io.swagger.annotations.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
@@ -96,6 +90,18 @@ class OffenderSearchController(private val searchService: SearchService, private
   ): SearchPhraseResults {
     log.info("Search called with {}", searchPhraseFilter)
     return searchService.performSearch(searchPhraseFilter, pageable, getOffenderUserAccessFromScopes(securityUserContext))
+  }
+
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @ApiResponses(value = [
+    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+  ])
+  @PostMapping("/crns")
+  @ApiOperation(value = "Match prisoners by a list of prisoner crns", notes = "Requires ROLE_COMMUNITY role")
+  fun findByIds(@ApiParam(required = true, name = "crnList") @RequestBody crnList : List<String>
+  ) : List<OffenderDetail> {
+    return searchService.findByListOfCRNs(crnList)
   }
 
 }
