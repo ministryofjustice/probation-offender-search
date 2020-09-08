@@ -30,3 +30,6 @@ whitelist:
   cloudplatform-live1-1: "35.178.209.113/32"
   cloudplatform-live1-2: "3.8.51.207/32"
   cloudplatform-live1-3: "35.177.252.54/32"
+  delius-aws-1: "52.56.240.62/32"
+  delius-aws-2: "18.130.110.168/32"
+  delius-aws-3: "35.178.44.184/32"
