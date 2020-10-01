@@ -1,6 +1,6 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.6"
-  kotlin("plugin.spring") version "1.4.0"
+  kotlin("plugin.spring") version "1.4.10"
 }
 
 configurations {
@@ -38,9 +38,7 @@ dependencies {
 
   implementation("com.amazonaws:aws-java-sdk-core:1.11.873")
 
-  implementation("io.springfox:springfox-swagger2:3.0.0")
-  implementation("io.springfox:springfox-swagger-ui:3.0.0")
-  implementation("io.springfox:springfox-bean-validators:3.0.0")
+  implementation("io.springfox:springfox-boot-starter:3.0.0")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
