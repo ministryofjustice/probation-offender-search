@@ -28,8 +28,6 @@ import java.time.LocalDate
 class MatchService(
     private val elasticSearchClient: SearchClient,
     private val mapper: ObjectMapper,
-    @Value("\${search.supported.mapping.version}")
-    private val mappingVersion: String
 ) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -85,14 +83,7 @@ class MatchService(
           .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
           .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
           .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
-            when (mappingVersion) {
-              "1" -> this
-                  .mustMultiMatch(surname, "surname", "offenderAliases.surname")
-                  .mustMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
-                  .mustMultiMatch(firstName, "firstName", "offenderAliases.firstName")
-
-              else -> this.must(nameQueryV2(matchRequest))
-            }
+            this.must(nameQuery(matchRequest))
           }
     }
   }
@@ -106,30 +97,6 @@ class MatchService(
   }
 
   private fun nameQuery(matchRequest: MatchRequest): BoolQueryBuilder? {
-    return when (mappingVersion) {
-      "1" -> nameQueryV1(matchRequest)
-      else -> nameQueryV2(matchRequest)
-    }
-  }
-
-  private fun nameQueryV1(matchRequest: MatchRequest): BoolQueryBuilder {
-    with(matchRequest) {
-      return QueryBuilders.boolQuery()
-          .should(QueryBuilders.boolQuery()
-              .mustWhenPresent("surname", surname)
-              .mustWhenPresent("firstName", firstName)
-              .mustWhenPresent("dateOfBirth", dateOfBirth)
-          )
-          .should(QueryBuilders.boolQuery()
-              .mustWhenPresent("offenderAliases.surname", surname)
-              .mustWhenPresent("offenderAliases.firstName", firstName)
-              .mustWhenPresent("offenderAliases.dateOfBirth", dateOfBirth)
-          )
-
-    }
-  }
-
-  private fun nameQueryV2(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
           .should(QueryBuilders.boolQuery()
