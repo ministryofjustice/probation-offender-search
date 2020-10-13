@@ -79,7 +79,7 @@ class LocalStackHelper(private val esClient: RestHighLevelClient, private val ma
   private fun buildIndex() {
     esClient.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)
     esClient.indices()
-        .putMapping(PutMappingRequest(indexName).source("/elasticsearchdata/create-mapping-$mappingVersion.json".resourceAsString(), JSON), RequestOptions.DEFAULT)
+        .putMapping(PutMappingRequest(indexName).source("/elasticsearchdata/create-mapping.json".resourceAsString(), JSON), RequestOptions.DEFAULT)
     log.debug("Build index")
   }
 

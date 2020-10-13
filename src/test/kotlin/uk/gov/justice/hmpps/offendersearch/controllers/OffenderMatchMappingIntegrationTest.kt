@@ -12,10 +12,10 @@ import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import java.time.LocalDate
 
 @TestPropertySource(properties = [
-  "search.supported.mapping.version=1"
+  "search.supported.mapping.version=2"
 ])
 @DirtiesContext
-internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegrationBase() {
+internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegrationBase() {
   @BeforeEach
   internal fun setup() {
     loadOffenders(
@@ -37,7 +37,7 @@ internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegr
   @Nested
   inner class CRONumberMatching {
     @Test
-    internal fun `will (incorrectly) full match across aliases and date of births`() {
+    internal fun `will only partial match for a particular alias and date of birth`() {
       given()
           .auth()
           .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -51,12 +51,12 @@ internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegr
           .post("/match")
           .then()
           .statusCode(200)
-          .body("matchedBy", equalTo("ALL_SUPPLIED"))
+          .body("matchedBy", equalTo("EXTERNAL_KEY"))
           .body("matches.findall.size()", equalTo(1))
     }
 
     @Test
-    internal fun `will full match for a particular alias and date of birth`() {
+    internal fun `will match for a particular alias and date of birth`() {
       given()
           .auth()
           .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -92,11 +92,10 @@ internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegr
           .body("matches.findall.size()", equalTo(1))
     }
   }
-
   @Nested
   inner class PNCNumberMatching {
     @Test
-    internal fun `will (incorrectly) full match across aliases and date of births`() {
+    internal fun `will only partial match for a particular alias and date of birth`() {
       given()
           .auth()
           .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -110,12 +109,12 @@ internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegr
           .post("/match")
           .then()
           .statusCode(200)
-          .body("matchedBy", equalTo("ALL_SUPPLIED"))
+          .body("matchedBy", equalTo("EXTERNAL_KEY"))
           .body("matches.findall.size()", equalTo(1))
     }
 
     @Test
-    internal fun `will full match for a particular alias and date of birth`() {
+    internal fun `will match for a particular alias and date of birth`() {
       given()
           .auth()
           .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -132,8 +131,9 @@ internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegr
           .body("matchedBy", equalTo("ALL_SUPPLIED"))
           .body("matches.findall.size()", equalTo(1))
     }
+
     @Test
-    internal fun `will only partial match for a particular alias and date of birth`() {
+    internal fun `will partial match for a particular alias and date of birth`() {
       given()
           .auth()
           .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -150,14 +150,11 @@ internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegr
           .body("matchedBy", equalTo("EXTERNAL_KEY"))
           .body("matches.findall.size()", equalTo(1))
     }
-
   }
-
-
   @Nested
   inner class NameMatching {
     @Test
-    internal fun `will (incorrectly) cross match across aliases and date of births`() {
+    internal fun `will not cross match across aliases and date of births`() {
       given()
           .auth()
           .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -171,8 +168,8 @@ internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegr
           .post("/match")
           .then()
           .statusCode(200)
-          .body("matchedBy", equalTo("NAME"))
-          .body("matches.findall.size()", equalTo(1))
+          .body("matchedBy", equalTo("NOTHING"))
+          .body("matches.findall.size()", equalTo(0))
     }
 
     @Test
@@ -194,6 +191,8 @@ internal class OffenderMatchMappingV1APIIntegrationTest : OffenderMatchAPIIntegr
           .body("matches.findall.size()", equalTo(1))
     }
   }
+
+
 }
 
 
