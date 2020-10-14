@@ -9,10 +9,10 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED
+import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED_ALIAS
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.EXTERNAL_KEY
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.HMPPS_KEY
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.NAME
@@ -35,6 +35,7 @@ class MatchService(
 
   fun match(matchRequest: MatchRequest): OffenderMatches {
     matchBy(matchRequest) { fullMatch(it) } onMatch { return OffenderMatches(it.matches, ALL_SUPPLIED) }
+    matchBy(matchRequest) { fullMatchAlias(it) } onMatch { return OffenderMatches(it.matches, ALL_SUPPLIED_ALIAS) }
     matchBy(matchRequest) { nomsNumber(it) } onMatch { return OffenderMatches(it.matches, HMPPS_KEY) }
     matchBy(matchRequest) { croNumber(it) } onMatch { return OffenderMatches(it.matches, EXTERNAL_KEY) }
     matchBy(matchRequest) { pncNumber(it) } onMatch { return OffenderMatches(it.matches, EXTERNAL_KEY) }
@@ -88,11 +89,26 @@ class MatchService(
     }
   }
 
+  private fun fullMatchAlias(matchRequest: MatchRequest): BoolQueryBuilder? {
+    with(matchRequest) {
+      return QueryBuilders.boolQuery()
+          .mustKeyword(croNumber?.toLowerCase(), "otherIds.croNumberLowercase")
+          .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+          .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
+          .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
+            this.must(aliasQuery(matchRequest))
+          }
+    }
+  }
+
   private fun nameMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
           .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
-          .must(nameQuery(matchRequest))
+          .must(QueryBuilders.boolQuery()
+              .should(nameQuery(matchRequest))
+              .should(aliasQuery(matchRequest))
+          )
     }
   }
 
@@ -104,6 +120,12 @@ class MatchService(
               .mustWhenPresent("firstName", firstName)
               .mustWhenPresent("dateOfBirth", dateOfBirth)
           )
+    }
+  }
+
+  private fun aliasQuery(matchRequest: MatchRequest): BoolQueryBuilder? {
+    with(matchRequest) {
+      return QueryBuilders.boolQuery()
           .should(QueryBuilders.nestedQuery(
               "offenderAliases",
               QueryBuilders.boolQuery()

@@ -56,6 +56,25 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     }
 
     @Test
+    internal fun `will match for a particular name and date of birth`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "Adorno",
+              firstName = "Theodor",
+              dateOfBirth = LocalDate.of(1903, 11, 11),
+              croNumber = "AA99/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("ALL_SUPPLIED"))
+          .body("matches.findall.size()", equalTo(1))
+    }
+
+    @Test
     internal fun `will match for a particular alias and date of birth`() {
       given()
           .auth()
@@ -70,9 +89,10 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
           .post("/match")
           .then()
           .statusCode(200)
-          .body("matchedBy", equalTo("ALL_SUPPLIED"))
+          .body("matchedBy", equalTo("ALL_SUPPLIED_ALIAS"))
           .body("matches.findall.size()", equalTo(1))
     }
+
     @Test
     internal fun `will partial match for a particular alias and date of birth`() {
       given()
@@ -114,6 +134,25 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     }
 
     @Test
+    internal fun `will match for a particular name and date of birth`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "Adorno",
+              firstName = "Theodor",
+              dateOfBirth = LocalDate.of(1903, 11, 11),
+              pncNumber = "2015/0123456X"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("ALL_SUPPLIED"))
+          .body("matches.findall.size()", equalTo(1))
+    }
+
+    @Test
     internal fun `will match for a particular alias and date of birth`() {
       given()
           .auth()
@@ -128,7 +167,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
           .post("/match")
           .then()
           .statusCode(200)
-          .body("matchedBy", equalTo("ALL_SUPPLIED"))
+          .body("matchedBy", equalTo("ALL_SUPPLIED_ALIAS"))
           .body("matches.findall.size()", equalTo(1))
     }
 
@@ -151,6 +190,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
           .body("matches.findall.size()", equalTo(1))
     }
   }
+
   @Nested
   inner class NameMatching {
     @Test
@@ -170,6 +210,25 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
           .statusCode(200)
           .body("matchedBy", equalTo("NOTHING"))
           .body("matches.findall.size()", equalTo(0))
+    }
+
+    @Test
+    internal fun `will match for a particular name and date of birth`() {
+      given()
+          .auth()
+          .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .body(MatchRequest(
+              surname = "Adorno",
+              firstName = "Theodor",
+              dateOfBirth = LocalDate.of(1903, 11, 11),
+              croNumber = "SF80/655108T"
+          ))
+          .post("/match")
+          .then()
+          .statusCode(200)
+          .body("matchedBy", equalTo("NAME"))
+          .body("matches.findall.size()", equalTo(1))
     }
 
     @Test

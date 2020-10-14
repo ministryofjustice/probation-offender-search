@@ -29,6 +29,7 @@ import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED
+import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED_ALIAS
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.EXTERNAL_KEY
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.HMPPS_KEY
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
@@ -58,6 +59,7 @@ internal class MatchServiceTest {
     fun setUp() {
       whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match results
+          .thenReturn(resultsOf()) // full match alias results
           .thenReturn(resultsOf()) // NOMS Number results
           .thenReturn(resultsOf()) // CRO Number results
           .thenReturn(resultsOf()) // PNC Number results
@@ -79,7 +81,7 @@ internal class MatchServiceTest {
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
 
-      verify(searchClient, times(7)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(8)).search(searchRequestCaptor.capture())
 
       with(searchRequestCaptor.lastValue) {
         assertThat(mustNames()).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -124,7 +126,7 @@ internal class MatchServiceTest {
       ))
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
-      verify(searchClient, times(7)).search(searchRequestCaptor.capture())
+      verify(searchClient, times(8)).search(searchRequestCaptor.capture())
 
       val query = searchRequestCaptor.lastValue.source().query() as BoolQueryBuilder
       val dateMatches = query.must().filterIsInstance<BoolQueryBuilder>().first().should()
@@ -170,7 +172,7 @@ internal class MatchServiceTest {
     }
 
     @Test
-    fun `will return matched by ALL_MATCHED when matching all parameters`() {
+    fun `will return matched by ALL_SUPPLIED when matching all parameters`() {
       whenever(searchClient.search(any())).thenReturn(resultsOf(
           OffenderDetail(surname = "smith", offenderId = 99)
       ))
@@ -180,9 +182,22 @@ internal class MatchServiceTest {
     }
 
     @Test
+    fun `will return matched by ALL_SUPPLIED_ALIAS when matching all alias parameters`() {
+      whenever(searchClient.search(any()))
+          .thenReturn(resultsOf()) // full match
+          .thenReturn(resultsOf(
+              OffenderDetail(surname = "smith", offenderId = 99)
+          ))
+
+      val results = service.match(matchRequest)
+      assertThat(results.matchedBy).isEqualTo(ALL_SUPPLIED_ALIAS)
+    }
+
+    @Test
     fun `will return matched by HMPPS_KEY when matching on NOMS number`() {
       whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match
+          .thenReturn(resultsOf()) // full match alias
           .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99)
           ))
 
@@ -194,6 +209,7 @@ internal class MatchServiceTest {
     fun `will return matched by EXTERNAL_KEY when matching on CRO number`() {
       whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match
+          .thenReturn(resultsOf()) // full match alias
           .thenReturn(resultsOf()) // NOMS number match
           .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99)
           ))
@@ -206,6 +222,7 @@ internal class MatchServiceTest {
     fun `will return matched by EXTERNAL_KEY when matching on PNC number`() {
       whenever(searchClient.search(any()))
           .thenReturn(resultsOf()) // full match
+          .thenReturn(resultsOf()) // full match alias
           .thenReturn(resultsOf()) // NOMS number match
           .thenReturn(resultsOf()) // CRO number match
           .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99)
@@ -238,8 +255,8 @@ fun SearchRequest.mustMultiMatchNames(): Map<Any, List<String>> {
 }
 
 fun QueryBuilder.mustNames(): Map<String, Any> {
-  return when(this) {
-      is BoolQueryBuilder -> this.must().filterIsInstance<MatchQueryBuilder>().map { it.fieldName() to it.value() }.toMap()
+  return when (this) {
+    is BoolQueryBuilder -> this.must().filterIsInstance<MatchQueryBuilder>().map { it.fieldName() to it.value() }.toMap()
     else -> mapOf()
   }
 }
