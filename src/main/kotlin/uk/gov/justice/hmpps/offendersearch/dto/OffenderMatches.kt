@@ -15,6 +15,7 @@ data class OffenderMatches(
 @ApiModel
 enum class MatchedBy {
   ALL_SUPPLIED,
+  ALL_SUPPLIED_ALIAS,
   HMPPS_KEY,
   EXTERNAL_KEY,
   NAME,
