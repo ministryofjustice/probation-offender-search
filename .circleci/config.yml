@@ -84,6 +84,12 @@ workflows:
           requires:
             - deploy_dev
       - hmpps/deploy_env:
+          name: deploy_staging
+          env: "staging"
+          context: probation-offender-search-staging
+          requires:
+            - request-preprod-approval
+      - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
           context: probation-offender-search-preprod
