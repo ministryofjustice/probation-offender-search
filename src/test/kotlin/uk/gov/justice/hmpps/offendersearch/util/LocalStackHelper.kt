@@ -34,7 +34,8 @@ class LocalStackHelper(private val esClient: RestHighLevelClient, private val ma
     loadOffender("6", "/elasticsearchdata/antonio-gramsci-n03.json".resourceAsString())
     loadOffender("7", "/elasticsearchdata/anne-gramsci-n02.json".resourceAsString())
     loadOffender("8", "/elasticsearchdata/antonio-gramsci-c20.json".resourceAsString())
-    waitForOffenderLoading(8)
+    loadOffender("9", "/elasticsearchdata/tom-bloggs.json".resourceAsString())
+    waitForOffenderLoading(9)
   }
 
   fun loadData(offenders: List<String>) {

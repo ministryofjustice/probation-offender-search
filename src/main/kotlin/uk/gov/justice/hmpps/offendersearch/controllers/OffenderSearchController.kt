@@ -111,4 +111,15 @@ class OffenderSearchController(private val searchService: SearchService, private
     return searchService.findByListOfCRNs(crnList)
   }
 
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @ApiResponses(value = [
+    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+  ])
+  @PostMapping("/nomsNumbers")
+  @ApiOperation(value = "Match prisoners by a list of prisoner noms numbers", notes = "Requires ROLE_COMMUNITY role")
+  fun findByNomsNumbers(@ApiParam(required = true, name = "nomsList") @RequestBody nomsList : List<String>
+  ) : List<OffenderDetail> {
+    return searchService.findByListOfNoms(nomsList)
+  }
 }
