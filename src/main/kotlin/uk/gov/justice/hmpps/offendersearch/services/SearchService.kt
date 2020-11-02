@@ -16,11 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
-import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
-import uk.gov.justice.hmpps.offendersearch.dto.OffenderUserAccess
-import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
-import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
-import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
+import uk.gov.justice.hmpps.offendersearch.dto.*
 import java.util.*
 
 @Service
@@ -147,7 +143,6 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
   }
 
   fun findBy(inputList: List<String>, field: String): List<OffenderDetail> {
-
     val searchRequest = SearchRequest("offender")
     val searchSourceBuilder = SearchSourceBuilder()
 

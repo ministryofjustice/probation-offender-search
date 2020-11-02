@@ -102,3 +102,5 @@ abstract class LocalstackIntegrationBase {
 }
 
 fun Int.toCrn() = "X%05d".format(this)
+
+fun Int.toNomsNumber() = "G%d0GG".format(this)
