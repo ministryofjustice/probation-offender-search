@@ -139,42 +139,28 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
   }
 
   fun findByListOfCRNs(crnList: List<String>): List<OffenderDetail> {
-    val searchRequest = SearchRequest("offender")
-    val searchSourceBuilder = SearchSourceBuilder()
-
-    searchSourceBuilder.size(crnList.size)
-
-    val outerMustQuery = QueryBuilders
-        .boolQuery()
-
-    val matchingAllFieldsQuery = QueryBuilders
-        .boolQuery()
-    crnList.forEach {
-      matchingAllFieldsQuery
-          .should(QueryBuilders.matchQuery("otherIds.crn", it))
-    }
-    outerMustQuery.must(matchingAllFieldsQuery)
-    searchSourceBuilder.query(outerMustQuery.withDefaults())
-    searchRequest.source(searchSourceBuilder)
-    val response = hlClient.search(searchRequest)
-    return getSearchResult(response)
+    return findBy(crnList, "otherIds.crn")
   }
 
   fun findByListOfNoms(nomsList: List<String>): List<OffenderDetail> {
+    return findBy(nomsList, "otherIds.nomsNumber")
+  }
+
+  fun findBy(inputList: List<String>, field: String): List<OffenderDetail> {
 
     val searchRequest = SearchRequest("offender")
     val searchSourceBuilder = SearchSourceBuilder()
 
-    searchSourceBuilder.size(nomsList.size)
+    searchSourceBuilder.size(inputList.size)
 
     val outerMustQuery = QueryBuilders
             .boolQuery()
 
     val matchingAllFieldsQuery = QueryBuilders
             .boolQuery()
-    nomsList.forEach {
+    inputList.forEach {
       matchingAllFieldsQuery
-              .should(QueryBuilders.matchQuery("otherIds.nomsNumber", it))
+              .should(QueryBuilders.matchQuery(field, it))
     }
     outerMustQuery.must(matchingAllFieldsQuery)
     searchSourceBuilder.query(outerMustQuery.withDefaults())
