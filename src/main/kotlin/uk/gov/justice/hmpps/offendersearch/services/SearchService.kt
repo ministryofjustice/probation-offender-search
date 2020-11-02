@@ -159,4 +159,27 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
     val response = hlClient.search(searchRequest)
     return getSearchResult(response)
   }
+
+  fun findByListOfNoms(nomsList: List<String>): List<OffenderDetail> {
+
+    val searchRequest = SearchRequest("offender")
+    val searchSourceBuilder = SearchSourceBuilder()
+
+    searchSourceBuilder.size(nomsList.size)
+
+    val outerMustQuery = QueryBuilders
+            .boolQuery()
+
+    val matchingAllFieldsQuery = QueryBuilders
+            .boolQuery()
+    nomsList.forEach {
+      matchingAllFieldsQuery
+              .should(QueryBuilders.matchQuery("otherIds.nomsNumber", it))
+    }
+    outerMustQuery.must(matchingAllFieldsQuery)
+    searchSourceBuilder.query(outerMustQuery.withDefaults())
+    searchRequest.source(searchSourceBuilder)
+    val response = hlClient.search(searchRequest)
+    return getSearchResult(response)
+  }
 }
