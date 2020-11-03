@@ -134,4 +134,5 @@ class OffenderSearchController(private val searchService: SearchService, private
   ) : List<OffenderDetail> {
     return searchService.findByListOfLdu(lduList)
   }
+
 }

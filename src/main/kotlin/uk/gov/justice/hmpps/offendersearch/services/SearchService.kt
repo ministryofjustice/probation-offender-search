@@ -150,7 +150,6 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
     return findBy(lduList, "offenderManagers.team.localDeliveryUnit.code")
   }
 
-
   fun findBy(inputList: List<String>, field: String): List<OffenderDetail> {
     val searchRequest = SearchRequest("offender")
     val searchSourceBuilder = SearchSourceBuilder()
