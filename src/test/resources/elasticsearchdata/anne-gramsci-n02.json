@@ -20,7 +20,6 @@
 
   "offenderAliases": [
   ],
-
   "contactDetails": {
     "addresses": [
       {
@@ -42,7 +41,6 @@
     "phoneNumbers": [],
     "allowSMS": true
   },
-
   "offenderProfile": {
     "riskColour": "red",
     "ethnicity": "string",
@@ -77,6 +75,10 @@
       "partitionArea": "National Data",
       "softDeleted": false,
       "team": {
+        "localDeliveryUnit": {
+          "code": "ABC1234",
+          "description": "test"
+        },
         "description": "OMU A",
         "district": {
           "code": "C16CRCA",

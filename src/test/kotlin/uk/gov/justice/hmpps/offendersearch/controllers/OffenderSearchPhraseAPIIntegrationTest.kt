@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.http.MediaType
+import uk.gov.justice.hmpps.offendersearch.dto.KeyValue
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper.ClientUser
 import uk.gov.justice.hmpps.offendersearch.wiremock.CommunityApiExtension
@@ -1556,7 +1557,7 @@ data class OffenderReplacement(
     val town: String = "Sheffield",
     val county: String = "South Yorkshire",
     val postcode: String = "S29 1TT",
-    val offenderManagers: List<OffenderManagerReplacement> = listOf(OffenderManagerReplacement()),
+    val offenderManagers: List<OffenderManagerReplacement> = listOf(),
     val currentRestriction: Boolean = false,
     val currentExclusion: Boolean = false
 )
@@ -1570,5 +1571,17 @@ data class AliasReplacement(
 data class OffenderManagerReplacement(
     val code: String = "N02",
     val description: String = "NPS North East",
-    val active: Boolean = true
+    val active: Boolean = true,
+    val team: TeamReplacement = TeamReplacement()
 )
+
+data class TeamReplacement(
+        val localDeliveryUnit: KeyValue = KeyValue(code="ABC123", description="description"),
+        val description: String = "OMU A"
+)
+
+data class KeyValueReplacement(
+    val code: String = "ABC123",
+    val description: String = "description"
+)
+

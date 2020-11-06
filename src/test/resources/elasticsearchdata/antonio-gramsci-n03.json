@@ -75,11 +75,11 @@
         "surname": "Dolphin"
       },
       "partitionArea": "National Data",
-      "softDeleted": false,
+      "softDeleted": true,
       "team": {
-        "localDeliveryUnit":{
+        "localDeliveryUnit": {
           "code": "ABC123",
-          "description" : "temp"
+          "description": "test"
         },
         "description": "OMU A",
         "district": {
