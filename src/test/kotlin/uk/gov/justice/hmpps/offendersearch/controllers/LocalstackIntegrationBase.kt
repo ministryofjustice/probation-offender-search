@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
+import uk.gov.justice.hmpps.offendersearch.dto.Team
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 
@@ -83,7 +84,9 @@ abstract class LocalstackIntegrationBase {
             it.offenderManagers.find { replacement -> replacement.active == offenderManager.active }
                 .let { matchingReplacement ->
                   offenderManager.copy(
-                      probationArea = ProbationArea(code = matchingReplacement?.code, description = matchingReplacement?.description)
+                      probationArea = ProbationArea(code = matchingReplacement?.code, description = matchingReplacement?.description),
+                      team = Team(localDeliveryUnit = matchingReplacement?.team?.localDeliveryUnit),
+                      softDeleted = matchingReplacement?.softDeleted
                   )
                 }
           },

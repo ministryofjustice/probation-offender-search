@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.apache.lucene.search.join.ScoreMode
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.index.query.BoolQueryBuilder
@@ -25,146 +26,173 @@ import java.util.*
 
 @Service
 class SearchService @Autowired constructor(private val offenderAccessService: OffenderAccessService, private val hlClient: SearchClient, private val mapper: ObjectMapper) {
-  companion object {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
-    private const val MAX_SEARCH_RESULTS = 100
-  }
-
-  fun performSearch(searchOptions: SearchDto): List<OffenderDetail> {
-    validateSearchForm(searchOptions)
-    val searchRequest = SearchRequest("offender")
-    val searchSourceBuilder = SearchSourceBuilder()
-    // Set the maximum search result size (the default would otherwise be 10)
-    searchSourceBuilder.size(MAX_SEARCH_RESULTS)
-    val matchingAllFieldsQuery = buildMatchWithAllProvidedParameters(searchOptions)
-    searchSourceBuilder.query(matchingAllFieldsQuery.withDefaults())
-    searchRequest.source(searchSourceBuilder)
-    val response = hlClient.search(searchRequest)
-    return getSearchResult(response)
-  }
-
-  protected fun buildMatchWithAllProvidedParameters(searchOptions: SearchDto): BoolQueryBuilder {
-    val matchingAllFieldsQuery = QueryBuilders
-        .boolQuery()
-    with(searchOptions) {
-      croNumber.takeIf { !it.isNullOrBlank() }?.let {
-        matchingAllFieldsQuery
-            .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
-      }
-      pncNumber.takeIf { !it.isNullOrBlank() }?.let {
-        matchingAllFieldsQuery
-            .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
-      }
-      matchingAllFieldsQuery
-          .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
-          .mustWhenPresent("otherIds.crn", crn)
-          .mustWhenPresent("firstName", firstName)
-          .mustWhenPresent("surname", surname)
-          .mustWhenPresent("dateOfBirth", dateOfBirth)
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
+        private const val MAX_SEARCH_RESULTS = 100
+        private const val MAX_LDU_SEARCH_RESULTS = 10000
     }
 
-    return matchingAllFieldsQuery
-  }
-
-  private fun validateSearchForm(searchOptions: SearchDto) {
-    if (!searchOptions.isValid) {
-      log.warn("Invalid search  - no criteria provided")
-      throw BadRequestException("Invalid search  - please provide at least 1 search parameter")
-    }
-  }
-
-  private fun getSearchResult(response: SearchResponse): List<OffenderDetail> {
-    val searchHit = response.hits.hits
-    val offenderDetailList = ArrayList<OffenderDetail>()
-    if (searchHit.isNotEmpty()) {
-      Arrays.stream(searchHit)
-          .forEach { hit: SearchHit ->
-            offenderDetailList
-                .add(parseOffenderDetail(hit.sourceAsString))
-          }
-    }
-    return offenderDetailList
-  }
-
-  private fun parseOffenderDetail(src: String): OffenderDetail {
-    return try {
-      mapper.readValue(src, OffenderDetail::class.java)
-    } catch (t: Throwable) {
-      throw RuntimeException(t)
-    }
-  }
-
-  private fun BoolQueryBuilder.withDefaults(): BoolQueryBuilder? {
-    return this
-        .must("softDeleted", false)
-  }
-
-  fun performSearch(searchPhraseFilter: SearchPhraseFilter, pageable: Pageable, offenderUserAccess: OffenderUserAccess): SearchPhraseResults {
-
-    fun canAccessOffender(offenderDetail: OffenderDetail): Boolean {
-      return offenderAccessService.canAccessOffender(offenderDetail, offenderUserAccess)
+    fun performSearch(searchOptions: SearchDto): List<OffenderDetail> {
+        validateSearchForm(searchOptions)
+        val searchRequest = SearchRequest("offender")
+        val searchSourceBuilder = SearchSourceBuilder()
+        // Set the maximum search result size (the default would otherwise be 10)
+        searchSourceBuilder.size(MAX_SEARCH_RESULTS)
+        val matchingAllFieldsQuery = buildMatchWithAllProvidedParameters(searchOptions)
+        searchSourceBuilder.query(matchingAllFieldsQuery.withDefaults())
+        searchRequest.source(searchSourceBuilder)
+        val response = hlClient.search(searchRequest)
+        return getSearchResult(response)
     }
 
-    log.info("Search was: \"${searchPhraseFilter.phrase}\"")
-    val searchRequest = SearchRequest("offender")
-        .source(SearchSourceBuilder()
-            .query(buildQuery(searchPhraseFilter.phrase, searchPhraseFilter.matchAllTerms))
-            .size(pageable.pageSize)
-            .from(pageable.offset.toInt())
-            .sort("_score")
-            .sort("offenderId", DESC)
-            .trackTotalHits(true)
-            .aggregation(buildAggregationRequest())
-            .highlighter(buildHighlightRequest())
-            .suggest(SuggestBuilder()
-                .addSuggestion("surname", TermSuggestionBuilder("surname").text(searchPhraseFilter.phrase))
-                .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase)))
-            .apply {
-              buildProbationAreaFilter(searchPhraseFilter.probationAreasFilter)?.run { postFilter(this) }
+    protected fun buildMatchWithAllProvidedParameters(searchOptions: SearchDto): BoolQueryBuilder {
+        val matchingAllFieldsQuery = QueryBuilders
+                .boolQuery()
+        with(searchOptions) {
+            croNumber.takeIf { !it.isNullOrBlank() }?.let {
+                matchingAllFieldsQuery
+                        .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
             }
-        )
-    val response = hlClient.search(searchRequest)
-    return SearchPhraseResults(
-        content = extractOffenderDetailList(
-            hits = response.hits.hits,
-            phrase = searchPhraseFilter.phrase,
-            offenderParser = ::parseOffenderDetail,
-            accessChecker = ::canAccessOffender
-        ),
-        pageable = pageable,
-        total = response.hits.totalHits?.value ?: 0,
-        probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
-        suggestions = response.suggest
-    )
-  }
+            pncNumber.takeIf { !it.isNullOrBlank() }?.let {
+                matchingAllFieldsQuery
+                        .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+            }
+            matchingAllFieldsQuery
+                    .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
+                    .mustWhenPresent("otherIds.crn", crn)
+                    .mustWhenPresent("firstName", firstName)
+                    .mustWhenPresent("surname", surname)
+                    .mustWhenPresent("dateOfBirth", dateOfBirth)
+        }
 
-  fun findByListOfCRNs(crnList: List<String>): List<OffenderDetail> {
-    return findBy(crnList, "otherIds.crn")
-  }
-
-  fun findByListOfNoms(nomsList: List<String>): List<OffenderDetail> {
-    return findBy(nomsList, "otherIds.nomsNumber")
-  }
-
-  fun findBy(inputList: List<String>, field: String): List<OffenderDetail> {
-    val searchRequest = SearchRequest("offender")
-    val searchSourceBuilder = SearchSourceBuilder()
-
-    searchSourceBuilder.size(inputList.size)
-
-    val outerMustQuery = QueryBuilders
-            .boolQuery()
-
-    val matchingAllFieldsQuery = QueryBuilders
-            .boolQuery()
-    inputList.forEach {
-      matchingAllFieldsQuery
-              .should(QueryBuilders.matchQuery(field, it))
+        return matchingAllFieldsQuery
     }
-    outerMustQuery.must(matchingAllFieldsQuery)
-    searchSourceBuilder.query(outerMustQuery.withDefaults())
-    searchRequest.source(searchSourceBuilder)
-    val response = hlClient.search(searchRequest)
-    return getSearchResult(response)
-  }
+
+    private fun validateSearchForm(searchOptions: SearchDto) {
+        if (!searchOptions.isValid) {
+            log.warn("Invalid search  - no criteria provided")
+            throw BadRequestException("Invalid search  - please provide at least 1 search parameter")
+        }
+    }
+
+    private fun getSearchResult(response: SearchResponse): List<OffenderDetail> {
+        val searchHit = response.hits.hits
+        val offenderDetailList = ArrayList<OffenderDetail>()
+        if (searchHit.isNotEmpty()) {
+            Arrays.stream(searchHit)
+                    .forEach { hit: SearchHit ->
+                        offenderDetailList
+                                .add(parseOffenderDetail(hit.sourceAsString))
+                    }
+        }
+        return offenderDetailList
+    }
+
+    private fun parseOffenderDetail(src: String): OffenderDetail {
+        return try {
+            mapper.readValue(src, OffenderDetail::class.java)
+        } catch (t: Throwable) {
+            throw RuntimeException(t)
+        }
+    }
+
+    private fun BoolQueryBuilder.withDefaults(): BoolQueryBuilder? {
+        return this
+                .must("softDeleted", false)
+    }
+
+    fun performSearch(searchPhraseFilter: SearchPhraseFilter, pageable: Pageable, offenderUserAccess: OffenderUserAccess): SearchPhraseResults {
+
+        fun canAccessOffender(offenderDetail: OffenderDetail): Boolean {
+            return offenderAccessService.canAccessOffender(offenderDetail, offenderUserAccess)
+        }
+
+        log.info("Search was: \"${searchPhraseFilter.phrase}\"")
+        val searchRequest = SearchRequest("offender")
+                .source(SearchSourceBuilder()
+                        .query(buildQuery(searchPhraseFilter.phrase, searchPhraseFilter.matchAllTerms))
+                        .size(pageable.pageSize)
+                        .from(pageable.offset.toInt())
+                        .sort("_score")
+                        .sort("offenderId", DESC)
+                        .trackTotalHits(true)
+                        .aggregation(buildAggregationRequest())
+                        .highlighter(buildHighlightRequest())
+                        .suggest(SuggestBuilder()
+                                .addSuggestion("surname", TermSuggestionBuilder("surname").text(searchPhraseFilter.phrase))
+                                .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase)))
+                        .apply {
+                            buildProbationAreaFilter(searchPhraseFilter.probationAreasFilter)?.run { postFilter(this) }
+                        }
+                )
+        val response = hlClient.search(searchRequest)
+        return SearchPhraseResults(
+                content = extractOffenderDetailList(
+                        hits = response.hits.hits,
+                        phrase = searchPhraseFilter.phrase,
+                        offenderParser = ::parseOffenderDetail,
+                        accessChecker = ::canAccessOffender
+                ),
+                pageable = pageable,
+                total = response.hits.totalHits?.value ?: 0,
+                probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
+                suggestions = response.suggest
+        )
+    }
+
+    fun findByListOfCRNs(crnList: List<String>): List<OffenderDetail> {
+        return findBy(crnList, "otherIds.crn", crnList.size)
+    }
+
+    fun findByListOfNoms(nomsList: List<String>): List<OffenderDetail> {
+        return findBy(nomsList, "otherIds.nomsNumber", nomsList.size)
+    }
+
+    fun findByListOfLdu(lduList: List<String>): List<OffenderDetail> {
+        val searchRequest = SearchRequest("offender")
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.size(MAX_LDU_SEARCH_RESULTS)
+
+        val matchingAllFieldsQuery = QueryBuilders.boolQuery()
+        val outerMustQuery = QueryBuilders.boolQuery()
+
+        lduList.forEach {
+            matchingAllFieldsQuery.should(QueryBuilders.nestedQuery(
+                    "offenderManagers",
+                    QueryBuilders.boolQuery()
+                            .mustWhenPresent("offenderManagers.active", true)
+                            .mustWhenPresent("offenderManagers.softDeleted", false)
+                            .mustWhenPresent("offenderManagers.team.localDeliveryUnit.code", it),
+                    ScoreMode.Max
+            ))
+        }
+        outerMustQuery.must(matchingAllFieldsQuery)
+        searchSourceBuilder.query(outerMustQuery.withDefaults())
+        searchRequest.source(searchSourceBuilder)
+
+        val response = hlClient.search(searchRequest)
+        return getSearchResult(response)
+    }
+
+    fun findBy(inputList: List<String>, field: String, searchSourceBuilderSize: Int): List<OffenderDetail> {
+        val searchRequest = SearchRequest("offender")
+        val searchSourceBuilder = SearchSourceBuilder()
+
+        searchSourceBuilder.size(searchSourceBuilderSize)
+
+        val outerMustQuery = QueryBuilders
+                .boolQuery()
+
+        val matchingAllFieldsQuery = QueryBuilders
+                .boolQuery()
+        inputList.forEach {
+            matchingAllFieldsQuery
+                    .should(QueryBuilders.matchQuery(field, it))
+        }
+        outerMustQuery.must(matchingAllFieldsQuery)
+        searchSourceBuilder.query(outerMustQuery.withDefaults())
+        searchRequest.source(searchSourceBuilder)
+        val response = hlClient.search(searchRequest)
+        return getSearchResult(response)
+    }
 }

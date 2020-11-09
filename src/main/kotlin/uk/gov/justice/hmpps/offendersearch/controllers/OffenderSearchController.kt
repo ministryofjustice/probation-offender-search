@@ -122,4 +122,17 @@ class OffenderSearchController(private val searchService: SearchService, private
   ) : List<OffenderDetail> {
     return searchService.findByListOfNoms(nomsList)
   }
+
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @ApiResponses(value = [
+    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+  ])
+  @PostMapping("/ldu-codes")
+  @ApiOperation(value = "Match prisoners by a list of ldu codes", notes = "Requires ROLE_COMMUNITY role")
+  fun findByLduCode(@ApiParam(required = true, name = "lduList") @RequestBody lduList : List<String>
+  ) : List<OffenderDetail> {
+    return searchService.findByListOfLdu(lduList)
+  }
+
 }

@@ -77,6 +77,10 @@
       "partitionArea": "National Data",
       "softDeleted": false,
       "team": {
+        "localDeliveryUnit": {
+          "code": "N07ALL",
+          "description": "test"
+        },
         "description": "OMU A",
         "district": {
           "code": "C16CRCA",
