@@ -1577,8 +1577,8 @@ data class OffenderManagerReplacement(
 )
 
 data class TeamReplacement(
-      val localDeliveryUnit: KeyValue = KeyValue(code="ABC123", description="description"),
-      val description: String = "OMU A"
+    val localDeliveryUnit: KeyValue = KeyValue(code="ABC123", description="description"),
+    val description: String = "OMU A"
 )
 
 data class KeyValueReplacement(
