@@ -29,6 +29,7 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
     companion object {
         val log: Logger = LoggerFactory.getLogger(this::class.java)
         private const val MAX_SEARCH_RESULTS = 100
+        private const val MAX_LDU_SEARCH_RESULTS = 10000
     }
 
     fun performSearch(searchOptions: SearchDto): List<OffenderDetail> {
@@ -150,8 +151,7 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
     fun findByListOfLdu(lduList: List<String>): List<OffenderDetail> {
         val searchRequest = SearchRequest("offender")
         val searchSourceBuilder = SearchSourceBuilder()
-        //Maximum size allowed.
-        searchSourceBuilder.size(10000)
+        searchSourceBuilder.size(MAX_LDU_SEARCH_RESULTS)
 
         val matchingAllFieldsQuery = QueryBuilders.boolQuery()
         val outerMustQuery = QueryBuilders.boolQuery()
