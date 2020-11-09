@@ -1572,7 +1572,8 @@ data class OffenderManagerReplacement(
     val code: String = "N02",
     val description: String = "NPS North East",
     val active: Boolean = true,
-    val team: TeamReplacement = TeamReplacement()
+    val softDeleted: Boolean = false,
+    val team: TeamReplacement = TeamReplacement(),
 )
 
 data class TeamReplacement(

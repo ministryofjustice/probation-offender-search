@@ -82,8 +82,8 @@ abstract class LocalstackIntegrationBase {
                 .let { matchingReplacement ->
                   offenderManager.copy(
                       probationArea = ProbationArea(code = matchingReplacement?.code, description = matchingReplacement?.description),
-                      team = Team(localDeliveryUnit = matchingReplacement?.team?.localDeliveryUnit)
-
+                      team = Team(localDeliveryUnit = matchingReplacement?.team?.localDeliveryUnit),
+                      softDeleted = matchingReplacement?.softDeleted
                   )
                 }
           },
