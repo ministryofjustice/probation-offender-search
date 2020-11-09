@@ -11,7 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.hmpps.offendersearch.dto.*
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
+import uk.gov.justice.hmpps.offendersearch.dto.Team
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 

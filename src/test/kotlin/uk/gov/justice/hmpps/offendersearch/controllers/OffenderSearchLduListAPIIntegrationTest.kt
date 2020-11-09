@@ -17,7 +17,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                         offenderManagers = listOf(
                                 OffenderManagerReplacement(
                                         team = TeamReplacement(
-                                                localDeliveryUnit = KeyValue(code = "AAA123")
+                                                localDeliveryUnit = KeyValue(code = "N01ALL")
                                         )
                                 )
                         )
@@ -26,7 +26,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                         offenderManagers = listOf(
                                 OffenderManagerReplacement(
                                         team = TeamReplacement(
-                                                localDeliveryUnit = KeyValue(code = "BBB123")
+                                                localDeliveryUnit = KeyValue(code = "N02ALL")
                                         )
                                 )
                         )
@@ -36,7 +36,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                         offenderManagers = listOf(
                                 OffenderManagerReplacement(
                                         team = TeamReplacement(
-                                                localDeliveryUnit = KeyValue(code = "CCC123")
+                                                localDeliveryUnit = KeyValue(code = "N03ALL")
                                         )
                                 )
                         )
@@ -46,7 +46,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                                 OffenderManagerReplacement(
                                         active = false,
                                         team = TeamReplacement(
-                                                localDeliveryUnit = KeyValue(code = "HHH123")
+                                                localDeliveryUnit = KeyValue(code = "N04ALL")
                                         )
                                 )
                         )
@@ -56,7 +56,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                                 OffenderManagerReplacement(
                                         softDeleted = true,
                                         team = TeamReplacement(
-                                                localDeliveryUnit = KeyValue(code = "III123")
+                                                localDeliveryUnit = KeyValue(code = "N05ALL")
                                         )
                                 )
                         )
@@ -70,7 +70,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .auth()
                 .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("""["AAA123","BBB123"]""")
+                .body("""["N01ALL","N02ALL"]""")
                 .post("/ldu-codes")
                 .then()
                 .statusCode(403)
@@ -82,7 +82,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .auth()
                 .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("""["AAA123", "BBB123"]""")
+                .body("""["N01ALL", "N02ALL"]""")
                 .post("/ldu-codes")
                 .then()
                 .statusCode(200)
@@ -90,8 +90,8 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .body()
                 .`as`(Array<OffenderDetail>::class.java)
 
-        Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("AAA123")
-        Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("BBB123")
+        Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("N01ALL")
+        Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("N02ALL")
         Assertions.assertThat(results).hasSize(2)
     }
 
@@ -102,7 +102,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .auth()
                 .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("""["AAA123", "HHH123"]""")
+                .body("""["N01ALL", "N04ALL"]""")
                 .post("/ldu-codes")
                 .then()
                 .statusCode(200)
@@ -111,7 +111,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .`as`(Array<OffenderDetail>::class.java)
 
         Assertions.assertThat(results).hasSize(1)
-        Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("AAA123")
+        Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("N01ALL")
     }
 
     @Test
@@ -120,7 +120,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .auth()
                 .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("""["AAA123", "BBB123", "DDD123"]""")
+                .body("""["N01ALL", "N02ALL", "DDD123"]""")
                 .post("/ldu-codes")
                 .then()
                 .statusCode(200)
@@ -128,8 +128,8 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .body()
                 .`as`(Array<OffenderDetail>::class.java)
         Assertions.assertThat(results).hasSize(2)
-        Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("AAA123")
-        Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("BBB123")
+        Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("N01ALL")
+        Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.localDeliveryUnit?.code).contains("N02ALL")
     }
 
     @Test
@@ -138,7 +138,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .auth()
                 .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("""["CCC123"]""")
+                .body("""["N03ALL"]""")
                 .post("/ldu-codes")
                 .then()
                 .statusCode(200)
@@ -154,7 +154,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .auth()
                 .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("""["III123"]""")
+                .body("""["N05ALL"]""")
                 .post("/ldu-codes")
                 .then()
                 .statusCode(200)
@@ -183,7 +183,7 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .auth()
                 .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("""["DDD123", "EEE123"]""")
+                .body("""["AAA123", "BBB123"]""")
                 .post("/ldu-codes")
                 .then()
                 .statusCode(200)
@@ -191,5 +191,4 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
                 .`as`(Array<OffenderDetail>::class.java)
         Assertions.assertThat(results).hasSize(0)
     }
-
 }

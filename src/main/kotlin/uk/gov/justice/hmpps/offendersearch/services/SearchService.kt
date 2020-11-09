@@ -17,7 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
-import uk.gov.justice.hmpps.offendersearch.dto.*
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.offendersearch.dto.OffenderUserAccess
+import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
+import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
+import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import java.util.*
 
 @Service
