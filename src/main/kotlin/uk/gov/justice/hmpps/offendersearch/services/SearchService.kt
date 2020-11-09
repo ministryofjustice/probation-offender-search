@@ -150,7 +150,8 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
     fun findByListOfLdu(lduList: List<String>): List<OffenderDetail> {
         val searchRequest = SearchRequest("offender")
         val searchSourceBuilder = SearchSourceBuilder()
-        searchSourceBuilder.size(MAX_SEARCH_RESULTS)
+        //Maximum size allowed.
+        searchSourceBuilder.size(10000)
 
         val matchingAllFieldsQuery = QueryBuilders.boolQuery()
         val outerMustQuery = QueryBuilders.boolQuery()
