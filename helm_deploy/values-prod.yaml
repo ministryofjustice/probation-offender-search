@@ -33,3 +33,6 @@ whitelist:
   delius-aws-1: "52.56.115.146/32"
   delius-aws-2: "35.178.104.253/32"
   delius-aws-3: "35.177.47.45/32"
+  analyticplatform: "34.250.17.221/32"
+  analyticplatform: "34.251.212.33/32"
+  analyticplatform: "34.252.4.39/32"
