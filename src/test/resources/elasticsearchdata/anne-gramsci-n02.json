@@ -75,6 +75,7 @@
       "partitionArea": "National Data",
       "softDeleted": false,
       "team": {
+        "code" : "N07588",
         "localDeliveryUnit": {
           "code": "N08ALL",
           "description": "test"
