@@ -147,7 +147,7 @@ class OffenderSearchController(private val searchService: SearchService, private
   )
   @ApiOperation(value = "Match prisoners by a list of team codes", notes = "Requires ROLE_COMMUNITY role")
   fun findByTeamCode(
-          @ApiParam(required = true, name = "lduList")
+          @ApiParam(required = true, name = "teamCodeList")
           @PageableDefault  pageable: Pageable,
           @RequestBody teamCodeList : List<String>
   ) : List<OffenderDetail> {
