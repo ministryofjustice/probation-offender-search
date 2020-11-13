@@ -174,6 +174,32 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
         return getSearchResult(response)
     }
 
+    fun findByListOfTeamCodes(pageable: Pageable, teamCodeList: List<String>): List<OffenderDetail> {
+        val searchRequest = SearchRequest("offender")
+        val searchSourceBuilder = SearchSourceBuilder()
+        searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
+
+        val matchingAllFieldsQuery = QueryBuilders.boolQuery()
+        val outerMustQuery = QueryBuilders.boolQuery()
+
+        teamCodeList.forEach {
+            matchingAllFieldsQuery.should(QueryBuilders.nestedQuery(
+                    "offenderManagers",
+                    QueryBuilders.boolQuery()
+                            .mustWhenPresent("offenderManagers.active", true)
+                            .mustWhenPresent("offenderManagers.softDeleted", false)
+                            .mustWhenPresent("offenderManagers.team.code", it),
+                    ScoreMode.Max
+            ))
+        }
+        outerMustQuery.must(matchingAllFieldsQuery)
+        searchSourceBuilder.query(outerMustQuery.withDefaults())
+        searchRequest.source(searchSourceBuilder)
+
+        val response = hlClient.search(searchRequest)
+        return getSearchResult(response)
+    }
+
     fun findBy(inputList: List<String>, field: String, searchSourceBuilderSize: Int): List<OffenderDetail> {
         val searchRequest = SearchRequest("offender")
         val searchSourceBuilder = SearchSourceBuilder()

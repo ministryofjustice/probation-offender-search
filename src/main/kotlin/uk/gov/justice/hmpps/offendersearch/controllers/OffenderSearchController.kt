@@ -135,4 +135,23 @@ class OffenderSearchController(private val searchService: SearchService, private
     return searchService.findByListOfLdu(lduList)
   }
 
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @ApiResponses(value = [
+    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+  ])
+  @PostMapping("/team-codes")
+  @ApiImplicitParams(
+          ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
+          ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
+  )
+  @ApiOperation(value = "Match prisoners by a list of team codes", notes = "Requires ROLE_COMMUNITY role")
+  fun findByTeamCode(
+          @ApiParam(required = true, name = "teamCodeList")
+          @PageableDefault  pageable: Pageable,
+          @RequestBody teamCodeList : List<String>
+  ) : List<OffenderDetail> {
+    return searchService.findByListOfTeamCodes(pageable, teamCodeList)
+  }
+
 }
