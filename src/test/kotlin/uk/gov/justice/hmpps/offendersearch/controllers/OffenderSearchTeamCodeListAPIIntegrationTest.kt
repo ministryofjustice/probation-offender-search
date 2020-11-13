@@ -149,7 +149,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
         Assertions.assertThat(results).hasSize(3)
         Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.code).contains("N02000")
         Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
-        Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
+        Assertions.assertThat(results[2].offenderManagers?.get(0)?.team?.code).contains("N01000")
     }
 
     @Test
