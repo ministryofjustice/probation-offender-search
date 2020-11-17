@@ -1,15 +1,14 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
 internal fun String.canonicalPNCNumber() =
-    if (this.isPNCNumber()) {
-      toPNCNumber()
-    } else this
+  if (this.isPNCNumber()) {
+    toPNCNumber()
+  } else this
 
 internal fun String.canonicalPNCNumberOrNull(): String? =
-    if (this.isPNCNumber()) {
-      toPNCNumber()
-    } else null
-
+  if (this.isPNCNumber()) {
+    toPNCNumber()
+  } else null
 
 private fun String.isPNCNumber(): Boolean {
   return this.matches("^([0-9]{2}|[0-9]{4})/[0-9]+[a-zA-Z]".toRegex())

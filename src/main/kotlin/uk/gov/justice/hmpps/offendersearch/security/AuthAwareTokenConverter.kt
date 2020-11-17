@@ -8,17 +8,16 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 
-
 class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
   private val jwtGrantedAuthoritiesConverter: Converter<Jwt, Collection<GrantedAuthority>> = JwtGrantedAuthoritiesConverter()
 
   override fun convert(jwt: Jwt): AbstractAuthenticationToken {
     return AuthAwareAuthenticationToken(
-        jwt = jwt,
-        clientOnly = jwt.subject == jwt.claims["client_id"],
-        subject = jwt.subject,
-        deliusUser = "delius" == jwt.claims["auth_source"],
-        authorities = extractAuthorities(jwt)
+      jwt = jwt,
+      clientOnly = jwt.subject == jwt.claims["client_id"],
+      subject = jwt.subject,
+      deliusUser = "delius" == jwt.claims["auth_source"],
+      authorities = extractAuthorities(jwt)
     )
   }
 
@@ -34,9 +33,9 @@ class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
 }
 
 class AuthAwareAuthenticationToken(
-    jwt: Jwt,
-    val clientOnly: Boolean,
-    val deliusUser: Boolean,
-    val subject: String,
-    authorities: Collection<GrantedAuthority>
+  jwt: Jwt,
+  val clientOnly: Boolean,
+  val deliusUser: Boolean,
+  val subject: String,
+  authorities: Collection<GrantedAuthority>
 ) : JwtAuthenticationToken(jwt, authorities)

@@ -28,74 +28,73 @@ class ControllerAdvice {
   fun handleException(e: RestClientResponseException): ResponseEntity<ByteArray> {
     log.error("Unexpected exception", e)
     return ResponseEntity
-        .status(e.rawStatusCode)
-        .body(e.responseBodyAsByteArray)
+      .status(e.rawStatusCode)
+      .body(e.responseBodyAsByteArray)
   }
 
   @ExceptionHandler(RestClientException::class)
   fun handleException(e: RestClientException): ResponseEntity<ErrorResponse> {
     log.error("Unexpected exception", e)
     return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR.value(), developerMessage = e.message))
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR.value(), developerMessage = e.message))
   }
 
   @ExceptionHandler(AccessDeniedException::class)
   fun handleException(e: AccessDeniedException?): ResponseEntity<ErrorResponse> {
     log.debug("Forbidden (403) returned", e)
     return ResponseEntity
-        .status(HttpStatus.FORBIDDEN)
-        .body(ErrorResponse(status = HttpStatus.FORBIDDEN.value()))
+      .status(HttpStatus.FORBIDDEN)
+      .body(ErrorResponse(status = HttpStatus.FORBIDDEN.value()))
   }
 
   @ExceptionHandler(NotFoundException::class)
   fun handleException(e: NotFoundException): ResponseEntity<ErrorResponse> {
     log.debug("Not Found (404) returned", e)
     return ResponseEntity
-        .status(HttpStatus.NOT_FOUND)
-        .body(ErrorResponse(status = HttpStatus.NOT_FOUND.value(), developerMessage = e.message))
+      .status(HttpStatus.NOT_FOUND)
+      .body(ErrorResponse(status = HttpStatus.NOT_FOUND.value(), developerMessage = e.message))
   }
 
   @ExceptionHandler(UnauthorisedException::class)
   fun handleException(e: UnauthorisedException): ResponseEntity<ErrorResponse> {
     log.debug("Unauthorised (401) returned", e)
     return ResponseEntity
-        .status(HttpStatus.UNAUTHORIZED)
-        .body(ErrorResponse(status = HttpStatus.UNAUTHORIZED.value(), developerMessage = e.message))
+      .status(HttpStatus.UNAUTHORIZED)
+      .body(ErrorResponse(status = HttpStatus.UNAUTHORIZED.value(), developerMessage = e.message))
   }
 
   @ExceptionHandler(InvalidRequestException::class)
   fun handleException(e: InvalidRequestException): ResponseEntity<ErrorResponse> {
     log.debug("Bad Request (400) returned", e)
     return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
+      .status(HttpStatus.BAD_REQUEST)
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
   }
 
   @ExceptionHandler(BadRequestException::class)
   fun handleException(e: BadRequestException): ResponseEntity<ErrorResponse> {
     log.debug("Bad request (400) returned", e)
     return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
+      .status(HttpStatus.BAD_REQUEST)
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
   }
 
   @ExceptionHandler(JsonMappingException::class)
   fun handleException(e: JsonMappingException): ResponseEntity<ErrorResponse> {
     log.debug("Bad request (400) returned", e)
     return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
+      .status(HttpStatus.BAD_REQUEST)
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
   }
 
   @ExceptionHandler(MethodArgumentNotValidException::class)
   fun handleException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
     log.debug("Bad request (400) returned", e)
     return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.developerMessage()))
+      .status(HttpStatus.BAD_REQUEST)
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.developerMessage()))
   }
-
 }
 
 private fun MethodArgumentNotValidException.developerMessage(): String {

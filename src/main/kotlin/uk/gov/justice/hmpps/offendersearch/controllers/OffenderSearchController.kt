@@ -48,8 +48,9 @@ class OffenderSearchController(private val searchService: SearchService, private
   }
 
   @ApiOperation(
-      value = "Search for an offender in Delius ElasticSearch using a search phrase. Only offenders matching all request attributes will be returned",
-      notes = """The phrase can contain one or more of the following:
+    value = "Search for an offender in Delius ElasticSearch using a search phrase. Only offenders matching all request attributes will be returned",
+    notes =
+      """The phrase can contain one or more of the following:
         
         - first name
         - middle name
@@ -79,79 +80,91 @@ class OffenderSearchController(private val searchService: SearchService, private
             - the client has the scopes to allow it to ignore these lists; the two scopes to bypass this feature are "ignore_delius_exclusions_always" and "ignore_delius_inclusions_always"
          
       """,
-      nickname = "searchByPhrase"
+    nickname = "searchByPhrase"
   )
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-  @ApiResponses(value = [
-    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
-  ])
+  @ApiResponses(
+    value = [
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+    ]
+  )
   @PostMapping("/phrase")
   @ApiImplicitParams(
-      ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
-      ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
+    ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
+    ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
   )
   fun searchOffendersByPhrase(
-      @Valid @RequestBody searchPhraseFilter: SearchPhraseFilter,
-      @PageableDefault  pageable: Pageable
+    @Valid @RequestBody searchPhraseFilter: SearchPhraseFilter,
+    @PageableDefault pageable: Pageable
   ): SearchPhraseResults {
     log.info("Search called with {}", searchPhraseFilter)
     return searchService.performSearch(searchPhraseFilter, pageable, getOffenderUserAccessFromScopes(securityUserContext))
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-  @ApiResponses(value = [
-    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
-  ])
+  @ApiResponses(
+    value = [
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+    ]
+  )
   @PostMapping("/crns")
   @ApiOperation(value = "Match prisoners by a list of prisoner crns", notes = "Requires ROLE_COMMUNITY role")
-  fun findByIds(@ApiParam(required = true, name = "crnList") @RequestBody crnList : List<String>
-  ) : List<OffenderDetail> {
+  fun findByIds(
+    @ApiParam(required = true, name = "crnList") @RequestBody crnList: List<String>
+  ): List<OffenderDetail> {
     return searchService.findByListOfCRNs(crnList)
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-  @ApiResponses(value = [
-    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
-  ])
+  @ApiResponses(
+    value = [
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+    ]
+  )
   @PostMapping("/nomsNumbers")
   @ApiOperation(value = "Match prisoners by a list of prisoner noms numbers", notes = "Requires ROLE_COMMUNITY role")
-  fun findByNomsNumbers(@ApiParam(required = true, name = "nomsList") @RequestBody nomsList : List<String>
-  ) : List<OffenderDetail> {
+  fun findByNomsNumbers(
+    @ApiParam(required = true, name = "nomsList") @RequestBody nomsList: List<String>
+  ): List<OffenderDetail> {
     return searchService.findByListOfNoms(nomsList)
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-  @ApiResponses(value = [
-    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
-  ])
+  @ApiResponses(
+    value = [
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+    ]
+  )
   @PostMapping("/ldu-codes")
   @ApiOperation(value = "Match prisoners by a list of ldu codes", notes = "Requires ROLE_COMMUNITY role")
-  fun findByLduCode(@ApiParam(required = true, name = "lduList") @RequestBody lduList : List<String>
-  ) : List<OffenderDetail> {
+  fun findByLduCode(
+    @ApiParam(required = true, name = "lduList") @RequestBody lduList: List<String>
+  ): List<OffenderDetail> {
     return searchService.findByListOfLdu(lduList)
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-  @ApiResponses(value = [
-    ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-    ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
-  ])
+  @ApiResponses(
+    value = [
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+    ]
+  )
   @PostMapping("/team-codes")
   @ApiImplicitParams(
-          ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
-          ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
+    ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
+    ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
   )
   @ApiOperation(value = "Match prisoners by a list of team codes", notes = "Requires ROLE_COMMUNITY role")
   fun findByTeamCode(
-          @ApiParam(required = true, name = "teamCodeList")
-          @PageableDefault  pageable: Pageable,
-          @RequestBody teamCodeList : List<String>
-  ) : List<OffenderDetail> {
+    @ApiParam(required = true, name = "teamCodeList")
+    @PageableDefault pageable: Pageable,
+    @RequestBody teamCodeList: List<String>
+  ): List<OffenderDetail> {
     return searchService.findByListOfTeamCodes(pageable, teamCodeList)
   }
-
 }

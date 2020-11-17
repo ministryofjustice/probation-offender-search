@@ -11,23 +11,25 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.Builder
 
 @Configuration
-class WebClientConfiguration(@Value("\${community.endpoint.url}") private val communityRootUri: String,
-                             private val webClientBuilder: Builder,
-                             private val securityUserContext: SecurityUserContext) {
+class WebClientConfiguration(
+  @Value("\${community.endpoint.url}") private val communityRootUri: String,
+  private val webClientBuilder: Builder,
+  private val securityUserContext: SecurityUserContext
+) {
 
   @Bean
   fun communityApiWebClient(): WebClient {
     return webClientBuilder
-        .baseUrl(communityRootUri)
-        .filter(addAuthHeaderFilterFunction())
-        .build()
+      .baseUrl(communityRootUri)
+      .filter(addAuthHeaderFilterFunction())
+      .build()
   }
 
   private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction {
     return ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
       val filtered = ClientRequest.from(request)
-          .header(HttpHeaders.AUTHORIZATION, "Bearer ${securityUserContext.token}")
-          .build()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer ${securityUserContext.token}")
+        .build()
       next.exchange(filtered)
     }
   }
@@ -36,5 +38,4 @@ class WebClientConfiguration(@Value("\${community.endpoint.url}") private val co
   fun communityApiHealthWebClient(): WebClient {
     return webClientBuilder.baseUrl(communityRootUri).build()
   }
-
 }

@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-
 /*
   A user may or may not be present in the security context.
   When the user is present in the security context the following apply:
@@ -18,7 +17,7 @@ package uk.gov.justice.hmpps.offendersearch.dto
       a) client has ignoreInclusionsAlways scope
  */
 data class OffenderUserAccess(
-    val username: String? = null,
-    val ignoreExclusionsAlways: Boolean = false,
-    val ignoreInclusionsAlways: Boolean = false
+  val username: String? = null,
+  val ignoreExclusionsAlways: Boolean = false,
+  val ignoreInclusionsAlways: Boolean = false
 )

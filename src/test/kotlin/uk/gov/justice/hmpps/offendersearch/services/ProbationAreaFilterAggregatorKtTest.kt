@@ -11,7 +11,6 @@ import org.elasticsearch.common.xcontent.XContentType.JSON
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.NestedQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.index.query.TermQueryBuilder
 import org.elasticsearch.search.aggregations.Aggregation
 import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder
@@ -24,7 +23,6 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilde
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationAreaAggregation
-
 
 internal class ProbationAreaFilterAggregatorKtTest {
   @Nested
@@ -58,7 +56,8 @@ internal class ProbationAreaFilterAggregatorKtTest {
 internal class ExtractProbationAreaAggregation {
   @Test
   internal fun `will return no aggregations when empty`() {
-    val aggregations = """
+    val aggregations =
+      """
           { 
               "nested#offenderManagers": {
                 "doc_count":0,
@@ -74,7 +73,8 @@ internal class ExtractProbationAreaAggregation {
 
   @Test
   internal fun `will only return action manager areas aggregations when found`() {
-    val aggregations = """
+    val aggregations =
+      """
           {
             "nested#offenderManagers": {
               "doc_count": 12,
@@ -125,15 +125,16 @@ internal class ExtractProbationAreaAggregation {
             }
           }""".toAggregation()
     assertThat(extractProbationAreaAggregation(aggregations)).containsExactlyInAnyOrder(
-        ProbationAreaAggregation("N01", 3),
-        ProbationAreaAggregation("N07", 2),
-        ProbationAreaAggregation("N02", 1)
+      ProbationAreaAggregation("N01", 3),
+      ProbationAreaAggregation("N07", 2),
+      ProbationAreaAggregation("N02", 1)
     )
   }
 
   @Test
   internal fun `will return no aggregations when no active managers found`() {
-    val aggregations = """
+    val aggregations =
+      """
           {
             "nested#offenderManagers": {
               "doc_count": 12,
@@ -165,7 +166,8 @@ internal class ExtractProbationAreaAggregation {
 
   @Test
   internal fun `will return no aggregations when no probation area codes found`() {
-    val aggregations = """
+    val aggregations =
+      """
           {
             "nested#offenderManagers": {
               "doc_count": 12,
@@ -222,20 +224,20 @@ internal class BuildProbationAreaFilter {
 fun getDefaultNamedXContents(): List<Entry> {
   // required by ES to parse the contents of our aggregations
   val contentParsers = mapOf(
-      StringTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedStringTerms.fromXContent(parser, name as String) },
-      NestedAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedNested.fromXContent(parser, name as String) },
-      LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedLongTerms.fromXContent(parser, name as String) }
+    StringTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedStringTerms.fromXContent(parser, name as String) },
+    NestedAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedNested.fromXContent(parser, name as String) },
+    LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedLongTerms.fromXContent(parser, name as String) }
   )
   return contentParsers
-      .toList()
-      .map { Entry(Aggregation::class.java, ParseField(it.first), it.second) }
+    .toList()
+    .map { Entry(Aggregation::class.java, ParseField(it.first), it.second) }
 }
 
 fun String.toAggregation(): Aggregations {
   val parser = JSON.xContent().createParser(
-      NamedXContentRegistry(getDefaultNamedXContents()),
-      DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
-      this
+    NamedXContentRegistry(getDefaultNamedXContents()),
+    DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
+    this
   )
   parser.nextToken() // simulate ES moving to first aggregation
   return Aggregations.fromXContent(parser)

@@ -14,7 +14,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 import uk.gov.justice.hmpps.offendersearch.controllers.OffenderSearchController
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Date
+import java.util.Optional
 
 @Configuration
 @EnableSwagger2
@@ -22,20 +23,25 @@ class DocketConfiguration {
   @Autowired(required = false)
   private val buildProperties: BuildProperties? = null
 
-
   @Bean
   fun api(): Docket {
     val apiInfo = ApiInfo(
-        "Offender search API Documentation",
-        "API for searching for offenders in Delius.",
-        version, "", contactInfo(), "", "", emptyList())
+      "Offender search API Documentation",
+      "API for searching for offenders in Delius.",
+      version,
+      "",
+      contactInfo(),
+      "",
+      "",
+      emptyList()
+    )
     val docket = Docket(DocumentationType.SWAGGER_2)
-        .useDefaultResponseMessages(false)
-        .apiInfo(apiInfo)
-        .select()
-        .apis(RequestHandlerSelectors.basePackage(OffenderSearchController::class.java.getPackage().name))
-        .paths(PathSelectors.any())
-        .build()
+      .useDefaultResponseMessages(false)
+      .apiInfo(apiInfo)
+      .select()
+      .apis(RequestHandlerSelectors.basePackage(OffenderSearchController::class.java.getPackage().name))
+      .paths(PathSelectors.any())
+      .build()
     docket.genericModelSubstitutes(Optional::class.java)
     docket.directModelSubstitute(ZonedDateTime::class.java, Date::class.java)
     docket.directModelSubstitute(LocalDateTime::class.java, Date::class.java)
@@ -50,9 +56,9 @@ class DocketConfiguration {
 
   private fun contactInfo(): Contact {
     return Contact(
-        "HMPPS Digital Studio",
-        "",
-        "feedback@digital.justice.gov.uk")
+      "HMPPS Digital Studio",
+      "",
+      "feedback@digital.justice.gov.uk"
+    )
   }
-
 }

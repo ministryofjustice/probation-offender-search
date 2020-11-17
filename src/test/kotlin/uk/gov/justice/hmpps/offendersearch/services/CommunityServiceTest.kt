@@ -25,7 +25,8 @@ import uk.gov.justice.hmpps.offendersearch.wiremock.CommunityApiExtension
 import java.security.KeyPair
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 @ExtendWith(CommunityApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,17 +53,22 @@ internal class CommunityServiceTest {
     @Test
     fun `will get access limitation using the crn `() {
 
-      CommunityApiExtension.communityApi.stubUserAccess("X12345", """
+      CommunityApiExtension.communityApi.stubUserAccess(
+        "X12345",
+        """
         {
             "userRestricted": false,
             "userExcluded": false
         }
-      """.trimIndent())
+        """.trimIndent()
+      )
 
       val accessLimitation = service.canAccessOffender("X12345")
 
-      CommunityApiExtension.communityApi.verify(getRequestedFor(urlEqualTo("/secure/offenders/crn/X12345/userAccess"))
-          .withHeader("Authorization", WireMock.equalTo("Bearer ${jwt.tokenValue}")))
+      CommunityApiExtension.communityApi.verify(
+        getRequestedFor(urlEqualTo("/secure/offenders/crn/X12345/userAccess"))
+          .withHeader("Authorization", WireMock.equalTo("Bearer ${jwt.tokenValue}"))
+      )
 
       assertThat(accessLimitation.userExcluded).isFalse
       assertThat(accessLimitation.userRestricted).isFalse
@@ -71,17 +77,22 @@ internal class CommunityServiceTest {
     @Test
     fun `will handle access denied`() {
 
-      CommunityApiExtension.communityApi.stubUserAccessDenied("X12345", """
+      CommunityApiExtension.communityApi.stubUserAccessDenied(
+        "X12345",
+        """
         {
             "userRestricted": false,
             "userExcluded": true
         }
-      """.trimIndent())
+        """.trimIndent()
+      )
 
       val accessLimitation = service.canAccessOffender("X12345")
 
-      CommunityApiExtension.communityApi.verify(getRequestedFor(urlEqualTo("/secure/offenders/crn/X12345/userAccess"))
-          .withHeader("Authorization", WireMock.equalTo("Bearer ${jwt.tokenValue}")))
+      CommunityApiExtension.communityApi.verify(
+        getRequestedFor(urlEqualTo("/secure/offenders/crn/X12345/userAccess"))
+          .withHeader("Authorization", WireMock.equalTo("Bearer ${jwt.tokenValue}"))
+      )
 
       assertThat(accessLimitation.userExcluded).isTrue
       assertThat(accessLimitation.userRestricted).isFalse
@@ -107,28 +118,27 @@ internal class CommunityServiceTest {
 
   private fun createJwt(): Jwt {
     val claims = mapOf(
-        "authorities" to listOf("ROLE_COMMUNITY"),
-        "scope" to listOf("read"),
-        "client_id" to "new-tech",
-        "auth_source" to "delius",
-        "user_name" to "maryblack",
-        "sub" to "maryblack",
+      "authorities" to listOf("ROLE_COMMUNITY"),
+      "scope" to listOf("read"),
+      "client_id" to "new-tech",
+      "auth_source" to "delius",
+      "user_name" to "maryblack",
+      "sub" to "maryblack",
     )
     val expiresAt = LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC)
     val token = Jwts.builder()
-        .setId(UUID.randomUUID().toString())
-        .addClaims(claims)
-        .setExpiration(Date(expiresAt.toEpochMilli()))
-        .signWith(SignatureAlgorithm.RS256, keyPair.private)
-        .compact()
+      .setId(UUID.randomUUID().toString())
+      .addClaims(claims)
+      .setExpiration(Date(expiresAt.toEpochMilli()))
+      .signWith(SignatureAlgorithm.RS256, keyPair.private)
+      .compact()
 
     return Jwt(
-        token,
-        LocalDateTime.now().toInstant(ZoneOffset.UTC),
-        expiresAt,
-        mapOf("a" to "b"),
-        claims,
+      token,
+      LocalDateTime.now().toInstant(ZoneOffset.UTC),
+      expiresAt,
+      mapOf("a" to "b"),
+      claims,
     )
   }
 }
-

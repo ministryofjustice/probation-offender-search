@@ -22,9 +22,9 @@ internal class CanonicalPncKtTest {
     assertThat("03/0000567A".canonicalPNCNumber()).isEqualTo("03/567a")
     assertThat("03/0000067A".canonicalPNCNumber()).isEqualTo("03/67a")
     assertThat("03/0000007A".canonicalPNCNumber()).isEqualTo("03/7a")
-    assertThat("03/0000000A".canonicalPNCNumber()).isEqualTo("03/0a")    
+    assertThat("03/0000000A".canonicalPNCNumber()).isEqualTo("03/0a")
   }
-  
+
   @Test
   internal fun `will not convert to canonical form of PNC when it is not valid`() {
     assertThat("2003/A".canonicalPNCNumber()).isEqualTo("2003/A")
@@ -39,6 +39,6 @@ internal class CanonicalPncKtTest {
     assertThat("111111/11A".canonicalPNCNumber()).isEqualTo("111111/11A")
     assertThat("SF68/945674U".canonicalPNCNumber()).isEqualTo("SF68/945674U")
     assertThat("".canonicalPNCNumber()).isEqualTo("")
-    assertThat("2010/BBBBBBBA".canonicalPNCNumber()).isEqualTo("2010/BBBBBBBA")   
+    assertThat("2010/BBBBBBBA".canonicalPNCNumber()).isEqualTo("2010/BBBBBBBA")
   }
 }

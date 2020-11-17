@@ -17,15 +17,16 @@ const val probationAreaCodeBucket = "byProbationAreaCode"
 
 internal fun buildAggregationRequest(): NestedAggregationBuilder {
   return AggregationBuilders
-      .nested(offenderManagersAggregation, "offenderManagers")
-      .subAggregation(AggregationBuilders
-          .terms(activeOffenderManagerBucket)
-          .field("offenderManagers.active").subAggregation(
-              AggregationBuilders
-                  .terms(probationAreaCodeBucket).size(1000)
-                  .field("offenderManagers.probationArea.code")
-          )
-      )
+    .nested(offenderManagersAggregation, "offenderManagers")
+    .subAggregation(
+      AggregationBuilders
+        .terms(activeOffenderManagerBucket)
+        .field("offenderManagers.active").subAggregation(
+          AggregationBuilders
+            .terms(probationAreaCodeBucket).size(1000)
+            .field("offenderManagers.probationArea.code")
+        )
+    )
 }
 
 internal fun extractProbationAreaAggregation(aggregations: Aggregations): List<ProbationAreaAggregation> {
@@ -43,17 +44,23 @@ internal fun extractProbationAreaAggregation(aggregations: Aggregations): List<P
 
 internal fun buildProbationAreaFilter(probationAreasCodes: List<String>): BoolQueryBuilder? {
   return probationAreasCodes
-      .takeIf { it.isNotEmpty() }
-      ?.let { probationAreaFilter(it) }
+    .takeIf { it.isNotEmpty() }
+    ?.let { probationAreaFilter(it) }
 }
 
 private fun probationAreaFilter(probationAreasCodes: List<String>): BoolQueryBuilder =
-    QueryBuilders
-        .boolQuery()
-        .shouldAll(probationAreasCodes
-            .map {
-              nestedQuery("offenderManagers", QueryBuilders.boolQuery().apply {
-                must(QueryBuilders.termQuery("offenderManagers.active", true))
-                must(QueryBuilders.termQuery("offenderManagers.probationArea.code", it))
-              }, None)
-            })
+  QueryBuilders
+    .boolQuery()
+    .shouldAll(
+      probationAreasCodes
+        .map {
+          nestedQuery(
+            "offenderManagers",
+            QueryBuilders.boolQuery().apply {
+              must(QueryBuilders.termQuery("offenderManagers.active", true))
+              must(QueryBuilders.termQuery("offenderManagers.probationArea.code", it))
+            },
+            None
+          )
+        }
+    )

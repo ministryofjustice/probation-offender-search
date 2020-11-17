@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import java.time.LocalDate
 
-internal class Highlighting {
+internal class HighlightingTest {
 
   @Nested
   inner class BuildHighlightRequest {
@@ -39,36 +39,41 @@ internal class Highlighting {
     fun `will copy highlights for any fields found`() {
       val offenderDetail = OffenderDetail(offenderId = 99)
       val highlights = mapOf(
-          "surname" to HighlightField("surname", arrayOf(Text("Smith"))),
-          "offenderAlias.surname" to HighlightField("surname", arrayOf(Text("smith")))
+        "surname" to HighlightField("surname", arrayOf(Text("Smith"))),
+        "offenderAlias.surname" to HighlightField("surname", arrayOf(Text("smith")))
       )
       assertThat(offenderDetail.mergeHighlights(highlightFields = highlights, phrase = "smith").highlight)
-          .containsExactlyEntriesOf(mapOf(
-              "surname" to listOf("Smith"),
-              "offenderAlias.surname" to listOf("smith")
-          ))
+        .containsExactlyEntriesOf(
+          mapOf(
+            "surname" to listOf("Smith"),
+            "offenderAlias.surname" to listOf("smith")
+          )
+        )
     }
 
     @Test
     fun `will highlight date of birth when format is same`() {
       val offenderDetail = OffenderDetail(offenderId = 99, dateOfBirth = LocalDate.parse("1965-07-19"))
       val highlights = mapOf(
-          "dateOfBirth" to HighlightField("dateOfBirth", arrayOf(Text("1965-07-19")))
+        "dateOfBirth" to HighlightField("dateOfBirth", arrayOf(Text("1965-07-19")))
       )
       assertThat(offenderDetail.mergeHighlights(highlightFields = highlights, phrase = "1965-07-19").highlight)
-          .containsExactlyEntriesOf(mapOf(
-              "dateOfBirth" to listOf("1965-07-19")
-          ))
+        .containsExactlyEntriesOf(
+          mapOf(
+            "dateOfBirth" to listOf("1965-07-19")
+          )
+        )
     }
 
     @Test
     fun `will highlight date of birth even when format is different`() {
       val offenderDetail = OffenderDetail(offenderId = 99, dateOfBirth = LocalDate.parse("1965-07-19"))
       assertThat(offenderDetail.mergeHighlights(mapOf(), "19/7/1965").highlight)
-          .containsExactlyEntriesOf(mapOf(
-              "dateOfBirth" to listOf("1965-07-19")
-          ))
+        .containsExactlyEntriesOf(
+          mapOf(
+            "dateOfBirth" to listOf("1965-07-19")
+          )
+        )
     }
   }
-
 }
