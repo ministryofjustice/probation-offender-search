@@ -148,10 +148,10 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
         return findBy(nomsList, "otherIds.nomsNumber", nomsList.size)
     }
 
-    fun findByListOfLdu(lduList: List<String>): List<OffenderDetail> {
+    fun findByListOfLdu(pageable: Pageable, lduList: List<String>): List<OffenderDetail> {
         val searchRequest = SearchRequest("offender")
         val searchSourceBuilder = SearchSourceBuilder()
-        searchSourceBuilder.size(MAX_LDU_SEARCH_RESULTS)
+        searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
 
         val matchingAllFieldsQuery = QueryBuilders.boolQuery()
         val outerMustQuery = QueryBuilders.boolQuery()

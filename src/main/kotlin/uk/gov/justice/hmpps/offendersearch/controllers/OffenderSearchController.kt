@@ -129,10 +129,15 @@ class OffenderSearchController(private val searchService: SearchService, private
     ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
   ])
   @PostMapping("/ldu-codes")
+  @ApiImplicitParams(
+          ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
+          ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
+  )
   @ApiOperation(value = "Match prisoners by a list of ldu codes", notes = "Requires ROLE_COMMUNITY role")
-  fun findByLduCode(@ApiParam(required = true, name = "lduList") @RequestBody lduList : List<String>
+  fun findByLduCode(@ApiParam(required = true, name = "lduList") @RequestBody lduList : List<String>,
+                    @PageableDefault pageable: Pageable
   ) : List<OffenderDetail> {
-    return searchService.findByListOfLdu(lduList)
+    return searchService.findByListOfLdu(pageable, lduList)
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
