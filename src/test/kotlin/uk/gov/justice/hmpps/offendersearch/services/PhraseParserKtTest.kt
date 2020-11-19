@@ -106,7 +106,6 @@ internal class PhraseParserKtTest {
       val pncNumbers = extractPNCNumberLikeTerms("2003/1234567A 2003/0000001A 03/1234567A 03/00001A")
       assertThat(pncNumbers).containsExactly("2003/1234567a", "2003/1a", "03/1234567a", "03/1a")
     }
-
   }
 
   @Nested
@@ -158,8 +157,6 @@ internal class PhraseParserKtTest {
       val croNumbers = extractCRONumberLikeTerms("123456/99Z 1/99Z SF94/123456A SF94/1A")
       assertThat(croNumbers).containsExactly("123456/99z", "1/99z", "sf94/123456a", "sf94/1a")
     }
-
-
   }
 
   @Nested

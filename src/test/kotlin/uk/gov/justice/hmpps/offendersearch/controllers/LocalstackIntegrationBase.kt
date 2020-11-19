@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
@@ -20,7 +18,6 @@ import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
-@DirtiesContext(classMode = BEFORE_CLASS)
 abstract class LocalstackIntegrationBase {
 
   @Autowired
@@ -49,55 +46,54 @@ abstract class LocalstackIntegrationBase {
 
     val offendersToLoad = offenders.map {
       templateOffender.copy(
-          offenderId = it.offenderId,
-          surname = it.surname,
-          firstName = it.firstName,
-          middleNames = it.middleNames,
-          dateOfBirth = it.dateOfBirth,
-          softDeleted = it.deleted,
-          gender = it.gender,
-          otherIds = templateOffender.otherIds?.copy(
-              crn = it.crn,
-              nomsNumber = it.nomsNumber,
-              croNumber = it.croNumber,
-              pncNumber = it.pncNumber,
-              niNumber = it.niNumber
-          ),
-          offenderAliases = it.aliases.map { alias ->
-            OffenderAlias(
-                firstName = alias.firstName,
-                surname = alias.surname,
-                dateOfBirth = alias.dateOfBirth
-            )
-          },
-          contactDetails = templateOffender.contactDetails?.copy(
-              addresses = templateOffender.contactDetails?.addresses?.map { address ->
-                if (address.status?.code == "M") address.copy(
-                    streetName = it.streetName,
-                    town = it.town,
-                    county = it.county,
-                    postcode = it.postcode
-                ) else address
-              }
-          ),
-          offenderManagers = templateOffender.offenderManagers?.map { offenderManager ->
-            it.offenderManagers.find { replacement -> replacement.active == offenderManager.active }
-                .let { matchingReplacement ->
-                  offenderManager.copy(
-                      probationArea = ProbationArea(code = matchingReplacement?.code, description = matchingReplacement?.description),
-                      team = Team(code = matchingReplacement?.team?.code, localDeliveryUnit = matchingReplacement?.team?.localDeliveryUnit),
-                      softDeleted = matchingReplacement?.softDeleted
-                  )
-                }
-          },
-          currentExclusion = it.currentExclusion,
-          currentRestriction = it.currentRestriction
+        offenderId = it.offenderId,
+        surname = it.surname,
+        firstName = it.firstName,
+        middleNames = it.middleNames,
+        dateOfBirth = it.dateOfBirth,
+        softDeleted = it.deleted,
+        gender = it.gender,
+        otherIds = templateOffender.otherIds?.copy(
+          crn = it.crn,
+          nomsNumber = it.nomsNumber,
+          croNumber = it.croNumber,
+          pncNumber = it.pncNumber,
+          niNumber = it.niNumber
+        ),
+        offenderAliases = it.aliases.map { alias ->
+          OffenderAlias(
+            firstName = alias.firstName,
+            surname = alias.surname,
+            dateOfBirth = alias.dateOfBirth
+          )
+        },
+        contactDetails = templateOffender.contactDetails?.copy(
+          addresses = templateOffender.contactDetails?.addresses?.map { address ->
+            if (address.status?.code == "M") address.copy(
+              streetName = it.streetName,
+              town = it.town,
+              county = it.county,
+              postcode = it.postcode
+            ) else address
+          }
+        ),
+        offenderManagers = templateOffender.offenderManagers?.map { offenderManager ->
+          it.offenderManagers.find { replacement -> replacement.active == offenderManager.active }
+            .let { matchingReplacement ->
+              offenderManager.copy(
+                probationArea = ProbationArea(code = matchingReplacement?.code, description = matchingReplacement?.description),
+                team = Team(code = matchingReplacement?.team?.code, localDeliveryUnit = matchingReplacement?.team?.localDeliveryUnit),
+                softDeleted = matchingReplacement?.softDeleted
+              )
+            }
+        },
+        currentExclusion = it.currentExclusion,
+        currentRestriction = it.currentRestriction
       )
     }.map { objectMapper.writeValueAsString(it) }
 
-    LocalStackHelper(esClient, "v${mappingVersion}").loadData(offendersToLoad)
+    LocalStackHelper(esClient, "v$mappingVersion").loadData(offendersToLoad)
   }
-
 
   private fun String.readResourceAsText(): String {
     return LocalstackIntegrationBase::class.java.getResource(this).readText()

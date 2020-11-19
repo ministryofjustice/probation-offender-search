@@ -16,7 +16,13 @@ import com.amazonaws.DefaultRequest
 import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.auth.Signer
 import com.amazonaws.http.HttpMethodName
-import org.apache.http.*
+import org.apache.http.Header
+import org.apache.http.HttpEntityEnclosingRequest
+import org.apache.http.HttpException
+import org.apache.http.HttpHost
+import org.apache.http.HttpRequest
+import org.apache.http.HttpRequestInterceptor
+import org.apache.http.NameValuePair
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.entity.BasicHttpEntity
 import org.apache.http.message.BasicHeader
@@ -25,32 +31,28 @@ import org.apache.http.protocol.HttpCoreContext
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.*
+import java.util.ArrayList
+import java.util.TreeMap
 
 /**
  * An [HttpRequestInterceptor] that signs requests using any AWS [Signer]
  * and [AWSCredentialsProvider].
  */
-class AWSRequestSigningApacheInterceptor
-/**
- *
- * @param service service that we're connecting to
- * @param signer particular signer implementation
- * @param awsCredentialsProvider source of AWS credentials for signing
- */(
-    /**
-     * The service that we're connecting to. Technically not necessary.
-     * Could be used by a future Signer, though.
-     */
-    private val service: String,
-    /**
-     * The particular signer implementation.
-     */
-    private val signer: Signer,
-    /**
-     * The source of AWS credentials for signing.
-     */
-    private val awsCredentialsProvider: AWSCredentialsProvider) : HttpRequestInterceptor {
+class AWSRequestSigningApacheInterceptor(
+  /**
+   * The service that we're connecting to. Technically not necessary.
+   * Could be used by a future Signer, though.
+   */
+  private val service: String,
+  /**
+   * The particular signer implementation.
+   */
+  private val signer: Signer,
+  /**
+   * The source of AWS credentials for signing.
+   */
+  private val awsCredentialsProvider: AWSCredentialsProvider
+) : HttpRequestInterceptor {
 
   /**
    * {@inheritDoc}
@@ -130,10 +132,13 @@ class AWSRequestSigningApacheInterceptor
      * @return true if the given header should be excluded when signing
      */
     private fun skipHeader(header: Header): Boolean {
-      return (("content-length".equals(header.name, ignoreCase = true)
-          && "0" == header.value) // Strip Content-Length: 0
-          || "host".equals(header.name, ignoreCase = true) // Host comes from endpoint
-          )
+      return (
+        (
+          "content-length".equals(header.name, ignoreCase = true) &&
+            "0" == header.value
+          ) || // Strip Content-Length: 0
+          "host".equals(header.name, ignoreCase = true) // Host comes from endpoint
+        )
     }
 
     /**
@@ -149,5 +154,4 @@ class AWSRequestSigningApacheInterceptor
       return headers
     }
   }
-
 }

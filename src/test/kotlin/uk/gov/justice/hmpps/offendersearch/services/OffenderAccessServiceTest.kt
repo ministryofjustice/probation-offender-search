@@ -26,21 +26,21 @@ internal class OffenderAccessServiceTest {
   inner class DoesNotHaveEitherList {
 
     val offender = OffenderDetail(
-        offenderId = 1,
-        currentExclusion = false,
-        currentRestriction = false,
-        otherIds = IDs(crn = "X00001")
+      offenderId = 1,
+      currentExclusion = false,
+      currentRestriction = false,
+      otherIds = IDs(crn = "X00001")
     )
 
     @Test
     fun `Won't make an access check regardless of ignores `() {
       offenderAccessService.canAccessOffender(
-          offender,
-          OffenderUserAccess(
-              "sandra.black",
-              ignoreExclusionsAlways = false,
-              ignoreInclusionsAlways = false
-          )
+        offender,
+        OffenderUserAccess(
+          "sandra.black",
+          ignoreExclusionsAlways = false,
+          ignoreInclusionsAlways = false
+        )
       )
       verify(communityService, never()).canAccessOffender(any())
     }
@@ -48,48 +48,49 @@ internal class OffenderAccessServiceTest {
     @Test
     fun `Will return true `() {
       val canAccess = offenderAccessService.canAccessOffender(
-          offender,
-          OffenderUserAccess(
-              "sandra.black",
-              ignoreExclusionsAlways = false,
-              ignoreInclusionsAlways = false
-          )
+        offender,
+        OffenderUserAccess(
+          "sandra.black",
+          ignoreExclusionsAlways = false,
+          ignoreInclusionsAlways = false
+        )
       )
       assertThat(canAccess).isTrue
     }
-
   }
 
   @Nested
   inner class HasExclusionList {
     val offender = OffenderDetail(
-        offenderId = 1,
-        currentExclusion = true,
-        currentRestriction = false,
-        otherIds = IDs(crn = "X00001")
+      offenderId = 1,
+      currentExclusion = true,
+      currentRestriction = false,
+      otherIds = IDs(crn = "X00001")
     )
 
     @Nested
     inner class WhenIgnoreExclusions {
       private val offenderUserAccess = OffenderUserAccess(
-          "sandra.black",
-          ignoreExclusionsAlways = true,
-          ignoreInclusionsAlways = false
+        "sandra.black",
+        ignoreExclusionsAlways = true,
+        ignoreInclusionsAlways = false
       )
 
       @Test
       fun `Won't make an access check`() {
         offenderAccessService.canAccessOffender(
-            offender,
-            offenderUserAccess)
+          offender,
+          offenderUserAccess
+        )
         verify(communityService, never()).canAccessOffender(any())
       }
 
       @Test
       fun `Will return true `() {
         val canAccess = offenderAccessService.canAccessOffender(
-            offender,
-            offenderUserAccess)
+          offender,
+          offenderUserAccess
+        )
         assertThat(canAccess).isTrue
       }
     }
@@ -100,16 +101,17 @@ internal class OffenderAccessServiceTest {
       inner class WhenHasUsername {
 
         private val offenderUserAccess = OffenderUserAccess(
-            "sandra.black",
-            ignoreExclusionsAlways = false,
-            ignoreInclusionsAlways = false
+          "sandra.black",
+          ignoreExclusionsAlways = false,
+          ignoreInclusionsAlways = false
         )
 
         @Test
         fun `Will make an access check`() {
           offenderAccessService.canAccessOffender(
-              offender,
-              offenderUserAccess)
+            offender,
+            offenderUserAccess
+          )
           verify(communityService).canAccessOffender("X00001")
         }
 
@@ -118,8 +120,9 @@ internal class OffenderAccessServiceTest {
           whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = false, userExcluded = false))
 
           val canAccess = offenderAccessService.canAccessOffender(
-              offender,
-              offenderUserAccess)
+            offender,
+            offenderUserAccess
+          )
           assertThat(canAccess).isTrue
         }
 
@@ -128,8 +131,9 @@ internal class OffenderAccessServiceTest {
           whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = false, userExcluded = true))
 
           val canAccess = offenderAccessService.canAccessOffender(
-              offender,
-              offenderUserAccess)
+            offender,
+            offenderUserAccess
+          )
           assertThat(canAccess).isFalse
         }
       }
@@ -138,24 +142,26 @@ internal class OffenderAccessServiceTest {
       inner class WhenHasNoUsername {
 
         private val offenderUserAccess = OffenderUserAccess(
-            null,
-            ignoreExclusionsAlways = false,
-            ignoreInclusionsAlways = false
+          null,
+          ignoreExclusionsAlways = false,
+          ignoreInclusionsAlways = false
         )
 
         @Test
         fun `Will not make an access check`() {
           offenderAccessService.canAccessOffender(
-              offender,
-              offenderUserAccess)
+            offender,
+            offenderUserAccess
+          )
           verify(communityService, never()).canAccessOffender(any())
         }
 
         @Test
         fun `Will always return false`() {
           val canAccess = offenderAccessService.canAccessOffender(
-              offender,
-              offenderUserAccess)
+            offender,
+            offenderUserAccess
+          )
           assertThat(canAccess).isFalse
         }
       }
@@ -165,33 +171,35 @@ internal class OffenderAccessServiceTest {
   @Nested
   inner class HasInclusionList {
     val offender = OffenderDetail(
-        offenderId = 1,
-        currentExclusion = false,
-        currentRestriction = true,
-        otherIds = IDs(crn = "X00001")
+      offenderId = 1,
+      currentExclusion = false,
+      currentRestriction = true,
+      otherIds = IDs(crn = "X00001")
     )
 
     @Nested
     inner class WhenIgnoreInclusions {
       private val offenderUserAccess = OffenderUserAccess(
-          "sandra.black",
-          ignoreExclusionsAlways = false,
-          ignoreInclusionsAlways = true
+        "sandra.black",
+        ignoreExclusionsAlways = false,
+        ignoreInclusionsAlways = true
       )
 
       @Test
       fun `Won't make an access check`() {
         offenderAccessService.canAccessOffender(
-            offender,
-            offenderUserAccess)
+          offender,
+          offenderUserAccess
+        )
         verify(communityService, never()).canAccessOffender(any())
       }
 
       @Test
       fun `Will return true`() {
         val canAccess = offenderAccessService.canAccessOffender(
-            offender,
-            offenderUserAccess)
+          offender,
+          offenderUserAccess
+        )
         assertThat(canAccess).isTrue
       }
     }
@@ -202,16 +210,17 @@ internal class OffenderAccessServiceTest {
       @Nested
       inner class WhenHasNoUsername {
         private val offenderUserAccess = OffenderUserAccess(
-            "sandra.black",
-            ignoreExclusionsAlways = false,
-            ignoreInclusionsAlways = false
+          "sandra.black",
+          ignoreExclusionsAlways = false,
+          ignoreInclusionsAlways = false
         )
 
         @Test
         fun `Will make an access check`() {
           offenderAccessService.canAccessOffender(
-              offender,
-              offenderUserAccess)
+            offender,
+            offenderUserAccess
+          )
           verify(communityService).canAccessOffender("X00001")
         }
 
@@ -220,8 +229,9 @@ internal class OffenderAccessServiceTest {
           whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = false, userExcluded = false))
 
           val canAccess = offenderAccessService.canAccessOffender(
-              offender,
-              offenderUserAccess)
+            offender,
+            offenderUserAccess
+          )
           assertThat(canAccess).isTrue
         }
 
@@ -230,8 +240,9 @@ internal class OffenderAccessServiceTest {
           whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = true, userExcluded = false))
 
           val canAccess = offenderAccessService.canAccessOffender(
-              offender,
-              offenderUserAccess)
+            offender,
+            offenderUserAccess
+          )
           assertThat(canAccess).isFalse
         }
       }
@@ -241,24 +252,26 @@ internal class OffenderAccessServiceTest {
     inner class WhenHasNoUsername {
 
       private val offenderUserAccess = OffenderUserAccess(
-          null,
-          ignoreExclusionsAlways = false,
-          ignoreInclusionsAlways = false
+        null,
+        ignoreExclusionsAlways = false,
+        ignoreInclusionsAlways = false
       )
 
       @Test
       fun `Will not make an access check`() {
         offenderAccessService.canAccessOffender(
-            offender,
-            offenderUserAccess)
+          offender,
+          offenderUserAccess
+        )
         verify(communityService, never()).canAccessOffender(any())
       }
 
       @Test
       fun `Will always return false`() {
         val canAccess = offenderAccessService.canAccessOffender(
-            offender,
-            offenderUserAccess)
+          offender,
+          offenderUserAccess
+        )
         assertThat(canAccess).isFalse
       }
     }

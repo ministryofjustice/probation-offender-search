@@ -2,8 +2,6 @@ package uk.gov.justice.hmpps.offendersearch.dto
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import java.time.LocalDate
 
 internal class OffenderDetailTest {

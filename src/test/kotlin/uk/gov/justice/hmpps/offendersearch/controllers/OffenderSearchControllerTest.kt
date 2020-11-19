@@ -6,8 +6,8 @@ import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -38,23 +38,24 @@ class OffenderSearchControllerTest {
   fun setup() {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-        ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
+      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper }
+    )
   }
 
   @Test
   fun offenderSearch() {
     ElasticSearchExtension.elasticSearch.stubSearch(response("src/test/resources/elasticsearchdata/singleMatch.json"))
     val results = RestAssured.given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"surname\":\"smith\"}")
-        .`when`()["/search"]
-        .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .`as`(Array<OffenderDetail>::class.java)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"surname\":\"smith\"}")
+      .`when`()["/search"]
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(1)
     assertThat(results).extracting("firstName").containsOnly("John")
   }
@@ -62,26 +63,26 @@ class OffenderSearchControllerTest {
   @Test
   fun noSearchParameters_badRequest() {
     RestAssured.given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{}")
-        .`when`()["/search"]
-        .then()
-        .statusCode(400)
-        .body("developerMessage", CoreMatchers.containsString("Invalid search  - please provide at least 1 search parameter"))
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{}")
+      .`when`()["/search"]
+      .then()
+      .statusCode(400)
+      .body("developerMessage", CoreMatchers.containsString("Invalid search  - please provide at least 1 search parameter"))
   }
 
   @Test
   fun invalidDateOfBirthFormat_badRequest() {
     RestAssured.given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"dateOfBirth\":\"23/11/1976\"}")
-        .`when`()["/search"]
-        .then()
-        .statusCode(400)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"dateOfBirth\":\"23/11/1976\"}")
+      .`when`()["/search"]
+      .then()
+      .statusCode(400)
   }
 
   private fun response(file: String): String {

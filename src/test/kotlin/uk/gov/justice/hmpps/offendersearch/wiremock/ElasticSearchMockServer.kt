@@ -33,14 +33,20 @@ class ElasticSearchMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4444
   }
 
-  fun stubSearch( response: String) {
-    stubFor(WireMock.post(WireMock.anyUrl()).willReturn(
-        WireMock.okForContentType("application/json", response)))
+  fun stubSearch(response: String) {
+    stubFor(
+      WireMock.post(WireMock.anyUrl()).willReturn(
+        WireMock.okForContentType("application/json", response)
+      )
+    )
   }
 
   fun stubHealth(status: Int) {
-    stubFor(get("/_cluster/health/").willReturn(aResponse()
-        .withBody("""
+    stubFor(
+      get("/_cluster/health/").willReturn(
+        aResponse()
+          .withBody(
+            """
           {
             "cluster_name":"elasticsearch",
             "status":"yellow",
@@ -58,10 +64,11 @@ class ElasticSearchMockServer : WireMockServer(WIREMOCK_PORT) {
             "task_max_waiting_in_queue_millis":0,
             "active_shards_percent_as_number":50.0
           }          
-        """.trimIndent())
-        .withHeader("content-type", "application/json; charset=UTF-8")
-        .withStatus(status)))
-
+            """.trimIndent()
+          )
+          .withHeader("content-type", "application/json; charset=UTF-8")
+          .withStatus(status)
+      )
+    )
   }
 }
-

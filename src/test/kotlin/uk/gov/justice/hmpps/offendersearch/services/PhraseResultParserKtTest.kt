@@ -14,7 +14,8 @@ internal class PhraseResultParserKtTest {
 
   @BeforeEach
   internal fun setUp() {
-    whenever(searchHit.sourceAsString).thenReturn("""
+    whenever(searchHit.sourceAsString).thenReturn(
+      """
       {
         "offenderId": 99,
         "firstName": "John",
@@ -57,17 +58,18 @@ internal class PhraseResultParserKtTest {
            }
          ]
       }
-    """.trimIndent())
+      """.trimIndent()
+    )
     whenever(searchHit.highlightFields).thenReturn(mapOf())
   }
 
   @Test
   internal fun `will transform to list of offenders`() {
     val offenders = extractOffenderDetailList(
-        hits = arrayOf(searchHit),
-        phrase = "john smith",
-        offenderParser = ::offenderParser,
-        accessChecker = { _ -> true }
+      hits = arrayOf(searchHit),
+      phrase = "john smith",
+      offenderParser = ::offenderParser,
+      accessChecker = { _ -> true }
     )
 
     assertThat(offenders).hasSize(1)
@@ -80,10 +82,10 @@ internal class PhraseResultParserKtTest {
   @Test
   internal fun `will redact details when offender not accessible`() {
     val offenders = extractOffenderDetailList(
-        hits = arrayOf(searchHit),
-        phrase = "john smith",
-        offenderParser = ::offenderParser,
-        accessChecker = { false }
+      hits = arrayOf(searchHit),
+      phrase = "john smith",
+      offenderParser = ::offenderParser,
+      accessChecker = { false }
     )
 
     assertThat(offenders).hasSize(1)
@@ -94,10 +96,10 @@ internal class PhraseResultParserKtTest {
   @Test
   internal fun `redacted offenders will have crn, offenderId and offender managers`() {
     val offenders = extractOffenderDetailList(
-        hits = arrayOf(searchHit),
-        phrase = "john smith",
-        offenderParser = ::offenderParser,
-        accessChecker = { false }
+      hits = arrayOf(searchHit),
+      phrase = "john smith",
+      offenderParser = ::offenderParser,
+      accessChecker = { false }
     )
 
     assertThat(offenders[0].offenderId).isEqualTo(99)

@@ -11,7 +11,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.hmpps.offendersearch.wiremock.CommunityApiExtension
 import uk.gov.justice.hmpps.offendersearch.wiremock.ElasticSearchExtension
 
-
 @ExtendWith(CommunityApiExtension::class, ElasticSearchExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test"])
@@ -26,13 +25,13 @@ class HealthCheckTest {
     stubPingWithResponse(200)
 
     webTestClient.get()
-        .uri("/health")
-        .exchange()
-        .expectStatus()
-        .isOk()
-        .expectBody()
-        .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("OK")
-        .jsonPath("status").isEqualTo("UP")
+      .uri("/health")
+      .exchange()
+      .expectStatus()
+      .isOk()
+      .expectBody()
+      .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("OK")
+      .jsonPath("status").isEqualTo("UP")
   }
 
   @Test
@@ -40,12 +39,12 @@ class HealthCheckTest {
     stubPingWithResponse(200)
 
     webTestClient.get()
-        .uri("/health/ping")
-        .exchange()
-        .expectStatus()
-        .isOk
-        .expectBody()
-        .jsonPath("status").isEqualTo("UP")
+      .uri("/health/ping")
+      .exchange()
+      .expectStatus()
+      .isOk
+      .expectBody()
+      .jsonPath("status").isEqualTo("UP")
   }
 
   @Test
@@ -53,12 +52,12 @@ class HealthCheckTest {
     stubPingWithResponse(200)
 
     webTestClient.get()
-        .uri("/health/readiness")
-        .exchange()
-        .expectStatus()
-        .isOk
-        .expectBody()
-        .jsonPath("status").isEqualTo("UP")
+      .uri("/health/readiness")
+      .exchange()
+      .expectStatus()
+      .isOk
+      .expectBody()
+      .jsonPath("status").isEqualTo("UP")
   }
 
   @Test
@@ -66,12 +65,12 @@ class HealthCheckTest {
     stubPingWithResponse(200)
 
     webTestClient.get()
-        .uri("/health/liveness")
-        .exchange()
-        .expectStatus()
-        .isOk
-        .expectBody()
-        .jsonPath("status").isEqualTo("UP")
+      .uri("/health/liveness")
+      .exchange()
+      .expectStatus()
+      .isOk
+      .expectBody()
+      .jsonPath("status").isEqualTo("UP")
   }
 
   @Test
@@ -79,13 +78,13 @@ class HealthCheckTest {
     stubPingWithResponse(404)
 
     webTestClient.get()
-        .uri("/health")
-        .exchange()
-        .expectStatus()
-        .is5xxServerError
-        .expectBody()
-        .jsonPath("status").isEqualTo("DOWN")
-        .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
+      .uri("/health")
+      .exchange()
+      .expectStatus()
+      .is5xxServerError
+      .expectBody()
+      .jsonPath("status").isEqualTo("DOWN")
+      .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("NOT_FOUND")
   }
 
   @Test
@@ -93,19 +92,17 @@ class HealthCheckTest {
     stubPingWithResponse(418)
 
     webTestClient.get()
-        .uri("/health")
-        .exchange()
-        .expectStatus()
-        .is5xxServerError
-        .expectBody()
-        .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
-        .jsonPath("status").isEqualTo("DOWN")
+      .uri("/health")
+      .exchange()
+      .expectStatus()
+      .is5xxServerError
+      .expectBody()
+      .jsonPath("components.communityApiHealth.details.HttpStatus").isEqualTo("I_AM_A_TEAPOT")
+      .jsonPath("status").isEqualTo("DOWN")
   }
-
 
   private fun stubPingWithResponse(status: Int) {
     CommunityApiExtension.communityApi.stubHealthPing(status)
     ElasticSearchExtension.elasticSearch.stubHealth(status)
   }
-
 }

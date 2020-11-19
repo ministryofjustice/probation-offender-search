@@ -26,8 +26,8 @@ import java.time.LocalDate
 
 @Service
 class MatchService(
-    private val elasticSearchClient: SearchClient,
-    private val mapper: ObjectMapper,
+  private val elasticSearchClient: SearchClient,
+  private val mapper: ObjectMapper,
 ) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -49,7 +49,7 @@ class MatchService(
     return matchRequest.nomsNumber.takeIf { !it.isNullOrBlank() }?.let {
       // NOMS number is a special case since a human has already matched so trust that judgement
       return QueryBuilders.boolQuery()
-          .mustWhenPresent("otherIds.nomsNumber", it)
+        .mustWhenPresent("otherIds.nomsNumber", it)
     }
   }
 
@@ -57,10 +57,12 @@ class MatchService(
     with(matchRequest) {
       return pncNumber.takeIf { !it.isNullOrBlank() }?.let {
         return QueryBuilders.boolQuery()
-            .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
-            .must(QueryBuilders.boolQuery()
-                .shouldMultiMatch(surname, "surname", "offenderAliases.surname")
-                .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth"))
+          .mustMultiMatchKeyword(it.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+          .must(
+            QueryBuilders.boolQuery()
+              .shouldMultiMatch(surname, "surname", "offenderAliases.surname")
+              .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
+          )
       }
     }
   }
@@ -69,10 +71,12 @@ class MatchService(
     with(matchRequest) {
       return croNumber.takeIf { !it.isNullOrBlank() }?.let {
         return QueryBuilders.boolQuery()
-            .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
-            .must(QueryBuilders.boolQuery()
-                .shouldMultiMatch(surname, "surname", "offenderAliases.surname")
-                .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth"))
+          .mustKeyword(it.toLowerCase(), "otherIds.croNumberLowercase")
+          .must(
+            QueryBuilders.boolQuery()
+              .shouldMultiMatch(surname, "surname", "offenderAliases.surname")
+              .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
+          )
       }
     }
   }
@@ -80,81 +84,84 @@ class MatchService(
   private fun fullMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .mustKeyword(croNumber?.toLowerCase(), "otherIds.croNumberLowercase")
-          .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
-          .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
-          .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
-            this.must(nameQuery(matchRequest))
-          }
+        .mustKeyword(croNumber?.toLowerCase(), "otherIds.croNumberLowercase")
+        .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+        .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
+        .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
+          this.must(nameQuery(matchRequest))
+        }
     }
   }
 
   private fun fullMatchAlias(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .mustKeyword(croNumber?.toLowerCase(), "otherIds.croNumberLowercase")
-          .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
-          .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
-          .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
-            this.must(aliasQuery(matchRequest))
-          }
+        .mustKeyword(croNumber?.toLowerCase(), "otherIds.croNumberLowercase")
+        .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
+        .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
+        .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
+          this.must(aliasQuery(matchRequest))
+        }
     }
   }
 
   private fun nameMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
-          .must(QueryBuilders.boolQuery()
-              .should(nameQuery(matchRequest))
-              .should(aliasQuery(matchRequest))
-          )
+        .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
+        .must(
+          QueryBuilders.boolQuery()
+            .should(nameQuery(matchRequest))
+            .should(aliasQuery(matchRequest))
+        )
     }
   }
 
   private fun nameQuery(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .should(QueryBuilders.boolQuery()
-              .mustWhenPresent("surname", surname)
-              .mustWhenPresent("firstName", firstName)
-              .mustWhenPresent("dateOfBirth", dateOfBirth)
-          )
+        .should(
+          QueryBuilders.boolQuery()
+            .mustWhenPresent("surname", surname)
+            .mustWhenPresent("firstName", firstName)
+            .mustWhenPresent("dateOfBirth", dateOfBirth)
+        )
     }
   }
 
   private fun aliasQuery(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .should(QueryBuilders.nestedQuery(
-              "offenderAliases",
-              QueryBuilders.boolQuery()
-                  .mustWhenPresent("offenderAliases.surname", surname)
-                  .mustWhenPresent("offenderAliases.firstName", firstName)
-                  .mustWhenPresent("offenderAliases.dateOfBirth", dateOfBirth),
-              ScoreMode.Max
-          ))
+        .should(
+          QueryBuilders.nestedQuery(
+            "offenderAliases",
+            QueryBuilders.boolQuery()
+              .mustWhenPresent("offenderAliases.surname", surname)
+              .mustWhenPresent("offenderAliases.firstName", firstName)
+              .mustWhenPresent("offenderAliases.dateOfBirth", dateOfBirth),
+            ScoreMode.Max
+          )
+        )
     }
   }
 
   private fun partialNameMatch(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return QueryBuilders.boolQuery()
-          .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
-          .mustWhenPresent("surname", surname)
-          .mustWhenPresent("dateOfBirth", dateOfBirth)
+        .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
+        .mustWhenPresent("surname", surname)
+        .mustWhenPresent("dateOfBirth", dateOfBirth)
     }
   }
-
 
   private fun partialNameMatchDateOfBirthLenient(matchRequest: MatchRequest): BoolQueryBuilder? {
     with(matchRequest) {
       return dateOfBirth?.let {
         QueryBuilders.boolQuery()
-            .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
-            .mustMultiMatch(firstName, "firstName", "offenderAliases.firstName")
-            .mustWhenPresent("surname", surname)
-            .mustMatchOneOf("dateOfBirth", allLenientDateVariations(dateOfBirth))
+          .mustWhenTrue({ activeSentence }, "currentDisposal", "1")
+          .mustMultiMatch(firstName, "firstName", "offenderAliases.firstName")
+          .mustWhenPresent("surname", surname)
+          .mustMatchOneOf("dateOfBirth", allLenientDateVariations(dateOfBirth))
       }
     }
   }
@@ -164,10 +171,10 @@ class MatchService(
   }
 
   private fun aroundDateInSameMonth(date: LocalDate) =
-      listOf(date.minusDays(1), date.minusDays(-1), date).filter { it.month == date.month }
+    listOf(date.minusDays(1), date.minusDays(-1), date).filter { it.month == date.month }
 
   private fun everyOtherValidMonth(date: LocalDate): List<LocalDate> =
-      (1..12).filterNot { date.monthValue == it }.mapNotNull { setMonthDay(date, it) }
+    (1..12).filterNot { date.monthValue == it }.mapNotNull { setMonthDay(date, it) }
 
   private fun swapMonthDay(date: LocalDate): List<LocalDate> = try {
     listOf(LocalDate.of(date.year, date.dayOfMonth, date.monthValue))
@@ -180,7 +187,6 @@ class MatchService(
   } catch (e: DateTimeException) {
     null
   }
-
 
   private fun matchBy(matchRequest: MatchRequest, queryBuilder: (matchRequest: MatchRequest) -> BoolQueryBuilder?): Result {
     val matchQuery = queryBuilder(matchRequest)
@@ -201,9 +207,7 @@ class MatchService(
   }
 
   private fun toOffenderDetail(src: String) = mapper.readValue(src, OffenderDetail::class.java)
-
 }
-
 
 sealed class Result {
   object NoMatch : Result()
@@ -220,7 +224,6 @@ inline infix fun Result.onMatch(block: (Result.Match) -> Nothing): Unit? {
 
 private fun BoolQueryBuilder.withDefaults(matchRequest: MatchRequest): BoolQueryBuilder? {
   return this
-      .mustWhenTrue({ matchRequest.activeSentence }, "currentDisposal", "1")
-      .must("softDeleted", false)
+    .mustWhenTrue({ matchRequest.activeSentence }, "currentDisposal", "1")
+    .must("softDeleted", false)
 }
-

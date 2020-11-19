@@ -7,17 +7,16 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 
-
 @Service
 class CommunityService(@Qualifier("communityApiWebClient") private val webClient: WebClient, private val objectMapper: Gson) {
   fun canAccessOffender(crn: String): AccessLimitation =
-      webClient.get()
-          .uri("/secure/offenders/crn/${crn}/userAccess")
-          .retrieve()
-          .bodyToMono(AccessLimitation::class.java)
-          .onErrorResume(::noAccessIfNotFound)
-          .onErrorResume(::noAccessIfForbidden)
-          .block()!!
+    webClient.get()
+      .uri("/secure/offenders/crn/$crn/userAccess")
+      .retrieve()
+      .bodyToMono(AccessLimitation::class.java)
+      .onErrorResume(::noAccessIfNotFound)
+      .onErrorResume(::noAccessIfForbidden)
+      .block()!!
 
   private fun noAccessIfNotFound(exception: Throwable): Mono<out AccessLimitation> {
     return if (exception is WebClientResponseException.NotFound) Mono.just(AccessLimitation(userRestricted = true, userExcluded = true)) else Mono.error(exception)
@@ -25,10 +24,9 @@ class CommunityService(@Qualifier("communityApiWebClient") private val webClient
   private fun noAccessIfForbidden(exception: Throwable): Mono<out AccessLimitation> {
     return if (exception is WebClientResponseException.Forbidden) Mono.just(objectMapper.fromJson(exception.responseBodyAsString, AccessLimitation::class.java)) else Mono.error(exception)
   }
-
 }
 
 data class AccessLimitation(
-    val userRestricted: Boolean,
-    val userExcluded: Boolean,
+  val userRestricted: Boolean,
+  val userExcluded: Boolean,
 )

@@ -12,37 +12,37 @@ class OffenderSearchCrnListAPIIntegrationTest : LocalstackIntegrationBase() {
   @BeforeEach
   fun setUp() {
     loadOffenders(
-        OffenderReplacement(crn = "X00001"),
-        OffenderReplacement(crn = "X00003"),
-        OffenderReplacement(crn = "X00088", deleted = true),
+      OffenderReplacement(crn = "X00001"),
+      OffenderReplacement(crn = "X00003"),
+      OffenderReplacement(crn = "X00088", deleted = true),
     )
   }
 
   @Test
   fun `not allowed to do a search without COMMUNITY role`() {
     given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("[\"X00001\",\"X00002\"]")
-        .post("/crns")
-        .then()
-        .statusCode(403)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("[\"X00001\",\"X00002\"]")
+      .post("/crns")
+      .then()
+      .statusCode(403)
   }
 
   @Test
   fun crnListSearch() {
     val results = given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("[\"X00001\",\"X00003\"]")
-        .post("/crns")
-        .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .`as`(Array<OffenderDetail>::class.java)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("[\"X00001\",\"X00003\"]")
+      .post("/crns")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(2)
     assertThat(results).extracting("otherIds.crn").containsExactly("X00001", "X00003")
   }
@@ -57,16 +57,16 @@ class OffenderSearchCrnListAPIIntegrationTest : LocalstackIntegrationBase() {
     }.toTypedArray()
     loadOffenders(*offendersToLoad)
     val results = given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body(offendersToSearch)
-        .post("/crns")
-        .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .`as`(Array<OffenderDetail>::class.java)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body(offendersToSearch)
+      .post("/crns")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(102)
     assertThat(results).extracting("otherIds.crn").contains("X00200", "X00301")
   }
@@ -74,16 +74,16 @@ class OffenderSearchCrnListAPIIntegrationTest : LocalstackIntegrationBase() {
   @Test
   fun crnListSearch_ignoreNotFoundIds() {
     val results = given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("[\"X00001\",\"X00002\"]")
-        .post("/crns")
-        .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .`as`(Array<OffenderDetail>::class.java)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("[\"X00001\",\"X00002\"]")
+      .post("/crns")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(1)
     assertThat(results).extracting("otherIds.crn").containsExactly("X00001")
   }
@@ -91,44 +91,44 @@ class OffenderSearchCrnListAPIIntegrationTest : LocalstackIntegrationBase() {
   @Test
   fun shouldFilterOutSoftDeletedRecords() {
     val results = given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("[\"X00088\"]")
-        .post("/crns")
-        .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .`as`(Array<OffenderDetail>::class.java)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("[\"X00088\"]")
+      .post("/crns")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(0)
   }
 
   @Test
   fun noCrnList_badRequest() {
     given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .post("/crns")
-        .then()
-        .statusCode(400)
-        .extract()
-        .body()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .post("/crns")
+      .then()
+      .statusCode(400)
+      .extract()
+      .body()
   }
 
   @Test
   fun noResults() {
     val results = given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("[\"AB1\",\"AB2\"]")
-        .post("/crns")
-        .then()
-        .statusCode(200)
-        .extract()
-        .`as`(Array<OffenderDetail>::class.java)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("[\"AB1\",\"AB2\"]")
+      .post("/crns")
+      .then()
+      .statusCode(200)
+      .extract()
+      .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(0)
   }
 }

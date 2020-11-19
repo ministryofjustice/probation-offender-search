@@ -16,7 +16,7 @@ import org.elasticsearch.common.bytes.BytesArray
 import org.elasticsearch.common.xcontent.XContentType.JSON
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.UUID
 
 class LocalStackHelper(private val esClient: RestHighLevelClient, private val mappingVersion: String = "v1") {
   companion object {
@@ -62,12 +62,15 @@ class LocalStackHelper(private val esClient: RestHighLevelClient, private val ma
 
   private fun loadOffender(key: String, offender: String) {
     log.debug("Loading offender: {}", offender)
-    esClient.index(IndexRequest()
+    esClient.index(
+      IndexRequest()
         .setPipeline("pnc-pipeline")
         .source(offender, JSON)
         .id(key)
         .type("_doc")
-        .index(indexName), RequestOptions.DEFAULT)
+        .index(indexName),
+      RequestOptions.DEFAULT
+    )
   }
 
   private fun destroyIndex() {
@@ -80,16 +83,15 @@ class LocalStackHelper(private val esClient: RestHighLevelClient, private val ma
   private fun buildIndex() {
     esClient.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)
     esClient.indices()
-        .putMapping(PutMappingRequest(indexName).source("/elasticsearchdata/create-mapping.json".resourceAsString(), JSON), RequestOptions.DEFAULT)
+      .putMapping(PutMappingRequest(indexName).source("/elasticsearchdata/create-mapping.json".resourceAsString(), JSON), RequestOptions.DEFAULT)
     log.debug("Build index")
   }
 
   private fun buildPipeline() {
     log.debug("Build pipeline")
     esClient.ingest()
-        .putPipeline(PutPipelineRequest("pnc-pipeline", "/elasticsearchdata/create-pipeline.json".resourceAsByteReference(), JSON), RequestOptions.DEFAULT)
+      .putPipeline(PutPipelineRequest("pnc-pipeline", "/elasticsearchdata/create-pipeline.json".resourceAsByteReference(), JSON), RequestOptions.DEFAULT)
   }
-
 }
 
 private fun String.resourceAsString() = LocalStackHelper::class.java.getResource(this).readText()

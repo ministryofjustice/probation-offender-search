@@ -3,7 +3,7 @@ package uk.gov.justice.hmpps.offendersearch.config
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.info.BuildProperties
-import java.util.*
+import java.util.Properties
 
 class HealthInfoTest {
   @Test

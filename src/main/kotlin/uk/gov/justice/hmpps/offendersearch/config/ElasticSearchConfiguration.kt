@@ -31,7 +31,8 @@ class ElasticSearchConfiguration {
       signer.regionName = awsRegion
       val clientBuilder = RestClient.builder(HttpHost(host, port, scheme)).setHttpClientConfigCallback { callback: HttpAsyncClientBuilder ->
         callback.addInterceptorLast(
-            AWSRequestSigningApacheInterceptor(SERVICE_NAME, signer, DefaultAWSCredentialsProviderChain()))
+          AWSRequestSigningApacheInterceptor(SERVICE_NAME, signer, DefaultAWSCredentialsProviderChain())
+        )
       }
       return RestHighLevelClient(clientBuilder)
     }

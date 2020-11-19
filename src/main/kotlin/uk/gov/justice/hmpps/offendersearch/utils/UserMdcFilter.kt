@@ -5,7 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.hmpps.offendersearch.config.SecurityUserContext
-import javax.servlet.*
+import javax.servlet.Filter
+import javax.servlet.FilterChain
+import javax.servlet.FilterConfig
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
 
 @Component
 @Order(1)
@@ -33,5 +37,4 @@ class UserMdcFilter @Autowired constructor(private val securityUserContext: Secu
   companion object {
     private const val USER_ID_HEADER = "userId"
   }
-
 }

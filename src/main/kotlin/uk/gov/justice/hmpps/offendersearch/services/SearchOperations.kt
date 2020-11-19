@@ -6,7 +6,7 @@ import org.elasticsearch.index.query.QueryBuilders
 
 fun BoolQueryBuilder.mustWhenPresent(query: String, value: Any?): BoolQueryBuilder {
   value.takeIf {
-    when(it) {
+    when (it) {
       is String -> it.isNotBlank()
       else -> true
     }
@@ -18,7 +18,7 @@ fun BoolQueryBuilder.mustWhenPresent(query: String, value: Any?): BoolQueryBuild
 
 fun BoolQueryBuilder.shouldMultiMatch(value: Any?, vararg query: String): BoolQueryBuilder {
   value.takeIf {
-    when(it) {
+    when (it) {
       is String -> it.isNotBlank()
       else -> true
     }
@@ -42,12 +42,13 @@ fun BoolQueryBuilder.mustWhenTrue(predicate: () -> Boolean, query: String, value
 
 fun BoolQueryBuilder.mustMultiMatchKeyword(value: Any?, vararg query: String): BoolQueryBuilder {
   value.takeIf {
-    when(it) {
+    when (it) {
       is String -> it.isNotBlank()
       else -> true
     }
   }?.let {
-    this.must().add(QueryBuilders.multiMatchQuery(value, *query)
+    this.must().add(
+      QueryBuilders.multiMatchQuery(value, *query)
         .analyzer("keyword")
     )
   }
@@ -56,12 +57,13 @@ fun BoolQueryBuilder.mustMultiMatchKeyword(value: Any?, vararg query: String): B
 
 fun BoolQueryBuilder.mustMultiMatch(value: Any?, vararg query: String): BoolQueryBuilder {
   value.takeIf {
-    when(it) {
+    when (it) {
       is String -> it.isNotBlank()
       else -> true
     }
   }?.let {
-    this.must().add(QueryBuilders.multiMatchQuery(value, *query)
+    this.must().add(
+      QueryBuilders.multiMatchQuery(value, *query)
     )
   }
   return this
@@ -69,7 +71,7 @@ fun BoolQueryBuilder.mustMultiMatch(value: Any?, vararg query: String): BoolQuer
 
 fun BoolQueryBuilder.mustKeyword(value: Any?, query: String): BoolQueryBuilder {
   value.takeIf {
-    when(it) {
+    when (it) {
       is String -> it.isNotBlank()
       else -> true
     }
@@ -79,7 +81,6 @@ fun BoolQueryBuilder.mustKeyword(value: Any?, query: String): BoolQueryBuilder {
   return this
 }
 
-
 fun BoolQueryBuilder.mustMatchOneOf(query: String, values: List<Any>): BoolQueryBuilder {
   val nestedQuery = QueryBuilders.boolQuery()
   values.forEach { nestedQuery.should(QueryBuilders.boolQuery().must(query, it)) }
@@ -88,9 +89,9 @@ fun BoolQueryBuilder.mustMatchOneOf(query: String, values: List<Any>): BoolQuery
 
 fun BoolQueryBuilder.mustIfPresent(maybeSimpleTermQuery: QueryBuilder?): BoolQueryBuilder {
   maybeSimpleTermQuery
-      ?.let {
-        this.must().add(it)
-      }
+    ?.let {
+      this.must().add(it)
+    }
   return this
 }
 
@@ -103,9 +104,9 @@ fun BoolQueryBuilder.mustAll(queries: List<QueryBuilder>): BoolQueryBuilder {
 
 fun BoolQueryBuilder.shouldIfPresent(maybeSimpleTermQuery: QueryBuilder?): BoolQueryBuilder {
   maybeSimpleTermQuery
-      ?.let {
-        this.should().add(it)
-      }
+    ?.let {
+      this.should().add(it)
+    }
   return this
 }
 
@@ -115,4 +116,3 @@ fun BoolQueryBuilder.shouldAll(queries: List<QueryBuilder>): BoolQueryBuilder {
   }
   return this
 }
-

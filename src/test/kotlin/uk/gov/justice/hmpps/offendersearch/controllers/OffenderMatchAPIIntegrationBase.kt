@@ -36,7 +36,6 @@ abstract class OffenderMatchAPIIntegrationBase {
   @Value("\${local.server.port}")
   private var port: Int = 0
 
-
   @BeforeEach
   internal fun before() {
     RestAssured.port = port
@@ -48,30 +47,29 @@ abstract class OffenderMatchAPIIntegrationBase {
 
     val offendersToLoad = offenders.map {
       templateOffender.copy(
-          surname = it.surname,
-          firstName = it.firstName,
-          dateOfBirth = it.dateOfBirth,
-          currentDisposal = if (it.activeSentence) "1" else "0",
-          softDeleted = it.deleted,
-          otherIds = templateOffender.otherIds?.copy(
-              crn = it.crn,
-              nomsNumber = it.nomsNumber,
-              croNumber = it.croNumber,
-              pncNumber = it.pncNumber
-          ),
-          offenderAliases = it.aliases.map { alias ->
-            OffenderAlias(
-                firstName = alias.firstName,
-                surname = alias.surname,
-                dateOfBirth = alias.dateOfBirth
-            )
-          }
+        surname = it.surname,
+        firstName = it.firstName,
+        dateOfBirth = it.dateOfBirth,
+        currentDisposal = if (it.activeSentence) "1" else "0",
+        softDeleted = it.deleted,
+        otherIds = templateOffender.otherIds?.copy(
+          crn = it.crn,
+          nomsNumber = it.nomsNumber,
+          croNumber = it.croNumber,
+          pncNumber = it.pncNumber
+        ),
+        offenderAliases = it.aliases.map { alias ->
+          OffenderAlias(
+            firstName = alias.firstName,
+            surname = alias.surname,
+            dateOfBirth = alias.dateOfBirth
+          )
+        }
       )
     }.map { objectMapper.writeValueAsString(it) }
 
-    LocalStackHelper(esClient, "v${mappingVersion}").loadData(offendersToLoad)
+    LocalStackHelper(esClient, "v$mappingVersion").loadData(offendersToLoad)
   }
-
 }
 
 private fun String.readResourceAsText(): String {
@@ -79,23 +77,20 @@ private fun String.readResourceAsText(): String {
 }
 
 data class OffenderIdentification(
-    val surname: String,
-    val firstName: String,
-    val dateOfBirth: LocalDate,
-    val crn: String,
-    val activeSentence: Boolean = true,
-    val deleted: Boolean = false,
-    val aliases: List<Alias> = listOf(),
-    val nomsNumber: String? = null,
-    val croNumber: String? = null,
-    val pncNumber: String? = null
+  val surname: String,
+  val firstName: String,
+  val dateOfBirth: LocalDate,
+  val crn: String,
+  val activeSentence: Boolean = true,
+  val deleted: Boolean = false,
+  val aliases: List<Alias> = listOf(),
+  val nomsNumber: String? = null,
+  val croNumber: String? = null,
+  val pncNumber: String? = null
 )
 
 data class Alias(
-    val surname: String,
-    val firstName: String,
-    val dateOfBirth: LocalDate
+  val surname: String,
+  val firstName: String,
+  val dateOfBirth: LocalDate
 )
-
-
-

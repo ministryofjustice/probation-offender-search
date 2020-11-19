@@ -39,46 +39,46 @@ internal class OffenderMatchControllerTest {
   fun setUp() {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-        ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper })
+      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper }
+    )
     whenever(matchService.match(any())).thenReturn(OffenderMatches(listOf()))
   }
 
   @Test
   fun `surname is mandatory`() {
     RestAssured.given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{}")
-        .post("/match")
-        .then()
-        .statusCode(400)
-        .body("developerMessage", containsString("Surname is required"))
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{}")
+      .post("/match")
+      .then()
+      .statusCode(400)
+      .body("developerMessage", containsString("Surname is required"))
   }
 
   @Test
   fun `date of birth must be in the past`() {
     RestAssured.given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"surname\": \"Smith\", \"dateOfBirth\":\"2199-07-02\"}")
-        .post("/match")
-        .then()
-        .statusCode(400)
-        .body("developerMessage", containsString("Date of birth must be in the past"))
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"surname\": \"Smith\", \"dateOfBirth\":\"2199-07-02\"}")
+      .post("/match")
+      .then()
+      .statusCode(400)
+      .body("developerMessage", containsString("Date of birth must be in the past"))
   }
 
   @Test
   fun `OK response with valid request`() {
     RestAssured.given()
-        .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body("{\"surname\": \"Smith\"}")
-        .post("/match")
-        .then()
-        .statusCode(200)
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"surname\": \"Smith\"}")
+      .post("/match")
+      .then()
+      .statusCode(200)
   }
-
 }
