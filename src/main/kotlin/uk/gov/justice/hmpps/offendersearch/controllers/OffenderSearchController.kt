@@ -30,16 +30,41 @@ import uk.gov.justice.hmpps.offendersearch.security.getOffenderUserAccessFromSco
 import uk.gov.justice.hmpps.offendersearch.services.SearchService
 import javax.validation.Valid
 
-@Api(tags = ["offender-search"], authorizations = [Authorization("ROLE_COMMUNITY")], description = "Provides offender search features for Delius elastic search")
+@Api(
+  tags = ["offender-search"],
+  authorizations = [Authorization("ROLE_COMMUNITY")],
+  description = "Provides offender search features for Delius elastic search"
+)
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-class OffenderSearchController(private val searchService: SearchService, private val securityUserContext: SecurityUserContext) {
+class OffenderSearchController(
+  private val searchService: SearchService,
+  private val securityUserContext: SecurityUserContext
+) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  @ApiOperation(value = "Search for an offender in Delius ElasticSearch. Only offenders matching all request attributes will be returned", notes = "Specify the request criteria to match against", authorizations = [Authorization("ROLE_COMMUNITY")], nickname = "search")
-  @ApiResponses(value = [ApiResponse(code = 200, message = "OK", response = OffenderDetail::class, responseContainer = "List"), ApiResponse(code = 400, message = "Invalid Request", response = BadRequestException::class), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)])
+  @ApiOperation(
+    value = "Search for an offender in Delius ElasticSearch. Only offenders matching all request attributes will be returned",
+    notes = "Specify the request criteria to match against",
+    authorizations = [Authorization("ROLE_COMMUNITY")],
+    nickname = "search"
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        code = 200,
+        message = "OK",
+        response = OffenderDetail::class,
+        responseContainer = "List"
+      ), ApiResponse(
+        code = 400,
+        message = "Invalid Request",
+        response = BadRequestException::class
+      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)
+    ]
+  )
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @GetMapping("/search")
   fun searchOffenders(@RequestBody searchForm: SearchDto): List<OffenderDetail?>? {
@@ -91,15 +116,33 @@ class OffenderSearchController(private val searchService: SearchService, private
   )
   @PostMapping("/phrase")
   @ApiImplicitParams(
-    ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
-    ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
+    ApiImplicitParam(
+      name = "page",
+      dataType = "int",
+      paramType = "query",
+      value = "Results page you want to retrieve (0..N)",
+      example = "0",
+      defaultValue = "0"
+    ),
+    ApiImplicitParam(
+      name = "size",
+      dataType = "int",
+      paramType = "query",
+      value = "Number of records per page.",
+      example = "10",
+      defaultValue = "10"
+    )
   )
   fun searchOffendersByPhrase(
     @Valid @RequestBody searchPhraseFilter: SearchPhraseFilter,
     @PageableDefault pageable: Pageable
   ): SearchPhraseResults {
     log.info("Search called with {}", searchPhraseFilter)
-    return searchService.performSearch(searchPhraseFilter, pageable, getOffenderUserAccessFromScopes(securityUserContext))
+    return searchService.performSearch(
+      searchPhraseFilter,
+      pageable,
+      getOffenderUserAccessFromScopes(securityUserContext)
+    )
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
@@ -140,11 +183,30 @@ class OffenderSearchController(private val searchService: SearchService, private
     ]
   )
   @PostMapping("/ldu-codes")
+  @ApiImplicitParams(
+    ApiImplicitParam(
+      name = "page",
+      dataType = "int",
+      paramType = "query",
+      value = "Results page you want to retrieve (0..N)",
+      example = "0",
+      defaultValue = "0"
+    ),
+    ApiImplicitParam(
+      name = "size",
+      dataType = "int",
+      paramType = "query",
+      value = "Number of records per page.",
+      example = "10",
+      defaultValue = "10"
+    )
+  )
   @ApiOperation(value = "Match prisoners by a list of ldu codes", notes = "Requires ROLE_COMMUNITY role")
   fun findByLduCode(
-    @ApiParam(required = true, name = "lduList") @RequestBody lduList: List<String>
+    @ApiParam(required = true, name = "lduList") @RequestBody lduList: List<String>,
+    @PageableDefault pageable: Pageable
   ): List<OffenderDetail> {
-    return searchService.findByListOfLdu(lduList)
+    return searchService.findByListOfLdu(pageable, lduList)
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
@@ -156,8 +218,22 @@ class OffenderSearchController(private val searchService: SearchService, private
   )
   @PostMapping("/team-codes")
   @ApiImplicitParams(
-    ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
-    ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Number of records per page.", example = "10", defaultValue = "10")
+    ApiImplicitParam(
+      name = "page",
+      dataType = "int",
+      paramType = "query",
+      value = "Results page you want to retrieve (0..N)",
+      example = "0",
+      defaultValue = "0"
+    ),
+    ApiImplicitParam(
+      name = "size",
+      dataType = "int",
+      paramType = "query",
+      value = "Number of records per page.",
+      example = "10",
+      defaultValue = "10"
+    )
   )
   @ApiOperation(value = "Match prisoners by a list of team codes", notes = "Requires ROLE_COMMUNITY role")
   fun findByTeamCode(

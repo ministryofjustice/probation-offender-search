@@ -26,11 +26,14 @@ import java.util.ArrayList
 import java.util.Arrays
 
 @Service
-class SearchService @Autowired constructor(private val offenderAccessService: OffenderAccessService, private val hlClient: SearchClient, private val mapper: ObjectMapper) {
+class SearchService @Autowired constructor(
+  private val offenderAccessService: OffenderAccessService,
+  private val hlClient: SearchClient,
+  private val mapper: ObjectMapper
+) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     private const val MAX_SEARCH_RESULTS = 100
-    private const val MAX_LDU_SEARCH_RESULTS = 10000
   }
 
   fun performSearch(searchOptions: SearchDto): List<OffenderDetail> {
@@ -102,7 +105,11 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
       .must("softDeleted", false)
   }
 
-  fun performSearch(searchPhraseFilter: SearchPhraseFilter, pageable: Pageable, offenderUserAccess: OffenderUserAccess): SearchPhraseResults {
+  fun performSearch(
+    searchPhraseFilter: SearchPhraseFilter,
+    pageable: Pageable,
+    offenderUserAccess: OffenderUserAccess
+  ): SearchPhraseResults {
 
     fun canAccessOffender(offenderDetail: OffenderDetail): Boolean {
       return offenderAccessService.canAccessOffender(offenderDetail, offenderUserAccess)
@@ -152,10 +159,10 @@ class SearchService @Autowired constructor(private val offenderAccessService: Of
     return findBy(nomsList, "otherIds.nomsNumber", nomsList.size)
   }
 
-  fun findByListOfLdu(lduList: List<String>): List<OffenderDetail> {
+  fun findByListOfLdu(pageable: Pageable, lduList: List<String>): List<OffenderDetail> {
     val searchRequest = SearchRequest("offender")
     val searchSourceBuilder = SearchSourceBuilder()
-    searchSourceBuilder.size(MAX_LDU_SEARCH_RESULTS)
+    searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
 
     val matchingAllFieldsQuery = QueryBuilders.boolQuery()
     val outerMustQuery = QueryBuilders.boolQuery()

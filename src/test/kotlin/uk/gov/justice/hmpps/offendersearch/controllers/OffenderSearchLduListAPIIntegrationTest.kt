@@ -190,4 +190,68 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
       .`as`(Array<OffenderDetail>::class.java)
     Assertions.assertThat(results).hasSize(0)
   }
+
+  @Test
+  fun `will limit result of the supplied page for the supplied size`() {
+    loadBulkUsers(20)
+    val results = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .queryParam("page", 0)
+      .queryParam("size", 12)
+      .body("""["N09ALL"]""")
+      .post("/ldu-codes")
+      .then()
+      .statusCode(200)
+      .extract()
+      .`as`(Array<OffenderDetail>::class.java)
+    Assertions.assertThat(results).hasSize(12)
+  }
+
+  @Test
+  fun `will give results of the default page and for default size`() {
+    loadBulkUsers(20)
+    val results = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("""["N09ALL"]""")
+      .post("/ldu-codes")
+      .then()
+      .statusCode(200)
+      .extract()
+      .`as`(Array<OffenderDetail>::class.java)
+    Assertions.assertThat(results).hasSize(10)
+  }
+
+  @Test
+  fun `will give results of next page`() {
+    loadBulkUsers()
+    val results = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .queryParam("page", 1)
+      .body("""["N09ALL"]""")
+      .post("/ldu-codes")
+      .then()
+      .statusCode(200)
+      .extract()
+      .`as`(Array<OffenderDetail>::class.java)
+    Assertions.assertThat(results).hasSize(5)
+  }
+
+  private fun loadBulkUsers(count: Int = 15) {
+    var offendersToLoad = (0 until count).map {
+      OffenderReplacement(
+        offenderManagers = listOf(
+          OffenderManagerReplacement(
+            team = TeamReplacement(localDeliveryUnit = KeyValue(code = "N09ALL"))
+          )
+        )
+      )
+    }.toTypedArray()
+    loadOffenders(*offendersToLoad)
+  }
 }
