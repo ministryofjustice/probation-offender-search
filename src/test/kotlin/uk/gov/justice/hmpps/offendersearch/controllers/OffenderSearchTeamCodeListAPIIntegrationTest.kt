@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.offendersearch.dto.SearchPageResults
 
 class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase() {
 
@@ -110,11 +111,12 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .statusCode(200)
       .extract()
       .body()
-      .`as`(Array<OffenderDetail>::class.java)
+      .`as`(SearchPageResults::class.java)
 
+    val offenders: List<OffenderDetail> = results.content
     Assertions.assertThat(results).hasSize(2)
-    Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.code).contains("N01000")
-    Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
+    Assertions.assertThat(offenders[0].offenderManagers?.get(0)?.team?.code).contains("N01000")
+    Assertions.assertThat(offenders[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
   }
 
   @Test
@@ -150,12 +152,14 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .statusCode(200)
       .extract()
       .body()
-      .`as`(Array<OffenderDetail>::class.java)
+      .`as`(SearchPageResults::class.java)
+
+    val offenders: List<OffenderDetail> = results.content
 
     Assertions.assertThat(results).hasSize(3)
-    Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.code).contains("N02000")
-    Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
-    Assertions.assertThat(results[2].offenderManagers?.get(0)?.team?.code).contains("N01000")
+    Assertions.assertThat(offenders[0].offenderManagers?.get(0)?.team?.code).contains("N02000")
+    Assertions.assertThat(offenders[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
+    Assertions.assertThat(offenders[2].offenderManagers?.get(0)?.team?.code).contains("N01000")
   }
 
   @Test

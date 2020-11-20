@@ -20,6 +20,7 @@ import uk.gov.justice.hmpps.offendersearch.BadRequestException
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderUserAccess
 import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
+import uk.gov.justice.hmpps.offendersearch.dto.SearchPageResults
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import java.util.ArrayList
@@ -187,7 +188,7 @@ class SearchService @Autowired constructor(
     return getSearchResult(response)
   }
 
-  fun findByListOfTeamCodes(pageable: Pageable, teamCodeList: List<String>): List<OffenderDetail> {
+  fun findByListOfTeamCodes(pageable: Pageable, teamCodeList: List<String>): SearchPageResults {
     val searchRequest = SearchRequest("offender")
     val searchSourceBuilder = SearchSourceBuilder()
     searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
@@ -212,7 +213,12 @@ class SearchService @Autowired constructor(
     searchRequest.source(searchSourceBuilder)
 
     val response = hlClient.search(searchRequest)
-    return getSearchResult(response)
+
+    return SearchPageResults(
+      content = getSearchResult(response),
+      pageable = pageable,
+      total = response.hits.totalHits?.value ?: 0,
+    )
   }
 
   fun findBy(inputList: List<String>, field: String, searchSourceBuilderSize: Int): List<OffenderDetail> {
