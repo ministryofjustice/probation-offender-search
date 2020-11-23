@@ -24,7 +24,7 @@ import uk.gov.justice.hmpps.offendersearch.NotFoundException
 import uk.gov.justice.hmpps.offendersearch.config.SecurityUserContext
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
-import uk.gov.justice.hmpps.offendersearch.dto.SearchPageResults
+import uk.gov.justice.hmpps.offendersearch.dto.SearchPagedResults
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import uk.gov.justice.hmpps.offendersearch.security.getOffenderUserAccessFromScopes
@@ -241,7 +241,7 @@ class OffenderSearchController(
     @ApiParam(required = true, name = "teamCodeList")
     @PageableDefault pageable: Pageable,
     @RequestBody teamCodeList: List<String>
-  ): SearchPageResults {
+  ): SearchPagedResults {
     return searchService.findByListOfTeamCodes(pageable, teamCodeList)
   }
 }

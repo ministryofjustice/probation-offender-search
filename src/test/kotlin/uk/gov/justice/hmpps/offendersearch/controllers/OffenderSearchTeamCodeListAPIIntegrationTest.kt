@@ -1,12 +1,10 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import io.restassured.RestAssured
-import org.assertj.core.api.Assertions
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
-import uk.gov.justice.hmpps.offendersearch.dto.SearchPageResults
 
 class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase() {
 
@@ -99,8 +97,8 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
   }
 
   @Test
-  fun teamCodeListSearch() {
-    val results = RestAssured.given()
+  fun `search for offenders by team code`() {
+    RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -109,19 +107,14 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .post("/team-codes")
       .then()
       .statusCode(200)
-      .extract()
-      .body()
-      .`as`(SearchPageResults::class.java)
-
-    val offenders: List<OffenderDetail> = results.content
-    Assertions.assertThat(results).hasSize(2)
-    Assertions.assertThat(offenders[0].offenderManagers?.get(0)?.team?.code).contains("N01000")
-    Assertions.assertThat(offenders[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
+      .body("content.size()", equalTo(2))
+      .body("content[0].offenderManagers?.get(0)?.team?.code", equalTo("N01000"))
+      .body("content[1].offenderManagers?.get(0)?.team?.code", equalTo("N01000"))
   }
 
   @Test
-  fun ignoreNonActiveOffenderManagerResults() {
-    val results = RestAssured.given()
+  fun `should ignore non-active offender manager results`() {
+    RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -130,18 +123,14 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .post("/team-codes")
       .then()
       .statusCode(200)
-      .extract()
-      .body()
-      .`as`(Array<OffenderDetail>::class.java)
-
-    Assertions.assertThat(results).hasSize(2)
-    Assertions.assertThat(results[0].offenderManagers?.get(0)?.team?.code).contains("N01000")
-    Assertions.assertThat(results[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
+      .body("content.size()", equalTo(2))
+      .body("content[0].offenderManagers?.get(0)?.team?.code", equalTo("N01000"))
+      .body("content[1].offenderManagers?.get(0)?.team?.code", equalTo("N01000"))
   }
 
   @Test
-  fun teamCodeListSearch_ignoreNotFoundIds() {
-    val results = RestAssured.given()
+  fun `should ignore id's that are not found`() {
+    RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -150,21 +139,15 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .post("/team-codes")
       .then()
       .statusCode(200)
-      .extract()
-      .body()
-      .`as`(SearchPageResults::class.java)
-
-    val offenders: List<OffenderDetail> = results.content
-
-    Assertions.assertThat(results).hasSize(3)
-    Assertions.assertThat(offenders[0].offenderManagers?.get(0)?.team?.code).contains("N02000")
-    Assertions.assertThat(offenders[1].offenderManagers?.get(0)?.team?.code).contains("N01000")
-    Assertions.assertThat(offenders[2].offenderManagers?.get(0)?.team?.code).contains("N01000")
+      .body("content.size()", equalTo(3))
+      .body("content[0].offenderManagers?.get(0)?.team?.code", equalTo("N02000"))
+      .body("content[1].offenderManagers?.get(0)?.team?.code", equalTo("N01000"))
+      .body("content[2].offenderManagers?.get(0)?.team?.code", equalTo("N01000"))
   }
 
   @Test
-  fun shouldFilterOutSoftDeletedOffenderRecords() {
-    val results = RestAssured.given()
+  fun `should filter out offenders that are soft deleted`() {
+    RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -173,16 +156,12 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .post("/team-codes")
       .then()
       .statusCode(200)
-      .extract()
-      .body()
-      .`as`(Array<OffenderDetail>::class.java)
-
-    Assertions.assertThat(results).hasSize(0)
+      .body("content.size()", equalTo(0))
   }
 
   @Test
-  fun shouldFilterOutSoftDeletedOffenderManagerRecords() {
-    val results = RestAssured.given()
+  fun `should filter out offenders that have a manager that is soft deleted`() {
+    RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -191,35 +170,34 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .post("/team-codes")
       .then()
       .statusCode(200)
-      .extract()
-      .body()
-      .`as`(Array<OffenderDetail>::class.java)
-    Assertions.assertThat(results).hasSize(0)
+      .body("content.size()", equalTo(0))
   }
 
   @Test
-  fun limitResultsToPageSize() {
+  fun `by default will return a page of 10 offenders along with totals`() {
     loadBulkUsers()
-    val results = RestAssured.given()
+    RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .queryParam("page", 0)
       .body("""["N09000"]""")
       .post("/team-codes")
       .then()
       .statusCode(200)
-      .extract()
-      .body()
-      .`as`(Array<OffenderDetail>::class.java)
-
-    Assertions.assertThat(results).hasSize(10)
+      .body("content.size()", equalTo(10))
+      .body("size", equalTo(10))
+      .body("numberOfElements", equalTo(10))
+      .body("totalElements", equalTo(12))
+      .body("totalPages", equalTo(2))
+      .body("pageable.offset", equalTo(0))
+      .body("pageable.paged", equalTo(true))
+      .body("pageable.pageSize", equalTo(10))
   }
 
   @Test
-  fun checkResultsGoToNextPage() {
+  fun `can specify page`() {
     loadBulkUsers()
-    val results = RestAssured.given()
+    RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -228,15 +206,32 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .post("/team-codes")
       .then()
       .statusCode(200)
-      .extract()
-      .body()
-      .`as`(Array<OffenderDetail>::class.java)
-
-    Assertions.assertThat(results).hasSize(2)
+      .body("content.size()", equalTo(2))
+      .body("totalElements", equalTo(12))
+      .body("totalPages", equalTo(2))
+      .body("pageable.offset", equalTo(10))
   }
 
   @Test
-  fun noTeamCodesList_badRequest() {
+  fun `can specify page size`() {
+    loadBulkUsers()
+    RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .queryParam("size", 5)
+      .body("""["N09000"]""")
+      .post("/team-codes")
+      .then()
+      .statusCode(200)
+      .body("content.size()", equalTo(5))
+      .body("totalElements", equalTo(12))
+      .body("totalPages", equalTo(3))
+      .body("pageable.offset", equalTo(0))
+  }
+
+  @Test
+  fun `a bad request should return a 400 status code`() {
     RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -245,13 +240,11 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .post("/team-codes")
       .then()
       .statusCode(400)
-      .extract()
-      .body()
   }
 
   @Test
-  fun noResults() {
-    val results = RestAssured.given()
+  fun `no results should be returned if there are no matching id's`() {
+    RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -260,8 +253,6 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : LocalstackIntegrationBase()
       .post("/team-codes")
       .then()
       .statusCode(200)
-      .extract()
-      .`as`(Array<OffenderDetail>::class.java)
-    Assertions.assertThat(results).hasSize(0)
+      .body("content.size()", equalTo(0))
   }
 }
