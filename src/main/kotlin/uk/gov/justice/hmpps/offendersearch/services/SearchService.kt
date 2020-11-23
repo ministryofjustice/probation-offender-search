@@ -160,7 +160,7 @@ class SearchService @Autowired constructor(
     return findBy(nomsList, "otherIds.nomsNumber", nomsList.size)
   }
 
-  fun findByListOfLdu(pageable: Pageable, lduList: List<String>): List<OffenderDetail> {
+  fun findByListOfLdu(pageable: Pageable, lduList: List<String>): SearchPagedResults {
     val searchRequest = SearchRequest("offender")
     val searchSourceBuilder = SearchSourceBuilder()
     searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
@@ -183,9 +183,13 @@ class SearchService @Autowired constructor(
     outerMustQuery.must(matchingAllFieldsQuery)
     searchSourceBuilder.query(outerMustQuery.withDefaults())
     searchRequest.source(searchSourceBuilder)
-
     val response = hlClient.search(searchRequest)
-    return getSearchResult(response)
+
+    return SearchPagedResults(
+      content = getSearchResult(response),
+      pageable = pageable,
+      total = response.hits.totalHits?.value ?: 0
+    )
   }
 
   fun findByListOfTeamCodes(pageable: Pageable, teamCodeList: List<String>): SearchPagedResults {
@@ -211,13 +215,12 @@ class SearchService @Autowired constructor(
     outerMustQuery.must(matchingAllFieldsQuery)
     searchSourceBuilder.query(outerMustQuery.withDefaults())
     searchRequest.source(searchSourceBuilder)
-
     val response = hlClient.search(searchRequest)
 
     return SearchPagedResults(
       content = getSearchResult(response),
       pageable = pageable,
-      total = response.hits.totalHits?.value ?: 0,
+      total = response.hits.totalHits?.value ?: 0
     )
   }
 

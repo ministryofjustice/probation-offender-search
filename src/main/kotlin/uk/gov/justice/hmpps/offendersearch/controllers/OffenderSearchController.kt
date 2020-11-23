@@ -206,7 +206,7 @@ class OffenderSearchController(
   fun findByLduCode(
     @ApiParam(required = true, name = "lduList") @RequestBody lduList: List<String>,
     @PageableDefault pageable: Pageable
-  ): List<OffenderDetail> {
+  ): SearchPagedResults {
     return searchService.findByListOfLdu(pageable, lduList)
   }
 
