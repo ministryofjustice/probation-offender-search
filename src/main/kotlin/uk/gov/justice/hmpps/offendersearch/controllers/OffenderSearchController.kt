@@ -12,9 +12,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -30,6 +33,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import uk.gov.justice.hmpps.offendersearch.security.getOffenderUserAccessFromScopes
 import uk.gov.justice.hmpps.offendersearch.services.SearchService
+import javax.validation.ConstraintViolationException
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 
@@ -207,7 +211,8 @@ class OffenderSearchController(
   )
   @ApiOperation(value = "Match prisoners by a list of ldu codes", notes = "Requires ROLE_COMMUNITY role")
   fun findByLduCode(
-    @ApiParam(required = true, name = "lduList") @RequestBody lduList: List<String>,
+    @ApiParam(required = true, name = "lduList")
+    @RequestBody @NotEmpty lduList: List<String>,
     @PageableDefault pageable: Pageable
   ): SearchPagedResults {
     return searchService.findByListOfLdu(pageable, lduList)
@@ -243,8 +248,13 @@ class OffenderSearchController(
   fun findByTeamCode(
     @ApiParam(required = true, name = "teamCodeList")
     @PageableDefault pageable: Pageable,
-    @RequestBody @NotEmpty @Valid teamCodeList: List<String>
+    @RequestBody @NotEmpty teamCodeList: List<String>
   ): SearchPagedResults {
     return searchService.findByListOfTeamCodes(pageable, teamCodeList)
+  }
+
+  @ExceptionHandler(ConstraintViolationException::class)
+  fun onValidationError(ex: Exception): ResponseEntity<String> {
+    return ResponseEntity<String>(HttpStatus.BAD_REQUEST)
   }
 }
