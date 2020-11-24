@@ -157,6 +157,18 @@ class OffenderSearchLduListAPIIntegrationTest : LocalstackIntegrationBase() {
   }
 
   @Test
+  fun `a request body containing an empty list should return a 400 status code`() {
+    RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("""[]""")
+      .post("/ldu-codes")
+      .then()
+      .statusCode(400)
+  }
+
+  @Test
   fun `no results should be returned if there are no matching id's`() {
     RestAssured.given()
       .auth()

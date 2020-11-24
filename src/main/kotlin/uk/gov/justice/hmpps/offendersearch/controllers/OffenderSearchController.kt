@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -30,6 +31,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
 import uk.gov.justice.hmpps.offendersearch.security.getOffenderUserAccessFromScopes
 import uk.gov.justice.hmpps.offendersearch.services.SearchService
 import javax.validation.Valid
+import javax.validation.constraints.NotEmpty
 
 @Api(
   tags = ["offender-search"],
@@ -38,6 +40,7 @@ import javax.validation.Valid
 )
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+@Validated
 class OffenderSearchController(
   private val searchService: SearchService,
   private val securityUserContext: SecurityUserContext
@@ -204,7 +207,8 @@ class OffenderSearchController(
   )
   @ApiOperation(value = "Match prisoners by a list of ldu codes", notes = "Requires ROLE_COMMUNITY role")
   fun findByLduCode(
-    @ApiParam(required = true, name = "lduList") @RequestBody lduList: List<String>,
+    @ApiParam(required = true, name = "lduList")
+    @RequestBody @NotEmpty lduList: List<String>,
     @PageableDefault pageable: Pageable
   ): SearchPagedResults {
     return searchService.findByListOfLdu(pageable, lduList)
@@ -240,7 +244,7 @@ class OffenderSearchController(
   fun findByTeamCode(
     @ApiParam(required = true, name = "teamCodeList")
     @PageableDefault pageable: Pageable,
-    @RequestBody teamCodeList: List<String>
+    @RequestBody @NotEmpty teamCodeList: List<String>
   ): SearchPagedResults {
     return searchService.findByListOfTeamCodes(pageable, teamCodeList)
   }
