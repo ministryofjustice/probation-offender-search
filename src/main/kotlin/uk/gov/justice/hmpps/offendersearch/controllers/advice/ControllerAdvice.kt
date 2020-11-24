@@ -16,6 +16,7 @@ import uk.gov.justice.hmpps.offendersearch.InvalidRequestException
 import uk.gov.justice.hmpps.offendersearch.NotFoundException
 import uk.gov.justice.hmpps.offendersearch.UnauthorisedException
 import uk.gov.justice.hmpps.offendersearch.controllers.OffenderSearchController
+import javax.validation.ConstraintViolationException
 
 @RestControllerAdvice(basePackageClasses = [OffenderSearchController::class])
 class ControllerAdvice {
@@ -94,6 +95,11 @@ class ControllerAdvice {
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.developerMessage()))
+  }
+
+  @ExceptionHandler(ConstraintViolationException::class)
+  fun onValidationError(ex: Exception): ResponseEntity<String> {
+    return ResponseEntity<String>(HttpStatus.BAD_REQUEST)
   }
 }
 
