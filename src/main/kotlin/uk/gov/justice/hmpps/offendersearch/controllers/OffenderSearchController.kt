@@ -250,19 +250,14 @@ class OffenderSearchController(
     return searchService.findByListOfTeamCodes(pageable, teamCodeList)
   }
 
-  @ApiOperation(
-    value = "Search for an offender in Delius ElasticSearch. Only offenders matching all request attributes will be returned",
-    notes = "Specify the request criteria to match against",
-    authorizations = [Authorization("ROLE_COMMUNITY")],
-    nickname = "searchByLdu"
-  )
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @ApiOperation(value = "Match prisoners by a ldu code", notes = "Requires ROLE_COMMUNITY role")
   @ApiResponses(
     value = [
       ApiResponse(
         code = 200,
         message = "OK",
-        response = OffenderDetail::class,
-        responseContainer = "List"
+        response = SearchPagedResults::class
       ), ApiResponse(
         code = 400,
         message = "Invalid Request",
@@ -270,13 +265,36 @@ class OffenderSearchController(
       ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)
     ]
   )
-  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @GetMapping("/ldu-codes/{lduCode}")
   fun searchOffendersByLduCode(
     @PathVariable lduCode: String,
     @PageableDefault pageable: Pageable,
   ): SearchPagedResults {
     log.info("Search called with {}", lduCode)
-    return searchService.findByLdu(lduCode, pageable)
+    return searchService.findByLduCode(lduCode, pageable)
+  }
+
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @ApiOperation(value = "Match prisoners by a team code", notes = "Requires ROLE_COMMUNITY role")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        code = 200,
+        message = "OK",
+        response = SearchPagedResults::class
+      ), ApiResponse(
+        code = 400,
+        message = "Invalid Request",
+        response = BadRequestException::class
+      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)
+    ]
+  )
+  @GetMapping("/team-codes/{teamCode}")
+  fun searchOffendersByTeamCode(
+    @PathVariable teamCode: String,
+    @PageableDefault pageable: Pageable,
+  ): SearchPagedResults {
+    log.info("Search called with {}", teamCode)
+    return searchService.findByTeamCode(teamCode, pageable)
   }
 }

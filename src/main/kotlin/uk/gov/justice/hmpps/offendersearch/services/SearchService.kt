@@ -246,7 +246,7 @@ class SearchService @Autowired constructor(
     return getSearchResult(response)
   }
 
-  fun findByLdu(lduCode: String, pageable: Pageable): SearchPagedResults {
+  private fun findByNested(code: String, pageable: Pageable, searchField: String): SearchPagedResults {
     val searchRequest = SearchRequest("offender")
     val searchSourceBuilder = SearchSourceBuilder()
     searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
@@ -254,16 +254,8 @@ class SearchService @Autowired constructor(
     val matchingAllFieldsQuery = QueryBuilders.boolQuery()
     val outerMustQuery = QueryBuilders.boolQuery()
 
-    matchingAllFieldsQuery.should(
-      QueryBuilders.nestedQuery(
-        "offenderManagers",
-        QueryBuilders.boolQuery()
-          .mustWhenPresent("offenderManagers.active", true)
-          .mustWhenPresent("offenderManagers.softDeleted", false)
-          .mustWhenPresent("offenderManagers.team.localDeliveryUnit.code", lduCode),
-        ScoreMode.Max
-      )
-    )
+    matchingFieldsQuery(matchingAllFieldsQuery, searchField, code)
+
     outerMustQuery.must(matchingAllFieldsQuery)
     searchSourceBuilder.query(outerMustQuery.withDefaults())
     searchRequest.source(searchSourceBuilder)
@@ -274,5 +266,26 @@ class SearchService @Autowired constructor(
       pageable = pageable,
       total = response.hits.totalHits?.value ?: 0
     )
+  }
+
+  private fun matchingFieldsQuery(matchingAllFieldsQuery: BoolQueryBuilder, searchField: String, code: String) {
+    matchingAllFieldsQuery.should(
+      QueryBuilders.nestedQuery(
+        "offenderManagers",
+        QueryBuilders.boolQuery()
+          .mustWhenPresent("offenderManagers.active", true)
+          .mustWhenPresent("offenderManagers.softDeleted", false)
+          .mustWhenPresent(searchField, code),
+        ScoreMode.Max
+      )
+    )
+  }
+
+  fun findByLduCode(lduCode: String, pageable: Pageable): SearchPagedResults {
+    return findByNested(lduCode, pageable, "offenderManagers.team.localDeliveryUnit.code")
+  }
+
+  fun findByTeamCode(teamCode: String, pageable: Pageable): SearchPagedResults {
+    return findByNested(teamCode, pageable, "offenderManagers.team.code")
   }
 }
