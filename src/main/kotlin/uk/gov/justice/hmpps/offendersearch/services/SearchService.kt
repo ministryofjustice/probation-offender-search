@@ -245,4 +245,34 @@ class SearchService @Autowired constructor(
     val response = hlClient.search(searchRequest)
     return getSearchResult(response)
   }
+
+  fun findByLdu(lduCode: String, pageable: Pageable): SearchPagedResults {
+    val searchRequest = SearchRequest("offender")
+    val searchSourceBuilder = SearchSourceBuilder()
+    searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
+
+    val matchingAllFieldsQuery = QueryBuilders.boolQuery()
+    val outerMustQuery = QueryBuilders.boolQuery()
+
+    matchingAllFieldsQuery.should(
+      QueryBuilders.nestedQuery(
+        "offenderManagers",
+        QueryBuilders.boolQuery()
+          .mustWhenPresent("offenderManagers.active", true)
+          .mustWhenPresent("offenderManagers.softDeleted", false)
+          .mustWhenPresent("offenderManagers.team.localDeliveryUnit.code", lduCode),
+        ScoreMode.Max
+      )
+    )
+    outerMustQuery.must(matchingAllFieldsQuery)
+    searchSourceBuilder.query(outerMustQuery.withDefaults())
+    searchRequest.source(searchSourceBuilder)
+    val response = hlClient.search(searchRequest)
+
+    return SearchPagedResults(
+      content = getSearchResult(response),
+      pageable = pageable,
+      total = response.hits.totalHits?.value ?: 0
+    )
+  }
 }

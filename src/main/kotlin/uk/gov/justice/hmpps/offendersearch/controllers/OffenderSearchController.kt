@@ -16,6 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -247,5 +248,35 @@ class OffenderSearchController(
     @RequestBody @NotEmpty teamCodeList: List<String>
   ): SearchPagedResults {
     return searchService.findByListOfTeamCodes(pageable, teamCodeList)
+  }
+
+  @ApiOperation(
+    value = "Search for an offender in Delius ElasticSearch. Only offenders matching all request attributes will be returned",
+    notes = "Specify the request criteria to match against",
+    authorizations = [Authorization("ROLE_COMMUNITY")],
+    nickname = "searchByLdu"
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        code = 200,
+        message = "OK",
+        response = OffenderDetail::class,
+        responseContainer = "List"
+      ), ApiResponse(
+        code = 400,
+        message = "Invalid Request",
+        response = BadRequestException::class
+      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)
+    ]
+  )
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @GetMapping("/ldu-codes/{lduCode}")
+  fun searchOffendersByLduCode(
+    @PathVariable lduCode: String,
+    @PageableDefault pageable: Pageable,
+  ): SearchPagedResults {
+    log.info("Search called with {}", lduCode)
+    return searchService.findByLdu(lduCode, pageable)
   }
 }
