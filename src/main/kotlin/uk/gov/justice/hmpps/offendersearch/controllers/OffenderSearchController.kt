@@ -16,6 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -247,5 +248,57 @@ class OffenderSearchController(
     @RequestBody @NotEmpty teamCodeList: List<String>
   ): SearchPagedResults {
     return searchService.findByListOfTeamCodes(pageable, teamCodeList)
+  }
+
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @ApiOperation(value = "Match prisoners by a ldu code", notes = "Requires ROLE_COMMUNITY role")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        code = 200,
+        message = "OK",
+        response = SearchPagedResults::class
+      ), ApiResponse(
+        code = 400,
+        message = "Invalid Request",
+        response = BadRequestException::class
+      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class),
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+    ]
+  )
+  @GetMapping("/ldu-codes/{lduCode}")
+  fun searchOffendersByLduCode(
+    @PathVariable lduCode: String,
+    @PageableDefault pageable: Pageable,
+  ): SearchPagedResults {
+    log.info("Searching for offenders by ldu code: {}", lduCode)
+    return searchService.findByLduCode(lduCode, pageable)
+  }
+
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @ApiOperation(value = "Match prisoners by a team code", notes = "Requires ROLE_COMMUNITY role")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        code = 200,
+        message = "OK",
+        response = SearchPagedResults::class
+      ), ApiResponse(
+        code = 400,
+        message = "Invalid Request",
+        response = BadRequestException::class
+      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class),
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+    ]
+  )
+  @GetMapping("/team-codes/{teamCode}")
+  fun searchOffendersByTeamCode(
+    @PathVariable teamCode: String,
+    @PageableDefault pageable: Pageable,
+  ): SearchPagedResults {
+    log.info("Searching for offenders by team code: {}", teamCode)
+    return searchService.findByTeamCode(teamCode, pageable)
   }
 }
