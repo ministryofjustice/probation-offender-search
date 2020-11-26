@@ -262,7 +262,9 @@ class OffenderSearchController(
         code = 400,
         message = "Invalid Request",
         response = BadRequestException::class
-      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)
+      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class),
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
     ]
   )
   @GetMapping("/ldu-codes/{lduCode}")
@@ -270,7 +272,7 @@ class OffenderSearchController(
     @PathVariable lduCode: String,
     @PageableDefault pageable: Pageable,
   ): SearchPagedResults {
-    log.info("Search called with {}", lduCode)
+    log.info("Searching for offenders by ldu code: {}", lduCode)
     return searchService.findByLduCode(lduCode, pageable)
   }
 
@@ -286,7 +288,9 @@ class OffenderSearchController(
         code = 400,
         message = "Invalid Request",
         response = BadRequestException::class
-      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)
+      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class),
+      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
     ]
   )
   @GetMapping("/team-codes/{teamCode}")
@@ -294,7 +298,7 @@ class OffenderSearchController(
     @PathVariable teamCode: String,
     @PageableDefault pageable: Pageable,
   ): SearchPagedResults {
-    log.info("Search called with {}", teamCode)
+    log.info("Searching for offenders by team code: {}", teamCode)
     return searchService.findByTeamCode(teamCode, pageable)
   }
 }
