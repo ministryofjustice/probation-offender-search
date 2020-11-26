@@ -161,67 +161,19 @@ class SearchService @Autowired constructor(
   }
 
   fun findByListOfLdu(pageable: Pageable, lduList: List<String>): SearchPagedResults {
-    val searchRequest = SearchRequest("offender")
-    val searchSourceBuilder = SearchSourceBuilder()
-    searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
-
-    val matchingAllFieldsQuery = QueryBuilders.boolQuery()
-    val outerMustQuery = QueryBuilders.boolQuery()
-
-    lduList.forEach {
-      matchingAllFieldsQuery.should(
-        QueryBuilders.nestedQuery(
-          "offenderManagers",
-          QueryBuilders.boolQuery()
-            .mustWhenPresent("offenderManagers.active", true)
-            .mustWhenPresent("offenderManagers.softDeleted", false)
-            .mustWhenPresent("offenderManagers.team.localDeliveryUnit.code", it),
-          ScoreMode.Max
-        )
-      )
-    }
-    outerMustQuery.must(matchingAllFieldsQuery)
-    searchSourceBuilder.query(outerMustQuery.withDefaults())
-    searchRequest.source(searchSourceBuilder)
-    val response = hlClient.search(searchRequest)
-
-    return SearchPagedResults(
-      content = getSearchResult(response),
-      pageable = pageable,
-      total = response.hits.totalHits?.value ?: 0
-    )
+    return findByNestedList(lduList, pageable, "offenderManagers.team.localDeliveryUnit.code")
   }
 
   fun findByListOfTeamCodes(pageable: Pageable, teamCodeList: List<String>): SearchPagedResults {
-    val searchRequest = SearchRequest("offender")
-    val searchSourceBuilder = SearchSourceBuilder()
-    searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
+    return findByNestedList(teamCodeList, pageable, "offenderManagers.team.code")
+  }
 
-    val matchingAllFieldsQuery = QueryBuilders.boolQuery()
-    val outerMustQuery = QueryBuilders.boolQuery()
+  fun findByLduCode(lduCode: String, pageable: Pageable): SearchPagedResults {
+    return findByNested(lduCode, pageable, "offenderManagers.team.localDeliveryUnit.code")
+  }
 
-    teamCodeList.forEach {
-      matchingAllFieldsQuery.should(
-        QueryBuilders.nestedQuery(
-          "offenderManagers",
-          QueryBuilders.boolQuery()
-            .mustWhenPresent("offenderManagers.active", true)
-            .mustWhenPresent("offenderManagers.softDeleted", false)
-            .mustWhenPresent("offenderManagers.team.code", it),
-          ScoreMode.Max
-        )
-      )
-    }
-    outerMustQuery.must(matchingAllFieldsQuery)
-    searchSourceBuilder.query(outerMustQuery.withDefaults())
-    searchRequest.source(searchSourceBuilder)
-    val response = hlClient.search(searchRequest)
-
-    return SearchPagedResults(
-      content = getSearchResult(response),
-      pageable = pageable,
-      total = response.hits.totalHits?.value ?: 0
-    )
+  fun findByTeamCode(teamCode: String, pageable: Pageable): SearchPagedResults {
+    return findByNested(teamCode, pageable, "offenderManagers.team.code")
   }
 
   fun findBy(inputList: List<String>, field: String, searchSourceBuilderSize: Int): List<OffenderDetail> {
@@ -268,6 +220,30 @@ class SearchService @Autowired constructor(
     )
   }
 
+  private fun findByNestedList(inputList: List<String>, pageable: Pageable, searchField: String): SearchPagedResults {
+    val searchRequest = SearchRequest("offender")
+    val searchSourceBuilder = SearchSourceBuilder()
+    searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
+
+    val matchingAllFieldsQuery = QueryBuilders.boolQuery()
+    val outerMustQuery = QueryBuilders.boolQuery()
+
+    inputList.forEach {
+      matchingFieldsQuery(matchingAllFieldsQuery, searchField, it)
+    }
+
+    outerMustQuery.must(matchingAllFieldsQuery)
+    searchSourceBuilder.query(outerMustQuery.withDefaults())
+    searchRequest.source(searchSourceBuilder)
+    val response = hlClient.search(searchRequest)
+
+    return SearchPagedResults(
+      content = getSearchResult(response),
+      pageable = pageable,
+      total = response.hits.totalHits?.value ?: 0
+    )
+  }
+
   private fun matchingFieldsQuery(matchingAllFieldsQuery: BoolQueryBuilder, searchField: String, code: String) {
     matchingAllFieldsQuery.should(
       QueryBuilders.nestedQuery(
@@ -279,13 +255,5 @@ class SearchService @Autowired constructor(
         ScoreMode.Max
       )
     )
-  }
-
-  fun findByLduCode(lduCode: String, pageable: Pageable): SearchPagedResults {
-    return findByNested(lduCode, pageable, "offenderManagers.team.localDeliveryUnit.code")
-  }
-
-  fun findByTeamCode(teamCode: String, pageable: Pageable): SearchPagedResults {
-    return findByNested(teamCode, pageable, "offenderManagers.team.code")
   }
 }
