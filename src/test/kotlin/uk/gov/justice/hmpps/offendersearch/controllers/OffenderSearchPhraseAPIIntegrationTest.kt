@@ -5,6 +5,7 @@ import io.restassured.RestAssured
 import io.restassured.response.ValidatableResponse
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.notNullValue
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Nested
@@ -39,6 +40,27 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
       )
 
       hasSingleMatch(phrase = "gramsci", expectedCrn = "X99999")
+    }
+
+    @Test
+    internal fun `a search brings back offender details`() {
+      loadOffenders(
+        OffenderReplacement(
+          crn = "X00001",
+          aliases = listOf(AliasReplacement("Smith", "John")),
+          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London"))
+        ),
+      )
+      doSearch("X00001", true)
+        .body("totalElements", equalTo(1))
+        .body("content[0].currentTier", notNullValue())
+        .body("content[0].activeProbationManagedSentence", notNullValue())
+        .body("content[0].offenderAliases[0].id", notNullValue())
+        .body("content[0].offenderManagers[0].staff.code", notNullValue())
+        .body("content[0].offenderManagers[0].staff.unallocated", notNullValue())
+        .body("content[0].offenderManagers[0].team.localDeliveryUnit.code", notNullValue())
+        .body("content[0].offenderManagers[0].team.localDeliveryUnit.description", notNullValue())
+        .body("content[0].offenderProfile.offenderDetails", notNullValue())
     }
   }
 

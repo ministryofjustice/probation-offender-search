@@ -124,7 +124,7 @@
           "offenderProfile": {
             "riskColour": "red",
             "sexualOrientation": "string",
-            "offenderDetails": {},
+            "offenderDetails": "string",
             "notes": "string",
             "remandStatus": "string",
             "ethnicity": "string",
@@ -368,7 +368,7 @@
           "offenderProfile": {
             "riskColour": "red",
             "sexualOrientation": "string",
-            "offenderDetails": {},
+            "offenderDetails": "string",
             "notes": "string",
             "remandStatus": "string",
             "ethnicity": "string",
@@ -641,7 +641,7 @@
           "offenderProfile": {
             "riskColour": "red",
             "sexualOrientation": "string",
-            "offenderDetails": {},
+            "offenderDetails": "string",
             "notes": "string",
             "remandStatus": "string",
             "ethnicity": "string",
@@ -885,7 +885,7 @@
           "offenderProfile": {
             "riskColour": "red",
             "sexualOrientation": "string",
-            "offenderDetails": {},
+            "offenderDetails": "string",
             "notes": "string",
             "remandStatus": "string",
             "ethnicity": "string",
