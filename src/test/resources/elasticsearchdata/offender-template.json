@@ -68,11 +68,17 @@
       },
       "active": true,
       "staff": {
+        "code": "N02IAVU",
         "surname": "Staff",
-        "forenames": "Inactive Staff(N02)"
+        "forenames": "Inactive Staff(N02)",
+        "unallocated": true
       },
       "team": {
         "district": {
+          "code": "N02IAV",
+          "description": "Inactive Level 3(N02)"
+        },
+        "localDeliveryUnit": {
           "code": "N02IAV",
           "description": "Inactive Level 3(N02)"
         },
@@ -132,6 +138,7 @@
   },
   "offenderAliases": [
     {
+      "id": "595141434",
       "firstName": "Jonny",
       "gender": "Male",
       "surname": "Smith",
@@ -184,6 +191,8 @@
       }
     },
     "religion": "Christian"
-  }
+  },
+  "currentTier": "C1",
+  "activeProbationManagedSentence": true
 }
  

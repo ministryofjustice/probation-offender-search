@@ -15,6 +15,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
 import uk.gov.justice.hmpps.offendersearch.dto.Team
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
+import kotlin.random.Random.Default.nextInt
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
@@ -62,6 +63,7 @@ abstract class LocalstackIntegrationBase {
         ),
         offenderAliases = it.aliases.map { alias ->
           OffenderAlias(
+            id =  nextInt().toString(),
             firstName = alias.firstName,
             surname = alias.surname,
             dateOfBirth = alias.dateOfBirth

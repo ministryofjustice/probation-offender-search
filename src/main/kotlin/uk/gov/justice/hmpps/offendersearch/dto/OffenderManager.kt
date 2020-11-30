@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 data class OffenderManager(
   val trustOfficer: Human? = null,
-  val staff: Human? = null,
+  val staff: StaffHuman? = null,
   val providerEmployee: Human? = null,
   val partitionArea: String? = null,
   val softDeleted: Boolean? = null,

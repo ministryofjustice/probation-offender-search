@@ -9,6 +9,7 @@ data class OffenderProfile(
   val offenderLanguages: OffenderLanguages? = null,
   val religion: String? = null,
   val sexualOrientation: String? = null,
+  val offenderDetails: String? = null,
   val remandStatus: String? = null,
   val previousConviction: PreviousConviction? = null,
   val riskColour: String? = null,
