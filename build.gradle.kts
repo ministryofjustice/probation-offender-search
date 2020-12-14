@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.1.2"
-  kotlin("plugin.spring") version "1.4.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "2.1.0"
+  kotlin("plugin.spring") version "1.4.21"
 }
 
 configurations {
@@ -30,21 +30,21 @@ dependencies {
   implementation("org.apache.commons:commons-lang3:3.11")
   implementation("org.apache.commons:commons-text:1.9")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.2")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.0")
 
-  implementation("org.elasticsearch:elasticsearch:7.9.2")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.9.2")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.9.2")
+  implementation("org.elasticsearch:elasticsearch:7.10.1")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.10.1")
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.10.1")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.11.873")
+  implementation("com.amazonaws:aws-java-sdk-core:1.11.918")
 
   implementation("io.springfox:springfox-boot-starter:3.0.0")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.19.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.22.0")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
-  testImplementation("org.mockito:mockito-inline:3.5.13")
+  testImplementation("org.mockito:mockito-inline:3.6.28")
   testImplementation("org.testcontainers:localstack:1.14.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
 
