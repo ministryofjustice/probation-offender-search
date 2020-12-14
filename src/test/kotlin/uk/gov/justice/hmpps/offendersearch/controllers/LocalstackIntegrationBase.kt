@@ -63,7 +63,7 @@ abstract class LocalstackIntegrationBase {
         ),
         offenderAliases = it.aliases.map { alias ->
           OffenderAlias(
-            id =  nextInt().toString(),
+            id = nextInt().toString(),
             firstName = alias.firstName,
             surname = alias.surname,
             dateOfBirth = alias.dateOfBirth
