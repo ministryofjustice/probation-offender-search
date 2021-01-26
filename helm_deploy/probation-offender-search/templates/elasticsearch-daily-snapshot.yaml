@@ -11,7 +11,7 @@ data:
     set -e
     HTTPIE_SESSION="~/.httpie_session.json"
     HTTPIE_OPTS=("--stream" "--check-status" "--ignore-stdin" "--timeout=600" "--session-read-only=${HTTPIE_SESSION}")
-    API_ENDPOINT="http://aws-es-proxy-service:9200"
+    API_ENDPOINT="${ES_PROXY_URL}"
     
     # Setup httpie session
     if ! OUTPUT=$(http --check-status --ignore-stdin --session=${HTTPIE_SESSION} "${API_ENDPOINT}"); then
@@ -92,6 +92,11 @@ spec:
                 secretKeyRef:
                   name: es-snapshot-role
                   key: snapshot_role_arn
+            - name: ES_PROXY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch
+                  key: aws_es_proxy_url
             - name: BUCKET_NAME
               valueFrom: 
                 secretKeyRef:
