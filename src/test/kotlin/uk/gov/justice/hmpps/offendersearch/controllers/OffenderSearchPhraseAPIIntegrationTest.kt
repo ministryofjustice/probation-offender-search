@@ -8,6 +8,7 @@ import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.notNullValue
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -25,6 +26,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 @ExtendWith(CommunityApiExtension::class)
+@Disabled
 class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
 
   @Nested

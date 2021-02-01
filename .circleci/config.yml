@@ -34,7 +34,7 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew --debug --stacktrace check
+          command: ./gradlew check
       - save_cache:
           paths:
             - ~/.gradle
