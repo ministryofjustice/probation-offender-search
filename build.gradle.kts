@@ -54,6 +54,6 @@ dependencies {
 
 tasks {
   test {
-    maxHeapSize = "512m"
+    maxHeapSize = "384m"
   }
 }
