@@ -51,3 +51,9 @@ dependencies {
   testImplementation("io.rest-assured:rest-assured:3.3.0")
   testImplementation("io.rest-assured:spring-mock-mvc:3.3.0")
 }
+
+tasks {
+  test {
+    maxHeapSize = "512m"
+  }
+}
