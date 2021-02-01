@@ -11,6 +11,11 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
     default-property-inclusion: non_null
 
+  profiles:
+    groups:
+      test:
+        - "stdout"
+
 server:
   port: 8080
   servlet:
@@ -20,12 +25,7 @@ server:
       protocol-header: x-forwarded-proto
       remote-ip-header: x-forwarded-for
   forward-headers-strategy: native
-
-logging:
-  level:
-    org.springframework: INFO
-    org.springframework.security: INFO
-    uk.gov.justice.hmpps: DEBUG
+  shutdown: graceful
 
 management:
   endpoints:
@@ -44,11 +44,6 @@ management:
     info:
       cache:
         time-to-live: 2000ms
-
-azure:
-  application-insights:
-    web:
-      enable-W3C: true
 
 cloud:
   aws:

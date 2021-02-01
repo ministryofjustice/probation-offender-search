@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  owasp: entur/owasp@0.0.10
+  owasp: entur/owasp@0.0.14
   hmpps: ministryofjustice/hmpps@2.2
 
 executors:
@@ -16,9 +16,8 @@ executors:
           - DOCKER_HOST=unix:///var/run/docker.sock
           - DEFAULT_REGION=eu-west-2
     environment:
-      _JAVA_OPTIONS: -Xmx256m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
+      _JAVA_OPTIONS: -Xmx384m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     working_directory: ~/app
-
 
 jobs:
   validate:
