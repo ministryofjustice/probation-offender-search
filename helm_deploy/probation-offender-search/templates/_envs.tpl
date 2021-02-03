@@ -35,7 +35,7 @@ env:
     value: "http"
 
   - name: ELASTICSEARCH_HOST
-    value: "{{ .Values.env.ES_PROXY_HOST }}"
+    value: "es-proxy"
 
   - name: ELASTICSEARCH_AWS_SIGNREQUESTS
     value: "false"
