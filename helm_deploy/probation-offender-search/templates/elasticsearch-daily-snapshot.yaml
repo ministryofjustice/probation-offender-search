@@ -11,7 +11,7 @@ data:
     set -e
     HTTPIE_SESSION="~/.httpie_session.json"
     HTTPIE_OPTS=("--stream" "--check-status" "--ignore-stdin" "--timeout=600" "--session-read-only=${HTTPIE_SESSION}")
-    API_ENDPOINT="http://{{ .Values.env.ES_PROXY_HOST }}:9200"
+    API_ENDPOINT="http://es-proxy:9200"
     
     # Setup httpie session
     if ! OUTPUT=$(http --check-status --ignore-stdin --session=${HTTPIE_SESSION} "${API_ENDPOINT}"); then
