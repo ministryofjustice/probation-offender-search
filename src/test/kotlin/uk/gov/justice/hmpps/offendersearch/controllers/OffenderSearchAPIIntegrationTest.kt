@@ -24,7 +24,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import java.lang.reflect.Type
-import java.util.*
+import java.util.Objects
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])

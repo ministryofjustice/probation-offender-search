@@ -16,7 +16,7 @@ class OffenderAccessService(private val communityService: CommunityService) {
     if (shouldCheckAccess(offenderDetail, offenderUserAccess)) {
       offenderUserAccess.username?.let {
         canAccess(communityService.canAccessOffender(offenderDetail.otherIds!!.crn!!))
-          .also { log.debug("Access to ${offenderDetail.otherIds!!.crn!!} for ${offenderUserAccess.username} was allowed=$it") }
+          .also { log.debug("Access to ${offenderDetail.otherIds.crn!!} for ${offenderUserAccess.username} was allowed=$it") }
       }
         ?: false.also { log.debug("No user in context when checking access to ${offenderDetail.otherIds!!.crn!!}, so access denied") }
     } else {
