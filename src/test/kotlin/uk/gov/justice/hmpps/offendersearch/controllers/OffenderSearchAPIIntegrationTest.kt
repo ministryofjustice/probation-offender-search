@@ -24,7 +24,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import java.lang.reflect.Type
-import java.util.Objects
+import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "localstack"])
@@ -90,6 +90,37 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
       .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(2)
     assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane")
+  }
+
+  @Test
+  fun `can POST or GET a search request`() {
+    assertThat(
+      given()
+        .auth()
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body("{\"surname\": \"smith\"}")
+        .post("/search")
+        .then()
+        .statusCode(200)
+        .extract()
+        .body()
+        .`as`(Array<OffenderDetail>::class.java)
+    ).hasSize(2)
+
+    assertThat(
+      given()
+        .auth()
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body("{\"surname\": \"smith\"}")
+        .get("/search")
+        .then()
+        .statusCode(200)
+        .extract()
+        .body()
+        .`as`(Array<OffenderDetail>::class.java)
+    ).hasSize(2)
   }
 
   @Test
