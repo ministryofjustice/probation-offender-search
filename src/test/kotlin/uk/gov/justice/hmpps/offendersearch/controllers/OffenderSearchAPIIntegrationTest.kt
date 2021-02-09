@@ -93,6 +93,37 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   }
 
   @Test
+  fun `can POST or GET a search request`() {
+    assertThat(
+      given()
+        .auth()
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body("{\"surname\": \"smith\"}")
+        .post("/search")
+        .then()
+        .statusCode(200)
+        .extract()
+        .body()
+        .`as`(Array<OffenderDetail>::class.java)
+    ).hasSize(2)
+
+    assertThat(
+      given()
+        .auth()
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body("{\"surname\": \"smith\"}")
+        .get("/search")
+        .then()
+        .statusCode(200)
+        .extract()
+        .body()
+        .`as`(Array<OffenderDetail>::class.java)
+    ).hasSize(2)
+  }
+
+  @Test
   fun shouldFilterOutSoftDeletedRecords() {
     val results = given()
       .auth()
