@@ -16,13 +16,21 @@ executors:
           - DOCKER_HOST=unix:///var/run/docker.sock
           - DEFAULT_REGION=eu-west-2
     environment:
-      _JAVA_OPTIONS: -Xmx384m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
+      _JAVA_OPTIONS: -Xmx384m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process
     working_directory: ~/app
 
 jobs:
   validate:
     executor: validator
     steps:
+      - run:
+          command: |
+            while true; do
+              sleep 5
+              ps auxwwf
+              echo "======"
+            done
+          background: true
       - checkout
       - hmpps/install_aws_cli
       - run:
@@ -50,6 +58,9 @@ jobs:
           paths:
             - build/libs
             - build.gradle.kts
+      - run:
+          command: cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes
+          when: always
 
 workflows:
   version: 2
