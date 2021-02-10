@@ -66,5 +66,6 @@
     "remandStatus": "string",
     "secondaryNationality": "string",
     "sexualOrientation": "string"
-  }
+  },
+  "mappa": null
 }

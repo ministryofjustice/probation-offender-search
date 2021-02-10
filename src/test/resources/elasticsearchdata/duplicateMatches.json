@@ -142,7 +142,8 @@
               "detail": {}
             },
             "religion": "string"
-          }
+          },
+          "mappa": null
         }
       },
       {
@@ -276,7 +277,8 @@
               "detail": {}
             },
             "religion": "string"
-          }
+          },
+          "mappa": null
         }
       }
     ]
