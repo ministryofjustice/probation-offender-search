@@ -32,6 +32,7 @@ data class OffenderDetail(
   val accessDenied: Boolean? = null,
   val currentTier: String? = null,
   val activeProbationManagedSentence: Boolean? = null,
+  val mappa: MappaDetails? = null,
 ) {
   val age: Int? get() = dateOfBirth?.let { Period.between(it, LocalDate.now()).years }
 }
