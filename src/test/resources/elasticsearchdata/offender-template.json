@@ -193,6 +193,7 @@
     "religion": "Christian"
   },
   "currentTier": "C1",
-  "activeProbationManagedSentence": true
+  "activeProbationManagedSentence": true,
+  "mappa": null
 }
  

@@ -143,7 +143,8 @@
               "detail": {}
             },
             "religion": "string"
-          }
+          },
+          "mappa": null
         },
         "highlight": {
           "surname": [
@@ -387,7 +388,8 @@
               "detail": {}
             },
             "religion": "string"
-          }
+          },
+          "mappa": null
         },
         "highlight": {
           "surname": [
@@ -660,7 +662,8 @@
               "detail": {}
             },
             "religion": "string"
-          }
+          },
+          "mappa": null
         },
         "highlight": {
           "surname": [
@@ -904,7 +907,8 @@
               "detail": {}
             },
             "religion": "string"
-          }
+          },
+          "mappa": null
         },
         "highlight": {
           "surname": [

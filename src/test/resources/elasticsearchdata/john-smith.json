@@ -66,5 +66,17 @@
     "remandStatus": "string",
     "secondaryNationality": "string",
     "sexualOrientation": "string"
+  },
+  "mappa": {
+    "level": 1,
+    "levelDescription": "MAPPA Level 1",
+    "category": 2,
+    "categoryDescription": "MAPPA Category 2",
+    "startDate": "2021-02-08",
+    "reviewDate": "2021-05-08",
+    "team": {"code": "NO2AAM", "description": "OMIC OMU A"},
+    "officer": {"code": "NO2AAMU", "forenames": "Unallocated", "surname": "Staff"},
+    "probationArea": {"code": "NO2", "description": "NPS London"},
+    "notes": "Level 1 Cat 2 notes"
   }
 }

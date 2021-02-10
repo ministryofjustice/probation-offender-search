@@ -34,7 +34,7 @@ abstract class LocalstackIntegrationBase {
 
   @Autowired
   @Qualifier("elasticSearchClient")
-  private lateinit var esClient: RestHighLevelClient
+  internal lateinit var esClient: RestHighLevelClient
 
   @Autowired
   private lateinit var objectMapper: ObjectMapper
