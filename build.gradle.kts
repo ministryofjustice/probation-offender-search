@@ -30,8 +30,6 @@ dependencies {
   implementation("org.apache.commons:commons-lang3:3.11")
   implementation("org.apache.commons:commons-text:1.9")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.1")
-
   implementation("org.elasticsearch:elasticsearch:7.11.1")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.11.1")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:7.11.1")
