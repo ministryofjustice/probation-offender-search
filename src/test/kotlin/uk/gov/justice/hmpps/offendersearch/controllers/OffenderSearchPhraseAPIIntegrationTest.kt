@@ -1220,42 +1220,42 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00002",
         response =
-          """
+        """
         {
             "userRestricted": true,
             "userExcluded": false
         }
-          """.trimIndent()
+        """.trimIndent()
       )
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00003",
         response =
-          """
+        """
         {
             "userRestricted": false,
             "userExcluded": false
         }
-          """.trimIndent()
+        """.trimIndent()
       )
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00004",
         response =
-          """
+        """
         {
             "userRestricted": false,
             "userExcluded": true
         }
-          """.trimIndent()
+        """.trimIndent()
       )
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00005",
         response =
-          """
+        """
         {
             "userRestricted": false,
             "userExcluded": false
         }
-          """.trimIndent()
+        """.trimIndent()
       )
     }
 

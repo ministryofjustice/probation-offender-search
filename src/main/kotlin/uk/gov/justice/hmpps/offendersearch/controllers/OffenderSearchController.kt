@@ -82,7 +82,7 @@ class OffenderSearchController(
   @ApiOperation(
     value = "Search for an offender in Delius ElasticSearch using a search phrase. Only offenders matching all request attributes will be returned",
     notes =
-      """The phrase can contain one or more of the following:
+    """The phrase can contain one or more of the following:
         
         - first name
         - middle name
