@@ -144,7 +144,8 @@
             },
             "religion": "string"
           },
-          "mappa": null
+          "mappa": null,
+          "probationStatus": null
         },
         "highlight": {
           "surname": [
@@ -389,7 +390,8 @@
             },
             "religion": "string"
           },
-          "mappa": null
+          "mappa": null,
+          "probationStatus": null
         },
         "highlight": {
           "surname": [
@@ -663,7 +665,8 @@
             },
             "religion": "string"
           },
-          "mappa": null
+          "mappa": null,
+          "probationStatus": null
         },
         "highlight": {
           "surname": [
@@ -908,7 +911,8 @@
             },
             "religion": "string"
           },
-          "mappa": null
+          "mappa": null,
+          "probationStatus": null
         },
         "highlight": {
           "surname": [
