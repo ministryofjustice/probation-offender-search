@@ -194,6 +194,6 @@
   },
   "currentTier": "C1",
   "activeProbationManagedSentence": true,
-  "mappa": null
+  "mappa": null,
+  "probationStatus": null
 }
- 

@@ -20,7 +20,10 @@
 
   "offenderAliases": [
   ],
-
+  "probationStatus": {
+    "status": "PREVIOUSLY_KNOWN",
+    "preSentenceActivity": false
+  },
   "contactDetails": {
     "addresses": [
       {

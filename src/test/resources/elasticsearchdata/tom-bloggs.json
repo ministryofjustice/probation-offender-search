@@ -67,5 +67,6 @@
     "secondaryNationality": "string",
     "sexualOrientation": "string"
   },
-  "mappa": null
+  "mappa": null,
+  "probationStatus": null
 }
