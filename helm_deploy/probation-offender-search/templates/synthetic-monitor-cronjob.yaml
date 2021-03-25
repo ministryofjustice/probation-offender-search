@@ -1,0 +1,24 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: synthetic-monitor-cronjob
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.cron.SYNTHETIC_MONITOR_CRON_EXPRESSION }}"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: synthetic-monitor
+              image: quay.io/hmpps/dps-tools
+              args:
+                - /bin/sh
+                - -c
+                - curl -XPUT http://probation-offender-search/synthetic-monitor
+          restartPolicy: Never

@@ -23,6 +23,9 @@ env:
   COMMUNITY_ENDPOINT_URL: "https://community-api-secure.probation.service.justice.gov.uk"
   JAVA_OPTS: "-Xmx512m"
 
+cron:
+  SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"
+
 allowlist:
   office: "217.33.148.210/32"
   health-kick: "35.177.252.195/32"
