@@ -1,16 +1,22 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.microsoft.applicationinsights.TelemetryClient
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.isNull
+import com.nhaarman.mockitokotlin2.verify
 import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
@@ -33,6 +39,9 @@ class OffenderSearchControllerTest {
 
   @Autowired
   private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
+
+  @SpyBean
+  lateinit var telemetryClient: TelemetryClient
 
   @BeforeEach
   fun setup() {
@@ -87,5 +96,36 @@ class OffenderSearchControllerTest {
 
   private fun response(file: String): String {
     return Files.readString(Paths.get(file))
+  }
+
+  @Nested
+  inner class SyntheticMonitor {
+
+    @Test
+    fun `endpoint is unsecured`() {
+      ElasticSearchExtension.elasticSearch.stubSearch(response("src/test/resources/elasticsearchdata/singleMatch.json"))
+      RestAssured.given()
+        .get("/synthetic-monitor")
+        .then()
+        .statusCode(200)
+    }
+
+    @Test
+    fun `telemetry is recorded`() {
+      ElasticSearchExtension.elasticSearch.stubSearch(response("src/test/resources/elasticsearchdata/singleMatch.json"))
+      RestAssured.given()
+        .get("/synthetic-monitor")
+        .then()
+        .statusCode(200)
+
+      verify(telemetryClient).trackEvent(
+        eq("synthetic-monitor"),
+        com.nhaarman.mockitokotlin2.check<Map<String, String>> {
+          assertThat(it["results"]).containsOnlyDigits()
+          assertThat(it["timeMs"]).containsOnlyDigits()
+        },
+        isNull()
+      )
+    }
   }
 }

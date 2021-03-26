@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
+import com.microsoft.applicationinsights.TelemetryClient
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -46,7 +47,8 @@ import javax.validation.constraints.NotEmpty
 @Validated
 class OffenderSearchController(
   private val searchService: SearchService,
-  private val securityUserContext: SecurityUserContext
+  private val securityUserContext: SecurityUserContext,
+  private val telemetryClient: TelemetryClient
 ) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -302,5 +304,13 @@ class OffenderSearchController(
   ): SearchPagedResults {
     log.info("Searching for offenders by team code: {}", teamCode)
     return searchService.findByTeamCode(teamCode, pageable)
+  }
+
+  @GetMapping("/synthetic-monitor")
+  fun syntheticMonitor() {
+    val start = System.currentTimeMillis()
+    val results = searchService.performSearch(SearchDto(surname = "Smith"))
+
+    telemetryClient.trackEvent("synthetic-monitor", mapOf("results" to "${results.size}", "timeMs" to (System.currentTimeMillis() - start).toString()), null)
   }
 }
