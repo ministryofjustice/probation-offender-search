@@ -20,5 +20,5 @@ spec:
               args:
                 - /bin/sh
                 - -c
-                - curl -XPUT http://probation-offender-search/synthetic-monitor
+                - curl http://probation-offender-search/synthetic-monitor
           restartPolicy: Never
