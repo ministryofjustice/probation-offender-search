@@ -46,8 +46,9 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.15.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
 
-  testImplementation("io.rest-assured:rest-assured:3.3.0")
-  testImplementation("io.rest-assured:spring-mock-mvc:3.3.0")
+  testImplementation("io.rest-assured:json-path:4.3.3")
+  testImplementation("io.rest-assured:xml-path:4.3.3")
+  testImplementation("io.rest-assured:spring-mock-mvc:4.3.3")
 }
 
 tasks {
