@@ -15,7 +15,8 @@ executors:
           - DOCKER_HOST=unix:///var/run/docker.sock
           - DEFAULT_REGION=eu-west-2
     environment:
-      _JAVA_OPTIONS: -Xmx384m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process
+      # Setting max gradle workers to 2 (which means 2 running concurrently, not max 2!) - because although this doesn't stop the ktlint workers from starting it does seem to prevent the test executor from needing as much memory.
+      _JAVA_OPTIONS: -Xmx384m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=2
     working_directory: ~/app
 
 jobs:
