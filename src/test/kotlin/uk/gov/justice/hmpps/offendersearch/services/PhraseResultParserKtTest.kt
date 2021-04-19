@@ -7,9 +7,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.search.SearchHit
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.json.JsonTest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 
+@JsonTest
 internal class PhraseResultParserKtTest {
+  @Autowired
+  lateinit var gson: Gson
+
   private val searchHit: SearchHit = mock()
 
   @BeforeEach
@@ -106,6 +112,6 @@ internal class PhraseResultParserKtTest {
     assertThat(offenders[0].otherIds?.crn).isEqualTo("X00001")
     assertThat(offenders[0].offenderManagers).hasSize(1)
   }
-}
 
-fun offenderParser(json: String): OffenderDetail = Gson().fromJson(json, OffenderDetail::class.java)
+  fun offenderParser(json: String): OffenderDetail = gson.fromJson(json, OffenderDetail::class.java)
+}
