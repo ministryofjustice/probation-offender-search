@@ -1,6 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -14,7 +14,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 @JsonTest
 internal class PhraseResultParserKtTest {
   @Autowired
-  lateinit var gson: Gson
+  lateinit var objectMapper: ObjectMapper
 
   private val searchHit: SearchHit = mock()
 
@@ -113,5 +113,5 @@ internal class PhraseResultParserKtTest {
     assertThat(offenders[0].offenderManagers).hasSize(1)
   }
 
-  fun offenderParser(json: String): OffenderDetail = gson.fromJson(json, OffenderDetail::class.java)
+  private fun offenderParser(json: String): OffenderDetail = objectMapper.readValue(json, OffenderDetail::class.java)
 }
