@@ -1,15 +1,21 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.search.SearchHit
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.json.JsonTest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 
+@JsonTest
 internal class PhraseResultParserKtTest {
+  @Autowired
+  lateinit var objectMapper: ObjectMapper
+
   private val searchHit: SearchHit = mock()
 
   @BeforeEach
@@ -106,6 +112,6 @@ internal class PhraseResultParserKtTest {
     assertThat(offenders[0].otherIds?.crn).isEqualTo("X00001")
     assertThat(offenders[0].offenderManagers).hasSize(1)
   }
-}
 
-fun offenderParser(json: String): OffenderDetail = Gson().fromJson(json, OffenderDetail::class.java)
+  private fun offenderParser(json: String): OffenderDetail = objectMapper.readValue(json, OffenderDetail::class.java)
+}
