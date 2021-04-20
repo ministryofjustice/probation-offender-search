@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.7"
   kotlin("plugin.spring") version "1.4.32"
 }
 
@@ -52,6 +52,12 @@ dependencies {
 }
 
 tasks {
+  compileKotlin {
+    kotlinOptions {
+      jvmTarget = "15"
+    }
+  }
+
   test {
     maxHeapSize = "256m"
   }
