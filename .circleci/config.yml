@@ -8,6 +8,7 @@ jobs:
     executor:
       name: hmpps/localstack
       jdk_tag: "16.0"
+      localstack_tag: "0.12.9.1"
       services: "es"
     steps:
       - run:
@@ -22,7 +23,7 @@ jobs:
       - hmpps/install_aws_cli
       - run:
           name: Wait for ES to be ready
-          command: curl -4 --connect-timeout 30 --retry-connrefused --retry 20 --retry-delay 5 http://localhost:4578
+          command: curl -4 --connect-timeout 30 --retry-connrefused --retry 20 --retry-delay 5 http://localhost:4566
       - run:
           name: Set up es domain
           command: src/test/resources/localstack/setup-es.sh

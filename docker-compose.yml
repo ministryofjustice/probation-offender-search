@@ -43,7 +43,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
 
   localstack:
-    image: localstack/localstack:0.11.2
+    image: localstack/localstack:0.12.9.1
     networks:
       - hmpps
     container_name: localstack
@@ -52,7 +52,7 @@ services:
       - 8999:8080
     environment:
       - SERVICES=es
-      - ES_PORT_EXTERNAL=4571
+      - ES_PORT_EXTERNAL=4566
       - DEBUG=${DEBUG- }
       - DATA_DIR=/tmp/localstack/data
       - DOCKER_HOST=unix:///var/run/docker.sock
