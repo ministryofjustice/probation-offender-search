@@ -39,3 +39,7 @@ allowlist:
   analyticplatform-1: "34.250.17.221/32"
   analyticplatform-2: "34.251.212.33/32"
   analyticplatform-3: "34.252.4.39/32"
+
+# determine which slack channel alerts are sent to, via the correct Alert Manager receiver
+generic-prometheus-alerts:
+  alertSeverity: digital-prison-service
