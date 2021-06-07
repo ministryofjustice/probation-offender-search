@@ -34,6 +34,7 @@ class ProbationStatusIntegrationTest : LocalstackIntegrationBase() {
       assertThatJson(response).node("[0].probationStatus.status").isEqualTo("CURRENT")
       assertThatJson(response).node("[0].probationStatus.inBreach").isEqualTo(true)
       assertThatJson(response).node("[0].probationStatus.preSentenceActivity").isEqualTo(false)
+      assertThatJson(response).node("[0].probationStatus.awaitingPsr").isEqualTo(true)
       assertThatJson(response).node("[0].probationStatus.previouslyKnownTerminationDate").isEqualTo("2021-02-08")
     }
 
@@ -54,6 +55,7 @@ class ProbationStatusIntegrationTest : LocalstackIntegrationBase() {
       assertThatJson(response).node("[0].probationStatus.status").isEqualTo("PREVIOUSLY_KNOWN")
       assertThatJson(response).node("[0].probationStatus.inBreach").isAbsent()
       assertThatJson(response).node("[0].probationStatus.preSentenceActivity").isEqualTo(false)
+      assertThatJson(response).node("[0].probationStatus.awaitingPsr").isEqualTo(true)
       assertThatJson(response).node("[0].probationStatus.previouslyKnownTerminationDate").isAbsent()
     }
 
@@ -93,6 +95,7 @@ class ProbationStatusIntegrationTest : LocalstackIntegrationBase() {
       assertThatJson(response).node("matches[0].offender.otherIds.crn").isEqualTo("X00001")
       assertThatJson(response).node("matches[0].offender.probationStatus.status").isEqualTo("CURRENT")
       assertThatJson(response).node("matches[0].offender.probationStatus.inBreach").isEqualTo(true)
+      assertThatJson(response).node("matches[0].offender.probationStatus.awaitingPsr").isEqualTo(true)
       assertThatJson(response).node("matches[0].offender.probationStatus.preSentenceActivity").isEqualTo(false)
       assertThatJson(response).node("matches[0].offender.probationStatus.previouslyKnownTerminationDate").isEqualTo("2021-02-08")
     }
@@ -114,6 +117,7 @@ class ProbationStatusIntegrationTest : LocalstackIntegrationBase() {
       assertThatJson(response).node("matches[0].offender.probationStatus.status").isEqualTo("PREVIOUSLY_KNOWN")
       assertThatJson(response).node("matches[0].offender.probationStatus.inBreach").isAbsent()
       assertThatJson(response).node("matches[0].offender.probationStatus.preSentenceActivity").isEqualTo(false)
+      assertThatJson(response).node("matches[0].offender.probationStatus.awaitingPsr").isEqualTo(true)
       assertThatJson(response).node("matches[0].offender.probationStatus.previouslyKnownTerminationDate").isAbsent()
     }
 

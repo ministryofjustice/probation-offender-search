@@ -22,7 +22,8 @@
   ],
   "probationStatus": {
     "status": "PREVIOUSLY_KNOWN",
-    "preSentenceActivity": false
+    "preSentenceActivity": false,
+    "awaitingPsr": true
   },
   "contactDetails": {
     "addresses": [

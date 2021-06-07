@@ -83,6 +83,7 @@
     "status": "CURRENT",
     "previouslyKnownTerminationDate": "2021-02-08",
     "preSentenceActivity": false,
+    "awaitingPsr": true,
     "inBreach": true
   }
 }
