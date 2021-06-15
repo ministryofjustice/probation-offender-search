@@ -22,6 +22,7 @@ env:
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
   COMMUNITY_ENDPOINT_URL: "https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io"
   JAVA_OPTS: "-Xmx512m"
+  APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
 
 cron:
   SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"
