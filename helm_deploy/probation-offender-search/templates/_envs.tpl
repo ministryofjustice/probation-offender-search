@@ -25,6 +25,9 @@ env:
   - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     value: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
 
+  - name: APPLICATIONINSIGHTS_CONFIGURATION_FILE
+    value: "{{ .Values.env.APPLICATIONINSIGHTS_CONFIGURATION_FILE }}"
+
   - name: AWS_REGION
     value: "eu-west-2"
 
