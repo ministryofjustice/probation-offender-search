@@ -105,6 +105,7 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
+          show_changelog: true
           context:
             - hmpps-common-vars
             - probation-offender-search-prod
