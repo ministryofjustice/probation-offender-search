@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.5
+  hmpps: ministryofjustice/hmpps@3.6
 
 jobs:
   validate:
@@ -105,7 +105,6 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
-          show_changelog: true
           context:
             - hmpps-common-vars
             - probation-offender-search-prod
