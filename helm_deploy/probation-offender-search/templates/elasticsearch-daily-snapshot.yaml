@@ -78,7 +78,7 @@ spec:
         spec:
           containers:
           - name: elasticsearch-snapshot
-            image: "quay.io/hmpps/dps-tools:latest"
+            image: "ghcr.io/ministryofjustice/hmpps-devops-tools:latest"
             command:
             - /bin/entrypoint.sh
             volumeMounts:
