@@ -8,18 +8,16 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClient.Builder
 
 @Configuration
 class WebClientConfiguration(
   @Value("\${community.endpoint.url}") private val communityRootUri: String,
-  private val webClientBuilder: Builder,
   private val securityUserContext: SecurityUserContext
 ) {
 
   @Bean
   fun communityApiWebClient(): WebClient {
-    return webClientBuilder
+    return WebClient.builder()
       .baseUrl(communityRootUri)
       .filter(addAuthHeaderFilterFunction())
       .build()
@@ -36,6 +34,6 @@ class WebClientConfiguration(
 
   @Bean
   fun communityApiHealthWebClient(): WebClient {
-    return webClientBuilder.baseUrl(communityRootUri).build()
+    return WebClient.builder().baseUrl(communityRootUri).build()
   }
 }
