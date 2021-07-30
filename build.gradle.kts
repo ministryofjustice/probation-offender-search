@@ -11,9 +11,6 @@ dependencyCheck {
   suppressionFiles.add("dependency-check-suppress-es.xml")
 }
 
-// Mitigate CVE-2021-22145 - this can be removed once spring-data-elasticsearch's transitive dependency is at this version
-extra["elasticsearch.version"] = "7.13.4"
-
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
