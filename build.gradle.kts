@@ -30,11 +30,11 @@ dependencies {
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("org.apache.commons:commons-text:1.9")
 
-  implementation("org.elasticsearch:elasticsearch:7.13.2")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.2")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.13.2")
+  implementation("org.elasticsearch:elasticsearch:7.13.4")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.4")
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.13.4")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.13")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.36")
 
   implementation("io.springfox:springfox-boot-starter:3.0.0")
 
@@ -43,7 +43,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.27.0")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
   testImplementation("org.mockito:mockito-inline:3.11.2")
-  testImplementation("org.testcontainers:localstack:1.15.3")
+  testImplementation("org.testcontainers:localstack:1.16.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
 
   testImplementation("io.rest-assured:json-path:4.4.0")
