@@ -24,9 +24,9 @@ dependencies {
 
   implementation("javax.transaction:javax.transaction-api:1.3")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
-  implementation("com.sun.xml.bind:jaxb-impl:3.0.1")
-  implementation("com.sun.xml.bind:jaxb-core:3.0.1")
-  implementation("com.google.code.gson:gson:2.8.7")
+  implementation("com.sun.xml.bind:jaxb-impl:3.0.2")
+  implementation("com.sun.xml.bind:jaxb-core:3.0.2")
+  implementation("com.google.code.gson:gson:2.8.8")
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("org.apache.commons:commons-text:1.9")
 
@@ -34,15 +34,15 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.4")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:7.13.4")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.36")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.62")
 
   implementation("io.springfox:springfox-boot-starter:3.0.0")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.27.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
-  testImplementation("org.mockito:mockito-inline:3.11.2")
+  testImplementation("org.mockito:mockito-inline:3.12.4")
   testImplementation("org.testcontainers:localstack:1.16.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
 
@@ -51,8 +51,12 @@ dependencies {
   testImplementation("io.rest-assured:spring-mock-mvc:4.4.0")
 }
 
+java {
+  toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+}
+
 tasks {
-  compileKotlin {
+  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
       jvmTarget = "16"
     }
