@@ -26,3 +26,5 @@ hs_err_pid*
 build
 out
 dps-gradle-spring-boot-suppressions.xml
+helm_deploy/*/Chart.lock
+helm_deploy/*/charts/

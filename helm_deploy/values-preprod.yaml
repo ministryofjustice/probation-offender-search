@@ -1,49 +1,34 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+---
+# Environment specific values, override helm_deploy/probation-offender-search/values.yaml
 
-replicaCount: 4
+generic-service:
+  ingress:
+    host: probation-offender-search-preprod.hmpps.service.justice.gov.uk
 
-image:
-  repository: quay.io/hmpps/probation-offender-search
-  tag: latest
-  port: 8080
+  env:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
+    COMMUNITY_ENDPOINT_URL: "https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io"
 
-ingress:
-  enabled: true
-  enable_allowlist: true
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-  hosts:
-    - host: probation-offender-search-preprod.hmpps.service.justice.gov.uk
-      cert_secret: probation-offender-search-cert
-  path: /
-
-env:
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
-  COMMUNITY_ENDPOINT_URL: "https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io"
-  JAVA_OPTS: "-Xmx512m"
-  APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+  allowlist:
+    office: "217.33.148.210/32"
+    health-kick: "35.177.252.195/32"
+    mojvpn: "81.134.202.29/32"
+    cloudplatform-live1-1: "35.178.209.113/32"
+    cloudplatform-live1-2: "3.8.51.207/32"
+    cloudplatform-live1-3: "35.177.252.54/32"
+    delius-aws-1: "52.56.240.62/32"
+    delius-aws-2: "18.130.110.168/32"
+    delius-aws-3: "35.178.44.184/32"
+    delius-aws-perf-1: "3.10.200.35/32"
+    delius-aws-perf-2: "3.11.166.247/32"
+    delius-aws-perf-3: "52.56.136.138/32"
+    analyticplatform-1: "34.250.17.221/32"
+    analyticplatform-2: "34.251.212.33/32"
+    analyticplatform-3: "34.252.4.39/32"
 
 cron:
   SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"
 
-allowlist:
-  office: "217.33.148.210/32"
-  health-kick: "35.177.252.195/32"
-  mojvpn: "81.134.202.29/32"
-  cloudplatform-live1-1: "35.178.209.113/32"
-  cloudplatform-live1-2: "3.8.51.207/32"
-  cloudplatform-live1-3: "35.177.252.54/32"
-  delius-aws-1: "52.56.240.62/32"
-  delius-aws-2: "18.130.110.168/32"
-  delius-aws-3: "35.178.44.184/32"
-  delius-aws-perf-1: "3.10.200.35/32"
-  delius-aws-perf-2: "3.11.166.247/32"
-  delius-aws-perf-3: "52.56.136.138/32"
-  analyticplatform-1: "34.250.17.221/32"
-  analyticplatform-2: "34.251.212.33/32"
-  analyticplatform-3: "34.252.4.39/32"
-
-# CloudPlatform AlertManager receiver to route promethues alerts to slack
+# CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
   alertSeverity: hmpps_tech_non_prod

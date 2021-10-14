@@ -1,32 +1,21 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+---
+# Environment specific values, override helm_deploy/probation-offender-search/values.yaml
 
-replicaCount: 2
+generic-service:
+  replicaCount: 2
+  ingress:
+    host: probation-offender-search-dev.hmpps.service.justice.gov.uk
 
-image:
-  repository: quay.io/hmpps/probation-offender-search
-  tag: latest
-  port: 8080
+  env:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
+    COMMUNITY_ENDPOINT_URL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
 
-ingress:
-  enabled: true
-  enable_whitelist: false
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-  hosts:
-    - host: probation-offender-search-dev.hmpps.service.justice.gov.uk
-      cert_secret: probation-offender-search-cert
-  path: /
-
-env:
-  JAVA_OPTS: "-Xmx512m"
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
-  COMMUNITY_ENDPOINT_URL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
-  APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
+  allowlist: null
 
 cron:
   SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"
 
-# CloudPlatform AlertManager receiver to route promethues alerts to slack
+# CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
   alertSeverity: hmpps_tech_non_prod

@@ -1,5 +1,54 @@
 ---
 # Values here are the same across all environments
+generic-service:
+  nameOverride: probation-offender-search
+
+  image:
+    repository: quay.io/hmpps/probation-offender-search
+    tag: app_version    # override at deployment time
+    port: 8080
+
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        server_tokens off;
+        location /synthetic-monitor {
+          deny all;
+          return 401;
+        }
+    tlsSecretName: probation-offender-search-cert
+
+  env:
+    JAVA_OPTS: "-Xmx512m"
+    SPRING_PROFILES_ACTIVE: "elasticsearch"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+    ELASTICSEARCH_PORT: "9200"
+    ELASTICSEARCH_SCHEME: "http"
+    ELASTICSEARCH_HOST: "es-proxy"
+    ELASTICSEARCH_AWS_SIGNREQUESTS: "false"
+    AWS_REGION: "eu-west-2"
+    ELASTICSEARCH_PROVIDER: "aws"
+    SEARCH_SUPPORTED_MAPPING_VERSION: "2"
+
+  namespace_secrets:
+    probation-offender-search:
+      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+
+  allowlist:
+    office: "217.33.148.210/32"
+    health-kick: "35.177.252.195/32"
+    mojvpn: "81.134.202.29/32"
+    cloudplatform-live1-1: "35.178.209.113/32"
+    cloudplatform-live1-2: "3.8.51.207/32"
+    cloudplatform-live1-3: "35.177.252.54/32"
+    delius-aws-1: "52.56.115.146/32"
+    delius-aws-2: "35.178.104.253/32"
+    delius-aws-3: "35.177.47.45/32"
+    analyticplatform-1: "34.250.17.221/32"
+    analyticplatform-2: "34.251.212.33/32"
+    analyticplatform-3: "34.252.4.39/32"
 
 generic-prometheus-alerts:
   targetApplication: probation-offender-search
