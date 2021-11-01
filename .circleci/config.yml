@@ -7,7 +7,7 @@ jobs:
   validate:
     executor:
       name: hmpps/localstack
-      jdk_tag: "16.0"
+      jdk_tag: "17.0"
       services: "es"
     steps:
       - run:
@@ -31,7 +31,7 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" check
+          command: ./gradlew check
       - save_cache:
           paths:
             - ~/.gradle
