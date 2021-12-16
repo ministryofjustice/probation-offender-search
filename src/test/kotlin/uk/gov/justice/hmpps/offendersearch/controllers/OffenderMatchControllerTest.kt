@@ -1,8 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
 import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
@@ -10,6 +8,8 @@ import org.hamcrest.CoreMatchers.containsString
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean

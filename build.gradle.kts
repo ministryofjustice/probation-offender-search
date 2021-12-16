@@ -49,6 +49,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path:4.4.0")
   testImplementation("io.rest-assured:xml-path:4.4.0")
   testImplementation("io.rest-assured:spring-mock-mvc:4.4.0")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
 }
 
 java {
