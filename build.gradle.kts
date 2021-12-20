@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.16"
-  kotlin("plugin.spring") version "1.5.31"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.0"
+  kotlin("plugin.spring") version "1.6.0"
 }
 
 configurations {
@@ -26,15 +26,15 @@ dependencies {
   implementation("javax.xml.bind:jaxb-api:2.3.1")
   implementation("com.sun.xml.bind:jaxb-impl:3.0.2")
   implementation("com.sun.xml.bind:jaxb-core:3.0.2")
-  implementation("com.google.code.gson:gson:2.8.8")
+  implementation("com.google.code.gson:gson:2.8.9")
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("org.apache.commons:commons-text:1.9")
 
-  implementation("org.elasticsearch:elasticsearch:7.13.4")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.4")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.13.4")
+  implementation("org.elasticsearch:elasticsearch:7.16.2")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.2")
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.16.2")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.77")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.129")
 
   implementation("io.springfox:springfox-boot-starter:3.0.0")
 
@@ -42,14 +42,13 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
   testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
-  testImplementation("org.mockito:mockito-inline:3.12.4")
-  testImplementation("org.testcontainers:localstack:1.16.0")
-  testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
+  testImplementation("org.mockito:mockito-inline:4.2.0")
+  testImplementation("org.testcontainers:localstack:1.16.2")
+  testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
 
   testImplementation("io.rest-assured:json-path:4.4.0")
   testImplementation("io.rest-assured:xml-path:4.4.0")
   testImplementation("io.rest-assured:spring-mock-mvc:4.4.0")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
 }
 
 java {
