@@ -1,13 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.common.ParseField
-import org.elasticsearch.common.xcontent.ContextParser
-import org.elasticsearch.common.xcontent.DeprecationHandler
-import org.elasticsearch.common.xcontent.NamedXContentRegistry
-import org.elasticsearch.common.xcontent.NamedXContentRegistry.Entry
-import org.elasticsearch.common.xcontent.XContentParser
-import org.elasticsearch.common.xcontent.XContentType.JSON
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.NestedQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
@@ -20,6 +13,13 @@ import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder
+import org.elasticsearch.xcontent.ContextParser
+import org.elasticsearch.xcontent.DeprecationHandler
+import org.elasticsearch.xcontent.NamedXContentRegistry
+import org.elasticsearch.xcontent.NamedXContentRegistry.Entry
+import org.elasticsearch.xcontent.ParseField
+import org.elasticsearch.xcontent.XContentParser
+import org.elasticsearch.xcontent.XContentType.JSON
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationAreaAggregation
@@ -40,14 +40,16 @@ internal class ProbationAreaFilterAggregatorKtTest {
     @Test
     internal fun `will divide active and inactive offender managers into probation area buckets`() {
       assertThat(aggregation.subAggregations.first().subAggregations).hasSize(1)
-      val probationAreaCodeAggregation = aggregation.subAggregations.first().subAggregations.first() as TermsAggregationBuilder
+      val probationAreaCodeAggregation =
+        aggregation.subAggregations.first().subAggregations.first() as TermsAggregationBuilder
       assertThat(probationAreaCodeAggregation.field()).isEqualTo("offenderManagers.probationArea.code")
       assertThat(probationAreaCodeAggregation.name).isEqualTo("byProbationAreaCode")
     }
 
     @Test
     internal fun `will restrict probation area bucket to more than know number of areas`() {
-      val probationAreaCodeAggregation = aggregation.subAggregations.first().subAggregations.first() as TermsAggregationBuilder
+      val probationAreaCodeAggregation =
+        aggregation.subAggregations.first().subAggregations.first() as TermsAggregationBuilder
       assertThat(probationAreaCodeAggregation.size()).isEqualTo(1000)
     }
   }
@@ -203,16 +205,19 @@ internal class BuildProbationAreaFilter {
   internal fun `will return null if supplied filter is empty`() {
     assertThat(buildProbationAreaFilter(listOf())).isNull()
   }
+
   @Test
   internal fun `will return a query with a "should" for each probation area supplied`() {
     assertThat(buildProbationAreaFilter(listOf("N01", "N02"))?.should()).hasSize(2)
   }
+
   @Test
   internal fun `will filter only for active offender managers`() {
     val nestedQuery = buildProbationAreaFilter(listOf("N01"))?.should()?.first() as NestedQueryBuilder
     val termQueries = nestedQuery.query() as BoolQueryBuilder
     assertThat(termQueries.must()).contains(QueryBuilders.termQuery("offenderManagers.active", true))
   }
+
   @Test
   internal fun `will filter offender managers probation area code`() {
     val nestedQuery = buildProbationAreaFilter(listOf("N01"))?.should()?.first() as NestedQueryBuilder
@@ -224,9 +229,24 @@ internal class BuildProbationAreaFilter {
 fun getDefaultNamedXContents(): List<Entry> {
   // required by ES to parse the contents of our aggregations
   val contentParsers = mapOf(
-    StringTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedStringTerms.fromXContent(parser, name as String) },
-    NestedAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedNested.fromXContent(parser, name as String) },
-    LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedLongTerms.fromXContent(parser, name as String) }
+    StringTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any ->
+      ParsedStringTerms.fromXContent(
+        parser,
+        name as String
+      )
+    },
+    NestedAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any ->
+      ParsedNested.fromXContent(
+        parser,
+        name as String
+      )
+    },
+    LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any ->
+      ParsedLongTerms.fromXContent(
+        parser,
+        name as String
+      )
+    }
   )
   return contentParsers
     .toList()
