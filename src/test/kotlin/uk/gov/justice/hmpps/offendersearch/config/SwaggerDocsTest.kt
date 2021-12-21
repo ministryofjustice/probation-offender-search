@@ -14,7 +14,7 @@ class SwaggerDocsTest : LocalstackIntegrationBase() {
   fun `swagger docs are available`() {
     RestAssured.given()
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .get("/swagger-ui/index.html")
+      .get("/swagger-ui/?configUrl=/v3/api-docs")
       .then()
       .statusCode(200)
   }
@@ -23,7 +23,7 @@ class SwaggerDocsTest : LocalstackIntegrationBase() {
   fun `the swagger json is valid`() {
     val response = RestAssured.given()
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .get("/v2/api-docs")
+      .get("/v3/api-docs")
       .then()
       .statusCode(200)
       .extract()
@@ -36,7 +36,7 @@ class SwaggerDocsTest : LocalstackIntegrationBase() {
   fun `the swagger json contains the version number`() {
     val response = RestAssured.given()
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .get("/v2/api-docs")
+      .get("/v3/api-docs")
       .then()
       .statusCode(200)
       .extract()

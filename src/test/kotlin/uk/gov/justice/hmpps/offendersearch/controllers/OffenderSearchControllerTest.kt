@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
@@ -120,7 +121,7 @@ class OffenderSearchControllerTest {
 
       verify(telemetryClient).trackEvent(
         eq("synthetic-monitor"),
-        com.nhaarman.mockitokotlin2.check<Map<String, String>> {
+        check<Map<String, String>> {
           assertThat(it["results"]).containsOnlyDigits()
           assertThat(it["timeMs"]).containsOnlyDigits()
         },

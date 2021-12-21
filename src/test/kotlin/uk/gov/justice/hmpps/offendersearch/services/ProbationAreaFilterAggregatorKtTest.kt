@@ -203,16 +203,19 @@ internal class BuildProbationAreaFilter {
   internal fun `will return null if supplied filter is empty`() {
     assertThat(buildProbationAreaFilter(listOf())).isNull()
   }
+
   @Test
   internal fun `will return a query with a "should" for each probation area supplied`() {
     assertThat(buildProbationAreaFilter(listOf("N01", "N02"))?.should()).hasSize(2)
   }
+
   @Test
   internal fun `will filter only for active offender managers`() {
     val nestedQuery = buildProbationAreaFilter(listOf("N01"))?.should()?.first() as NestedQueryBuilder
     val termQueries = nestedQuery.query() as BoolQueryBuilder
     assertThat(termQueries.must()).contains(QueryBuilders.termQuery("offenderManagers.active", true))
   }
+
   @Test
   internal fun `will filter offender managers probation area code`() {
     val nestedQuery = buildProbationAreaFilter(listOf("N01"))?.should()?.first() as NestedQueryBuilder

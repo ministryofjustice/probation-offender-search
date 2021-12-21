@@ -1,12 +1,12 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.elasticsearch.search.SearchHit
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
@@ -99,6 +99,7 @@ internal class PhraseResultParserKtTest {
     assertThat(offenders[0].surname).isNull()
     assertThat(offenders[0].accessDenied).isTrue
   }
+
   @Test
   internal fun `redacted offenders will have crn, offenderId and offender managers`() {
     val offenders = extractOffenderDetailList(
