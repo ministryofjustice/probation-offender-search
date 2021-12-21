@@ -18,7 +18,6 @@ import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.spring.web.plugins.WebFluxRequestHandlerProvider
 import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider
-import springfox.documentation.swagger2.annotations.EnableSwagger2
 import uk.gov.justice.hmpps.offendersearch.controllers.OffenderSearchController
 import java.lang.reflect.Field
 import java.time.LocalDateTime
@@ -28,7 +27,6 @@ import java.util.Optional
 import java.util.stream.Collectors
 
 @Configuration
-@EnableSwagger2
 @Import(BeanValidatorPluginsConfiguration::class)
 class DocketConfiguration {
   @Autowired(required = false)

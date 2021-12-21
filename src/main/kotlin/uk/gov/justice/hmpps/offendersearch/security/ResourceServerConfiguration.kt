@@ -20,9 +20,8 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
         auth.antMatchers(
           "/webjars/**", "/favicon.ico", "/csrf",
           "/health/**", "/info",
-          "/v2/api-docs",
-          "/swagger-ui/**", "/swagger-resources", "/swagger-resources/configuration/ui",
-          "/swagger-resources/configuration/security",
+          "/v3/api-docs", "/swagger-ui/**",
+          "/swagger-resources", "/swagger-resources/configuration/ui", "/swagger-resources/configuration/security",
           "/synthetic-monitor" // This endpoint is secured in the ingress rather than the app so that it can be called from within the namespace without requiring authentication
         )
           .permitAll().anyRequest().authenticated()

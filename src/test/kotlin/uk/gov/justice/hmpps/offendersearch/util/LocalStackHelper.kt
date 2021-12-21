@@ -13,7 +13,7 @@ import org.elasticsearch.client.indices.CreateIndexRequest
 import org.elasticsearch.client.indices.GetIndexRequest
 import org.elasticsearch.client.indices.PutMappingRequest
 import org.elasticsearch.common.bytes.BytesArray
-import org.elasticsearch.xcontent.XContentType.JSON
+import org.elasticsearch.common.xcontent.XContentType.JSON
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.UUID
