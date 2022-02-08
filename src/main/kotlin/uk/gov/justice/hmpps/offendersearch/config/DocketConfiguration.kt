@@ -44,7 +44,7 @@ class DocketConfiguration {
       "",
       emptyList()
     )
-    val docket = Docket(DocumentationType.SWAGGER_2)
+    val docket = Docket(DocumentationType.OAS_30)
       .useDefaultResponseMessages(false)
       .apiInfo(apiInfo)
       .select()
