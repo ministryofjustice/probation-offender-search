@@ -27,4 +27,4 @@ cron:
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
-  alertSeverity: hmpps_tech_non_prod
+  alertSeverity: probation-integration-notifications
