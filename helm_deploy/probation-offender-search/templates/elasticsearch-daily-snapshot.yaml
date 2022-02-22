@@ -127,5 +127,5 @@ spec:
       expr: kube_job_status_failed{namespace="{{ .Release.Namespace }}",job_name=~"elasticsearch-snapshot.*"} > 0
       for: 1m
       labels:
-        severity: digital-prison-service
+        severity: probation-integration-notifications
 
