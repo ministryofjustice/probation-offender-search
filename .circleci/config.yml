@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.11
+  hmpps: ministryofjustice/hmpps@3.13
 
 jobs:
   validate:
@@ -61,6 +61,8 @@ workflows:
           name: helm_lint
       - hmpps/build_docker:
           name: build_docker
+          jira_update: true
+          context: hmpps-common-vars
           filters:
             branches:
               only:
@@ -68,6 +70,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          jira_update: true
           context: hmpps-common-vars
           filters:
             branches:
@@ -84,6 +87,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_staging
           env: "staging"
+          jira_update: true
+          jira_env_type: staging
           context:
             - hmpps-common-vars
             - probation-offender-search-staging
@@ -92,6 +97,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
+          jira_update: true
+          jira_env_type: staging
           context:
             - hmpps-common-vars
             - probation-offender-search-preprod
@@ -104,7 +111,10 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
+          jira_update: true
+          jira_env_type: production
           slack_notification: true
+          slack_channel_name: probation-integration-notifications
           context:
             - hmpps-common-vars
             - probation-offender-search-prod
@@ -121,15 +131,15 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: probation-integration-notifications
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: probation-integration-notifications
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: probation-integration-notifications
           context:
             - hmpps-common-vars
             - veracode-credentials
@@ -143,7 +153,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: probation-integration-notifications
           context:
             - veracode-credentials
             - hmpps-common-vars
