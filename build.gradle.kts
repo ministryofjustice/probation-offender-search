@@ -31,7 +31,7 @@ dependencies {
   implementation("org.apache.commons:commons-text:1.9")
 
   implementation("org.elasticsearch:elasticsearch:7.13.4")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.4")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.1")
   implementation("org.elasticsearch.client:elasticsearch-rest-client:7.13.4")
 
   implementation("com.amazonaws:aws-java-sdk-core:1.12.129")
