@@ -32,9 +32,9 @@ dependencies {
 
   implementation("org.elasticsearch:elasticsearch:7.13.4")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.4")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:7.13.4")
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:8.1.1")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.129")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.189")
 
   implementation("io.springfox:springfox-boot-starter:3.0.0")
 
@@ -42,7 +42,7 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
   testImplementation("org.mockito:mockito-inline:4.4.0")
-  testImplementation("org.testcontainers:localstack:1.16.2")
+  testImplementation("org.testcontainers:localstack:1.16.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
 
   testImplementation("io.rest-assured:json-path:4.4.0")
