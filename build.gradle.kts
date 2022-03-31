@@ -45,7 +45,7 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.16.3")
   testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
 
-  testImplementation("io.rest-assured:json-path:4.4.0")
+  testImplementation("io.rest-assured:json-path:5.0.0")
   testImplementation("io.rest-assured:xml-path:4.4.0")
   testImplementation("io.rest-assured:spring-mock-mvc:4.4.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.20")
