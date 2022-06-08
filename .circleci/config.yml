@@ -60,10 +60,6 @@ jobs:
       image_name:
         type: string
         default: "quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}"
-      no_output_timeout:
-        type: string
-        default: 5m
-        description: Configure the no_output_timeout setting for the container build step
       jira_update:
         type: boolean
         default: false
@@ -91,9 +87,8 @@ jobs:
           value: "${IMAGE_NAME}"
       - run:
           name: Build container image and publish
-          no_output_timeout: << parameters.no_output_timeout >>
           command: |
-            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD}
+            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD} -Djib.to.tags=latest
       - when:
           condition: << parameters.jira_update >>
           steps:
