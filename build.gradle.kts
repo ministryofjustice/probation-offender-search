@@ -45,7 +45,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.0.33")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.1")
 }
 
 java {
