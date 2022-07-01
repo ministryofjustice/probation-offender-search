@@ -40,7 +40,7 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.35.0")
   testImplementation("org.mockito:mockito-inline")
-  testImplementation("org.testcontainers:localstack:1.17.2")
+  testImplementation("org.testcontainers:localstack:1.17.3")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
