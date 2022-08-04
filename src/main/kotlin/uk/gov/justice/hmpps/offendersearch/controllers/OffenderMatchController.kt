@@ -22,7 +22,7 @@ import javax.validation.Valid
 
 @Api(tags = ["offender-match"], authorizations = [Authorization("ROLE_COMMUNITY")], description = "Provides offender matching features for Delius elastic search")
 @RestController
-@RequestMapping(value = ["match"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 class OffenderMatchController(private val matchService: MatchService) {
   companion object {
@@ -32,8 +32,18 @@ class OffenderMatchController(private val matchService: MatchService) {
   @ApiOperation(value = "Match for an offender in Delius ElasticSearch. It will return the best group of matching offenders based on the request", notes = "Specify the request criteria to match against", authorizations = [Authorization("ROLE_COMMUNITY")], nickname = "match")
   @ApiResponses(value = [ApiResponse(code = 200, message = "OK", response = OffenderMatches::class), ApiResponse(code = 400, message = "Invalid Request", response = BadRequestException::class), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)])
   @PostMapping
+  @RequestMapping(value = ["match"])
   fun matchOffenders(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches {
     log.info("Match called with {}", matchRequest)
+    return matchService.match(matchRequest)
+  }
+
+  @ApiOperation(value = "Match for an offender in Delius ElasticSearch. It will return the best group of matching offenders based on the request", notes = "Specify the request criteria to match against", authorizations = [Authorization("ROLE_COMMUNITY")], nickname = "match")
+  @ApiResponses(value = [ApiResponse(code = 200, message = "OK", response = OffenderMatches::class), ApiResponse(code = 400, message = "Invalid Request", response = BadRequestException::class), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)])
+  @PostMapping
+  @RequestMapping(value = ["match-with-probabilities"])
+  fun matchOffendersWithProbabilities(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches {
+    log.info("Match with probabilities called with {}", matchRequest)
     return matchService.match(matchRequest)
   }
 }
