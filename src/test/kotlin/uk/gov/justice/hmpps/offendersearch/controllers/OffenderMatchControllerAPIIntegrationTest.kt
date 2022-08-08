@@ -95,7 +95,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"Smith\"}")
-        .post("/match-with-probabilities")
+        .post("/match-with-scores")
         .then()
         .statusCode(200)
     }
@@ -107,7 +107,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"Smith\"}")
-        .post("/match-with-probabilities")
+        .post("/match-with-scores")
         .then()
         .statusCode(403)
     }
@@ -147,7 +147,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             activeSentence = true
           )
         )
-        .post("/match-with-probabilities")
+        .post("/match-with-scores")
         .then()
         .statusCode(200)
         .body("matches.findall.size()", equalTo(1))
@@ -190,7 +190,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             activeSentence = true
           )
         )
-        .post("/match-with-probabilities")
+        .post("/match-with-scores")
         .then()
         .statusCode(200)
         .body("matches.findall.size()", equalTo(1))

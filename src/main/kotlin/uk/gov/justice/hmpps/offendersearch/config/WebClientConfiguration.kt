@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient
 @Configuration
 class WebClientConfiguration(
   @Value("\${community.endpoint.url}") private val communityRootUri: String,
+  @Value("\${hmpps-person-match-score.endpoint.url}") private val hmppsPersonMatchScoreRootUri: String,
   private val securityUserContext: SecurityUserContext
 ) {
 
@@ -20,6 +21,13 @@ class WebClientConfiguration(
     return WebClient.builder()
       .baseUrl(communityRootUri)
       .filter(addAuthHeaderFilterFunction())
+      .build()
+  }
+
+  @Bean
+  fun hmppsPersonMatchScoreWebClient(): WebClient {
+    return WebClient.builder()
+      .baseUrl(hmppsPersonMatchScoreRootUri)
       .build()
   }
 
