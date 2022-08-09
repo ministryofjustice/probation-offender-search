@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatch
@@ -17,16 +18,35 @@ class MatchScoreService(@Qualifier("hmppsPersonMatchScoreWebClient") private val
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  internal fun score(matchRequest: MatchRequest, offenderMatch: OffenderMatch): Mono<MatchScore> {
+  internal fun scoreAll(matches: List<OffenderMatch>, matchRequest: MatchRequest): List<OffenderMatch> {
+    return Flux.fromIterable(matches)
+      .flatMap {
+        score(matchRequest, it)
+      }
+      .collectList()
+      .blockOptional()
+      .orElseGet {
+        if (matches.isNotEmpty())
+          log.warn("Could not retrieve any probability scores from hmpps-person-match-score. Probability scores will be omitted for these matches.")
+        matches
+      }
+      .sortedByDescending { it.matchProbability }
+  }
+
+  private fun score(matchRequest: MatchRequest, offenderMatch: OffenderMatch): Mono<OffenderMatch> {
     return webClient.post()
       .uri("/match")
       .bodyValue(matchRequest combinedIntoScoreRequestWith offenderMatch)
       .retrieve()
       .bodyToMono(MatchScoreResponse::class.java)
-      .map { MatchScore(it.match_probability.`0`) }
+      .map {
+        offenderMatch.copy(
+          matchProbability = it.match_probability.`0`
+        )
+      }
       .onErrorResume {
-        log.warn("There was an error retrieving probability scores from hmpps-person-match-score, returning empty.", it)
-        Mono.empty()
+        log.warn("There was an error retrieving probability scores from hmpps-person-match-score. The probability score will be omitted for this match.", it)
+        Mono.just(offenderMatch)
       }
   }
 }
@@ -44,14 +64,6 @@ private infix fun MatchRequest.combinedIntoScoreRequestWith(offenderMatch: Offen
     pnc_number = ValuePair(this.pncNumber, offenderMatch.offender.otherIds?.pncNumber),
     source_dataset = ValuePair("LIBRA", "DELIUS")
   )
-}
-
-internal data class MatchScore(val matchProbability: Double)
-
-
-sealed class MatchScoreResult {
-  object Empty : MatchScoreResult()
-  data class Match(val matchProbability: Double) : MatchScoreResult()
 }
 
 private data class MatchScoreRequest(

@@ -19,11 +19,9 @@ import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import reactor.core.publisher.Mono
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatch
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
-import uk.gov.justice.hmpps.offendersearch.services.MatchScore
 import uk.gov.justice.hmpps.offendersearch.services.MatchScoreService
 import uk.gov.justice.hmpps.offendersearch.services.MatchService
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
@@ -95,7 +93,7 @@ internal class OffenderMatchControllerTest {
   fun `OK response with valid request to match-with-scores`() {
     val offenderMatch = OffenderMatch(OffenderDetail(offenderId = 123))
     whenever(matchService.match(any())).thenReturn(OffenderMatches(listOf(offenderMatch)))
-    whenever(matchScoreService.score(any(), eq(offenderMatch))).thenReturn(Mono.just(MatchScore(0.92)))
+    whenever(matchScoreService.scoreAll(eq(listOf(offenderMatch)), any())).thenReturn(listOf(OffenderMatch(matchProbability = 0.92, offender = OffenderDetail(offenderId = 1))))
 
     RestAssured.given()
       .auth()

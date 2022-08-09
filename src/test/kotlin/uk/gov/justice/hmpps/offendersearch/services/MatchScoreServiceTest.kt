@@ -2,6 +2,7 @@ package uk.gov.justice.hmpps.offendersearch.services
 
 import com.github.tomakehurst.wiremock.client.WireMock
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -24,6 +25,11 @@ internal class MatchScoreServiceTest {
   @Autowired
   private lateinit var matchScoreService : MatchScoreService
 
+  @BeforeEach
+  internal fun setUp() {
+    HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.resetMappings()
+  }
+
   @Nested
   inner class Score {
     @Test
@@ -45,19 +51,61 @@ internal class MatchScoreServiceTest {
         )
       )
 
-      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScore()
+      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScore("2018/0123456X", "0.9172587927")
 
-      val matchScore = matchScoreService.score(matchRequest, match).block()
+      val matchScore = matchScoreService.scoreAll(listOf(match), matchRequest)
 
       HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.verify(
         WireMock.postRequestedFor(WireMock.urlEqualTo("/match"))
       )
 
-      assertThat(matchScore?.matchProbability).isEqualTo(0.9172587927)
+      assertThat(matchScore[0].matchProbability).isEqualTo(0.9172587927)
     }
 
     @Test
-    fun `if the match score request fails then return empty`() {
+    fun `return a score for multiple matches`() {
+      val matchRequest = MatchRequest(
+        firstName = "ann",
+        surname = "gramsci",
+        dateOfBirth = LocalDate.of(1988, 1, 6),
+        pncNumber = "2018/0123456X"
+      )
+
+      val match1 = OffenderMatch(
+        OffenderDetail(
+          firstName = "anne",
+          surname = "gramsci",
+          dateOfBirth = LocalDate.of(1988, 1, 6),
+          offenderId = 123,
+          otherIds = IDs(pncNumber = "2018/0123456X")
+        )
+      )
+
+      val match2 = OffenderMatch(
+        OffenderDetail(
+          firstName = "anne",
+          surname = "gramsci",
+          dateOfBirth = LocalDate.of(1988, 1, 6),
+          offenderId = 123,
+          otherIds = IDs(pncNumber = "2019/0123456X")
+        )
+      )
+
+      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScore("2018/0123456X", "0.9172587927")
+      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScore("2019/0123456X", "0.8439191924")
+
+      val matchScores = matchScoreService.scoreAll(listOf(match1, match2), matchRequest)
+
+      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.verify(
+        2,
+        WireMock.postRequestedFor(WireMock.urlEqualTo("/match"))
+      )
+
+      assertThat(matchScores.map { it.matchProbability }).containsExactly(0.9172587927, 0.8439191924)
+    }
+
+    @Test
+    fun `if the match score request fails then return null`() {
       val matchRequest = MatchRequest(
         firstName = "ann",
         surname = "gramsci",
@@ -77,13 +125,13 @@ internal class MatchScoreServiceTest {
 
       HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScoreError()
 
-      val matchScore = matchScoreService.score(matchRequest, match).block()
+      val matchScores = matchScoreService.scoreAll(listOf(match), matchRequest)
 
       HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.verify(
         WireMock.postRequestedFor(WireMock.urlEqualTo("/match"))
       )
 
-      assertThat(matchScore?.matchProbability).isNull()
+      assertThat(matchScores[0].matchProbability).isNull()
     }
   }
 }

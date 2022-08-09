@@ -1,6 +1,9 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import io.restassured.RestAssured.given
+import io.restassured.config.JsonConfig
+import io.restassured.config.RestAssuredConfig
+import io.restassured.path.json.config.JsonPathConfig
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeEach
@@ -132,9 +135,15 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
         )
       )
 
-      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScore()
+      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScore("2018/0123456X", "0.9172587927")
 
       given()
+        .config(RestAssuredConfig
+          .config()
+          .jsonConfig(JsonConfig
+            .jsonConfig()
+            .numberReturnType(JsonPathConfig.NumberReturnType.DOUBLE))
+        )
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)

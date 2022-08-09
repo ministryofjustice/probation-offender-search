@@ -23,10 +23,3 @@ community:
   endpoint.url: http://localhost:9091
 hmpps-person-match-score:
   endpoint.url: http://localhost:9091
-
-logging.level:
-  com:
-    github:
-      tomakehurst:
-        wiremock: TRACE
-  uk.gov.justice.hmpps.offendersearch.services.MatchScoreService: TRACE

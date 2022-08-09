@@ -82,7 +82,7 @@ private const val RESPONSE = """{
         "0": 1
     },
     "match_probability": {
-        "0": 0.9172587927
+        "0": [matchProbability]
     },
     "pnc_number_std_l": {
         "0": "2001/0141640Y"
@@ -127,9 +127,9 @@ private const val REQUEST = """{
     "0": "1988-01-06",
     "1": "1988-01-06"
   },
-  "pnc_number": {
+  "pnc_number": {    
     "0": "2018/0123456X",
-    "1": "2018/0123456X"
+    "1": "[pncNumber]"
   },
   "source_dataset": {
     "0": "LIBRA",
@@ -142,14 +142,16 @@ class HmppsPersonMatchScoreMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 9091
   }
 
-  fun stubPersonMatchScore() {
+  fun stubPersonMatchScore(pnc: String, matchProbability: String) {
+    val request = REQUEST.replace("[pncNumber]", pnc)
+    val response = RESPONSE.replace("[matchProbability]", matchProbability)
     stubFor(
       post("/match")
-        .withRequestBody(equalToJson(REQUEST))
+        .withRequestBody(equalToJson(request))
         .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
-          .withBody(RESPONSE)
+          .withBody(response)
           .withStatus(200)
       )
     )
