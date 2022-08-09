@@ -11,4 +11,4 @@ spring:
 community:
   endpoint.url: http://localhost:8096
 hmpps-person-match-score:
-  endpoint.url: http://localhost:8096
+  endpoint.url: http://localhost:8097

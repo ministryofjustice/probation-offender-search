@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.services
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -79,6 +80,7 @@ private data class MatchScoreResponse(
   val match_probability: ValueDouble
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 private data class ValuePair(
   val `0`: String?,
   val `1`: String?
