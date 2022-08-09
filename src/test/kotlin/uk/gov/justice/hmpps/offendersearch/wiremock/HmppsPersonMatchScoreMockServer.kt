@@ -1,7 +1,9 @@
 package uk.gov.justice.hmpps.offendersearch.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
+import com.github.tomakehurst.wiremock.client.WireMock.post
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -132,7 +134,7 @@ private const val REQUEST = """{
     "1": "[pncNumber]"
   },
   "source_dataset": {
-    "0": "LIBRA",
+    "0": "[sourceSystem]",
     "1": "DELIUS"
   }
 }"""
@@ -142,18 +144,19 @@ class HmppsPersonMatchScoreMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 9091
   }
 
-  fun stubPersonMatchScore(pnc: String, matchProbability: String) {
+  fun stubPersonMatchScore(pnc: String, matchProbability: String, sourceSystem: String = "LIBRA") {
     val request = REQUEST.replace("[pncNumber]", pnc)
+      .replace("[sourceSystem]", sourceSystem)
     val response = RESPONSE.replace("[matchProbability]", matchProbability)
     stubFor(
       post("/match")
         .withRequestBody(equalToJson(request))
         .willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withBody(response)
-          .withStatus(200)
-      )
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(response)
+            .withStatus(200)
+        )
     )
   }
 

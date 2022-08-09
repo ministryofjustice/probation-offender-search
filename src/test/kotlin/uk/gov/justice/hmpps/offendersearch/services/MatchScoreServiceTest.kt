@@ -23,7 +23,7 @@ import java.time.LocalDate
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 internal class MatchScoreServiceTest {
   @Autowired
-  private lateinit var matchScoreService : MatchScoreService
+  private lateinit var matchScoreService: MatchScoreService
 
   @BeforeEach
   internal fun setUp() {
@@ -38,7 +38,8 @@ internal class MatchScoreServiceTest {
         firstName = "ann",
         surname = "gramsci",
         dateOfBirth = LocalDate.of(1988, 1, 6),
-        pncNumber = "2018/0123456X"
+        pncNumber = "2018/0123456X",
+        sourceSystem = "LIBRA"
       )
 
       val match = OffenderMatch(
@@ -68,7 +69,8 @@ internal class MatchScoreServiceTest {
         firstName = "ann",
         surname = "gramsci",
         dateOfBirth = LocalDate.of(1988, 1, 6),
-        pncNumber = "2018/0123456X"
+        pncNumber = "2018/0123456X",
+        sourceSystem = "LIBRA"
       )
 
       val match1 = OffenderMatch(
@@ -110,7 +112,8 @@ internal class MatchScoreServiceTest {
         firstName = "ann",
         surname = "gramsci",
         dateOfBirth = LocalDate.of(1988, 1, 6),
-        pncNumber = "2018/0123456X"
+        pncNumber = "2018/0123456X",
+        sourceSystem = "LIBRA"
       )
 
       val match = OffenderMatch(
@@ -132,6 +135,36 @@ internal class MatchScoreServiceTest {
       )
 
       assertThat(matchScores[0].matchProbability).isNull()
+    }
+
+    @Test
+    fun `if no source system is provided then use UNKNOWN`() {
+      val matchRequest = MatchRequest(
+        firstName = "ann",
+        surname = "gramsci",
+        dateOfBirth = LocalDate.of(1988, 1, 6),
+        pncNumber = "2018/0123456X"
+      )
+
+      val match = OffenderMatch(
+        OffenderDetail(
+          firstName = "anne",
+          surname = "gramsci",
+          dateOfBirth = LocalDate.of(1988, 1, 6),
+          offenderId = 123,
+          otherIds = IDs(pncNumber = "2018/0123456X")
+        )
+      )
+
+      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScore("2018/0123456X", "0.9172587927", "UNKNOWN")
+
+      val matchScore = matchScoreService.scoreAll(listOf(match), matchRequest)
+
+      HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.verify(
+        WireMock.postRequestedFor(WireMock.urlEqualTo("/match"))
+      )
+
+      assertThat(matchScore[0].matchProbability).isEqualTo(0.9172587927)
     }
   }
 }

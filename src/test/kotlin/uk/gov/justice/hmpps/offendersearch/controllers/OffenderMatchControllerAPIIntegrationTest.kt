@@ -138,11 +138,14 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
       HmppsPersonMatchScoreExtension.hmppsPersonMatchScore.stubPersonMatchScore("2018/0123456X", "0.9172587927")
 
       given()
-        .config(RestAssuredConfig
-          .config()
-          .jsonConfig(JsonConfig
-            .jsonConfig()
-            .numberReturnType(JsonPathConfig.NumberReturnType.DOUBLE))
+        .config(
+          RestAssuredConfig
+            .config()
+            .jsonConfig(
+              JsonConfig
+                .jsonConfig()
+                .numberReturnType(JsonPathConfig.NumberReturnType.DOUBLE)
+            )
         )
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -153,7 +156,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "ann",
             dateOfBirth = LocalDate.of(1988, 1, 6),
             pncNumber = "2018/0123456X",
-            activeSentence = true
+            activeSentence = true,
+            sourceSystem = "LIBRA"
           )
         )
         .post("/match-with-scores")

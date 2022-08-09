@@ -52,7 +52,6 @@ class MatchScoreService(@Qualifier("hmppsPersonMatchScoreWebClient") private val
   }
 }
 
-
 private infix fun MatchRequest.combinedIntoScoreRequestWith(offenderMatch: OffenderMatch): MatchScoreRequest {
   return MatchScoreRequest(
     unique_id = ValuePair("1", "2"),
@@ -63,7 +62,7 @@ private infix fun MatchRequest.combinedIntoScoreRequestWith(offenderMatch: Offen
       offenderMatch.offender.dateOfBirth?.format(DateTimeFormatter.ISO_DATE)
     ),
     pnc_number = ValuePair(this.pncNumber, offenderMatch.offender.otherIds?.pncNumber),
-    source_dataset = ValuePair("LIBRA", "DELIUS")
+    source_dataset = ValuePair(this.sourceSystem ?: "UNKNOWN", "DELIUS")
   )
 }
 
