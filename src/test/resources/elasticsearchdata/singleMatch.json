@@ -13,7 +13,7 @@
     "hits": [
       {
         "_node": "cxs5t1YjTea4QMWmTbPHuw",
-        "_index": "offender",
+        "_index": "person-search-primary",
         "_type": "document",
         "_id": "3",
         "_score": 2.8768208,

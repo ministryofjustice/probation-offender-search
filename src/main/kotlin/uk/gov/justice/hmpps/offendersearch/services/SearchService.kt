@@ -39,7 +39,7 @@ class SearchService @Autowired constructor(
 
   fun performSearch(searchOptions: SearchDto): List<OffenderDetail> {
     validateSearchForm(searchOptions)
-    val searchRequest = SearchRequest("offender")
+    val searchRequest = personSearchRequest()
     val searchSourceBuilder = SearchSourceBuilder()
     // Set the maximum search result size (the default would otherwise be 10)
     searchSourceBuilder.size(MAX_SEARCH_RESULTS)
@@ -117,7 +117,7 @@ class SearchService @Autowired constructor(
     }
 
     log.info("Search was: \"${searchPhraseFilter.phrase}\"")
-    val searchRequest = SearchRequest("offender")
+    val searchRequest = personSearchRequest()
       .source(
         SearchSourceBuilder()
           .query(buildQuery(searchPhraseFilter.phrase, searchPhraseFilter.matchAllTerms))
@@ -177,7 +177,7 @@ class SearchService @Autowired constructor(
   }
 
   fun findBy(inputList: List<String>, field: String, searchSourceBuilderSize: Int): List<OffenderDetail> {
-    val searchRequest = SearchRequest("offender")
+    val searchRequest = personSearchRequest()
     val searchSourceBuilder = SearchSourceBuilder()
 
     searchSourceBuilder.size(searchSourceBuilderSize)
@@ -199,7 +199,7 @@ class SearchService @Autowired constructor(
   }
 
   private fun findByNested(code: String, pageable: Pageable, searchField: String): SearchPagedResults {
-    val searchRequest = SearchRequest("offender")
+    val searchRequest = personSearchRequest()
     val searchSourceBuilder = SearchSourceBuilder()
     searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
 
@@ -221,7 +221,7 @@ class SearchService @Autowired constructor(
   }
 
   private fun findByNestedList(inputList: List<String>, pageable: Pageable, searchField: String): SearchPagedResults {
-    val searchRequest = SearchRequest("offender")
+    val searchRequest = personSearchRequest()
     val searchSourceBuilder = SearchSourceBuilder()
     searchSourceBuilder.size(pageable.pageSize).from(pageable.offset.toInt())
 
@@ -257,3 +257,5 @@ class SearchService @Autowired constructor(
     )
   }
 }
+
+private fun personSearchRequest() = SearchRequest("person-search-primary")
