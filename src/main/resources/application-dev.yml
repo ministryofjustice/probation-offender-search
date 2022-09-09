@@ -10,9 +10,3 @@ spring:
 
 community:
   endpoint.url: http://localhost:8096
-elasticsearch:
-  port: 4571
-  host: localhost
-  scheme: http
-  aws:
-    signrequests: true
