@@ -68,7 +68,7 @@ abstract class OffenderMatchAPIIntegrationBase {
       )
     }.map { objectMapper.writeValueAsString(it) }
 
-    LocalStackHelper(esClient, "v$mappingVersion").loadData(offendersToLoad)
+    LocalStackHelper(esClient).loadData(offendersToLoad)
   }
 }
 

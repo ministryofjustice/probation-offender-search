@@ -194,7 +194,7 @@ class MatchService(
       val searchSourceBuilder = SearchSourceBuilder().apply {
         query(matchQuery.withDefaults(matchRequest))
       }
-      val searchRequest = SearchRequest(arrayOf("offender"), searchSourceBuilder)
+      val searchRequest = SearchRequest(arrayOf("person-search-primary"), searchSourceBuilder)
       val offenderMatches = getSearchResult(elasticSearchClient.search(searchRequest))
       return if (offenderMatches.isEmpty()) Result.NoMatch else Result.Match(offenderMatches)
     } ?: Result.NoMatch

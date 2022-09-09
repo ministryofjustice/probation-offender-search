@@ -18,10 +18,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.UUID
 
-class LocalStackHelper(private val esClient: RestHighLevelClient, private val mappingVersion: String = "v1") {
+class LocalStackHelper(private val esClient: RestHighLevelClient) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-    const val indexName = "offender"
+    const val indexName = "person-search-primary"
   }
 
   fun loadData() {

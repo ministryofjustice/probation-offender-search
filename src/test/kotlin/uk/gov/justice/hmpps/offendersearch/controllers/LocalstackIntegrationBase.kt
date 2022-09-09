@@ -94,7 +94,7 @@ abstract class LocalstackIntegrationBase {
       )
     }.map { objectMapper.writeValueAsString(it) }
 
-    LocalStackHelper(esClient, "v$mappingVersion").loadData(offendersToLoad)
+    LocalStackHelper(esClient).loadData(offendersToLoad)
   }
 
   private fun String.readResourceAsText(): String {

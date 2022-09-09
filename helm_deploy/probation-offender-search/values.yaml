@@ -29,7 +29,6 @@ generic-service:
     JDK_JAVA_OPTIONS: "-javaagent:/agent/agent.jar"
     ELASTICSEARCH_PORT: "9200"
     ELASTICSEARCH_SCHEME: "http"
-    ELASTICSEARCH_HOST: "es-proxy"
     ELASTICSEARCH_AWS_SIGNREQUESTS: "false"
     AWS_REGION: "eu-west-2"
     ELASTICSEARCH_PROVIDER: "aws"

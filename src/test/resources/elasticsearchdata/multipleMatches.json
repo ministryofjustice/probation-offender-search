@@ -14,7 +14,7 @@
       {
         "_shard": "[offender][2]",
         "_node": "cxs5t1YjTea4QMWmTbPHuw",
-        "_index": "offender",
+        "_index": "person-search-primary",
         "_type": "document",
         "_id": "3",
         "_score": 2.8768208,
@@ -260,7 +260,7 @@
       {
         "_shard": "[offender][5]",
         "_node": "cxs5t1YjTea4QMWmTbPHuw",
-        "_index": "offender",
+        "_index": "person-search-primary",
         "_type": "document",
         "_id": "1",
         "_score": 2.8768208,
@@ -506,7 +506,7 @@
       {
         "_shard": "[offender][3]",
         "_node": "cxs5t1YjTea4QMWmTbPHuw",
-        "_index": "offender",
+        "_index": "person-search-primary",
         "_type": "document",
         "_id": "2",
         "_score": 1.8232156,
@@ -781,7 +781,7 @@
       {
         "_shard": "[offender][3]",
         "_node": "cxs5t1YjTea4QMWmTbPHuw",
-        "_index": "offender",
+        "_index": "person-search-primary",
         "_type": "document",
         "_id": "4",
         "_score": 1.8232156,
