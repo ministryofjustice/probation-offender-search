@@ -10,6 +10,7 @@ generic-service:
   env:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
     COMMUNITY_ENDPOINT_URL: "https://community-api-secure.stage.delius.probation.hmpps.dsd.io"
+    ELASTICSEARCH_HOST: "es-proxy.hmpps-probation-search-preprod.svc.cluster.local"
 
   allowlist:
     office: "217.33.148.210/32"
