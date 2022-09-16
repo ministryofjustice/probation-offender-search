@@ -88,8 +88,8 @@ class MatchService(
         .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
         .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
         .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
-        this.must(nameQuery(matchRequest))
-      }
+          this.must(nameQuery(matchRequest))
+        }
     }
   }
 
@@ -100,8 +100,8 @@ class MatchService(
         .mustMultiMatchKeyword(pncNumber?.canonicalPNCNumber(), "otherIds.pncNumberLongYear", "otherIds.pncNumberShortYear")
         .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
         .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
-        this.must(aliasQuery(matchRequest))
-      }
+          this.must(aliasQuery(matchRequest))
+        }
     }
   }
 
