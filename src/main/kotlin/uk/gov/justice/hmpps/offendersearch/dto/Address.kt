@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty
 import java.time.LocalDate
 
 data class Address(
+  val id: Long,
   @ApiModelProperty(required = true) val from: LocalDate? = null,
   val to: LocalDate? = null,
   val noFixedAbode: Boolean? = null,
@@ -18,3 +19,4 @@ data class Address(
   val telephoneNumber: String? = null,
   val status: KeyValue? = null
 )
+
