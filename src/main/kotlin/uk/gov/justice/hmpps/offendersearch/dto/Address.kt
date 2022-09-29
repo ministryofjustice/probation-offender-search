@@ -19,4 +19,3 @@ data class Address(
   val telephoneNumber: String? = null,
   val status: KeyValue? = null
 )
-

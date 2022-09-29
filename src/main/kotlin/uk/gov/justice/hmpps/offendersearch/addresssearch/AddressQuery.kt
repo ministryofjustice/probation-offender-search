@@ -7,8 +7,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.InnerHitBuilder
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder.FilterFunctionBuilder
-import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext
 
@@ -23,15 +21,14 @@ fun matchAddresses(addressSearchRequest: AddressSearchRequest): SearchSourceBuil
   )
   .query(buildSearchQuery(addressSearchRequest))
 
-
 fun buildSearchQuery(addressSearchRequest: AddressSearchRequest): QueryBuilder =
   QueryBuilders.nestedQuery(
     "contactDetails.addresses",
     QueryBuilders.functionScoreQuery(matchQueryBuilder(addressSearchRequest))
       .scoreMode(FunctionScoreQuery.ScoreMode.SUM)
       .boostMode(CombineFunction.SUM)
-      .setMinScore(5f)
-    , ScoreMode.Total
+      .setMinScore(5f),
+    ScoreMode.Total
   )
     .innerHit(InnerHitBuilder("addresses").setFetchSourceContext(FetchSourceContext(true)))
 

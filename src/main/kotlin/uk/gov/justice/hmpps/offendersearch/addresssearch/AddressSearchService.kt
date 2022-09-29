@@ -25,5 +25,3 @@ class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val obj
     AddressSearchResponse(personDetail, addresses)
   }
 }
-
-

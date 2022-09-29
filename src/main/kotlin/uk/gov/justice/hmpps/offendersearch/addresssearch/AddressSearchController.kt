@@ -1,18 +1,13 @@
 package uk.gov.justice.hmpps.offendersearch.addresssearch
 
-import com.microsoft.applicationinsights.TelemetryClient
 import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import io.swagger.annotations.Authorization
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -20,34 +15,32 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 
 @Api(
-    tags = ["address-search"],
-    authorizations = [Authorization("ROLE_COMMUNITY")],
-    description = "Provides address search features for Delius elastic search"
+  tags = ["address-search"],
+  authorizations = [Authorization("ROLE_COMMUNITY")],
+  description = "Provides address search features for Delius elastic search"
+)
+@RestController
+@RequestMapping("/search/addresses")
+@Validated
+class AddressSearchController(
+  private val addressSearchService: AddressSearchService
+) {
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        code = 400,
+        message = "Invalid Request",
+        response = BadRequestException::class
+      )
+    ]
   )
-  @RestController
-  @RequestMapping("/search/addresses")
-  @Validated
-  class AddressSearchController(
-    private val addressSearchService: AddressSearchService
-  ) {
-    companion object {
-      val log: Logger = LoggerFactory.getLogger(this::class.java)
-    }
-    @ApiResponses(
-      value = [
-       ApiResponse(
-          code = 400,
-          message = "Invalid Request",
-          response = BadRequestException::class
-        )
-      ]
-    )
-    @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-    @RequestMapping(method = [RequestMethod.GET,RequestMethod.POST])
-    fun searchOffenders(@RequestBody addressSearchRequest: AddressSearchRequest): List<AddressSearchResponse?> {
-      log.info("Search called with {}", addressSearchRequest)
-      return addressSearchService.performSearch(addressSearchRequest)
-    }
-
-
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
+  fun searchOffenders(@RequestBody addressSearchRequest: AddressSearchRequest): List<AddressSearchResponse?> {
+    log.info("Search called with {}", addressSearchRequest)
+    return addressSearchService.performSearch(addressSearchRequest)
+  }
 }
