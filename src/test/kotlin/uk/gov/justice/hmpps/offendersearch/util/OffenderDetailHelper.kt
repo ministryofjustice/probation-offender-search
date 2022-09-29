@@ -43,7 +43,7 @@ interface OffenderDetailHelper {
           disabilities = listOf(Disability())
         ),
         contactDetails = ContactDetails(
-          addresses = listOf(Address(addressNumber = "123"))
+          addresses = listOf(Address(1L, addressNumber = "123"))
         )
       )
     }
