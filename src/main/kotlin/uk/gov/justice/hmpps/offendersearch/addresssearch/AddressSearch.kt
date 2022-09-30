@@ -6,7 +6,7 @@ import java.time.ZonedDateTime
 
 data class AddressSearchRequest(
   val buildingName: String?,
-  val addressNumber: Long?,
+  val addressNumber: String?,
   val streetName: String?,
   val district: String?,
   val town: String?,
@@ -20,7 +20,6 @@ data class BoostOptions(
   val streetName: Float = 10f,
   val buildingName: Float = 5f
 )
-
 
 data class CodedValue(
   val code: String? = null,
