@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
 
@@ -28,6 +29,7 @@ class AddressSearchController(
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
+
   @ApiResponses(
     value = [
       ApiResponse(
@@ -39,8 +41,12 @@ class AddressSearchController(
   )
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
-  fun searchOffenders(@RequestBody addressSearchRequest: AddressSearchRequest): List<AddressSearchResponse?> {
+  fun searchOffenders(
+    @RequestBody addressSearchRequest: AddressSearchRequest,
+    @RequestParam(required = false, defaultValue = "20") pageSize: Int,
+    @RequestParam(required = false, defaultValue = "0") offset: Int,
+  ): List<AddressSearchResponse?> {
     log.info("Search called with {}", addressSearchRequest)
-    return addressSearchService.performSearch(addressSearchRequest)
+    return addressSearchService.performSearch(addressSearchRequest, pageSize, offset)
   }
 }

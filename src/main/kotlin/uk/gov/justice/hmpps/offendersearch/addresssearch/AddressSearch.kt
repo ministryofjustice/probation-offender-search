@@ -12,8 +12,15 @@ data class AddressSearchRequest(
   val town: String?,
   val county: String?,
   val postcode: String?,
-  val telephoneNumber: String?
+  val telephoneNumber: String?,
+  val boostOptions: BoostOptions = BoostOptions()
 )
+data class BoostOptions(
+  val postcode: Float = 20f,
+  val streetName: Float = 10f,
+  val buildingName: Float = 5f
+)
+
 
 data class CodedValue(
   val code: String? = null,
@@ -50,7 +57,7 @@ data class Address(
 
 data class AddressSearchResponse(
   val person: Person,
-  val addresses: List<Address>
+  val address: Address
 )
 
 data class PersonDetail(
