@@ -53,6 +53,9 @@ data class Address(
   val noFixedAbode: Boolean,
   val matchScore: Double
 )
+data class AddressSearchResponses(
+  val personAddresses: List<AddressSearchResponse>
+)
 
 data class AddressSearchResponse(
   val person: Person,

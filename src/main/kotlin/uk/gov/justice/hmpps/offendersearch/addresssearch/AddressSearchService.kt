@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val objectMapper: ObjectMapper) {
-  fun performSearch(addressSearchRequest: AddressSearchRequest, pageSize: Int, offset: Int): List<AddressSearchResponse?> {
+  fun performSearch(addressSearchRequest: AddressSearchRequest, pageSize: Int, offset: Int): AddressSearchResponses {
     val searchSourceBuilder = matchAddresses(addressSearchRequest, pageSize, offset)
     val searchRequest = SearchRequest("person-search-primary")
     searchRequest.source(searchSourceBuilder)
     val res = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT)
-    return res.hits.toAddressSearchResponse()
+    return AddressSearchResponses(res.hits.toAddressSearchResponse())
   }
 
   fun SearchHits.toAddressSearchResponse(): List<AddressSearchResponse> = hits.flatMap { hit ->

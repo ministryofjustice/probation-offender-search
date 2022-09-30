@@ -45,7 +45,7 @@ class AddressSearchController(
     @RequestBody addressSearchRequest: AddressSearchRequest,
     @RequestParam(required = false, defaultValue = "20") pageSize: Int,
     @RequestParam(required = false, defaultValue = "0") offset: Int,
-  ): List<AddressSearchResponse?> {
+  ): AddressSearchResponses {
     log.info("Search called with {}", addressSearchRequest)
     return addressSearchService.performSearch(addressSearchRequest, pageSize, offset)
   }
