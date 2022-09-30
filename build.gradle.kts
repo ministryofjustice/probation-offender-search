@@ -32,7 +32,7 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client")
   implementation("org.elasticsearch.client:elasticsearch-rest-client")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.303")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.314")
 
   implementation("io.springfox:springfox-boot-starter:3.0.0")
 
