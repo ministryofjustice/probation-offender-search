@@ -8,10 +8,10 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext
 
-fun matchAddresses(addressSearchRequest: AddressSearchRequest, pageSize: Int, offset: Int): SearchSourceBuilder =
+fun matchAddresses(addressSearchRequest: AddressSearchRequest, maxResults: Int): SearchSourceBuilder =
   SearchSourceBuilder()
-    .from(offset)
-    .size(pageSize).fetchSource(
+    .from(0)
+    .size(maxResults).fetchSource(
       FetchSourceContext(
         true,
         arrayOf("offenderId", "gender", "otherIds.crn", "dateOfBirth"),
