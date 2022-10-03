@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 
-internal class AddressSearchIntegrationTest : LocalstackIntegrationBase()  {
+internal class AddressSearchIntegrationTest : LocalstackIntegrationBase() {
 
   @BeforeEach
   fun setUp() {

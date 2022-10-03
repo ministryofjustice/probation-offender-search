@@ -4,7 +4,6 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
-import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.ingest.PutPipelineRequest
 import org.elasticsearch.client.RequestOptions
@@ -12,9 +11,7 @@ import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
 import org.elasticsearch.client.indices.CreateIndexRequest
 import org.elasticsearch.client.indices.GetIndexRequest
-import org.elasticsearch.client.indices.PutComposableIndexTemplateRequest
 import org.elasticsearch.client.indices.PutIndexTemplateRequest
-import org.elasticsearch.client.indices.PutMappingRequest
 import org.elasticsearch.common.bytes.BytesArray
 import org.elasticsearch.common.xcontent.XContentType.JSON
 import org.slf4j.Logger
@@ -84,9 +81,11 @@ class LocalStackHelper(private val esClient: RestHighLevelClient) {
   }
 
   private fun buildIndex() {
-    esClient.indices().putTemplate(PutIndexTemplateRequest(templateName)
-      .source("/elasticsearchdata/create-template.json".resourceAsString(), JSON)
-      , RequestOptions.DEFAULT)
+    esClient.indices().putTemplate(
+      PutIndexTemplateRequest(templateName)
+        .source("/elasticsearchdata/create-template.json".resourceAsString(), JSON),
+      RequestOptions.DEFAULT
+    )
     esClient.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)
     log.debug("Build index")
   }
