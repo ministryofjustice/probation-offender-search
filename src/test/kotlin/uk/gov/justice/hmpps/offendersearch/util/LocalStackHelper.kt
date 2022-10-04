@@ -11,7 +11,7 @@ import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
 import org.elasticsearch.client.indices.CreateIndexRequest
 import org.elasticsearch.client.indices.GetIndexRequest
-import org.elasticsearch.client.indices.PutMappingRequest
+import org.elasticsearch.client.indices.PutIndexTemplateRequest
 import org.elasticsearch.common.bytes.BytesArray
 import org.elasticsearch.common.xcontent.XContentType.JSON
 import org.slf4j.Logger
@@ -22,6 +22,7 @@ class LocalStackHelper(private val esClient: RestHighLevelClient) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val indexName = "person-search-primary"
+    const val templateName = "person-search-template"
   }
 
   fun loadData() {
@@ -64,7 +65,6 @@ class LocalStackHelper(private val esClient: RestHighLevelClient) {
     log.debug("Loading offender: {}", offender)
     esClient.index(
       IndexRequest()
-        .setPipeline("pnc-pipeline")
         .source(offender, JSON)
         .id(key)
         .type("_doc")
@@ -81,16 +81,19 @@ class LocalStackHelper(private val esClient: RestHighLevelClient) {
   }
 
   private fun buildIndex() {
+    esClient.indices().putTemplate(
+      PutIndexTemplateRequest(templateName)
+        .source("/elasticsearchdata/create-template.json".resourceAsString(), JSON),
+      RequestOptions.DEFAULT
+    )
     esClient.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)
-    esClient.indices()
-      .putMapping(PutMappingRequest(indexName).source("/elasticsearchdata/create-mapping.json".resourceAsString(), JSON), RequestOptions.DEFAULT)
     log.debug("Build index")
   }
 
   private fun buildPipeline() {
     log.debug("Build pipeline")
     esClient.ingest()
-      .putPipeline(PutPipelineRequest("pnc-pipeline", "/elasticsearchdata/create-pipeline.json".resourceAsByteReference(), JSON), RequestOptions.DEFAULT)
+      .putPipeline(PutPipelineRequest("person-search-pipeline", "/elasticsearchdata/create-pipeline.json".resourceAsByteReference(), JSON), RequestOptions.DEFAULT)
   }
 }
 

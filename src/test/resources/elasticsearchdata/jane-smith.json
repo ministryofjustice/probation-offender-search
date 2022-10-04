@@ -27,17 +27,22 @@
     "addresses": [
       {
         "from": "2018-01-16",
-        "to": "2018-01-16",
         "addressNumber": "string",
         "buildingName": "string",
         "county": "string",
         "district": "string",
         "noFixedAbode": true,
         "notes": "string",
-        "postcode": "655108T",
-        "streetName": "2018",
+        "postcode": "NE1 2SW",
+        "streetName": "Church Street",
         "telephoneNumber": "string",
-        "town": "SF80"
+        "town": "SF80",
+        "status": {
+          "code":"m",
+          "description": "main"
+        },
+        "createdDateTime": "2022-08-12T10:30:27",
+        "lastUpdatedDateTime": "2022-08-12T10:30:27"
       }
     ],
     "emailAddresses": [],

@@ -1,0 +1,103 @@
+{
+  "index_patterns": [
+    "person-search-*"
+  ],
+  "settings": {
+    "index": {
+      "number_of_shards": "1",
+      "number_of_replicas": "0",
+      "default_pipeline": "person-search-pipeline"
+    },
+    "analysis": {
+      "analyzer": {
+        "streetAnalyzer": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "asciifolding",
+            "street_synonym"
+          ]
+        },
+        "postcodeAnalyzer": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "postcode_shingle",
+            "postcode_space_filter"
+          ]
+        }
+      },
+      "filter": {
+        "street_synonym": {
+          "type": "synonym",
+          "synonyms": [
+            "av => avenue",
+            "cl => close",
+            "cres => crescent",
+            "ct => court",
+            "dr => drive",
+            "ln => lane",
+            "pl => place",
+            "rd => road",
+            "st => street",
+            "wy => way"
+          ]
+        },
+        "postcode_shingle": {
+          "type": "shingle",
+          "min_shingle_size": 2,
+          "max_shingle_size": 3,
+          "output_unigrams": true
+        },
+        "postcode_space_filter": {
+          "type": "pattern_replace",
+          "pattern": " ",
+          "replacement": ""
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "otherIds.pncNumberShortYear": {
+        "type": "keyword"
+      },
+      "otherIds.croNumberLowercase": {
+        "type": "keyword"
+      },
+      "offenderManagers": {
+        "type": "nested",
+        "properties": {
+          "probationArea.code": {
+            "type": "keyword"
+          }
+        }
+      },
+      "offenderAliases": {
+        "include_in_root": true,
+        "type": "nested"
+      },
+      "dateOfBirth": {
+        "format": "yyyy-MM-dd||yyyy/MM/dd||dd-MM-yy||dd/MM/yy||dd-MM-yyyy||dd/MM/yyyy",
+        "type": "date"
+      },
+      "otherIds.pncNumberLongYear": {
+        "type": "keyword"
+      },
+      "contactDetails.addresses": {
+        "include_in_root": true,
+        "type": "nested",
+        "properties": {
+          "streetName_analyzed": {
+            "type": "text",
+            "analyzer": "streetAnalyzer"
+          },
+          "postcode_analyzed": {
+            "type": "text",
+            "analyzer": "postcodeAnalyzer"
+          }
+        }
+      }
+    }
+  }
+}
