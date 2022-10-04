@@ -50,8 +50,7 @@ data class Address(
   val lastUpdatedDateTime: ZonedDateTime,
   val status: CodedValue,
   val type: CodedValue? = null,
-  val noFixedAbode: Boolean,
-  val matchScore: Double
+  val noFixedAbode: Boolean
 )
 data class AddressSearchResponses(
   val personAddresses: List<AddressSearchResponse>
@@ -59,7 +58,8 @@ data class AddressSearchResponses(
 
 data class AddressSearchResponse(
   val person: Person,
-  val address: Address
+  val address: Address,
+  val matchScore: Int,
 )
 
 data class PersonDetail(
@@ -102,7 +102,7 @@ fun PersonDetail.toPerson() = Person(
   gender
 )
 
-fun PersonAddress.toAddress(matchScore: Double) = Address(
+fun PersonAddress.toAddress() = Address(
   id,
   buildingName,
   addressNumber,
@@ -120,5 +120,4 @@ fun PersonAddress.toAddress(matchScore: Double) = Address(
   status,
   type,
   noFixedAbode,
-  matchScore
 )

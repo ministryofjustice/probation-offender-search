@@ -43,7 +43,7 @@ class AddressSearchController(
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   fun searchOffenders(
     @RequestBody addressSearchRequest: AddressSearchRequest,
-    @RequestParam(required = false, defaultValue = "20") maxResults: Int
+    @RequestParam(required = false, defaultValue = "100") maxResults: Int
   ): AddressSearchResponses {
     log.info("Search called with {}", addressSearchRequest)
     return addressSearchService.performSearch(addressSearchRequest, maxResults)

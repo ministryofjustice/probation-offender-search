@@ -23,12 +23,14 @@ class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val obj
     hit.innerHits.values.flatMap { innerHit ->
       innerHit.hits.mapNotNull {
         if (it.matchedQueries.isNotEmpty()) {
-          objectMapper.readValue(it.sourceAsString, PersonAddress::class.java)
-            .toAddress(((it.score / maxScore) * 100).roundToInt() / 100.0)
+          Pair(
+            objectMapper.readValue(it.sourceAsString, PersonAddress::class.java)
+              .toAddress(), ((it.score / maxScore) * 100).roundToInt()
+          )
         } else {
           null
         }
       }
-    }.map { AddressSearchResponse(personDetail, it) }
-  }.sortedByDescending { it.address.matchScore }.take(maxResults)
+    }.map { AddressSearchResponse(personDetail, it.first, it.second) }
+  }.sortedByDescending { it.matchScore }.take(maxResults)
 }

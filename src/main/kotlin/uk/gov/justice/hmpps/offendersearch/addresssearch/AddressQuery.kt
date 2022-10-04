@@ -35,13 +35,13 @@ fun buildSearchQuery(addressSearchRequest: AddressSearchRequest): QueryBuilder =
 private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
   QueryBuilders.boolQuery()
     .shouldMatchNonNull(
-      "contactDetails.addresses.streetName",
+      "contactDetails.addresses.streetName_analyzed",
       addressSearchRequest.streetName,
       addressSearchRequest.boostOptions.streetName
     )
     .queryName("streetName")
     .shouldMatchNonNull(
-      "contactDetails.addresses.postcode",
+      "contactDetails.addresses.postcode_analyzed",
       addressSearchRequest.postcode,
       addressSearchRequest.boostOptions.postcode
     ).queryName("postcode")
@@ -60,7 +60,7 @@ private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
 
 fun BoolQueryBuilder.shouldMatchNonNull(name: String, value: Any?, boost: Float): BoolQueryBuilder {
   if (value != null) {
-    should(QueryBuilders.matchPhraseQuery(name, value).boost(boost))
+    should(QueryBuilders.matchQuery(name, value).boost(boost))
   }
   return this
 }
