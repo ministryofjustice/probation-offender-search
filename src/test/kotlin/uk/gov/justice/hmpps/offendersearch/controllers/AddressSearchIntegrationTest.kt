@@ -56,22 +56,20 @@ internal class AddressSearchIntegrationTest : LocalstackIntegrationBase() {
   companion object {
     @JvmStatic
     fun postcodeResults(): List<Arguments> = listOf(
-      Arguments.of("NE1 2SW",1),
-      Arguments.of("ne1 2sw",1),
-      Arguments.of("NE1",1),
-      Arguments.of("NE12SW",1),
-      Arguments.of("2SW",1),
-      Arguments.of("GG1 1BB",0),
+      Arguments.of("NE1 2SW", 1),
+      Arguments.of("ne1 2sw", 1),
+      Arguments.of("NE1", 1),
+      Arguments.of("NE12SW", 1),
+      Arguments.of("2SW", 1),
+      Arguments.of("GG1 1BB", 0),
     )
     @JvmStatic
     fun streetNameResults(): List<Arguments> = listOf(
-      Arguments.of("church street",1),
-      Arguments.of("Church St",1),
-      Arguments.of("Church",1),
-      Arguments.of("no street",1),
-      Arguments.of("cathedral view",0),
+      Arguments.of("church street", 1),
+      Arguments.of("Church St", 1),
+      Arguments.of("Church", 1),
+      Arguments.of("no street", 1),
+      Arguments.of("cathedral view", 0),
     )
   }
-
-
 }
