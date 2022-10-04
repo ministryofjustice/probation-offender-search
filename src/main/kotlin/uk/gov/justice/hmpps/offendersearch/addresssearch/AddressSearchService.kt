@@ -25,7 +25,8 @@ class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val obj
         if (it.matchedQueries.isNotEmpty()) {
           Pair(
             objectMapper.readValue(it.sourceAsString, PersonAddress::class.java)
-              .toAddress(), ((it.score / maxScore) * 100).roundToInt()
+              .toAddress(),
+            ((it.score / maxScore) * 100).roundToInt()
           )
         } else {
           null

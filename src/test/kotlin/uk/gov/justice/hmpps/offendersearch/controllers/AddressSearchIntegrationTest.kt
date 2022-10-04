@@ -1,9 +1,9 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import io.restassured.RestAssured
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.assertj.core.api.Assertions.assertThat
 import org.springframework.http.MediaType
 import uk.gov.justice.hmpps.offendersearch.addresssearch.AddressSearchResponses
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
