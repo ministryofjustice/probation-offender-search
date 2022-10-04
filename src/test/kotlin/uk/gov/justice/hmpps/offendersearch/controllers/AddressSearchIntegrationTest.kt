@@ -3,7 +3,9 @@ package uk.gov.justice.hmpps.offendersearch.controllers
 import io.restassured.RestAssured
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.http.MediaType
 import uk.gov.justice.hmpps.offendersearch.addresssearch.AddressSearchResponses
 import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
@@ -15,13 +17,14 @@ internal class AddressSearchIntegrationTest : LocalstackIntegrationBase() {
     LocalStackHelper(esClient).loadData()
   }
 
-  @Test
-  fun `OK response with valid request post code with space`() {
+  @ParameterizedTest
+  @MethodSource("postcodeResults")
+  fun `postcode search test`(postCode: String, noOfResults: Int) {
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .body("{\"postcode\": \"NE1 2SW\"}")
+      .body("{\"postcode\": \"$postCode\"}")
       .post("/search/addresses")
       .then()
       .statusCode(200)
@@ -29,16 +32,17 @@ internal class AddressSearchIntegrationTest : LocalstackIntegrationBase() {
       .body()
       .`as`(AddressSearchResponses::class.java)
 
-    assertThat(results.personAddresses).hasSize(1)
+    assertThat(results.personAddresses).hasSize(noOfResults)
   }
 
-  @Test
-  fun `OK response with valid request postcode no space`() {
+  @ParameterizedTest
+  @MethodSource("streetNameResults")
+  fun `street name search test`(streetName: String, noOfResults: Int) {
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .body("{\"postcode\": \"NE12SW\"}")
+      .body("{\"streetName\": \"$streetName\"}")
       .post("/search/addresses")
       .then()
       .statusCode(200)
@@ -46,37 +50,28 @@ internal class AddressSearchIntegrationTest : LocalstackIntegrationBase() {
       .body()
       .`as`(AddressSearchResponses::class.java)
 
-    assertThat(results.personAddresses).hasSize(1)
+    assertThat(results.personAddresses).hasSize(noOfResults)
   }
 
-  @Test
-  fun `OK response with valid request partial postcode`() {
-    var results = RestAssured.given()
-      .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .body("{\"postcode\": \"NE1\"}")
-      .post("/search/addresses")
-      .then()
-      .statusCode(200)
-      .extract()
-      .body()
-      .`as`(AddressSearchResponses::class.java)
-
-    assertThat(results.personAddresses).hasSize(1)
-
-    results = RestAssured.given()
-      .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .body("{\"postcode\": \"2sw\"}")
-      .post("/search/addresses")
-      .then()
-      .statusCode(200)
-      .extract()
-      .body()
-      .`as`(AddressSearchResponses::class.java)
-
-    assertThat(results.personAddresses).hasSize(1)
+  companion object {
+    @JvmStatic
+    fun postcodeResults(): List<Arguments> = listOf(
+      Arguments.of("NE1 2SW",1),
+      Arguments.of("ne1 2sw",1),
+      Arguments.of("NE1",1),
+      Arguments.of("NE12SW",1),
+      Arguments.of("2SW",1),
+      Arguments.of("GG1 1BB",0),
+    )
+    @JvmStatic
+    fun streetNameResults(): List<Arguments> = listOf(
+      Arguments.of("church street",1),
+      Arguments.of("Church St",1),
+      Arguments.of("Church",1),
+      Arguments.of("no street",1),
+      Arguments.of("cathedral view",0),
+    )
   }
+
+
 }
