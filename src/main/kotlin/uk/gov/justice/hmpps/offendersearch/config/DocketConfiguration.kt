@@ -48,7 +48,7 @@ class DocketConfiguration {
       .useDefaultResponseMessages(false)
       .apiInfo(apiInfo)
       .select()
-      .apis(RequestHandlerSelectors.basePackage(OffenderSearchController::class.java.getPackage().name))
+      .apis(RequestHandlerSelectors.basePackage("uk.gov.justice.hmpps.offendersearch"))
       .paths(PathSelectors.any())
       .build()
     docket.genericModelSubstitutes(Optional::class.java)
