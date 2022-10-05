@@ -18,7 +18,6 @@ import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.spring.web.plugins.WebFluxRequestHandlerProvider
 import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider
-import uk.gov.justice.hmpps.offendersearch.controllers.OffenderSearchController
 import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -48,7 +47,7 @@ class DocketConfiguration {
       .useDefaultResponseMessages(false)
       .apiInfo(apiInfo)
       .select()
-      .apis(RequestHandlerSelectors.basePackage(OffenderSearchController::class.java.getPackage().name))
+      .apis(RequestHandlerSelectors.basePackage("uk.gov.justice.hmpps.offendersearch"))
       .paths(PathSelectors.any())
       .build()
     docket.genericModelSubstitutes(Optional::class.java)
