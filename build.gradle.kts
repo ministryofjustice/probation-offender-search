@@ -26,7 +26,7 @@ dependencies {
 
   implementation("com.google.code.gson:gson")
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("org.apache.commons:commons-text:1.9")
+  implementation("org.apache.commons:commons-text:1.10.0")
 
   implementation("org.elasticsearch:elasticsearch")
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client")
