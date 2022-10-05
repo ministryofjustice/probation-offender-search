@@ -1,4 +1,4 @@
-package uk.gov.justice.hmpps.offendersearch.controllers
+package uk.gov.justice.hmpps.offendersearch.addresssearch
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiResponse
@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
-import uk.gov.justice.hmpps.offendersearch.addresssearch.AddressSearchRequest
-import uk.gov.justice.hmpps.offendersearch.addresssearch.AddressSearchResponses
-import uk.gov.justice.hmpps.offendersearch.addresssearch.AddressSearchService
 
 @Api(
   tags = ["address-search"],
