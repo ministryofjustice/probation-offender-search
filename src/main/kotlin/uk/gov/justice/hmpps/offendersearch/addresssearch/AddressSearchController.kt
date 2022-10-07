@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.hmpps.offendersearch.BadRequestException
-import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
 
 @Api(
   tags = ["address-search"],
@@ -44,7 +43,9 @@ class AddressSearchController(
         code = 200,
         message = "OK",
         response = AddressSearchResponses::class,
-        examples = Example(ExampleProperty("""
+        examples = Example(
+          ExampleProperty(
+            """
           {
           "personAddresses": [
               {
@@ -81,7 +82,10 @@ class AddressSearchController(
               }
             ]
         }
-        """, mediaType = "application/json"))
+        """,
+            mediaType = "application/json"
+          )
+        )
       )
     ]
   )
