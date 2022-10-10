@@ -38,7 +38,7 @@ dependencies {
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.35.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.0")
   testImplementation("org.mockito:mockito-inline")
   testImplementation("org.testcontainers:localstack:1.17.5")
   testImplementation("org.awaitility:awaitility-kotlin")
