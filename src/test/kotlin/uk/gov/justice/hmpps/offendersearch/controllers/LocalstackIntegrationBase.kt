@@ -12,7 +12,6 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.PhoneNumber
-import uk.gov.justice.hmpps.offendersearch.dto.PhoneNumber.*
 import uk.gov.justice.hmpps.offendersearch.dto.PhoneNumber.PhoneTypes.MOBILE
 import uk.gov.justice.hmpps.offendersearch.dto.PhoneNumber.PhoneTypes.TELEPHONE
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
@@ -85,7 +84,7 @@ abstract class LocalstackIntegrationBase {
           phoneNumbers = listOf(
             PhoneNumber(it.phoneNumber, TELEPHONE),
             PhoneNumber(it.mobileNumber, MOBILE)
-          ).filter { it.number!=null }
+          ).filter { it.number != null }
         ),
         offenderManagers = templateOffender.offenderManagers?.map { offenderManager ->
           it.offenderManagers.find { replacement -> replacement.active == offenderManager.active }

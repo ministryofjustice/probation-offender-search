@@ -72,9 +72,9 @@ private fun phoneQueries(phrase: String): List<QueryBuilder> =
   extractPhoneNumberLikeTerms(phrase)
     .map { phoneNumberQuery(it) }
 private fun phoneNumberQuery(term: String): QueryBuilder =
-QueryBuilders.matchQuery("contactDetails.phoneNumbers", term)
-.boost(10f).lenient(true)
-.analyzer("whitespace")
+  QueryBuilders.matchQuery("contactDetails.phoneNumbers", term)
+    .boost(10f).lenient(true)
+    .analyzer("whitespace")
 
 private fun pncNumberQuery(term: String): QueryBuilder =
   QueryBuilders.multiMatchQuery(term)

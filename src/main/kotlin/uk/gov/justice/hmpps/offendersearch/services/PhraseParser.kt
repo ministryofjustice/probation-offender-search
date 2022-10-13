@@ -110,4 +110,3 @@ private fun String.phoneNumberOrNull(): String? =
   if (this.matches("^/d{6,10}$".toRegex())) {
     this
   } else null
-
