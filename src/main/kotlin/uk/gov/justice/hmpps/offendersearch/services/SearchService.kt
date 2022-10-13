@@ -68,6 +68,7 @@ class SearchService @Autowired constructor(
         .mustWhenPresent("firstName", firstName)
         .mustWhenPresent("surname", surname)
         .mustWhenPresent("dateOfBirth", dateOfBirth)
+
     }
 
     return matchingAllFieldsQuery
