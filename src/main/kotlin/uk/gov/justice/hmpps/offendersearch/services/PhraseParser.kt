@@ -25,6 +25,13 @@ fun extractCRONumberLikeTerms(phrase: String): List<String> {
     .mapNotNull(String::canonicalCRONumberOrNull)
 }
 
+fun extractPhoneNumberLikeTerms(phrase: String): List<String> {
+  return phrase
+    .split(" ")
+    .filterNot(String::isEmpty)
+    .mapNotNull(String::phoneNumberOrNull)
+}
+
 fun extractSearchableSimpleTerms(phrase: String): String {
   return phrase
     .split(" ")
@@ -98,3 +105,8 @@ private fun String.isCRONumber(): Boolean {
   return this.matches("^[0-9]{1,6}/[0-9]{2}[a-zA-Z]".toRegex()) ||
     this.matches("^(sf|SF)[0-9]{2}/[0-9]{1,6}[a-zA-Z]".toRegex())
 }
+
+private fun String.phoneNumberOrNull(): String? =
+  if (this.matches("^/d{6,10}$".toRegex())) {
+    this
+  } else null

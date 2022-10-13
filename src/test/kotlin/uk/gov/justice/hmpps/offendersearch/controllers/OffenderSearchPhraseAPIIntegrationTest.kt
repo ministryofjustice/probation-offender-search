@@ -90,7 +90,9 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
           town = "Southampton",
           county = "Hampshire",
           postcode = "H1 1WA",
-          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London"))
+          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London")),
+          phoneNumber = "0191 1234567",
+          mobileNumber = "077888888888"
         )
       )
     }
@@ -178,6 +180,20 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     @MethodSource("matchAllTerms")
     internal fun `can match by post code name`(matchAllTerms: Boolean) {
       hasSingleMatch(phrase = "H1 1WA", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by telephone`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "01911234567", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by mobile`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "0778888888", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "077888 888888", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "778888", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
     }
   }
 
@@ -342,7 +358,8 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
           town = "Southampton",
           county = "Hampshire",
           postcode = "H1 1WA",
-          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London"))
+          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London")),
+          phoneNumber = "0191 7654321"
         )
       )
     }
@@ -429,7 +446,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by all terms`(matchAllTerms: Boolean) {
-      hasSingleMatch(phrase = "gramsci Anne Jane Joanna 1988-01-06 Female X99999 G5555TT 2018/0123456X SF80/655108T NE112233X Hyde Southampton Hampshire H1 1WA", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "gramsci Anne Jane Joanna 1988-01-06 Female X99999 G5555TT 2018/0123456X SF80/655108T NE112233X Hyde Southampton Hampshire H1 1WA 01917654321", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
     }
   }
 
@@ -1597,7 +1614,9 @@ data class OffenderReplacement(
   val postcode: String = "S29 1TT",
   val offenderManagers: List<OffenderManagerReplacement> = listOf(),
   val currentRestriction: Boolean = false,
-  val currentExclusion: Boolean = false
+  val currentExclusion: Boolean = false,
+  val phoneNumber: String? = null,
+  val mobileNumber: String? = null,
 )
 
 data class AliasReplacement(

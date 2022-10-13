@@ -100,6 +100,7 @@ class OffenderSearchController(
         - CRO number
         - National Insurance number
         - Recorded gender
+        - Telephone numbers
         
         Both primary and alias names will be searched.
         

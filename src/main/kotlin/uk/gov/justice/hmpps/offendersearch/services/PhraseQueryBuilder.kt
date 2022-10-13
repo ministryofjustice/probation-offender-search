@@ -14,6 +14,7 @@ fun buildQuery(phrase: String, matchAllTerms: Boolean): QueryBuilder =
       .mustAll(croNumberQueries(phrase))
       .mustAll(pncNumberQueries(phrase))
       .mustAll(dateQueries(phrase))
+      .mustAll(phoneQueries(phrase))
   } else {
     QueryBuilders.boolQuery()
       .shouldIfPresent(maybeSimpleTermOrQueryCrossFields(phrase))
@@ -22,6 +23,7 @@ fun buildQuery(phrase: String, matchAllTerms: Boolean): QueryBuilder =
       .shouldAll(pncNumberQueries(phrase))
       .shouldAll(dateQueries(phrase))
       .shouldAll(simpleTermsWithSingleLetters(phrase))
+      .shouldAll(phoneQueries(phrase))
   }.mustNot(QueryBuilders.termQuery("softDeleted", true))
 
 private fun maybeSimpleTermAndQuery(phrase: String): QueryBuilder? =
@@ -66,6 +68,14 @@ private fun dateOfBirthQuery(term: String): QueryBuilder =
     .boost(11f)
     .lenient(true)
 
+private fun phoneQueries(phrase: String): List<QueryBuilder> =
+  extractPhoneNumberLikeTerms(phrase)
+    .map { phoneNumberQuery(it) }
+private fun phoneNumberQuery(term: String): QueryBuilder =
+  QueryBuilders.matchQuery("contactDetails.phoneNumbers", term)
+    .boost(10f).lenient(true)
+    .analyzer("whitespace")
+
 private fun pncNumberQuery(term: String): QueryBuilder =
   QueryBuilders.multiMatchQuery(term)
     .field("otherIds.pncNumberLongYear", 10f)
@@ -78,13 +88,14 @@ private fun croNumberQuery(term: String): QueryBuilder =
     .analyzer("whitespace")
 
 private fun simpleTermAndQuery(phrase: String): QueryBuilder =
-  QueryBuilders.multiMatchQuery(phrase)
+  QueryBuilders.multiMatchQuery(phrase).analyzer("standard")
     .field("firstName", 10f)
     .field("surname", 10f)
     .field("middleNames", 8f)
     .field("offenderAliases.firstName", 1.5f)
     .field("offenderAliases.surname", 1.5f)
     .field("contactDetails.addresses.town")
+    .field("contactNumbers")
     .field("gender")
     .field("contactDetails.addresses.streetName")
     .field("contactDetails.addresses.county")
@@ -103,6 +114,7 @@ private fun simpleTermOrQueryCrossFields(phrase: String): QueryBuilder =
     .field("offenderAliases.firstName", 1.5f)
     .field("offenderAliases.surname", 1.5f)
     .field("contactDetails.addresses.town")
+    .field("contactNumbers")
     .operator(Operator.OR)
     .type(CROSS_FIELDS)
 
@@ -115,6 +127,7 @@ private fun simpleTermOrQueryMostFields(phrase: String): QueryBuilder =
     .field("contactDetails.addresses.streetName")
     .field("contactDetails.addresses.county")
     .field("contactDetails.addresses.postcode", 10f)
+    .field("contactNumbers")
     .operator(Operator.OR)
     .type(MOST_FIELDS)
 
