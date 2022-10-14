@@ -107,6 +107,6 @@ private fun String.isCRONumber(): Boolean {
 }
 
 private fun String.phoneNumberOrNull(): String? =
-  if (this.matches("^/d{6,10}$".toRegex())) {
+  if (this.matches("^/d{6,15}$".toRegex())) {
     this
   } else null
