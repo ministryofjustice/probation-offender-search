@@ -1,29 +1,23 @@
 {
   "offenderId": 1,
   "softDeleted": false,
-
   "otherIds": {
     "crn": "X00001",
     "pncNumber": "2018/0123456X",
     "croNumber": "SF80/655108T",
-    "nomsNumber" : "G8020GG"
+    "nomsNumber": "G8020GG"
   },
-
   "title": "Mr",
   "firstName": "John",
   "middleNames": [],
   "surname": "Smith",
   "previousSurnames": [],
-
   "dateOfBirth": "1978-01-06",
   "gender": "Male",
-
   "currentDisposal": "1",
   "partitionArea": "some name",
-
   "offenderAliases": [
   ],
-
   "contactDetails": {
     "addresses": [
       {
@@ -45,7 +39,6 @@
     "phoneNumbers": [],
     "allowSMS": true
   },
-
   "offenderProfile": {
     "riskColour": "red",
     "ethnicity": "string",
@@ -55,7 +48,9 @@
     "offenderDetails": "string",
     "offenderLanguages": {
       "languageConcerns": "string",
-      "otherLanguages": [ "string" ],
+      "otherLanguages": [
+        "string"
+      ],
       "primaryLanguage": "string",
       "requiresInterpreter": true
     },
@@ -74,9 +69,19 @@
     "categoryDescription": "MAPPA Category 2",
     "startDate": "2021-02-08",
     "reviewDate": "2021-05-08",
-    "team": {"code": "NO2AAM", "description": "OMIC OMU A"},
-    "officer": {"code": "NO2AAMU", "forenames": "Unallocated", "surname": "Staff"},
-    "probationArea": {"code": "NO2", "description": "NPS London"},
+    "team": {
+      "code": "NO2AAM",
+      "description": "OMIC OMU A"
+    },
+    "officer": {
+      "code": "NO2AAMU",
+      "forenames": "Unallocated",
+      "surname": "Staff"
+    },
+    "probationArea": {
+      "code": "NO2",
+      "description": "NPS London"
+    },
     "notes": "Level 1 Cat 2 notes"
   },
   "probationStatus": {
@@ -85,5 +90,39 @@
     "preSentenceActivity": false,
     "awaitingPsr": true,
     "inBreach": true
-  }
+  },
+  "offenderManagers": [
+    {
+      "fromDate": "2022-10-17",
+      "allocationReason": {
+        "code": "CAI",
+        "description": "Caseload Allocation"
+      },
+      "partitionArea": "National Data",
+      "active": true,
+      "staff": {
+        "code": "N02UATU",
+        "surname": "Staff",
+        "forenames": "Unallocated Staff(N02)",
+        "unallocated": true
+      },
+      "team": {
+        "code": "N02UAT",
+        "description": "Unallocated Team (N02)",
+        "district": {
+          "code": "N02DT1",
+          "description": "District One (N02)"
+        },
+        "borough": {
+          "code": "N02BR1",
+          "description": "Borough One(N02)"
+        }
+      },
+      "softDeleted": false,
+      "probationArea": {
+        "code": "N02",
+        "description": "NPS North East"
+      }
+    }
+  ]
 }
