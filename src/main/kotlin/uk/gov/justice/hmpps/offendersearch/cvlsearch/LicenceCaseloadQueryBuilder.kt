@@ -39,28 +39,28 @@ class LicenceCaseloadQueryBuilder(private val request: LicenceCaseloadRequest) {
   private fun searchQuery(): QueryBuilder =
     QueryBuilders.boolQuery()
       .should(
-        QueryBuilders.wildcardQuery("otherIds.crn", "*${request.query}*")
+        QueryBuilders.wildcardQuery("otherIds.crn", "*${request.query.lowercase()}*")
       )
       .should(
-        QueryBuilders.wildcardQuery("firstName", "*${request.query}*")
+        QueryBuilders.wildcardQuery("firstName", "*${request.query.lowercase()}*")
       )
       .should(
-        QueryBuilders.wildcardQuery("surname", "*${request.query}*")
+        QueryBuilders.wildcardQuery("surname", "*${request.query.lowercase()}*")
       )
       .should(
-        QueryBuilders.wildcardQuery("middleNames", "*${request.query}*")
+        QueryBuilders.wildcardQuery("middleNames", "*${request.query.lowercase()}*")
       )
       .should(
         QueryBuilders.nestedQuery(
           "offenderManagers",
-          QueryBuilders.wildcardQuery("offenderManagers.staff.surname", "*${request.query}*"),
+          QueryBuilders.wildcardQuery("offenderManagers.staff.surname", "*${request.query.lowercase()}*"),
           ScoreMode.None
         )
       )
       .should(
         QueryBuilders.nestedQuery(
           "offenderManagers",
-          QueryBuilders.wildcardQuery("offenderManagers.staff.forenames", "*${request.query}*"),
+          QueryBuilders.wildcardQuery("offenderManagers.staff.forenames", "*${request.query.lowercase()}*"),
           ScoreMode.None
         )
       )
