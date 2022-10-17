@@ -72,5 +72,39 @@
     "sexualOrientation": "string"
   },
   "mappa": null,
-  "probationStatus": null
+  "probationStatus": null,
+  "offenderManagers": [
+    {
+      "fromDate": "2022-10-17",
+      "allocationReason": {
+        "code": "CAI",
+        "description": "Caseload Allocation"
+      },
+      "partitionArea": "National Data",
+      "active": true,
+      "staff": {
+        "code": "N00UATL",
+        "surname": "Staff",
+        "forenames": "Lisa Test(N00)",
+        "unallocated": true
+      },
+      "team": {
+        "code": "N00UAT",
+        "description": "Unallocated Team (N00)",
+        "district": {
+          "code": "N00DT1",
+          "description": "District One (N00)"
+        },
+        "borough": {
+          "code": "N00BR1",
+          "description": "Borough One(N00)"
+        }
+      },
+      "softDeleted": false,
+      "probationArea": {
+        "code": "N00",
+        "description": "NPS London"
+      }
+    }
+  ]
 }
