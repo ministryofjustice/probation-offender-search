@@ -85,8 +85,8 @@ internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
       Arguments.of(listOf(SortBy("name.forename"), SortBy("name.surname")), listOf("X00010", "X00002", "X00001")),
       Arguments.of(listOf(SortBy("name.surname"), SortBy("name.forename")), listOf("X00010", "X00002", "X00001")),
       Arguments.of(listOf(SortBy("name.surname", "desc"), SortBy("name.forename", "desc")), listOf("X00001", "X00002", "X00010")),
-      Arguments.of(listOf(SortBy("manager.forename")), listOf("X00002", "X00001", "X00010")),
-      Arguments.of(listOf(SortBy("manager.surname", "desc"), SortBy("manager.forename", "desc")), listOf("X00001", "X00002", "X00010")),
+      Arguments.of(listOf(SortBy("manager.name.forename")), listOf("X00002", "X00001", "X00010")),
+      Arguments.of(listOf(SortBy("manager.name.surname", "desc"), SortBy("manager.name.forename", "desc")), listOf("X00001", "X00002", "X00010")),
     )
   }
 }

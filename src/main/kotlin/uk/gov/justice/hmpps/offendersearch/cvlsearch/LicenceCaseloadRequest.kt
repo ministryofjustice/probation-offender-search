@@ -8,10 +8,10 @@ import javax.validation.constraints.Pattern
 private const val CRN_INPUT = "identifiers.crn"
 private const val FORENAME_INPUT = "name.forename"
 private const val SURNAME_INPUT = "name.surname"
-private const val MANAGER_FORENAMES_INPUT = "manager.forename"
-private const val MANAGER_SURNAME_INPUT = "manager.surname"
+private const val MANAGER_FORENAMES_INPUT = "manager.name.forename"
+private const val MANAGER_SURNAME_INPUT = "manager.name.surname"
 private const val FIELD_REGEX =
-  "^identifiers\\.crn\$|^name\\.forename\$|^name\\.surname\$|^manager\\.forename\$|^manager\\.surname\$"
+  "^identifiers\\.crn\$|^name\\.forename\$|^name\\.surname\$|^manager\\.name\\.forename\$|^manager\\.name\\.surname\$"
 private const val FIELD_MESSAGE =
   "should be one of '$CRN_INPUT', '$FORENAME_INPUT', '$SURNAME_INPUT', '$MANAGER_FORENAMES_INPUT' or '$MANAGER_SURNAME_INPUT'"
 
