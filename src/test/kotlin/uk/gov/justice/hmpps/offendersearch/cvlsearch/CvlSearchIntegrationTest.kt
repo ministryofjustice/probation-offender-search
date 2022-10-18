@@ -18,6 +18,8 @@ internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
     LocalStackHelper(esClient).loadData()
   }
 
+  private fun cvlSearchRole() = jwtAuthenticationHelper.createJwt("ROLE_CVL_SEARCH")
+
   @ParameterizedTest
   @MethodSource("teamCodeResults")
   fun `cvl search by team code`(teamCodes: List<String>, query: String, crns: List<String>) {
@@ -25,7 +27,7 @@ internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
       LicenceCaseloadRequest(teamCodes, query, listOf(SortBy("name.forename", "desc"), SortBy("name.surname")))
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(cvlSearchRole())
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(request)
       .post("licence-caseload/by-team")
@@ -45,7 +47,7 @@ internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
     val request = LicenceCaseloadRequest(teamCodes = listOf("N00UAT", "N02UAT"), sortBy = sorting)
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(cvlSearchRole())
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(request)
       .post("licence-caseload/by-team")
@@ -67,7 +69,7 @@ internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
     )
     val res = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(cvlSearchRole())
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(request)
       .post("licence-caseload/by-team")

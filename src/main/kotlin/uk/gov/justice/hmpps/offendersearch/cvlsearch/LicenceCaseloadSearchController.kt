@@ -14,7 +14,7 @@ import javax.validation.Valid
 @RequestMapping("licence-caseload")
 class LicenceCaseloadSearchController(val licenceCaseloadService: LicenceCaseloadService) {
 
-  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @PreAuthorize("hasRole('ROLE_CVL_SEARCH')")
   @RequestMapping("by-team", method = [GET, POST])
   fun findLicenceCaseloadByTeam(@RequestBody @Valid request: LicenceCaseloadRequest) =
     licenceCaseloadService.findLicenceCaseload(request)
