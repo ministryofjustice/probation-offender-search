@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.cvlsearch
 
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,6 +14,7 @@ import javax.validation.Valid
 @RequestMapping("licence-caseload")
 class LicenceCaseloadSearchController(val licenceCaseloadService: LicenceCaseloadService) {
 
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @RequestMapping("by-team", method = [GET, POST])
   fun findLicenceCaseloadByTeam(@RequestBody @Valid request: LicenceCaseloadRequest) =
     licenceCaseloadService.findLicenceCaseload(request)

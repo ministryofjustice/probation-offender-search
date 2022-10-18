@@ -3,6 +3,7 @@ package uk.gov.justice.hmpps.offendersearch.cvlsearch
 import io.restassured.RestAssured
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -20,7 +21,8 @@ internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
   @ParameterizedTest
   @MethodSource("teamCodeResults")
   fun `cvl search by team code`(teamCodes: List<String>, query: String, crns: List<String>) {
-    val request = LicenceCaseloadRequest(teamCodes, query, listOf(SortBy("name.forename", "desc"), SortBy("name.surname")))
+    val request =
+      LicenceCaseloadRequest(teamCodes, query, listOf(SortBy("name.forename", "desc"), SortBy("name.surname")))
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -57,6 +59,38 @@ internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
     assertThat(results.map { it.identifiers.crn }).isEqualTo(crns)
   }
 
+  @Test
+  fun `cvl search returns 400 for invalid requests and lists all errors`() {
+    val request = LicenceCaseloadRequest(
+      teamCodes = listOf(),
+      sortBy = listOf(SortBy("crn", "ascending"), SortBy("name"), SortBy("staff.name", "DESCENDING"))
+    )
+    val res = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body(request)
+      .post("licence-caseload/by-team")
+      .then()
+      .statusCode(400)
+      .extract()
+      .body()
+      .`as`(ErrorsResponse::class.java)
+
+    println(res)
+
+    assertThat(res.fieldErrors).containsAll(
+      listOf(
+        FieldError("teamCodes", "must not be empty"),
+        FieldError("sortBy[0].field", FIELD_MESSAGE),
+        FieldError("sortBy[0].direction", DIRECTION_MESSAGE),
+        FieldError("sortBy[1].field", FIELD_MESSAGE),
+        FieldError("sortBy[2].field", FIELD_MESSAGE),
+        FieldError("sortBy[2].direction", DIRECTION_MESSAGE),
+      )
+    )
+  }
+
   companion object {
     @JvmStatic
     fun teamCodeResults(): List<Arguments> = listOf(
@@ -84,9 +118,15 @@ internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
       Arguments.of(listOf(SortBy("identifiers.crn")), listOf("X00001", "X00002", "X00010")),
       Arguments.of(listOf(SortBy("name.forename"), SortBy("name.surname")), listOf("X00010", "X00002", "X00001")),
       Arguments.of(listOf(SortBy("name.surname"), SortBy("name.forename")), listOf("X00010", "X00002", "X00001")),
-      Arguments.of(listOf(SortBy("name.surname", "desc"), SortBy("name.forename", "desc")), listOf("X00001", "X00002", "X00010")),
+      Arguments.of(
+        listOf(SortBy("name.surname", "desc"), SortBy("name.forename", "desc")),
+        listOf("X00001", "X00002", "X00010")
+      ),
       Arguments.of(listOf(SortBy("manager.name.forename")), listOf("X00002", "X00001", "X00010")),
-      Arguments.of(listOf(SortBy("manager.name.surname", "desc"), SortBy("manager.name.forename", "desc")), listOf("X00001", "X00002", "X00010")),
+      Arguments.of(
+        listOf(SortBy("manager.name.surname", "desc"), SortBy("manager.name.forename", "desc")),
+        listOf("X00001", "X00002", "X00010")
+      ),
     )
   }
 }
