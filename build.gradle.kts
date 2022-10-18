@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.5"
   kotlin("plugin.spring") version "1.7.10"
   id("com.google.cloud.tools.jib") version "3.3.0"
 }
@@ -32,7 +32,7 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client")
   implementation("org.elasticsearch.client:elasticsearch-rest-client")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.319")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.321")
 
   implementation("io.springfox:springfox-boot-starter:3.0.0")
 
@@ -45,7 +45,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.3")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.4")
 }
 
 java {
