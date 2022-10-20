@@ -108,7 +108,7 @@ private fun simpleTermAndQuery(phrase: String): QueryBuilder =
     .type(CROSS_FIELDS)
 
 private fun simpleTermOrQueryCrossFields(phrase: String): QueryBuilder =
-  QueryBuilders.multiMatchQuery(phrase)
+  QueryBuilders.multiMatchQuery(phrase).analyzer("standard")
     .field("firstName", 10f)
     .field("surname", 10f)
     .field("middleNames", 8f)
@@ -120,7 +120,7 @@ private fun simpleTermOrQueryCrossFields(phrase: String): QueryBuilder =
     .type(CROSS_FIELDS)
 
 private fun simpleTermOrQueryMostFields(phrase: String): QueryBuilder =
-  QueryBuilders.multiMatchQuery(phrase)
+  QueryBuilders.multiMatchQuery(phrase).analyzer("standard")
     .field("gender")
     .field("otherIds.crn", 10f)
     .field("otherIds.nomsNumber", 10f)
