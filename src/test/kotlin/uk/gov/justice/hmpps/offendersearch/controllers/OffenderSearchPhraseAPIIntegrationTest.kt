@@ -223,7 +223,8 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
           town = "Southampton",
           county = "Hampshire",
           postcode = "H1 1WA",
-          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London"))
+          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London")),
+          phoneNumber = "01918888888"
         ),
         OffenderReplacement(
           surname = "Gramsci",
@@ -231,7 +232,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
           gender = "Female",
           middleNames = listOf("Jane", "Joanna"),
           dateOfBirth = LocalDate.parse("1988-01-06"),
-          crn = "X88888",
+          crn = "X888888",
           nomsNumber = "G5555TT",
           croNumber = "SF80/655108T",
           pncNumber = "2018/0123456X",
@@ -249,86 +250,87 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by surname`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "Gramsci", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X88888"))
+      hasMatches(phrase = "Gramsci", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X888888"))
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by first name`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "Anne", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X88888"))
+      hasMatches(phrase = "Anne", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X888888"))
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by any middle name`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "Jane", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X88888"))
-      hasMatches(phrase = "Joanna", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X88888"))
+      hasMatches(phrase = "Jane", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X888888"))
+      hasMatches(phrase = "Joanna", matchAllTerms = matchAllTerms, expectedCrns = listOf("X99999", "X888888"))
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by date of birth`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "1988-01-06", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "1988-01-06", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by gender`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "Female", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "Female", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @Test
     internal fun `can match by crn`() {
-      hasMatches(phrase = "X99999 X88888", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = false)
-      hasNoMatch(phrase = "X99999 X88888", matchAllTerms = true)
+      hasMatches(phrase = "X99999 X888888", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = false)
+      hasNoMatch(phrase = "X99999 X888888", matchAllTerms = true)
+      hasSingleMatch(phrase = "X888888", expectedCrn = "X888888", matchAllTerms = false)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by noms number`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "G5555TT", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "G5555TT", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by pnc number`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "2018/0123456X", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "2018/0123456X", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by cro number`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "SF80/655108T", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "SF80/655108T", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by national insurance number`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "NE112233X", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "NE112233X", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by partial street name`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "Hyde", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "Hyde", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by town name`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "Southampton", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "Southampton", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by county name`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "Hampshire", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "Hampshire", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by post code name`(matchAllTerms: Boolean) {
-      hasMatches(phrase = "H1 1WA", expectedCrns = listOf("X99999", "X88888"), matchAllTerms = matchAllTerms)
+      hasMatches(phrase = "H1 1WA", expectedCrns = listOf("X99999", "X888888"), matchAllTerms = matchAllTerms)
     }
   }
 
@@ -598,7 +600,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
           deleted = true
         ),
         OffenderReplacement(
-          crn = "X88888",
+          crn = "X888888",
           deleted = false
         )
       )
@@ -608,7 +610,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     @MethodSource("matchAllTerms")
     internal fun `will not find deleted offenders`(matchAllTerms: Boolean) {
       hasNoMatch(phrase = "X99999", matchAllTerms = matchAllTerms)
-      hasSingleMatch(phrase = "X88888", expectedCrn = "X88888", matchAllTerms = matchAllTerms)
+      hasSingleMatch(phrase = "X888888", expectedCrn = "X888888", matchAllTerms = matchAllTerms)
     }
   }
 
