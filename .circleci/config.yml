@@ -11,6 +11,7 @@ jobs:
       name: hmpps/localstack
       jdk_tag: "17.0"
       services: "es"
+      localstack_tag: "0.11.2"
     steps:
       - run:
           command: |
