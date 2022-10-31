@@ -119,18 +119,6 @@ class OffenderSearchController(
     ]
   )
   @PostMapping("/phrase")
-  @Parameters(
-    Parameter(
-      name = "page",
-      description = "Results page you want to retrieve (0..N)",
-      example = "0",
-    ),
-    Parameter(
-      name = "size",
-      description = "Number of records per page.",
-      example = "10",
-    )
-  )
   fun searchOffendersByPhrase(
     @Valid @RequestBody searchPhraseFilter: SearchPhraseFilter,
     @PageableDefault pageable: Pageable

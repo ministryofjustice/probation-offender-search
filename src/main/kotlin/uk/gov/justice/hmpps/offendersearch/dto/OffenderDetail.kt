@@ -8,14 +8,14 @@ import java.time.Period
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class OffenderDetail(
   val previousSurname: String? = null,
-  @Schema(required = true) val offenderId: Long,
+  val offenderId: Long,
   val title: String? = null,
   val firstName: String? = null,
   val middleNames: List<String>? = null,
   val surname: String? = null,
   val dateOfBirth: LocalDate? = null,
   val gender: String? = null,
-  val otherIds: IDs? = null,
+  val otherIds: IDs,
   val contactDetails: ContactDetails? = null,
   val offenderProfile: OffenderProfile? = null,
   val offenderAliases: List<OffenderAlias>? = null,

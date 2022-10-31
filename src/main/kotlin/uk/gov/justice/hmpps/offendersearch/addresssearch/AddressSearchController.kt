@@ -34,7 +34,7 @@ class AddressSearchController(
       ApiResponse(
         responseCode = "400",
         description = "Invalid Request",
-        content = [Content(examples = [])]
+        content = [Content()]
       ),
       ApiResponse(
         responseCode = "200",

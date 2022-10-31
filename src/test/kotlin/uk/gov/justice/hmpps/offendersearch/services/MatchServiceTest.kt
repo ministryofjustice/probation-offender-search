@@ -25,6 +25,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import uk.gov.justice.hmpps.offendersearch.dto.IDs
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.ALL_SUPPLIED_ALIAS
@@ -61,7 +62,7 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // PNC Number results
         .thenReturn(resultsOf()) // name match results
         .thenReturn(resultsOf()) // partial name match results
-        .thenReturn(resultsOf(OffenderDetail(surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88)))
+        .thenReturn(resultsOf(OffenderDetail(otherIds = IDs("1234"), surname = "smith", offenderId = 99), OffenderDetail(surname = "smith", offenderId = 88, otherIds = IDs("1234"),)))
     }
 
     @Test
@@ -168,8 +169,8 @@ internal class MatchServiceTest {
     fun `will return matches`() {
       whenever(searchClient.search(any())).thenReturn(
         resultsOf(
-          OffenderDetail(surname = "smith", offenderId = 99),
-          OffenderDetail(surname = "smith", offenderId = 88)
+          OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"),),
+          OffenderDetail(surname = "smith", offenderId = 88, otherIds = IDs("1234"),)
         )
       )
 
@@ -181,7 +182,7 @@ internal class MatchServiceTest {
     fun `will return matched by ALL_SUPPLIED when matching all parameters`() {
       whenever(searchClient.search(any())).thenReturn(
         resultsOf(
-          OffenderDetail(surname = "smith", offenderId = 99)
+          OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"),)
         )
       )
 
@@ -195,7 +196,7 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // full match
         .thenReturn(
           resultsOf(
-            OffenderDetail(surname = "smith", offenderId = 99)
+            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"),)
           )
         )
 
@@ -210,7 +211,7 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // full match alias
         .thenReturn(
           resultsOf(
-            OffenderDetail(surname = "smith", offenderId = 99)
+            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"),)
           )
         )
 
@@ -226,7 +227,7 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // NOMS number match
         .thenReturn(
           resultsOf(
-            OffenderDetail(surname = "smith", offenderId = 99)
+            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"),)
           )
         )
 
@@ -243,7 +244,7 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // CRO number match
         .thenReturn(
           resultsOf(
-            OffenderDetail(surname = "smith", offenderId = 99)
+            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"),)
           )
         )
 

@@ -23,5 +23,5 @@ fun redact(offenderDetail: OffenderDetail): OffenderDetail = OffenderDetail(
   accessDenied = true,
   offenderId = offenderDetail.offenderId,
   offenderManagers = offenderDetail.offenderManagers,
-  otherIds = IDs(crn = offenderDetail.otherIds?.crn)
+  otherIds = IDs(crn = offenderDetail.otherIds.crn)
 )
