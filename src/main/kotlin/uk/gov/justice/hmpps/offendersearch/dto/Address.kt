@@ -1,11 +1,11 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
 data class Address(
   val id: Long,
-  @ApiModelProperty(required = true) val from: LocalDate? = null,
+  @Schema(required = true) val from: LocalDate? = null,
   val to: LocalDate? = null,
   val noFixedAbode: Boolean? = null,
   val notes: String? = null,

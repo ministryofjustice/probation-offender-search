@@ -1,8 +1,8 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 data class OffenderMatch(
-  @ApiModelProperty(required = true, value = "Details of the matching offender")
+  @Schema(required = true, description = "Details of the matching offender")
   val offender: OffenderDetail
 )

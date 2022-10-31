@@ -1,11 +1,10 @@
 package uk.gov.justice.hmpps.offendersearch.addresssearch
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
-import io.swagger.annotations.Authorization
-import io.swagger.annotations.Example
-import io.swagger.annotations.ExampleProperty
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.access.prepost.PreAuthorize
@@ -15,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.hmpps.offendersearch.BadRequestException
 
-@Api(
-  tags = ["address-search"],
-  authorizations = [Authorization("ROLE_COMMUNITY")],
+@Tag(
+  name = "address-search",
   description = "Provides address search features for Delius elastic search"
 )
 @RestController
@@ -35,18 +32,20 @@ class AddressSearchController(
   @ApiResponses(
     value = [
       ApiResponse(
-        code = 400,
-        message = "Invalid Request",
-        response = BadRequestException::class
+        responseCode = "400",
+        description = "Invalid Request",
+        content = [Content(examples = [])]
       ),
       ApiResponse(
-        code = 200,
-        message = "OK",
-        response = AddressSearchResponses::class,
-        examples = Example(
-          ExampleProperty(
-            """
-          {
+        responseCode = "200",
+        description = "OK",
+        content = [
+          Content(
+            mediaType = "application/json",
+            examples = [
+              ExampleObject(
+                value = """
+         {
           "personAddresses": [
               {
                   "person": {
@@ -81,11 +80,11 @@ class AddressSearchController(
                   "matchScore": 100
               }
             ]
-        }
-        """,
-            mediaType = "application/json"
+           }"""
+              )
+            ]
           )
-        )
+        ]
       )
     ]
   )

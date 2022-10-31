@@ -1,9 +1,9 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 data class ProbationArea(
-  @ApiModelProperty(required = true) val probationAreaId: Long? = null,
+  @Schema(required = true) val probationAreaId: Long? = null,
   val code: String? = null,
   val description: String? = null,
   val nps: Boolean? = null,

@@ -14,7 +14,7 @@ class SwaggerDocsTest : LocalstackIntegrationBase() {
   fun `swagger docs are available`() {
     RestAssured.given()
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .get("/swagger-ui/?configUrl=/v3/api-docs")
+      .get("/swagger-ui/index.html")
       .then()
       .statusCode(200)
   }

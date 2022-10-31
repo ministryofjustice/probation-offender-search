@@ -1,14 +1,14 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 data class Institution(
-  @ApiModelProperty(required = true) val institutionId: Long? = null,
+  @Schema(required = true) val institutionId: Long? = null,
   val isEstablishment: Boolean? = null,
   val code: String? = null,
   val description: String? = null,
   val institutionName: String? = null,
   val establishmentType: KeyValue? = null,
   val isPrivate: Boolean? = null,
-  @ApiModelProperty(value = "Prison institution code in NOMIS") val nomsPrisonInstitutionCode: String? = null
+  @Schema(description = "Prison institution code in NOMIS") val nomsPrisonInstitutionCode: String? = null
 )

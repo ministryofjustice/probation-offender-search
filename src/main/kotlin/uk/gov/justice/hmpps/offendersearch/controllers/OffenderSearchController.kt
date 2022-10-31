@@ -1,14 +1,13 @@
 package uk.gov.justice.hmpps.offendersearch.controllers
 
 import com.microsoft.applicationinsights.TelemetryClient
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiImplicitParam
-import io.swagger.annotations.ApiImplicitParams
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
-import io.swagger.annotations.Authorization
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.Parameters
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
@@ -24,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod.GET
 import org.springframework.web.bind.annotation.RequestMethod.POST
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.hmpps.offendersearch.BadRequestException
-import uk.gov.justice.hmpps.offendersearch.NotFoundException
 import uk.gov.justice.hmpps.offendersearch.config.SecurityUserContext
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
@@ -37,9 +34,8 @@ import uk.gov.justice.hmpps.offendersearch.services.SearchService
 import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
 
-@Api(
-  tags = ["offender-search"],
-  authorizations = [Authorization("ROLE_COMMUNITY")],
+@Tag(
+  name = "offender-search",
   description = "Provides offender search features for Delius elastic search"
 )
 @RestController
@@ -54,24 +50,21 @@ class OffenderSearchController(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  @ApiOperation(
-    value = "Search for an offender in Delius ElasticSearch. Only offenders matching all request attributes will be returned",
-    notes = "Specify the request criteria to match against",
-    authorizations = [Authorization("ROLE_COMMUNITY")],
-    nickname = "search"
+  @Operation(
+    summary = "Search for an offender in Delius ElasticSearch. Only offenders matching all request attributes will be returned",
+    description = "Specify the request criteria to match against",
+    operationId = "search"
   )
   @ApiResponses(
     value = [
       ApiResponse(
-        code = 200,
-        message = "OK",
-        response = OffenderDetail::class,
-        responseContainer = "List"
+        responseCode = "200",
+        description = "OK",
       ), ApiResponse(
-        code = 400,
-        message = "Invalid Request",
-        response = BadRequestException::class
-      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class)
+        responseCode = "400",
+        description = "Invalid Request",
+        content = [Content(examples = [])]
+      ), ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])])
     ]
   )
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
@@ -81,9 +74,9 @@ class OffenderSearchController(
     return searchService.performSearch(searchForm)
   }
 
-  @ApiOperation(
-    value = "Search for an offender in Delius ElasticSearch using a search phrase. Only offenders matching all request attributes will be returned",
-    notes =
+  @Operation(
+    summary = "Search for an offender in Delius ElasticSearch using a search phrase. Only offenders matching all request attributes will be returned",
+    description =
     """The phrase can contain one or more of the following:
         
         - first name
@@ -115,32 +108,27 @@ class OffenderSearchController(
             - the client has the scopes to allow it to ignore these lists; the two scopes to bypass this feature are "ignore_delius_exclusions_always" and "ignore_delius_inclusions_always"
          
       """,
-    nickname = "searchByPhrase"
+    operationId = "searchByPhrase"
   )
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @ApiResponses(
     value = [
-      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+      ApiResponse(responseCode = "200", description = "OK"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])])
     ]
   )
   @PostMapping("/phrase")
-  @ApiImplicitParams(
-    ApiImplicitParam(
+  @Parameters(
+    Parameter(
       name = "page",
-      dataType = "int",
-      paramType = "query",
-      value = "Results page you want to retrieve (0..N)",
+      description = "Results page you want to retrieve (0..N)",
       example = "0",
-      defaultValue = "0"
     ),
-    ApiImplicitParam(
+    Parameter(
       name = "size",
-      dataType = "int",
-      paramType = "query",
-      value = "Number of records per page.",
+      description = "Number of records per page.",
       example = "10",
-      defaultValue = "10"
     )
   )
   fun searchOffendersByPhrase(
@@ -158,14 +146,15 @@ class OffenderSearchController(
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @ApiResponses(
     value = [
-      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+      ApiResponse(responseCode = "200", description = "OK"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])])
     ]
   )
   @PostMapping("/crns")
-  @ApiOperation(value = "Match prisoners by a list of prisoner crns", notes = "Requires ROLE_COMMUNITY role")
+  @Operation(description = "Match prisoners by a list of prisoner crns", summary = "Requires ROLE_COMMUNITY role")
   fun findByIds(
-    @ApiParam(required = true, name = "crnList") @RequestBody crnList: List<String>
+    @Parameter(required = true, name = "crnList") @RequestBody crnList: List<String>
   ): List<OffenderDetail> {
     return searchService.findByListOfCRNs(crnList)
   }
@@ -173,14 +162,15 @@ class OffenderSearchController(
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @ApiResponses(
     value = [
-      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+      ApiResponse(responseCode = "200", description = "OK"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])])
     ]
   )
   @PostMapping("/nomsNumbers")
-  @ApiOperation(value = "Match prisoners by a list of prisoner noms numbers", notes = "Requires ROLE_COMMUNITY role")
+  @Operation(description = "Match prisoners by a list of prisoner noms numbers", summary = "Requires ROLE_COMMUNITY role")
   fun findByNomsNumbers(
-    @ApiParam(required = true, name = "nomsList") @RequestBody nomsList: List<String>
+    @Parameter(required = true, name = "nomsList") @RequestBody nomsList: List<String>
   ): List<OffenderDetail> {
     return searchService.findByListOfNoms(nomsList)
   }
@@ -188,32 +178,27 @@ class OffenderSearchController(
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @ApiResponses(
     value = [
-      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+      ApiResponse(responseCode = "200", description = "OK"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])])
     ]
   )
   @PostMapping("/ldu-codes")
-  @ApiImplicitParams(
-    ApiImplicitParam(
+  @Parameters(
+    Parameter(
       name = "page",
-      dataType = "int",
-      paramType = "query",
-      value = "Results page you want to retrieve (0..N)",
+      description = "Results page you want to retrieve (0..N)",
       example = "0",
-      defaultValue = "0"
     ),
-    ApiImplicitParam(
+    Parameter(
       name = "size",
-      dataType = "int",
-      paramType = "query",
-      value = "Number of records per page.",
+      description = "Number of records per page.",
       example = "10",
-      defaultValue = "10"
     )
   )
-  @ApiOperation(value = "Match prisoners by a list of ldu codes", notes = "Requires ROLE_COMMUNITY role")
+  @Operation(summary = "Match prisoners by a list of ldu codes", description = "Requires ROLE_COMMUNITY role")
   fun findByLduCode(
-    @ApiParam(required = true, name = "lduList")
+    @Parameter(required = true, name = "lduList")
     @RequestBody @NotEmpty lduList: List<String>,
     @PageableDefault pageable: Pageable
   ): SearchPagedResults {
@@ -223,32 +208,27 @@ class OffenderSearchController(
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @ApiResponses(
     value = [
-      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+      ApiResponse(responseCode = "200", description = "OK"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])])
     ]
   )
   @PostMapping("/team-codes")
-  @ApiImplicitParams(
-    ApiImplicitParam(
+  @Parameters(
+    Parameter(
       name = "page",
-      dataType = "int",
-      paramType = "query",
-      value = "Results page you want to retrieve (0..N)",
+      description = "Results page you want to retrieve (0..N)",
       example = "0",
-      defaultValue = "0"
     ),
-    ApiImplicitParam(
+    Parameter(
       name = "size",
-      dataType = "int",
-      paramType = "query",
-      value = "Number of records per page.",
+      description = "Number of records per page.",
       example = "10",
-      defaultValue = "10"
     )
   )
-  @ApiOperation(value = "Match prisoners by a list of team codes", notes = "Requires ROLE_COMMUNITY role")
+  @Operation(description = "Match prisoners by a list of team codes", summary = "Requires ROLE_COMMUNITY role")
   fun findByTeamCode(
-    @ApiParam(required = true, name = "teamCodeList")
+    @Parameter(required = true, name = "teamCodeList")
     @PageableDefault pageable: Pageable,
     @RequestBody @NotEmpty teamCodeList: List<String>
   ): SearchPagedResults {
@@ -256,20 +236,19 @@ class OffenderSearchController(
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-  @ApiOperation(value = "Match prisoners by a ldu code", notes = "Requires ROLE_COMMUNITY role")
+  @Operation(description = "Match prisoners by a ldu code", summary = "Requires ROLE_COMMUNITY role")
   @ApiResponses(
     value = [
       ApiResponse(
-        code = 200,
-        message = "OK",
-        response = SearchPagedResults::class
+        responseCode = "200",
+        description = "OK",
       ), ApiResponse(
-        code = 400,
-        message = "Invalid Request",
-        response = BadRequestException::class
-      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class),
-      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+        responseCode = "400",
+        description = "Invalid Request",
+        content = [Content(examples = [])]
+      ), ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])])
     ]
   )
   @GetMapping("/ldu-codes/{lduCode}")
@@ -282,20 +261,19 @@ class OffenderSearchController(
   }
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-  @ApiOperation(value = "Match prisoners by a team code", notes = "Requires ROLE_COMMUNITY role")
+  @Operation(summary = "Match prisoners by a team code", description = "Requires ROLE_COMMUNITY role")
   @ApiResponses(
     value = [
       ApiResponse(
-        code = 200,
-        message = "OK",
-        response = SearchPagedResults::class
+        responseCode = "200",
+        description = "OK",
       ), ApiResponse(
-        code = 400,
-        message = "Invalid Request",
-        response = BadRequestException::class
-      ), ApiResponse(code = 404, message = "Not found", response = NotFoundException::class),
-      ApiResponse(code = 401, message = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(code = 403, message = "Forbidden, requires an authorisation with role ROLE_COMMUNITY")
+        responseCode = "400",
+        description = "Invalid Request",
+        content = [Content(examples = [])]
+      ), ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])])
     ]
   )
   @GetMapping("/team-codes/{teamCode}")

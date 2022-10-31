@@ -1,18 +1,18 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Past
 
 data class MatchRequest(
-  @ApiModelProperty(value = "Offender first name", example = "john", position = 1) val firstName: String? = null,
+  @Schema(description = "Offender first description", example = "john") val firstName: String? = null,
   @field:NotBlank(message = "Surname is required")
-  @ApiModelProperty(value = "Offender surname", example = "smith", position = 2) val surname: String?,
+  @Schema(description = "Offender surname", example = "smith") val surname: String?,
   @field:Past(message = "Date of birth must be in the past")
-  @ApiModelProperty(value = "Offender date of birth", example = "1996-02-10", position = 3) val dateOfBirth: LocalDate? = null,
-  @ApiModelProperty(value = "Police National Computer (PNC) number", example = "2018/0123456X", position = 4) val pncNumber: String? = null,
-  @ApiModelProperty(value = "Criminal Records Office (CRO) number", example = "SF80/655108T", position = 5) val croNumber: String? = null,
-  @ApiModelProperty(value = "The Offender NOMIS Id (aka prison number/offender no in DPS)", example = "G5555TT", position = 7) val nomsNumber: String? = null,
-  @ApiModelProperty(value = "Filter so only offenders on a current sentence managed by probation will be returned", example = "true", position = 8) val activeSentence: Boolean = false
+  @Schema(description = "Offender date of birth", example = "1996-02-10") val dateOfBirth: LocalDate? = null,
+  @Schema(description = "Police National Computer (PNC) number", example = "2018/0123456X") val pncNumber: String? = null,
+  @Schema(description = "Criminal Records Office (CRO) number", example = "SF80/655108T") val croNumber: String? = null,
+  @Schema(description = "The Offender NOMIS Id (aka prison number/offender no in DPS)", example = "G5555TT") val nomsNumber: String? = null,
+  @Schema(description = "Filter so only offenders on a current sentence managed by probation will be returned", example = "true") val activeSentence: Boolean = false
 )

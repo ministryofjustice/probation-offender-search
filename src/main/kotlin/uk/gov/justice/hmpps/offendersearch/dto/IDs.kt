@@ -1,9 +1,9 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 data class IDs(
-  @ApiModelProperty(required = true) val crn: String? = null,
+  @Schema(required = true) val crn: String? = null,
   val pncNumber: String? = null,
   val croNumber: String? = null,
   val niNumber: String? = null,

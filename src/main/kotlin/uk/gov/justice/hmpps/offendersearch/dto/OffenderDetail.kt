@@ -1,14 +1,14 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.Period
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class OffenderDetail(
   val previousSurname: String? = null,
-  @ApiModelProperty(required = true) val offenderId: Long,
+  @Schema(required = true) val offenderId: Long,
   val title: String? = null,
   val firstName: String? = null,
   val middleNames: List<String>? = null,
@@ -27,7 +27,7 @@ data class OffenderDetail(
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean? = null,
   val exclusionMessage: String? = null,
-  @ApiModelProperty(value = "map of fields which matched a search term (Only return for phrase searching)", example = "{\"surname\": [\"Smith\"], \"offenderAliases.surname\": [\"SMITH\"]}")
+  @Schema(description = "map of fields which matched a search term (Only return for phrase searching)", example = "{\"surname\": [\"Smith\"], \"offenderAliases.surname\": [\"SMITH\"]}")
   val highlight: Map<String, List<String>>? = null,
   val accessDenied: Boolean? = null,
   val currentTier: String? = null,
