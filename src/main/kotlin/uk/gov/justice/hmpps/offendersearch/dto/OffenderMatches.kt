@@ -1,17 +1,16 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.hmpps.offendersearch.dto.MatchedBy.NOTHING
 
 data class OffenderMatches(
-  @ApiModelProperty(required = true, value = "List of offenders that share the same possibility of being the match")
+  @Schema(required = true, description = "List of offenders that share the same possibility of being the match")
   val matches: List<OffenderMatch> = listOf(),
-  @ApiModelProperty(required = true, value = "How the match was performed")
+  @Schema(required = true, description = "How the match was performed")
   val matchedBy: MatchedBy = NOTHING
 )
 
-@ApiModel
+@Schema
 enum class MatchedBy {
   ALL_SUPPLIED,
   ALL_SUPPLIED_ALIAS,

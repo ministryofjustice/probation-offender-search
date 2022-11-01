@@ -52,7 +52,7 @@ abstract class OffenderMatchAPIIntegrationBase {
         dateOfBirth = it.dateOfBirth,
         currentDisposal = if (it.activeSentence) "1" else "0",
         softDeleted = it.deleted,
-        otherIds = templateOffender.otherIds?.copy(
+        otherIds = templateOffender.otherIds.copy(
           crn = it.crn,
           nomsNumber = it.nomsNumber,
           croNumber = it.croNumber,

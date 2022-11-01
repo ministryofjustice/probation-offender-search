@@ -34,7 +34,9 @@ dependencies {
 
   implementation("com.amazonaws:aws-java-sdk-core:1.12.329")
 
-  implementation("io.springfox:springfox-boot-starter:3.0.0")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.12")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.12")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.12")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")

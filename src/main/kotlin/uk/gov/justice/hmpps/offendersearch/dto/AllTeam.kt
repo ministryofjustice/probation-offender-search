@@ -1,10 +1,10 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 data class AllTeam(
-  @ApiModelProperty(required = true) val providerTeamId: Long? = null,
-  @ApiModelProperty(required = true) val teamId: Long? = null,
+  @Schema(required = true) val providerTeamId: Long? = null,
+  @Schema(required = true) val teamId: Long? = null,
   val code: String? = null,
   val description: String? = null,
   val name: String? = null,

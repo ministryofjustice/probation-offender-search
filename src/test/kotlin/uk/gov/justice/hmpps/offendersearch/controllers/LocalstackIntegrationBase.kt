@@ -57,7 +57,7 @@ abstract class LocalstackIntegrationBase {
         dateOfBirth = it.dateOfBirth,
         softDeleted = it.deleted,
         gender = it.gender,
-        otherIds = templateOffender.otherIds?.copy(
+        otherIds = templateOffender.otherIds.copy(
           crn = it.crn,
           nomsNumber = it.nomsNumber,
           croNumber = it.croNumber,
