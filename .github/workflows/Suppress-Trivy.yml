@@ -1,6 +1,9 @@
 name: Suppress-Trivy
 
-on: issue_comment
+on:
+  push:
+    branches:
+      - PI-516-GHA_suppress_trivy
 
 jobs:
   issue_commented:
