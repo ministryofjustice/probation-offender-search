@@ -4,47 +4,27 @@ on:
   push:
     branches:
       - PI-516-GHA_suppress_trivy
+  workflow_dispatch:
 
 jobs:
-  issue_commented:
-    name: Issue Comment
-    if: ${{ !github.event.issue.pull_request }}
+  build:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          gh issue edit $ISSUE_URL --add-label "wontfix"
-          echo A comment on issue $NUMBER
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_URL: ${{ github.event.issue.html_url }}
-          NUMBER: ${{ github.event.issue.number }}
-        name: Overwrite some file
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-  on:
-    push:
-      branches:
-        - PI-516-GHA_suppress_trivy
-    workflow_dispatch:
+      - name: Overwrite file
+        uses: "DamianReeves/write-file-action@master"
+        with:
+          path: .trivyignore
+          write-mode: append
+          contents: |
+            The workflow ran this code
 
-  jobs:
-    build:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout repo
-          uses: actions/checkout@v3
-
-        - name: Overwrite file
-          uses: "DamianReeves/write-file-action@master"
-          with:
-            path: .trivyignore
-            write-mode: append
-            contents: |
-              The workflow ran this code
-
-        - name: Commit & Push
-          uses: Andro999b/push@v1.3
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            branch: PI-516-GHA_suppress_trivy
-            force: true
-            message: 'Overwritten by Github Actions - ${date}'
+      - name: Commit & Push
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: PI-516-GHA_suppress_trivy
+          force: true
+          message: 'Overwritten by Github Actions - ${date}'
