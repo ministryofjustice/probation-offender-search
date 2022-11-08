@@ -25,7 +25,7 @@ jobs:
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
         with:
-          path: ./.trivyignore
+          path: .github/workflows/Suppress-Trivy.yml
           write-mode: append
           contents: |+
               
