@@ -30,6 +30,7 @@ jobs:
           contents: |+
             This was made 
             through ghactions
+            ${{ github.ref_name }}
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
