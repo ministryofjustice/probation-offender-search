@@ -1,4 +1,4 @@
-name: Suppress-Trivy
+name: Suppress-Trivy - write to file
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         with:
           path: .trivyignore
           write-mode: append
-          contents: |
+          contents:   |
             ${{ github.ref }}
 
       - name: Commit & Push
@@ -27,4 +27,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: PI-516-GHA_suppress_trivy
           force: true
-          message: 'Overwritten by Github Actions - ${date}'
+          message: 'Appended by ${actor} via GitHub Actions - ${date}'
