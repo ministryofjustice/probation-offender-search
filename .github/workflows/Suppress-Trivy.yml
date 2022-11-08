@@ -36,4 +36,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: PI-516-GHA_suppress_trivy
           force: true
-          message: Overwritten by Github Actions - ${date}
+          message: 'Appended by ${{ github.actor }} - ${date}'
