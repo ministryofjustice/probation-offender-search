@@ -18,8 +18,8 @@ jobs:
         with:
           path: .trivyignore
           write-mode: append
-          contents: |
-             " "
+          contents: \n
+            Test
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
