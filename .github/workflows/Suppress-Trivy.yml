@@ -30,7 +30,7 @@ jobs:
           contents: |+
             This was made 
             through ghactions
-            ${{ steps.get_branch_name.outputs.Branch }}
+            ${GITHUB_REF##*/}
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
