@@ -18,7 +18,7 @@ jobs:
         with:
           path: .trivyignore
           write-mode: append
-          contents: "..."
+          contents: \n
             double
             line
 
