@@ -19,7 +19,7 @@ jobs:
           path: .trivyignore
           write-mode: append
           contents: |
-            ${{ github.GITHUB_HEAD_REF }}
+            '${{ github.GITHUB_HEAD_REF }}'
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
