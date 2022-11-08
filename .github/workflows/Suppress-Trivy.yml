@@ -25,7 +25,7 @@ jobs:
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
         with:
-          path: .trivyignore
+          path: ./.trivyignore
           write-mode: append
           contents: |+
               
