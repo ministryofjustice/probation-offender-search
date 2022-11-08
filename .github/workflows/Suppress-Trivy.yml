@@ -29,7 +29,6 @@ jobs:
           write-mode: append
           contents: |+
               
-              
             ${{ github.ref_name }}
 
       - name: Commit & Push
