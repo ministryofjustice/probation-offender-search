@@ -13,20 +13,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-#      - name: Get & Set Variables
-#        run: echo "##[set-output name=branch;]$(echo $GITHUB_REF#refs/heads/})"
-#        env:
-#            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#            AUTHOR: ${{ github.actor }}
-
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
         with:
           path: .trivyignore
           write-mode: append
-          contents: >
-             Actions 
-            appended code
+          contents: |
+            This was made through ghactions
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
@@ -34,4 +27,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: PI-516-GHA_suppress_trivy
           force: true
-          message: 'Appended by  - ${date}'
+          message: 'Appended by GitHub Actions - ${date}'
