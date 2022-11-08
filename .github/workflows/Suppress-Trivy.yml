@@ -38,4 +38,4 @@ jobs:
           AUTHOR: ${{ github.actor }}
           branch: PI-516-GHA_suppress_trivy
           force: true
-          message: 'Appended by $AUTHOR GitHub Actions - ${date}'
+          message: 'Appended by $author_name GitHub Actions - $date'
