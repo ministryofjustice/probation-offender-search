@@ -26,6 +26,6 @@ jobs:
           write-mode: append
           contents: >
              Actions 
-              appended code
+            appended code
             ${{ github.actor }}
             ${{ github.ref##*/ }}
