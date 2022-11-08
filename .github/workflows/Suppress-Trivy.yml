@@ -18,13 +18,5 @@ jobs:
         with:
           path: .trivyignore
           write-mode: append
-          contents:   |
-            ${{ github.ref }}
-
-      - name: Commit & Push
-        uses: Andro999b/push@v1.3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: PI-516-GHA_suppress_trivy
-          force: true
-          message: 'Appended by ${actor} via GitHub Actions - ${date}'
+          contents: |
+            ${{ github.title }}
