@@ -15,7 +15,7 @@ jobs:
 
       - name: Get & Set Branch Variable
         id: get_branch_name
-        run: echo ${GITHUB_REF##*/}=Branch >> $GITHUB_OUTPUT
+        run: echo ${GITHUB_REF##*/}
 
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -30,7 +30,6 @@ jobs:
           contents: |+
             This was made 
             through ghactions
-            ${GITHUB_REF##*/}
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
