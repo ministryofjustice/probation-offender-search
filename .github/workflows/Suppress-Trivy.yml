@@ -19,4 +19,4 @@ jobs:
           path: .trivyignore
           write-mode: append
           contents: |
-            #{{TITLE}}
+            ${{ title }}
