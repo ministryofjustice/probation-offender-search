@@ -20,6 +20,7 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
+            BRANCH_NAME: ${{ github.head_ref }}
 
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
