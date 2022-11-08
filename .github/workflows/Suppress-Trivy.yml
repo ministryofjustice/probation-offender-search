@@ -16,11 +16,11 @@ jobs:
       - name: Get & Set Branch Variable
         id: get_branch_name
         run: |
-          echo $AUTHOR
+          echo $BRANCH_NAME
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
-            BRANCH_NAME: ${{ github.head_ref }}
+            BRANCH_NAME: ${{ github.ref_name }}
 
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
