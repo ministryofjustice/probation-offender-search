@@ -21,7 +21,7 @@ jobs:
           contents: >
             This was made 
             through ghactions
-            ${{ github.ref##*/ }}
+            ${{ github.ref }}
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
