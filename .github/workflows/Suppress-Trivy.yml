@@ -29,3 +29,11 @@ jobs:
             appended code
             ${{ github.actor }}
             ${{ github.ref##*/ }}
+
+      - name: Commit & Push
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: PI-516-GHA_suppress_trivy
+          force: true
+          message: Overwritten by Github Actions - ${date}
