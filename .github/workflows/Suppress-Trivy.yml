@@ -15,8 +15,7 @@ jobs:
 
       - name: Get & Set Branch Variable
         id: get_branch_name
-        run: |
-          echo '${GITHUB_REF##*/}=Branch' >> $GITHUB_OUTPUT
+        run: echo ${GITHUB_REF##*/}=Branch >> $GITHUB_OUTPUT
 
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
