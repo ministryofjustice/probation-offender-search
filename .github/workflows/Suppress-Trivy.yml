@@ -27,7 +27,6 @@ jobs:
           contents: >
              Actions 
             appended code
-            ${{ github.ref##*/ }}
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
