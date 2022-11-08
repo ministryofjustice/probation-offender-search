@@ -13,10 +13,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+#      - name: Get & Set Variables
+#        run:
+#        env:
+#            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#            AUTHOR: ${{ github.actor }}
+
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
         with:
           path: .trivyignore
           write-mode: append
-          contents: |
-            ${{ title }}
+          contents: >
+            | Actions 
+              appended code
+            ${{ github.actor }}
