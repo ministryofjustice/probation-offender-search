@@ -19,7 +19,7 @@ jobs:
           path: .trivyignore
           write-mode: append
           contents: |
-             console.log('some contents')
+             " "
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
