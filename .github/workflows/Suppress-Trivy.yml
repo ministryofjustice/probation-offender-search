@@ -21,14 +21,14 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
-#            GITHUB_REF: ${{ github.ref }}
+            GITHUB_REF: ${{ github.ref }}
 
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
         with:
           path: .trivyignore
           write-mode: append
-          contents: |
+          contents: |+
             This was made 
             through ghactions
             ${{ steps.get_branch_name.outputs.Branch }}
