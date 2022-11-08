@@ -19,6 +19,7 @@ jobs:
           path: .trivyignore
           write-mode: append
           contents: |
+            
             The workflow ran this code
 
       - name: Commit & Push
