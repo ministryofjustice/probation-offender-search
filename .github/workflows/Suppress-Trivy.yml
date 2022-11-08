@@ -18,8 +18,9 @@ jobs:
         with:
           path: .trivyignore
           write-mode: append
-          contents: |
-            This was made through ghactions
+          contents: >
+            This was made 
+            through ghactions
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
