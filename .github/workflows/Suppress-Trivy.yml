@@ -13,6 +13,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: Get & Set Branch Variable
+        id: get_branch_name
+        run: |
+          echo ${GITHUB_REF##*/}=Branch >> $GITHUB_OUTPUT
+
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            AUTHOR: ${{ github.actor }}
+#            GITHUB_REF: ${{ github.ref }}
+
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@master"
         with:
@@ -21,7 +31,7 @@ jobs:
           contents: >
             This was made 
             through ghactions
-            ${{ github.ref }}
+            ${{ steps.get_branch_name.outputs.Branch }}
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
