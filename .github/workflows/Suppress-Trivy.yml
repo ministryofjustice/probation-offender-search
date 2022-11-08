@@ -27,7 +27,6 @@ jobs:
           contents: >
              Actions 
             appended code
-            ${{ github.actor }}
             ${{ github.ref##*/ }}
 
       - name: Commit & Push
@@ -36,4 +35,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: PI-516-GHA_suppress_trivy
           force: true
-          message: 'Appended by ${{ github.actor }} - ${date}'
+          message: 'Appended by  - ${date}'
