@@ -28,14 +28,14 @@ jobs:
           path: .trivyignore
           write-mode: append
           contents: |+
-            This was made 
-            through ghactions
+            
             ${{ github.ref_name }}
 
       - name: Commit & Push
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          AUTHOR: ${{ github.actor }}
           branch: PI-516-GHA_suppress_trivy
           force: true
-          message: 'Appended by GitHub Actions - ${date}'
+          message: 'Appended by $AUTHOR GitHub Actions - ${date}'
