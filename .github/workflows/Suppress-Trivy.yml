@@ -19,7 +19,7 @@ jobs:
           path: .trivyignore
           write-mode: append
           contents: |
-            >
+            
             double
             line
 
