@@ -23,7 +23,7 @@ jobs:
             BRANCH_NAME: ${{ github.ref_name }}
 
       - name: Overwrite file
-        uses: "DamianReeves/write-file-action@master"
+        uses: "DamianReeves/write-file-action@v1.0"
         with:
           path: .trivyignore
           write-mode: append
