@@ -17,17 +17,17 @@ jobs:
       - name: Overwrite file
         uses: DamianReeves/write-file-action@master
         with:
-          path: .trivyignore
+          path: probation-offender-search/.trivyignore
           write-mode: append
           contents: |
               
             ${{ github.ref_name }}
 
+
       - name: Commit & Push
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          author_name: ${{ github.actor }}
           branch: PI-516-GHA_suppress_trivy
           force: true
           message: 'Appended by ${author_name} GitHub Actions - ${date}'
