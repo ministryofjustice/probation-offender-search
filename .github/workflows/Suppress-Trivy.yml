@@ -13,11 +13,19 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: Get & Set Branch Variable
+        id: get_branch_name
+        run: |
+          echo $BRANCH_NAME
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            AUTHOR: ${{ github.actor }}
+            BRANCH_NAME: ${{ github.ref_name }}
 
       - name: Overwrite file
-        uses: DamianReeves/write-file-action@master
+        uses: "DamianReeves/write-file-action@master"
         with:
-          path: probation-offender-search/.trivyignore
+          path: .trivyignore
           write-mode: append
           contents: |
               
@@ -28,6 +36,7 @@ jobs:
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          author_name: ${{ github.actor }}
           branch: PI-516-GHA_suppress_trivy
           force: true
           message: 'Appended by ${author_name} GitHub Actions - ${date}'
