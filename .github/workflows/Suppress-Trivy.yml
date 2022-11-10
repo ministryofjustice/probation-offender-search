@@ -24,12 +24,11 @@ jobs:
 
       - name: Overwrite file
         uses: "DamianReeves/write-file-action@vmaster"
-        with:
-          path: .trivyignore
-          write-mode: append
-          contents: |
-              
-            ${{ github.ref_name }}
+        path: .trivyignore
+        write-mode: append
+        contents: |
+            
+          ${{ github.ref_name }}
 
 
       - name: Commit & Push
