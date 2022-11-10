@@ -13,13 +13,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Get & Set Branch Variable
-        id: get_branch_name
-        run: gh issue list
+      - name: List Issue
+        id: get_issue_list
+        run: gh issue list --json ISSUENAME
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
             BRANCH_NAME: ${{ github.ref_name }}
+
 
       - name: Overwrite file
         uses: DamianReeves/write-file-action@master
