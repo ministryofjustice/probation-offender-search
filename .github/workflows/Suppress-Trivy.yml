@@ -24,7 +24,7 @@ jobs:
 
       - name: List Issue
         id: get_issue_list
-        run: gh issue list --json title
+        run: gh issue list --json title >> $ISSUE_TITLE
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
