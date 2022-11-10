@@ -16,7 +16,8 @@ jobs:
       - name: Get & Set Branch Variable
         id: get_branch_name
         run: |
-          $BRANCH_NAME by $AUTHOR
+          echo $AUTHOR made this branch $BRANCH_NAME
+          gh api -H "Accept: application/vnd.github+json" /repos/ministryofjustice/probation-offender-search/Issues
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
