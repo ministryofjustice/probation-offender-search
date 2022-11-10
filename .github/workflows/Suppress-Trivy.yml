@@ -23,12 +23,13 @@ jobs:
             BRANCH_NAME: ${{ github.ref_name }}
 
       - name: Overwrite file
-        uses: "DamianReeves/write-file-action@vmaster"
-        path: .trivyignore
-        write-mode: append
-        contents: |
-            
-          ${{ github.ref_name }}
+        uses: DamianReeves/write-file-action@vmaster
+        with:
+          path: .trivyignore
+          write-mode: append
+          contents: |
+              
+            ${{ github.ref_name }}
 
 
       - name: Commit & Push
