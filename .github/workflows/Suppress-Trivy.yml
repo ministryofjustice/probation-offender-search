@@ -29,7 +29,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
             BRANCH_NAME: ${{ github.ref_name }}
-            ISSUE_NAME: ${{ github.event.issue }}
+            ISSUE_NAME: ${{ github.event.issue.title }}
 
 
       - name: Overwrite file
