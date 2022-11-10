@@ -17,7 +17,7 @@ jobs:
         id: get_branch_name
         run: |
           echo $AUTHOR made this branch $BRANCH_NAME
-          gh api -H "Accept: application/vnd.github+json" /repos/ministryofjustice/probation-offender-search/Issues
+          echo gh api -H "Accept: application/vnd.github+json" /repos/ministryofjustice/probation-offender-search/Issues
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
