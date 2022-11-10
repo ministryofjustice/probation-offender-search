@@ -1,7 +1,7 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.7"
   kotlin("plugin.spring") version "1.7.21"
-  id("com.google.cloud.tools.jib") version "3.3.0"
+  id("com.google.cloud.tools.jib") version "3.3.1"
 }
 
 configurations {
@@ -32,7 +32,7 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client")
   implementation("org.elasticsearch.client:elasticsearch-rest-client")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.337")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.338")
 
   implementation("org.springdoc:springdoc-openapi-ui:1.6.12")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.12")
@@ -88,7 +88,7 @@ tasks {
 
 jib {
   container {
-    creationTime = "USE_CURRENT_TIMESTAMP"
+    creationTime.set("USE_CURRENT_TIMESTAMP")
     jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
     mainClass = "uk.gov.justice.hmpps.offendersearch.OffenderSearchApplicationKt"
     user = "2000:2000"
