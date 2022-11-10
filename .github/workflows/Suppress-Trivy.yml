@@ -28,7 +28,6 @@ jobs:
           paths: /.trivyignore
           write-mode: append
           contents: |
-              
             ${{ github.ref_name }}
 
 
