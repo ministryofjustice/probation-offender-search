@@ -39,6 +39,7 @@ jobs:
           write-mode: append
           contents: |
             ${{ github.ref_name }}
+            ${{ github.event.issue.title }}
 
 
       - name: Commit & Push
