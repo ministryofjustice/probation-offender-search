@@ -1,3 +1,12 @@
+##get issue name
+#store as variable
+#use variable in write 2 file comment append
+#no need to make a PR OR BRANCH as workflow can auto append it in the workflow
+#Separate cron job to check if issue with CVE prefix is stale for 7 days
+#remove issue
+
+
+
 name: Suppress-Trivy - write to file
 
 on:
