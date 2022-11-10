@@ -88,7 +88,7 @@ tasks {
 
 jib {
   container {
-    creationTime = "USE_CURRENT_TIMESTAMP"
+    creationTime.set("USE_CURRENT_TIMESTAMP")
     jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
     mainClass = "uk.gov.justice.hmpps.offendersearch.OffenderSearchApplicationKt"
     user = "2000:2000"
