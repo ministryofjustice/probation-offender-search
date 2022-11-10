@@ -24,7 +24,7 @@ jobs:
 
       - name: List Issue
         id: get_issue_list
-        run: echo $AUTHOR ${{ github.actor }}
+        run: echo $AUTHOR ${{ github.event.repository.name }}
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
@@ -37,7 +37,6 @@ jobs:
           write-mode: append
           contents: |
             ${{ github.ref_name }}
-            ${{ github.event.issue.title }}
 
 
       - name: Commit & Push
