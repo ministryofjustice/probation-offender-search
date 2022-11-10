@@ -24,11 +24,10 @@ jobs:
 
       - name: List Issue
         id: get_issue_list
-        run: echo $AUTHOR $ISSUE_NAME
+        run: echo $AUTHOR ${{ github.event.issue.number }}
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
-            ISSUE_NAME: ${{ github.event.issue.number }}
 
 
       - name: Overwrite file
