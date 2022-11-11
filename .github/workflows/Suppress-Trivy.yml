@@ -37,13 +37,9 @@ jobs:
           echo cve_id=${{ inputs.cve_id }} >> $GITHUB_ENV
           echo reason=${{ inputs.reason }} >> $GITHUB_ENV
 
-      - name: Set future date
-        uses: lee-dohm/calculate-dates-and-times@v1.0.2
-        run:
-          add 2 weeks
-
       - name: Update trivyignore file and create pull request
         run: |
+          echo date
           git switch -c suppress/${{ env.cve_id }}
           git pull origin suppress/${{ env.cve_id }}
           git push origin suppress/${{ env.cve_id }}
