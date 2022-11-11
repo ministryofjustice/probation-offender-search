@@ -13,6 +13,8 @@ on:
   issues:
     types:
       - edited
+  branches:
+    - PI-516-GHA_suppress_trivy
   workflow_dispatch:
 
 jobs:
