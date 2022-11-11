@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    if: github.event_name=='workflow_dispatch' || startsWith(github.event.comment.body, '# Suppress')
+    if: github.event_name=='workflow_dispatch' || (startsWith(github.event.comment.body, 'Suppress') && startsWith(github.event.issue.title, 'CVE-'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -29,7 +29,7 @@ jobs:
 
 
       - name: Overwrite file
-        run: echo -e "\n${{ env.cve_id }}" >> .trivyignore
+        run: echo -e "\n#${{ github.event.comment.body }}\n${{ env.cve_id }}" >> .trivyignore
 
 
       - name: Create pull request
@@ -42,6 +42,7 @@ jobs:
           body: Automated changes by GitHub Actions
           base: main
           branch: suppress/${{ env.cve_id }}
+          author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
           token: ${{ github.token }}
 
       - name: Output pull request
