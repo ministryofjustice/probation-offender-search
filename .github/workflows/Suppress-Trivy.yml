@@ -10,13 +10,14 @@
 name: Suppress-Trivy - write to file
 
 on:
-  issue_comment:
-    created:
-
+  issue:
+    types:
+      - opened
   workflow_dispatch:
 
 jobs:
-  build:
+#  run_if:
+#    if: startsWith(github.event.issue.title, 'CVE-')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -24,7 +25,7 @@ jobs:
 
       - name: List Issue
         id: get_issue_list
-        run: echo $AUTHOR ${{ github.issue }} ${{ github.event.issue.list }}
+        run: echo $AUTHOR ${{ github.issue }} ${{ github.event.issue.title }}
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             AUTHOR: ${{ github.actor }}
