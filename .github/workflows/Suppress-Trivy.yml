@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          ref: main
 
       - name: Set CVE from Issue Title automatically
         if: github.event_name=='issue_comment'
@@ -31,7 +33,7 @@ jobs:
       - name: Overwrite file
         run: echo -e "\n#${{ github.event.comment.body }}\n${{ env.cve_id }}" >> .trivyignore
 
-      - name: Upload file
+      - name: Upload file and create pull request
         run: |
           git switch -c suppress/${{ env.cve_id }}
           git push origin suppress/${{ env.cve_id }}
@@ -40,24 +42,6 @@ jobs:
             --field content=@<( base64 -i .trivyignore ) \
             --field branch='suppress/${{ env.cve_id }}' \
             --field sha="$( git rev-parse 'suppress/${{ env.cve_id }}:.trivyignore' )"
+          gh pr create --fill
         env:
           GITHUB_TOKEN: ${{ github.token }}
-
-#      - name: Create pull request
-#        id: pr
-#        uses: peter-evans/create-pull-request@v4
-#        with:
-#          add-paths: .trivyignore
-#          commit-message: Suppress ${{ env.cve_id }}
-#          title: Suppress ${{ env.cve_id }}
-#          body: Automated changes by GitHub Actions
-#          base: main
-#          branch: suppress/${{ env.cve_id }}
-#          author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
-#          committer: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
-#          token: ${{ github.token }}
-#
-#      - name: Output pull request
-#        run: |
-#          echo Merge pull request : ${{ steps.pr.outputs.pull-request-url }}
-#          echo '*Manual step required* - [Merge pull request](${{ steps.pr.outputs.pull-request-url }})' >> $GITHUB_STEP_SUMMARY
