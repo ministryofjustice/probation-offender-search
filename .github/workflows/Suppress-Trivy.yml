@@ -43,7 +43,7 @@ jobs:
           base: main
           branch: suppress/${{ env.cve_id }}
           author: '${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>'
-          committer: '${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>'
+          committer: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
           token: ${{ github.token }}
 
       - name: Output pull request
