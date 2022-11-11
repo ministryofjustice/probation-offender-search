@@ -24,3 +24,7 @@ CVE-2022-40155 exp:2022-11-07
 CVE-2022-40156 exp:2022-11-07
 #
 CVE-123-456
+
+#Suppressed due to no impact
+#By marcus-bcl
+CVE-123-456
