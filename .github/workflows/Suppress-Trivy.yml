@@ -1,0 +1,41 @@
+name: Suppress-Trivy - write to file
+
+on:
+  issue_comment:
+    types:
+      - created
+  workflow_dispatch:
+    inputs:
+      cve_id:
+        description: CVE ID
+        type: string
+        required: true
+
+jobs:
+  build:
+    if: github.event_name=='workflow_dispatch' || startsWith(github.event.comment.body, '# Suppress')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set CVE from Issue Title automatically
+        if: github.event_name=='issue_comment'
+        run: echo cve_id=${{ github.event.issue.title }} >> $GITHUB_ENV
+
+      - name: Set CVE from manual input
+        if: github.event_name=='workflow_dispatch'
+        run: echo cve_id=${{ inputs.cve_id }} >> $GITHUB_ENV
+
+
+      - name: Overwrite file
+        run: echo -e "\n${{ env.cve_id }}" >> .trivyignore
+
+
+      - name: Commit & Push
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: suppress/${{ env.cve_id }}
+          force: true
+          message: 'Appended by ${{ github.actor }} GitHub Actions - ${date}'
