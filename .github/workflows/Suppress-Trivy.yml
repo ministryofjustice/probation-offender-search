@@ -10,7 +10,7 @@
 name: Suppress-Trivy - write to file
 
 on:
-  issue:
+  issues:
     types:
       - edited
   workflow_dispatch:
