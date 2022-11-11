@@ -10,6 +10,10 @@ on:
         description: CVE ID
         type: string
         required: true
+      reason:
+        description: Reason
+        type: string
+        required: true
 
 jobs:
   build:
@@ -23,15 +27,18 @@ jobs:
 
       - name: Set CVE from Issue Title automatically
         if: github.event_name=='issue_comment'
-        run: echo cve_id=${{ github.event.issue.title }} >> $GITHUB_ENV
+        run: |
+          echo cve_id=${{ github.event.issue.title }} >> $GITHUB_ENV
+          echo reason=${{ github.event.comment.body }} >> $GITHUB_ENV
 
       - name: Set CVE from manual input
         if: github.event_name=='workflow_dispatch'
-        run: echo cve_id=${{ inputs.cve_id }} >> $GITHUB_ENV
-
+        run:  |
+          echo cve_id=${{ inputs.cve_id }} >> $GITHUB_ENV
+          echo reason=${{ inputs.reason }} >> $GITHUB_ENV
 
       - name: Overwrite file
-        run: echo -e "\n#${{ github.event.comment.body }}\n${{ env.cve_id }}" >> .trivyignore
+        run: echo -e "\n#${{ env.reason }}\n#By ${{ github.actor }}\n${{ env.cve_id }}" >> .trivyignore
 
       - name: Upload file and create pull request
         run: |
@@ -42,6 +49,6 @@ jobs:
             --field content=@<( base64 -i .trivyignore ) \
             --field branch='suppress/${{ env.cve_id }}' \
             --field sha="$( git rev-parse 'suppress/${{ env.cve_id }}:.trivyignore' )"
-          gh pr create --fill
+          gh pr create --title "Suppress ${{ env.cve_id }}" --body "Suppressed by ${{ github.actor }} with reason: ${{ env.reason }}"
         env:
           GITHUB_TOKEN: ${{ github.token }}
