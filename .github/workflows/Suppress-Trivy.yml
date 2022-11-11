@@ -33,6 +33,7 @@ jobs:
 
       - name: Upload file
         run: |
+          git switch -c suppress/${{ env.cve_id }} 
           gh api --method PUT /repos/ministryofjustice/probation-offender-search/contents/.trivyignore \
             --field message="Suppress ${{ env.cve_id }}" \
             --field content=@<( base64 -i .trivyignore ) \
