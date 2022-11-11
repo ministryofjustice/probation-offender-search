@@ -16,6 +16,7 @@ on:
   workflow_dispatch:
 
 jobs:
+  build:
 #  run_if:
 #    if: startsWith(github.event.issue.title, 'CVE-')
     runs-on: ubuntu-latest
