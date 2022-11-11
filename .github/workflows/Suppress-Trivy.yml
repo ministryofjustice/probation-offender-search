@@ -10,9 +10,8 @@
 name: Suppress-Trivy - write to file
 
 on:
-  push:
-    branches:
-      - PI-516-GHA_suppress_trivy
+  issue_commented:
+    created:
   workflow_dispatch:
 
 jobs:
