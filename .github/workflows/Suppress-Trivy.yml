@@ -42,7 +42,7 @@ jobs:
           body: Automated changes by GitHub Actions
           base: main
           branch: suppress/${{ env.cve_id }}
-          author: '${{ github.actor }}'
+          author: '${{ github.actor }} <${{ github.actor}}@users.noreply.github.com>'
           token: ${{ github.token }}
 
       - name: Output pull request
