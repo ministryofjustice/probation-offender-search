@@ -10,8 +10,9 @@
 name: Suppress-Trivy - write to file
 
 on:
-  issue_commented:
+  issue_comment:
     created:
+
   workflow_dispatch:
 
 jobs:
