@@ -31,22 +31,30 @@ jobs:
       - name: Overwrite file
         run: echo -e "\n#${{ github.event.comment.body }}\n${{ env.cve_id }}" >> .trivyignore
 
+      - name: Upload file
+        run: gh api --method PUT /repos/ministryofjustice/probation-offender-search/contents/.trivyignore \
+          --field message="Suppress ${{ env.cve_id }}" \
+          --field content=@<( base64 -i .trivyignore ) \
+          --field branch='suppress/CVE-2022-111111' \
+          --field sha="$(git ls-files -s .trivyignore | awk '{print $2}')"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Create pull request
-        id: pr
-        uses: peter-evans/create-pull-request@v4
-        with:
-          add-paths: .trivyignore
-          commit-message: Suppress ${{ env.cve_id }}
-          title: Suppress ${{ env.cve_id }}
-          body: Automated changes by GitHub Actions
-          base: main
-          branch: suppress/${{ env.cve_id }}
-          author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
-          committer: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
-          token: ${{ github.token }}
-
-      - name: Output pull request
-        run: |
-          echo Merge pull request : ${{ steps.pr.outputs.pull-request-url }}
-          echo '*Manual step required* - [Merge pull request](${{ steps.pr.outputs.pull-request-url }})' >> $GITHUB_STEP_SUMMARY
+#      - name: Create pull request
+#        id: pr
+#        uses: peter-evans/create-pull-request@v4
+#        with:
+#          add-paths: .trivyignore
+#          commit-message: Suppress ${{ env.cve_id }}
+#          title: Suppress ${{ env.cve_id }}
+#          body: Automated changes by GitHub Actions
+#          base: main
+#          branch: suppress/${{ env.cve_id }}
+#          author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
+#          committer: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
+#          token: ${{ github.token }}
+#
+#      - name: Output pull request
+#        run: |
+#          echo Merge pull request : ${{ steps.pr.outputs.pull-request-url }}
+#          echo '*Manual step required* - [Merge pull request](${{ steps.pr.outputs.pull-request-url }})' >> $GITHUB_STEP_SUMMARY
