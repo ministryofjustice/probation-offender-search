@@ -37,7 +37,7 @@ jobs:
             --field message="Suppress ${{ env.cve_id }}" \
             --field content=@<( base64 -i .trivyignore ) \
             --field branch='suppress/CVE-2022-111111' \
-            --field sha="$(git ls-files -s .trivyignore | awk '{print $2}')"
+            --field sha="$( git rev-parse 'suppress/CVE-2022-111111:.trivyignore' )"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
