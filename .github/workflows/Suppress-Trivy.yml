@@ -32,11 +32,12 @@ jobs:
         run: echo -e "\n#${{ github.event.comment.body }}\n${{ env.cve_id }}" >> .trivyignore
 
       - name: Upload file
-        run: gh api --method PUT /repos/ministryofjustice/probation-offender-search/contents/.trivyignore \
-          --field message="Suppress ${{ env.cve_id }}" \
-          --field content=@<( base64 -i .trivyignore ) \
-          --field branch='suppress/CVE-2022-111111' \
-          --field sha="$(git ls-files -s .trivyignore | awk '{print $2}')"
+        run: |
+          gh api --method PUT /repos/ministryofjustice/probation-offender-search/contents/.trivyignore \
+            --field message="Suppress ${{ env.cve_id }}" \
+            --field content=@<( base64 -i .trivyignore ) \
+            --field branch='suppress/CVE-2022-111111' \
+            --field sha="$(git ls-files -s .trivyignore | awk '{print $2}')"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
