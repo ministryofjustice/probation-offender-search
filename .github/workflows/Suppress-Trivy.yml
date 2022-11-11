@@ -36,8 +36,8 @@ jobs:
           gh api --method PUT /repos/ministryofjustice/probation-offender-search/contents/.trivyignore \
             --field message="Suppress ${{ env.cve_id }}" \
             --field content=@<( base64 -i .trivyignore ) \
-            --field branch='suppress/CVE-2022-111111' \
-            --field sha="$( git rev-parse 'suppress/CVE-2022-111111:.trivyignore' )"
+            --field branch='suppress/${{ env.cve_id }}' \
+            --field sha="$( git rev-parse 'suppress/${{ env.cve_id }}:.trivyignore' )"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
