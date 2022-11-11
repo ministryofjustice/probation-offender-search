@@ -32,10 +32,20 @@ jobs:
         run: echo -e "\n${{ env.cve_id }}" >> .trivyignore
 
 
-      - name: Commit & Push
-        uses: Andro999b/push@v1.3
+      - name: Create pull request
+        id: pr
+        uses: peter-evans/create-pull-request@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          add-paths: .trivyignore
+          commit-message: Suppress ${{ env.cve_id }}
+          title: Suppress ${{ env.cve_id }}
+          body: Automated changes by GitHub Actions
+          base: main
           branch: suppress/${{ env.cve_id }}
-          force: true
-          message: 'Appended by ${{ github.actor }} GitHub Actions - ${date}'
+          author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
+          token: ${{ github.token }}
+
+      - name: Output pull request
+        run: |
+          echo Merge pull request : ${{ steps.pr.outputs.pull-request-url }}
+          echo '*Manual step required* - [Merge pull request](${{ steps.pr.outputs.pull-request-url }})' >> $GITHUB_STEP_SUMMARY
