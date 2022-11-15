@@ -28,6 +28,7 @@ jobs:
       - name: Set CVE from Issue Title automatically
         if: github.event_name=='issue_comment'
         run: |
+          echo date +%Y-%m-%d
           echo cve_id=${{ github.event.issue.title }} >> $GITHUB_ENV
           echo reason=${{ github.event.comment.body }} >> $GITHUB_ENV
 
