@@ -39,6 +39,7 @@ jobs:
 
       - name: Update trivyignore file and create pull request
         run: |
+          echo date +%Y-%m-%d
           git switch -c suppress/${{ env.cve_id }}
           git push origin suppress/${{ env.cve_id }}
           git pull origin suppress/${{ env.cve_id }}
