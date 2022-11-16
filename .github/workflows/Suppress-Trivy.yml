@@ -39,13 +39,13 @@ jobs:
 
       - name: Update trivyignore file and create pull request
         run: |
-          echo "cdate=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
+          echo "cdate=$(date +"%Y-%m-%d" -d "14 days")" >> $GITHUB_ENV
           echo ${{ env.cdate }}
           git switch -c suppress/${{ env.cve_id }}
           git push origin suppress/${{ env.cve_id }}
           git pull origin suppress/${{ env.cve_id }}
           git push origin suppress/${{ env.cve_id }}
-          echo -e "\n# ${{ env.reason }}\n# By ${{ github.actor }}\n${{ env.cve_id }}" >> .trivyignore
+          echo -e "\n# ${{ env.reason }}\n# By ${{ github.actor }}\n${{ env.cve_id }} exp:${{ env.cdate }}" >> .trivyignore
           gh api --method PUT /repos/ministryofjustice/probation-offender-search/contents/.trivyignore \
             --field message="Suppress ${{ env.cve_id }}" \
             --field content=@<( base64 -i .trivyignore ) \
