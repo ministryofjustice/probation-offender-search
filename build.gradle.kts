@@ -35,7 +35,7 @@ dependencies {
   implementation("com.amazonaws:aws-java-sdk-core:1.12.348")
 
   implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.12")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.13")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
 
   testImplementation("org.springframework.security:spring-security-test")
