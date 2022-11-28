@@ -9,6 +9,7 @@ generic-service:
   env:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
     COMMUNITY_ENDPOINT_URL: "https://community-api-secure.probation.service.justice.gov.uk"
+    SENTRY_ENVIRONMENT: prod
 
 cron:
   SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"
