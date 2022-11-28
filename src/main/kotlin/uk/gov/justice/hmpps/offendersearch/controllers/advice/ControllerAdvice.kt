@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.offendersearch.controllers.advice
 
 import com.fasterxml.jackson.databind.JsonMappingException
+import io.sentry.Sentry
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -28,6 +29,7 @@ class ControllerAdvice {
   @ExceptionHandler(RestClientResponseException::class)
   fun handleException(e: RestClientResponseException): ResponseEntity<ByteArray> {
     log.error("Unexpected exception", e)
+    Sentry.captureException(e)
     return ResponseEntity
       .status(e.rawStatusCode)
       .body(e.responseBodyAsByteArray)
@@ -36,6 +38,7 @@ class ControllerAdvice {
   @ExceptionHandler(RestClientException::class)
   fun handleException(e: RestClientException): ResponseEntity<ErrorResponse> {
     log.error("Unexpected exception", e)
+    Sentry.captureException(e)
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR.value(), developerMessage = e.message))
