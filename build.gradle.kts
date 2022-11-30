@@ -38,7 +38,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.13")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
 
-  implementation("io.sentry:sentry-spring-boot-starter:6.9.0")
+  implementation("io.sentry:sentry-spring-boot-starter:6.9.1")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
