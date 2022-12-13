@@ -22,7 +22,7 @@ generic-service:
     tlsSecretName: probation-offender-search-cert
 
   env:
-    JAVA_OPTS: "-Xmx512m"
+    JAVA_TOOL_OPTS: "-XX:MaxRAMPercentage=75.0"
     SPRING_PROFILES_ACTIVE: "elasticsearch"
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
