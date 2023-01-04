@@ -1,6 +1,6 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.7.4"
-  kotlin("plugin.spring") version "1.7.22"
+  kotlin("plugin.spring") version "1.8.0"
   id("com.google.cloud.tools.jib") version "3.3.1"
 }
 
@@ -32,13 +32,13 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client")
   implementation("org.elasticsearch.client:elasticsearch-rest-client")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.370")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.376")
 
   implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.14")
 
-  implementation("io.sentry:sentry-spring-boot-starter:6.10.0")
+  implementation("io.sentry:sentry-spring-boot-starter:6.11.0")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
