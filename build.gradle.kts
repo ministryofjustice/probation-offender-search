@@ -32,7 +32,7 @@ dependencies {
   implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client")
   implementation("org.elasticsearch.client:elasticsearch-rest-client")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.387")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.394")
 
   implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
