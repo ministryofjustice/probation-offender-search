@@ -29,8 +29,7 @@ fun buildSearchQuery(addressSearchRequest: AddressSearchRequest): QueryBuilder =
     QueryBuilders.functionScoreQuery(matchQueryBuilder(addressSearchRequest))
       .setMinScore(addressSearchRequest.minBoost()),
     ScoreMode.Max,
-  )
-    .innerHit(InnerHitBuilder("addresses").setFetchSourceContext(FetchSourceContext(true)))
+  ).innerHit(InnerHitBuilder("addresses").setFetchSourceContext(FetchSourceContext(true)))
 
 private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
   QueryBuilders.boolQuery()
@@ -56,7 +55,6 @@ private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
     .shouldMatchNonNull("contactDetails.addresses.town", addressSearchRequest.town, 1f)
     .shouldMatchNonNull("contactDetails.addresses.county", addressSearchRequest.county, 1f)
     .shouldMatchNonNull("contactDetails.addresses.telephoneNumber", addressSearchRequest.telephoneNumber, 1f)
-    .mustNot(QueryBuilders.existsQuery("contactDetails.addresses.to"))
 
 fun BoolQueryBuilder.shouldMatchNonNull(name: String, value: Any?, boost: Float): BoolQueryBuilder {
   if (value != null) {
