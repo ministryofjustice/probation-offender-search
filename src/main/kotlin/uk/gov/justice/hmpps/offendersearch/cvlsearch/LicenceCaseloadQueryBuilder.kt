@@ -42,6 +42,9 @@ class LicenceCaseloadQueryBuilder(private val request: LicenceCaseloadRequest) {
         QueryBuilders.wildcardQuery("otherIds.crn", "*${request.query.lowercase()}*")
       )
       .should(
+        QueryBuilders.wildcardQuery("otherIds.previousCrn", "*${request.query.lowercase()}*")
+      )
+      .should(
         QueryBuilders.wildcardQuery("firstName", "*${request.query.lowercase()}*")
       )
       .should(

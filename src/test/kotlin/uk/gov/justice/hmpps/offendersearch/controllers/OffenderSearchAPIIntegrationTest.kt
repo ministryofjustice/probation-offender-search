@@ -352,4 +352,22 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
       .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(0)
   }
+
+  @Test
+  fun previousCrnSearch() {
+    val results = given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"crn\":\"X10001\"}")
+      .`when`()["/search"]
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("firstName").contains("John")
+    assertThat(results).extracting("surname").contains("Smith")
+  }
 }

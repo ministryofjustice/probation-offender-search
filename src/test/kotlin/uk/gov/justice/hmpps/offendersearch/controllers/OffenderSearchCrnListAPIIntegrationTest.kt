@@ -12,7 +12,7 @@ class OffenderSearchCrnListAPIIntegrationTest : LocalstackIntegrationBase() {
   @BeforeEach
   fun setUp() {
     loadOffenders(
-      OffenderReplacement(crn = "X00001"),
+      OffenderReplacement(crn = "X00001", previousCrn = "X10001"),
       OffenderReplacement(crn = "X00003"),
       OffenderReplacement(crn = "X00088", deleted = true),
     )
@@ -45,6 +45,23 @@ class OffenderSearchCrnListAPIIntegrationTest : LocalstackIntegrationBase() {
       .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(2)
     assertThat(results).extracting("otherIds.crn").containsExactly("X00001", "X00003")
+  }
+
+  @Test
+  fun previousCrnSearch() {
+    val results = given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("[\"X10001\"]")
+      .post("/crns")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(1)
+    assertThat(results).extracting("otherIds.crn").containsExactly("X00001")
   }
 
   @Test

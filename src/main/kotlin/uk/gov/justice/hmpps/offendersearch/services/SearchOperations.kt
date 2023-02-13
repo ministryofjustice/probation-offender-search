@@ -87,6 +87,12 @@ fun BoolQueryBuilder.mustMatchOneOf(query: String, values: List<Any>): BoolQuery
   return this.must(nestedQuery)
 }
 
+fun BoolQueryBuilder.atLeastOneMatches(queries: List<String>, value: Any): BoolQueryBuilder {
+  val nestedQuery = QueryBuilders.boolQuery()
+  queries.forEach { nestedQuery.should(QueryBuilders.boolQuery().must(it, value)) }
+  return this.must(nestedQuery)
+}
+
 fun BoolQueryBuilder.mustIfPresent(maybeSimpleTermQuery: QueryBuilder?): BoolQueryBuilder {
   maybeSimpleTermQuery
     ?.let {
