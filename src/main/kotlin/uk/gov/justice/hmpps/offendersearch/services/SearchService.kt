@@ -23,7 +23,6 @@ import uk.gov.justice.hmpps.offendersearch.dto.SearchDto
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPagedResults
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.offendersearch.dto.SearchPhraseResults
-import java.util.ArrayList
 import java.util.Arrays
 
 @Service
@@ -64,10 +63,12 @@ class SearchService @Autowired constructor(
       }
       matchingAllFieldsQuery
         .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
-        .mustWhenPresent("otherIds.crn", crn)
         .mustWhenPresent("firstName", firstName)
         .mustWhenPresent("surname", surname)
         .mustWhenPresent("dateOfBirth", dateOfBirth)
+      if (!crn.isNullOrBlank()) {
+        matchingAllFieldsQuery.atLeastOneMatches(listOf("otherIds.crn", "otherIds.previousCrn"), crn)
+      }
     }
 
     return matchingAllFieldsQuery
@@ -153,7 +154,7 @@ class SearchService @Autowired constructor(
   }
 
   fun findByListOfCRNs(crnList: List<String>): List<OffenderDetail> {
-    return findBy(crnList, "otherIds.crn", crnList.size)
+    return findByCrn(crnList, crnList.size)
   }
 
   fun findByListOfNoms(nomsList: List<String>): List<OffenderDetail> {
@@ -182,14 +183,31 @@ class SearchService @Autowired constructor(
 
     searchSourceBuilder.size(searchSourceBuilderSize)
 
-    val outerMustQuery = QueryBuilders
-      .boolQuery()
-
-    val matchingAllFieldsQuery = QueryBuilders
-      .boolQuery()
+    val outerMustQuery = QueryBuilders.boolQuery()
+    val matchingAllFieldsQuery = QueryBuilders.boolQuery()
     inputList.forEach {
       matchingAllFieldsQuery
         .should(QueryBuilders.matchQuery(field, it))
+    }
+    outerMustQuery.must(matchingAllFieldsQuery)
+    searchSourceBuilder.query(outerMustQuery.withDefaults())
+    searchRequest.source(searchSourceBuilder)
+    val response = hlClient.search(searchRequest)
+    return getSearchResult(response)
+  }
+
+  fun findByCrn(inputList: List<String>, searchSourceBuilderSize: Int): List<OffenderDetail> {
+    val searchRequest = personSearchRequest()
+    val searchSourceBuilder = SearchSourceBuilder()
+
+    searchSourceBuilder.size(searchSourceBuilderSize)
+
+    val outerMustQuery = QueryBuilders.boolQuery()
+    val matchingAllFieldsQuery = QueryBuilders.boolQuery()
+    inputList.forEach {
+      matchingAllFieldsQuery
+        .should(QueryBuilders.matchQuery("otherIds.crn", it))
+        .should(QueryBuilders.matchQuery("otherIds.previousCrn", it))
     }
     outerMustQuery.must(matchingAllFieldsQuery)
     searchSourceBuilder.query(outerMustQuery.withDefaults())

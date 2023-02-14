@@ -62,7 +62,8 @@ abstract class LocalstackIntegrationBase {
           nomsNumber = it.nomsNumber,
           croNumber = it.croNumber,
           pncNumber = it.pncNumber,
-          niNumber = it.niNumber
+          niNumber = it.niNumber,
+          previousCrn = it.previousCrn
         ),
         offenderAliases = it.aliases.map { alias ->
           OffenderAlias(

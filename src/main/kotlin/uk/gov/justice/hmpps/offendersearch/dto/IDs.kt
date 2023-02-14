@@ -7,5 +7,6 @@ data class IDs(
   val niNumber: String? = null,
   val nomsNumber: String? = null,
   val immigrationNumber: String? = null,
-  val mostRecentPrisonerNumber: String? = null
+  val mostRecentPrisonerNumber: String? = null,
+  val previousCrn: String? = null
 )

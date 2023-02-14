@@ -5,7 +5,8 @@
     "crn": "X00001",
     "pncNumber": "2018/0123456X",
     "croNumber": "SF80/655108T",
-    "nomsNumber": "G8020GG"
+    "nomsNumber": "G8020GG",
+    "previousCrn": "X10001"
   },
   "title": "Mr",
   "firstName": "John",

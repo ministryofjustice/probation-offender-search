@@ -73,7 +73,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     @BeforeAll
     internal fun setUp() {
       loadOffenders(
-        OffenderReplacement(crn = "X00001"),
+        OffenderReplacement(crn = "X00001", previousCrn = "X10001"),
         OffenderReplacement(
           surname = "Gramsci",
           firstName = "Anne",
@@ -95,6 +95,12 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
           mobileNumber = "077888888888"
         )
       )
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchAllTerms")
+    internal fun `can match by previous crn`(matchAllTerms: Boolean) {
+      hasSingleMatch(phrase = "X10001", expectedCrn = "X00001", matchAllTerms = matchAllTerms)
     }
 
     @ParameterizedTest
@@ -448,7 +454,11 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can match by all terms`(matchAllTerms: Boolean) {
-      hasSingleMatch(phrase = "gramsci Anne Jane Joanna 1988-01-06 Female X99999 G5555TT 2018/0123456X SF80/655108T NE112233X Hyde Southampton Hampshire H1 1WA 01917654321", expectedCrn = "X99999", matchAllTerms = matchAllTerms)
+      hasSingleMatch(
+        phrase = "gramsci Anne Jane Joanna 1988-01-06 Female X99999 G5555TT 2018/0123456X SF80/655108T NE112233X Hyde Southampton Hampshire H1 1WA 01917654321",
+        expectedCrn = "X99999",
+        matchAllTerms = matchAllTerms
+      )
     }
   }
 
@@ -1032,27 +1042,57 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
         OffenderReplacement(
           crn = "X00001",
           surname = "Gramsci",
-          offenderManagers = listOf(OffenderManagerReplacement(code = "N01", description = "NPS North West", active = true))
+          offenderManagers = listOf(
+            OffenderManagerReplacement(
+              code = "N01",
+              description = "NPS North West",
+              active = true
+            )
+          )
         ),
         OffenderReplacement(
           crn = "X00002",
           surname = "Gramsci",
-          offenderManagers = listOf(OffenderManagerReplacement(code = "N01", description = "NPS North West", active = true))
+          offenderManagers = listOf(
+            OffenderManagerReplacement(
+              code = "N01",
+              description = "NPS North West",
+              active = true
+            )
+          )
         ),
         OffenderReplacement(
           crn = "X00003",
           surname = "Gramsci",
-          offenderManagers = listOf(OffenderManagerReplacement(code = "N01", description = "NPS North West", active = true))
+          offenderManagers = listOf(
+            OffenderManagerReplacement(
+              code = "N01",
+              description = "NPS North West",
+              active = true
+            )
+          )
         ),
         OffenderReplacement(
           crn = "X00004",
           surname = "Gramsci",
-          offenderManagers = listOf(OffenderManagerReplacement(code = "N02", description = "NPS North East", active = true))
+          offenderManagers = listOf(
+            OffenderManagerReplacement(
+              code = "N02",
+              description = "NPS North East",
+              active = true
+            )
+          )
         ),
         OffenderReplacement(
           crn = "X00005",
           surname = "Smith",
-          offenderManagers = listOf(OffenderManagerReplacement(code = "N03", description = "NPS Midlands", active = true))
+          offenderManagers = listOf(
+            OffenderManagerReplacement(
+              code = "N03",
+              description = "NPS Midlands",
+              active = true
+            )
+          )
         ),
         OffenderReplacement(
           crn = "X00006",
@@ -1093,13 +1133,23 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `can filter by more than one probation area`(matchAllTerms: Boolean) {
-      hasMatches("Gramsci", matchAllTerms, listOf("X00001", "X00002", "X00003", "X00004"), filter = listOf("N01", "N02"))
+      hasMatches(
+        "Gramsci",
+        matchAllTerms,
+        listOf("X00001", "X00002", "X00003", "X00004"),
+        filter = listOf("N01", "N02")
+      )
     }
 
     @ParameterizedTest
     @MethodSource("matchAllTerms")
     internal fun `empty filter should return all matching results`(matchAllTerms: Boolean) {
-      hasMatches("Gramsci", matchAllTerms, listOf("X00001", "X00002", "X00003", "X00004", "X00006", "X00007"), filter = listOf())
+      hasMatches(
+        "Gramsci",
+        matchAllTerms,
+        listOf("X00001", "X00002", "X00003", "X00004", "X00006", "X00007"),
+        filter = listOf()
+      )
     }
 
     @ParameterizedTest
@@ -1164,13 +1214,31 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
         .body("content.find { it.otherIds.crn == \"X00001\" }.highlight.surname[0]", equalTo("Smith"))
         .body("content.find { it.otherIds.crn == \"X00002\" }.highlight.firstName.size()", equalTo(1))
         .body("content.find { it.otherIds.crn == \"X00002\" }.highlight.firstName[0]", equalTo("Smith"))
-        .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.firstName\".size()", equalTo(1))
-        .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.firstName\"[0]", equalTo("Smith"))
+        .body(
+          "content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.firstName\".size()",
+          equalTo(1)
+        )
+        .body(
+          "content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.firstName\"[0]",
+          equalTo("Smith")
+        )
         .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\".size()", equalTo(2))
-        .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\"[0]", equalTo("Smith"))
-        .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\"[1]", equalTo("SMITH"))
-        .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.\"contactDetails.addresses.streetName\".size()", equalTo(1))
-        .body("content.find { it.otherIds.crn == \"X00004\" }.highlight.\"contactDetails.addresses.streetName\"[0]", equalTo("28 Smith Street"))
+        .body(
+          "content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\"[0]",
+          equalTo("Smith")
+        )
+        .body(
+          "content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\"[1]",
+          equalTo("SMITH")
+        )
+        .body(
+          "content.find { it.otherIds.crn == \"X00004\" }.highlight.\"contactDetails.addresses.streetName\".size()",
+          equalTo(1)
+        )
+        .body(
+          "content.find { it.otherIds.crn == \"X00004\" }.highlight.\"contactDetails.addresses.streetName\"[0]",
+          equalTo("28 Smith Street")
+        )
     }
 
     @ParameterizedTest
@@ -1276,7 +1344,15 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     inner class WithClientHonoringBothList {
       @Nested
       inner class WithDeliusUserPresent {
-        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblacknps", username = "maryblacknps", authSource = "delius"), "read")
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(
+          ClientUser(
+            clientId = "new-tech",
+            subject = "maryblacknps",
+            username = "maryblacknps",
+            authSource = "delius"
+          ),
+          "read"
+        )
 
         @Test
         internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
@@ -1286,6 +1362,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be denied access to offenders that have inclusion lists that current user is not on`() {
           doSearch("X00002", token = token)
@@ -1294,6 +1371,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", nullValue())
             .body("content[0].accessDenied", equalTo(true))
         }
+
         @Test
         internal fun `will be allowed access to offenders that have inclusion lists that current user is on`() {
           doSearch("X00003", token = token)
@@ -1302,6 +1380,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be denied access to offenders that have exclusion lists that current user is on`() {
           doSearch("X00004", token = token)
@@ -1310,6 +1389,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", nullValue())
             .body("content[0].accessDenied", equalTo(true))
         }
+
         @Test
         internal fun `will be allowed access to offenders that have exclusion lists that current user is not on`() {
           doSearch("X00005", token = token)
@@ -1336,7 +1416,15 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
 
       @Nested
       inner class WithDeliusUserNotPresent {
-        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblackdps", username = "maryblackdps", authSource = "nomis"), "read")
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(
+          ClientUser(
+            clientId = "new-tech",
+            subject = "maryblackdps",
+            username = "maryblackdps",
+            authSource = "nomis"
+          ),
+          "read"
+        )
 
         @Test
         internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
@@ -1346,6 +1434,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be denied access to offenders that have inclusion lists that can not be checked`() {
           doSearch("X00002", token = token)
@@ -1359,6 +1448,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", nullValue())
             .body("content[0].accessDenied", equalTo(true))
         }
+
         @Test
         internal fun `will be denied access to offenders that have exclusion lists that can not be checked`() {
           doSearch("X00004", token = token)
@@ -1374,11 +1464,20 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
         }
       }
     }
+
     @Nested
     inner class WithClientHonoringInclusionListOnly {
       @Nested
       inner class WithDeliusUserPresent {
-        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblacknps", username = "maryblacknps", authSource = "delius"), "read", "ignore_delius_exclusions_always")
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(
+          ClientUser(
+            clientId = "new-tech",
+            subject = "maryblacknps",
+            username = "maryblacknps",
+            authSource = "delius"
+          ),
+          "read", "ignore_delius_exclusions_always"
+        )
 
         @Test
         internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
@@ -1388,6 +1487,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be denied access to offenders that have inclusion lists that current user is not on`() {
           doSearch("X00002", token = token)
@@ -1396,6 +1496,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", nullValue())
             .body("content[0].accessDenied", equalTo(true))
         }
+
         @Test
         internal fun `will be allowed access to offenders that have inclusion lists that current user is on`() {
           doSearch("X00003", token = token)
@@ -1404,6 +1505,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be allowed access to offenders that have exclusion lists even though current user is on list`() {
           doSearch("X00004", token = token)
@@ -1412,6 +1514,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be allowed access to offenders that have exclusion lists that current user is not on`() {
           doSearch("X00005", token = token)
@@ -1424,7 +1527,15 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
 
       @Nested
       inner class WithDeliusUserNotPresent {
-        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblackdps", username = "maryblackdps", authSource = "nomis"), "read", "ignore_delius_exclusions_always")
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(
+          ClientUser(
+            clientId = "new-tech",
+            subject = "maryblackdps",
+            username = "maryblackdps",
+            authSource = "nomis"
+          ),
+          "read", "ignore_delius_exclusions_always"
+        )
 
         @Test
         internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
@@ -1434,6 +1545,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be denied access to offenders that have inclusion lists that can not be checked`() {
           doSearch("X00002", token = token)
@@ -1463,11 +1575,20 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
         }
       }
     }
+
     @Nested
     inner class WithClientHonoringExclusionListOnly {
       @Nested
       inner class WithDeliusUserPresent {
-        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblacknps", username = "maryblacknps", authSource = "delius"), "read", "ignore_delius_inclusions_always")
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(
+          ClientUser(
+            clientId = "new-tech",
+            subject = "maryblacknps",
+            username = "maryblacknps",
+            authSource = "delius"
+          ),
+          "read", "ignore_delius_inclusions_always"
+        )
 
         @Test
         internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
@@ -1477,6 +1598,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be allowed access to offenders that have inclusion lists event though current user is not on list`() {
           doSearch("X00002", token = token)
@@ -1485,6 +1607,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be allowed access to offenders that have inclusion lists that current user is on`() {
           doSearch("X00003", token = token)
@@ -1493,6 +1616,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be denied access to offenders that have exclusion lists that current user is on`() {
           doSearch("X00004", token = token)
@@ -1501,6 +1625,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", nullValue())
             .body("content[0].accessDenied", equalTo(true))
         }
+
         @Test
         internal fun `will be allowed access to offenders that have exclusion lists that current user is not on`() {
           doSearch("X00005", token = token)
@@ -1513,7 +1638,15 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
 
       @Nested
       inner class WithDeliusUserNotPresent {
-        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(ClientUser(clientId = "new-tech", subject = "maryblackdps", username = "maryblackdps", authSource = "nomis"), "read", "ignore_delius_inclusions_always")
+        val token = jwtAuthenticationHelper.createCommunityJwtWithScopes(
+          ClientUser(
+            clientId = "new-tech",
+            subject = "maryblackdps",
+            username = "maryblackdps",
+            authSource = "nomis"
+          ),
+          "read", "ignore_delius_inclusions_always"
+        )
 
         @Test
         internal fun `can view all details for offenders neither with exclusion nor inclusion lists`() {
@@ -1523,6 +1656,7 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
             .body("content[0].surname", equalTo("Smith"))
             .body("content[0].accessDenied", nullValue())
         }
+
         @Test
         internal fun `will be allowed access to offenders that have inclusion lists even though they can not be checked`() {
           doSearch("X00002", token = token)
@@ -1554,13 +1688,22 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
     }
   }
 
-  private fun hasSingleMatch(phrase: String, @Suppress("SameParameterValue") expectedCrn: String, matchAllTerms: Boolean = false) {
+  private fun hasSingleMatch(
+    phrase: String,
+    @Suppress("SameParameterValue") expectedCrn: String,
+    matchAllTerms: Boolean = false
+  ) {
     doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
       .body("totalElements", equalTo(1))
       .body("content[0].otherIds.crn", equalTo(expectedCrn))
   }
 
-  private fun hasMatches(phrase: String, matchAllTerms: Boolean = false, expectedCrns: List<String>, filter: List<String> = listOf()) {
+  private fun hasMatches(
+    phrase: String,
+    matchAllTerms: Boolean = false,
+    expectedCrns: List<String>,
+    filter: List<String> = listOf()
+  ) {
     val response = doSearch(phrase = phrase, matchAllTerms = matchAllTerms, filter = filter)
 
     expectedCrns.forEach {
@@ -1577,8 +1720,16 @@ class OffenderSearchPhraseAPIIntegrationTest : LocalstackIntegrationBase() {
       .body("totalElements", equalTo(0))
   }
 
-  private fun doSearch(phrase: String, matchAllTerms: Boolean = false, size: Int? = null, page: Int? = null, filter: List<String> = listOf(), token: String = jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY")): ValidatableResponse {
-    val searchPhraseFilter = SearchPhraseFilter(phrase = phrase, matchAllTerms = matchAllTerms, probationAreasFilter = filter)
+  private fun doSearch(
+    phrase: String,
+    matchAllTerms: Boolean = false,
+    size: Int? = null,
+    page: Int? = null,
+    filter: List<String> = listOf(),
+    token: String = jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY")
+  ): ValidatableResponse {
+    val searchPhraseFilter =
+      SearchPhraseFilter(phrase = phrase, matchAllTerms = matchAllTerms, probationAreasFilter = filter)
     val request = RestAssured.given()
       .auth()
       .oauth2(token)
@@ -1619,6 +1770,7 @@ data class OffenderReplacement(
   val currentExclusion: Boolean = false,
   val phoneNumber: String? = null,
   val mobileNumber: String? = null,
+  val previousCrn: String? = null
 )
 
 data class AliasReplacement(
@@ -1639,9 +1791,4 @@ data class TeamReplacement(
   val code: String = "N09000",
   val localDeliveryUnit: KeyValue = KeyValue(code = "ABC123", description = "description"),
   val description: String = "OMU A"
-)
-
-data class KeyValueReplacement(
-  val code: String = "ABC123",
-  val description: String = "description"
 )
