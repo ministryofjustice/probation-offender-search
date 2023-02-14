@@ -2,6 +2,10 @@
 # Values here are the same across all environments
 generic-service:
   nameOverride: probation-offender-search
+  resources:
+    requests:
+      cpu: 1
+      memory: 512Mi
 
   image:
     repository: quay.io/hmpps/probation-offender-search
