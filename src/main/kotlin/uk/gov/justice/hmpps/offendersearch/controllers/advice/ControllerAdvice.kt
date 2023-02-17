@@ -2,6 +2,7 @@ package uk.gov.justice.hmpps.offendersearch.controllers.advice
 
 import com.fasterxml.jackson.databind.JsonMappingException
 import io.sentry.Sentry
+import jakarta.validation.ConstraintViolationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -17,7 +18,6 @@ import uk.gov.justice.hmpps.offendersearch.InvalidRequestException
 import uk.gov.justice.hmpps.offendersearch.NotFoundException
 import uk.gov.justice.hmpps.offendersearch.UnauthorisedException
 import uk.gov.justice.hmpps.offendersearch.controllers.OffenderSearchController
-import javax.validation.ConstraintViolationException
 
 @RestControllerAdvice(basePackageClasses = [OffenderSearchController::class])
 class ControllerAdvice {

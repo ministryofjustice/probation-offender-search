@@ -2,6 +2,7 @@ package uk.gov.justice.hmpps.offendersearch.cvlsearch
 
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -14,7 +15,7 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
   override fun handleMethodArgumentNotValid(
     ex: MethodArgumentNotValidException,
     headers: HttpHeaders,
-    status: HttpStatus,
+    status: HttpStatusCode,
     request: WebRequest
   ): ResponseEntity<Any> {
     val errors = ErrorsResponse(

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.hmpps.offendersearch.dto.MatchRequest
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderMatches
 import uk.gov.justice.hmpps.offendersearch.services.MatchService
-import javax.validation.Valid
 
 @Tag(name = "offender-match", description = "Provides offender matching features for Delius elastic search")
 @RestController

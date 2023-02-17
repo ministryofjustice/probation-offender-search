@@ -130,7 +130,7 @@ internal class CommunityServiceTest {
       .setId(UUID.randomUUID().toString())
       .addClaims(claims)
       .setExpiration(Date(expiresAt.toEpochMilli()))
-      .signWith(SignatureAlgorithm.RS256, keyPair.private)
+      .signWith(keyPair.private, SignatureAlgorithm.RS256)
       .compact()
 
     return Jwt(

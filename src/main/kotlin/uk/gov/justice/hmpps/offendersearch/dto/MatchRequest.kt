@@ -1,9 +1,9 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Past
 import java.time.LocalDate
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Past
 
 data class MatchRequest(
   @Schema(description = "Offender first description", example = "john") val firstName: String? = null,

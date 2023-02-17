@@ -1,7 +1,7 @@
 package uk.gov.justice.hmpps.offendersearch.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import javax.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotBlank
 
 data class SearchPhraseFilter(
   @field:NotBlank(message = "phrase must be supplied")

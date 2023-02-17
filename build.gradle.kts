@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.0"
   kotlin("plugin.spring") version "1.8.10"
   id("com.google.cloud.tools.jib") version "3.3.1"
 }
@@ -12,7 +12,7 @@ dependencyCheck {
   suppressionFiles.add("dependency-check-suppress-es.xml")
 }
 
-ext["elasticsearch.version"] = "7.13.4"
+val elasticsearchVersion = "7.13.4"
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -22,26 +22,25 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.data:spring-data-jpa")
 
-  implementation("io.jsonwebtoken:jjwt:0.9.1")
+  implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+  implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
   implementation("com.google.code.gson:gson")
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("org.apache.commons:commons-text:1.10.0")
 
-  implementation("org.elasticsearch:elasticsearch")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client")
+  implementation("org.elasticsearch:elasticsearch:$elasticsearchVersion")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:$elasticsearchVersion")
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:$elasticsearchVersion")
 
   implementation("com.amazonaws:aws-java-sdk-core:1.12.+")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.14")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 
   implementation("io.sentry:sentry-spring-boot-starter:6.14.0")
 
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
+  testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.1")
   testImplementation("org.mockito:mockito-inline")
   testImplementation("org.testcontainers:localstack:1.17.6")
