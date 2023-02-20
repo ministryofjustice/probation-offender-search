@@ -1,9 +1,8 @@
 package uk.gov.justice.hmpps.offendersearch.security
 
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
-import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
-class MethodSecurityConfiguration : GlobalMethodSecurityConfiguration()
+@EnableMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
+class MethodSecurityConfiguration

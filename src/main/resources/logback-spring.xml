@@ -20,10 +20,6 @@
         </appender>
     </springProfile>
 
-    <springProfile name="!(dev || stdout)">
-        <appender name="logAppender" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender"/>
-    </springProfile>
-
     <logger name="uk.gov.justice.hmpps" additivity="false" level="DEBUG">
         <appender-ref ref="logAppender"/>
     </logger>

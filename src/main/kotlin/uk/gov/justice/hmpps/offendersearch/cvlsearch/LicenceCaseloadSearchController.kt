@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.offendersearch.cvlsearch
 
+import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.RequestBody
@@ -7,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod.GET
 import org.springframework.web.bind.annotation.RequestMethod.POST
 import org.springframework.web.bind.annotation.RestController
-import javax.validation.Valid
 
 @Validated
 @RestController
