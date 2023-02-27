@@ -3,6 +3,7 @@ package uk.gov.justice.hmpps.offendersearch.controllers
 import io.restassured.RestAssured
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -51,6 +52,39 @@ internal class AddressSearchIntegrationTest : LocalstackIntegrationBase() {
       .`as`(AddressSearchResponses::class.java)
 
     assertThat(results.personAddresses).hasSize(noOfResults)
+  }
+
+  @Test
+  fun `matching on number alone gives no result`() {
+    // given data exists with a matching address number and street
+    val existing = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"addressNumber\": \"29\", \"streetName\": \"Church Street\"}")
+      .post("/search/addresses")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(AddressSearchResponses::class.java)
+
+    assertThat(existing.personAddresses).hasSize(1)
+
+    // searching on number alone gives no results
+    val results = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"addressNumber\": \"29\"}")
+      .post("/search/addresses")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(AddressSearchResponses::class.java)
+
+    assertThat(results.personAddresses).hasSize(0)
   }
 
   companion object {

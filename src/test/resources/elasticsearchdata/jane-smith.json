@@ -27,7 +27,7 @@
     "addresses": [
       {
         "from": "2018-01-16",
-        "addressNumber": "string",
+        "addressNumber": "29",
         "buildingName": "string",
         "county": "string",
         "district": "string",
