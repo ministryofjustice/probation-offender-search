@@ -136,11 +136,21 @@ class OffenderSearchController(
     value = [
       ApiResponse(responseCode = "200", description = "OK"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])])
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])]),
+      ApiResponse(responseCode = "500", description = "The list of CRNs provided exceeds the maximum of 512", content = [Content(examples = [])])
     ]
   )
   @PostMapping("/crns")
-  @Operation(description = "Match prisoners by a list of prisoner crns", summary = "Requires ROLE_COMMUNITY role")
+  @Operation(
+    description =
+    """Match prisoners by a list of prisoner CRNs.
+    
+       This checks each CRN in the provided list against the offender's current CRN and also their previous CRN.
+       Because of this and because the max limit of clauses that can be in the query is 1024; the maximum number of CRNs
+       that can be sent to this endpoint is 512.
+    """,
+    summary = "Requires ROLE_COMMUNITY role"
+  )
   fun findByIds(
     @Parameter(required = true, name = "crnList") @RequestBody crnList: List<String>
   ): List<OffenderDetail> {
