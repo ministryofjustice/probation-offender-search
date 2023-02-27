@@ -36,29 +36,37 @@ private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
     .shouldMatchNonNull(
       "contactDetails.addresses.streetName_analyzed",
       addressSearchRequest.streetName,
-      addressSearchRequest.boostOptions.streetName
+      addressSearchRequest.boostOptions.streetName,
+      "streetName"
     )
-    .queryName("streetName")
     .shouldMatchNonNull(
       "contactDetails.addresses.postcode_analyzed",
       addressSearchRequest.postcode,
-      addressSearchRequest.boostOptions.postcode
-    ).queryName("postcode")
+      addressSearchRequest.boostOptions.postcode,
+      "postcode"
+    )
     .shouldMatchNonNull(
       "contactDetails.addresses.buildingName",
       addressSearchRequest.buildingName,
-      addressSearchRequest.boostOptions.buildingName
+      addressSearchRequest.boostOptions.buildingName,
+      "buildingName"
     )
-    .queryName("buildingName")
     .shouldMatchNonNull("contactDetails.addresses.addressNumber", addressSearchRequest.addressNumber, 1f)
     .shouldMatchNonNull("contactDetails.addresses.district", addressSearchRequest.district, 1f)
     .shouldMatchNonNull("contactDetails.addresses.town", addressSearchRequest.town, 1f)
     .shouldMatchNonNull("contactDetails.addresses.county", addressSearchRequest.county, 1f)
     .shouldMatchNonNull("contactDetails.addresses.telephoneNumber", addressSearchRequest.telephoneNumber, 1f)
 
-fun BoolQueryBuilder.shouldMatchNonNull(name: String, value: Any?, boost: Float): BoolQueryBuilder {
-  if (value != null) {
-    should(QueryBuilders.matchQuery(name, value).boost(boost))
+fun BoolQueryBuilder.shouldMatchNonNull(
+  name: String,
+  value: String?,
+  boost: Float,
+  queryName: String? = null
+): BoolQueryBuilder {
+  if (value != null && value.isNotBlank()) {
+    val qb = QueryBuilders.matchQuery(name, value).boost(boost)
+    if (queryName != null) qb.queryName(queryName)
+    should(qb)
   }
   return this
 }
