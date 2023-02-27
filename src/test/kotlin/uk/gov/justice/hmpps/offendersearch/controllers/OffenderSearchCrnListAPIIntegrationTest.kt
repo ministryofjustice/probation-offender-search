@@ -135,6 +135,23 @@ class OffenderSearchCrnListAPIIntegrationTest : LocalstackIntegrationBase() {
   }
 
   @Test
+  fun tooManyCrns_serverError() {
+    val offendersToSearch = (1..513).map {
+      it.toCrn()
+    }.toTypedArray()
+    given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body(offendersToSearch)
+      .post("/crns")
+      .then()
+      .statusCode(500)
+      .extract()
+      .body()
+  }
+
+  @Test
   fun noResults() {
     val results = given()
       .auth()
