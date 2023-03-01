@@ -29,7 +29,7 @@ fun buildSearchQuery(addressSearchRequest: AddressSearchRequest): QueryBuilder =
     QueryBuilders.functionScoreQuery(matchQueryBuilder(addressSearchRequest))
       .setMinScore(addressSearchRequest.minBoost()),
     ScoreMode.Max,
-  ).innerHit(InnerHitBuilder("addresses").setFetchSourceContext(FetchSourceContext(true)))
+  ).innerHit(InnerHitBuilder("addresses").setFetchSourceContext(FetchSourceContext(true)).setSize(100))
 
 private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
   QueryBuilders.boolQuery()
