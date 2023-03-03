@@ -6,13 +6,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
+import uk.gov.justice.hmpps.offendersearch.util.ElasticsearchHelper
 
 class MappaDetailsIntegrationTest : LocalstackIntegrationBase() {
 
   @BeforeEach
   fun `load offenders`() {
-    LocalStackHelper(esClient).loadData()
+    ElasticsearchHelper(esClient).loadData()
   }
 
   @Nested

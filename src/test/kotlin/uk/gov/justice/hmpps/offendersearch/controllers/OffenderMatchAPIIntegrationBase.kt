@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
-import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
+import uk.gov.justice.hmpps.offendersearch.util.ElasticsearchHelper
 import java.time.LocalDate
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -68,7 +68,7 @@ abstract class OffenderMatchAPIIntegrationBase {
       )
     }.map { objectMapper.writeValueAsString(it) }
 
-    LocalStackHelper(esClient).loadData(offendersToLoad)
+    ElasticsearchHelper(esClient).loadData(offendersToLoad)
   }
 }
 

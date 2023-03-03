@@ -9,13 +9,13 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.http.MediaType
 import uk.gov.justice.hmpps.offendersearch.controllers.LocalstackIntegrationBase
-import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
+import uk.gov.justice.hmpps.offendersearch.util.ElasticsearchHelper
 
 internal class CvlSearchIntegrationTest : LocalstackIntegrationBase() {
 
   @BeforeEach
   fun setUp() {
-    LocalStackHelper(esClient).loadData()
+    ElasticsearchHelper(esClient).loadData()
   }
 
   private fun cvlSearchRole() = jwtAuthenticationHelper.createJwt("ROLE_CVL_SEARCH")

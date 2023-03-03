@@ -1,0 +1,112 @@
+{
+  "index_patterns": [
+    "contact-search-*"
+  ],
+  "index": {
+    "number_of_shards": "1",
+    "number_of_replicas": "0"
+  },
+  "mappings": {
+    "properties": {
+      "attended": {
+        "type": "keyword",
+        "copy_to": [
+          "outcome"
+        ]
+      },
+      "complied": {
+        "type": "keyword",
+        "copy_to": [
+          "outcome"
+        ]
+      },
+      "contactId": {
+        "type": "integer"
+      },
+      "crn": {
+        "type": "keyword"
+      },
+      "date": {
+        "type": "text",
+        "fields": {
+          "date": {
+            "type": "date",
+            "format": "date_optional_time||yyyy-MM-dd||dd-MM-yyyy"
+          }
+        },
+        "copy_to": [
+          "notes"
+        ],
+        "analyzer": "probation_text_analyzer"
+      },
+      "description": {
+        "type": "text",
+        "boost": 4.0,
+        "analyzer": "probation_text_analyzer",
+        "search_analyzer": "probation_search_analyzer"
+      },
+      "lastUpdatedDateTime": {
+        "type": "date"
+      },
+      "notes": {
+        "type": "text",
+        "boost": 5.0,
+        "analyzer": "probation_text_analyzer",
+        "search_analyzer": "probation_search_analyzer"
+      },
+      "offenderId": {
+        "type": "integer"
+      },
+      "outcome": {
+        "type": "text",
+        "boost": 2.0,
+        "store": true,
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        },
+        "fielddata": true
+      },
+      "outcomeCode": {
+        "type": "keyword",
+        "copy_to": [
+          "outcome"
+        ]
+      },
+      "outcomeDescription": {
+        "type": "keyword",
+        "copy_to": [
+          "outcome"
+        ]
+      },
+      "rowVersion": {
+        "type": "double",
+        "index": false
+      },
+      "type": {
+        "type": "text",
+        "store": true,
+        "fielddata": true
+      },
+      "typeCode": {
+        "type": "keyword",
+        "copy_to": [
+          "type"
+        ]
+      },
+      "typeDescription": {
+        "type": "keyword",
+        "copy_to": [
+          "type"
+        ]
+      },
+      "typeShortDescription": {
+        "type": "keyword",
+        "copy_to": [
+          "type"
+        ]
+      }
+    }
+  }
+}

@@ -17,7 +17,7 @@ import uk.gov.justice.hmpps.offendersearch.dto.PhoneNumber.PhoneTypes.TELEPHONE
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
 import uk.gov.justice.hmpps.offendersearch.dto.Team
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
-import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
+import uk.gov.justice.hmpps.offendersearch.util.ElasticsearchHelper
 import kotlin.random.Random.Default.nextInt
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -102,7 +102,7 @@ abstract class LocalstackIntegrationBase {
       )
     }.map { objectMapper.writeValueAsString(it) }
 
-    LocalStackHelper(esClient).loadData(offendersToLoad)
+    ElasticsearchHelper(esClient).loadData(offendersToLoad)
   }
 
   private fun String.readResourceAsText(): String {

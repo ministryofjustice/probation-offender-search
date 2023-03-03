@@ -25,7 +25,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
-import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
+import uk.gov.justice.hmpps.offendersearch.util.ElasticsearchHelper
 import uk.gov.justice.hmpps.offendersearch.wiremock.ElasticSearchExtension
 import java.lang.reflect.Type
 import java.nio.file.Files
@@ -53,7 +53,7 @@ class OffenderSearchControllerTest {
 
   @BeforeEach
   fun setup() {
-    LocalStackHelper(esClient).loadData()
+    ElasticsearchHelper(esClient).loadData()
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
       ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper }

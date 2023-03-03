@@ -9,13 +9,13 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.http.MediaType
 import uk.gov.justice.hmpps.offendersearch.addresssearch.AddressSearchResponses
-import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
+import uk.gov.justice.hmpps.offendersearch.util.ElasticsearchHelper
 
 internal class AddressSearchIntegrationTest : LocalstackIntegrationBase() {
 
   @BeforeEach
   fun setUp() {
-    LocalStackHelper(esClient).loadData()
+    ElasticsearchHelper(esClient).loadData()
   }
 
   @ParameterizedTest

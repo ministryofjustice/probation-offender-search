@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 @Service
 class ContactSearchService(private val es: ElasticsearchRestTemplate) {
   fun performSearch(request: ContactSearchRequest, pageable: Pageable): SearchContactResponse {
-    // Filter on CRN, then search on contact fields if the query is non-empty
+
     val query = QueryBuilders.boolQuery().filter(QueryBuilders.matchQuery("crn", request.crn))
     if (request.query.isNotEmpty()) {
       query.must(
@@ -23,9 +23,9 @@ class ContactSearchService(private val es: ElasticsearchRestTemplate) {
           .analyzeWildcard(true)
           .defaultOperator(if (request.matchAllTerms) Operator.AND else Operator.OR)
           .field("notes")
-          .field("contact_type")
-          .field("contact_outcome")
-          .field("contact_description")
+          .field("type")
+          .field("outcome")
+          .field("description")
           .flags(
             SimpleQueryStringFlag.AND,
             SimpleQueryStringFlag.OR,
@@ -47,31 +47,31 @@ class ContactSearchService(private val es: ElasticsearchRestTemplate) {
         HighlightBuilder()
           .encoder("html")
           .field("notes")
-          .field("contact_type")
-          .field("contact_outcome")
-          .field("contact_description")
+          .field("type")
+          .field("outcome")
+          .field("description")
           .fragmentSize(200)
       )
 
     val sortOrder = if (request.sortDirection == SortDirection.ASCENDING) SortOrder.ASC else SortOrder.DESC
     searchResponseBuilder = when (request.sort) {
       SortField.LAST_UPDATED_DATETIME -> {
-        searchResponseBuilder.withSort(SortBuilders.fieldSort("last_updated_date_time").order(sortOrder))
+        searchResponseBuilder.withSort(SortBuilders.fieldSort("lastUpdatedDateTime").order(sortOrder))
         searchResponseBuilder.withSort(SortBuilders.fieldSort("_score").order(sortOrder))
       }
       SortField.CONTACT_DATE -> {
-        searchResponseBuilder.withSort(SortBuilders.fieldSort("contact_date.date").order(sortOrder))
+        searchResponseBuilder.withSort(SortBuilders.fieldSort("date").order(sortOrder))
         searchResponseBuilder.withSort(SortBuilders.fieldSort("_score").order(sortOrder))
       }
       else -> {
         searchResponseBuilder.withSort(SortBuilders.fieldSort("_score").order(sortOrder))
-        searchResponseBuilder.withSort(SortBuilders.fieldSort("last_updated_date_time").order(sortOrder))
+        searchResponseBuilder.withSort(SortBuilders.fieldSort("lastUpdatedDateTime").order(sortOrder))
       }
     }
 
-    val searchResponse = es.search(searchResponseBuilder.build(), Contact::class.java)
+    val searchResponse = es.search(searchResponseBuilder.build(), SearchContact::class.java)
 
-    val results = searchResponse.searchHits.mapNotNull { it.content }
+    val results = searchResponse.searchHits.mapNotNull { it.content.copy(highlights = it.highlightFields) }
 
     val response = PageImpl(results, pageable, searchResponse.totalHits)
     return SearchContactResponse(

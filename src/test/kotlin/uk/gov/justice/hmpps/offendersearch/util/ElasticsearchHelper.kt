@@ -18,7 +18,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.UUID
 
-class LocalStackHelper(private val esClient: RestHighLevelClient) {
+class ElasticsearchHelper(private val esClient: RestHighLevelClient) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val indexName = "person-search-primary"
@@ -98,5 +98,5 @@ class LocalStackHelper(private val esClient: RestHighLevelClient) {
   }
 }
 
-private fun String.resourceAsString() = LocalStackHelper::class.java.getResource(this).readText()
-private fun String.resourceAsByteReference() = BytesArray(LocalStackHelper::class.java.getResource(this).readBytes())
+private fun String.resourceAsString() = ElasticsearchHelper::class.java.getResource(this).readText()
+private fun String.resourceAsByteReference() = BytesArray(ElasticsearchHelper::class.java.getResource(this).readBytes())

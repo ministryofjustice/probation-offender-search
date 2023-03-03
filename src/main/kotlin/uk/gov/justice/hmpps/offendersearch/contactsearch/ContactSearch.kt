@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.offendersearch.contactsearch
 
 import com.fasterxml.jackson.annotation.JsonAlias
+import org.springframework.data.elasticsearch.annotations.Document
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -37,10 +38,11 @@ data class SearchContactResponse(
   val page: Int,
   val totalResults: Long,
   val totalPages: Int,
-  val results: List<Contact>
+  val results: List<SearchContact>
 )
 
-data class Contact(
+@Document(indexName = "contact-search-primary")
+data class SearchContact(
   val id: Long,
   val typeCode: String,
   val typeDescription: String,
@@ -52,5 +54,5 @@ data class Contact(
   val startTime: LocalTime?,
   val endTime: LocalTime?,
   val lastUpdatedDateTime: LocalDateTime,
-  val highlights: Map<String, List<String>>,
+  val highlights: Map<String, List<String>> = mapOf(),
 )
