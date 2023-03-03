@@ -6,6 +6,7 @@ import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
+import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.CoreMatchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -16,6 +17,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.boot.test.web.server.LocalServerPort
@@ -23,6 +25,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.offendersearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
+import uk.gov.justice.hmpps.offendersearch.util.LocalStackHelper
 import uk.gov.justice.hmpps.offendersearch.wiremock.ElasticSearchExtension
 import java.lang.reflect.Type
 import java.nio.file.Files
@@ -36,6 +39,10 @@ class OffenderSearchControllerTest {
   var port = 0
 
   @Autowired
+  @Qualifier("elasticSearchClient")
+  internal lateinit var esClient: RestHighLevelClient
+
+  @Autowired
   private lateinit var objectMapper: ObjectMapper
 
   @Autowired
@@ -46,6 +53,7 @@ class OffenderSearchControllerTest {
 
   @BeforeEach
   fun setup() {
+    LocalStackHelper(esClient).loadData()
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
       ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper }
@@ -66,8 +74,8 @@ class OffenderSearchControllerTest {
       .extract()
       .body()
       .`as`(Array<OffenderDetail>::class.java)
-    assertThat(results).hasSize(1)
-    assertThat(results).extracting("firstName").containsOnly("John")
+    assertThat(results).hasSize(2)
+    assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane")
   }
 
   @Test
