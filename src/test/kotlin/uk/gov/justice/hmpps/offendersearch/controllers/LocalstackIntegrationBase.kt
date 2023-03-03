@@ -16,8 +16,8 @@ import uk.gov.justice.hmpps.offendersearch.dto.PhoneNumber.PhoneTypes.MOBILE
 import uk.gov.justice.hmpps.offendersearch.dto.PhoneNumber.PhoneTypes.TELEPHONE
 import uk.gov.justice.hmpps.offendersearch.dto.ProbationArea
 import uk.gov.justice.hmpps.offendersearch.dto.Team
-import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.offendersearch.util.ElasticsearchHelper
+import uk.gov.justice.hmpps.offendersearch.util.JwtAuthenticationHelper
 import kotlin.random.Random.Default.nextInt
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
