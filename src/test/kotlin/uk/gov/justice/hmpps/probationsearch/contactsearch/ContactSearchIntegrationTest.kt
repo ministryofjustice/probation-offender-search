@@ -91,7 +91,7 @@ class ContactSearchIntegrationTest {
 
   @ParameterizedTest
   @MethodSource("crnsForFind")
-  fun `results only include matches on query and crn`(crn: String) {
+  fun `results only include matches on query and crn, highlighting match criteria`(crn: String) {
     val results = RestAssured.given()
       .`when`()
       .search(ContactSearchRequest(crn, "FIND_ME"))
@@ -99,7 +99,9 @@ class ContactSearchIntegrationTest {
       .results()
 
     assertThat(results.size).isEqualTo(1)
-    assertThat(results.results.first().crn).isEqualTo(crn)
+    val found = results.results.first()
+    assertThat(found.crn).isEqualTo(crn)
+    assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(mapOf("type" to listOf("<em>FIND_ME</em>")))
   }
 
   @Test
@@ -154,6 +156,26 @@ class ContactSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(1)
     assertThat(results.results.first().crn).isEqualTo(crn)
+  }
+
+  @Test
+  fun `matches are highlighted`() {
+    val crn = "H123456"
+    val results = RestAssured.given()
+      .`when`()
+      .search(ContactSearchRequest(crn, "highlighted"))
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(1)
+    val found = results.results.first()
+    assertThat(found.crn).isEqualTo(crn)
+    assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(
+      mapOf(
+        "type" to listOf("Matches should be <em>highlighted</em>"),
+        "outcome" to listOf("Matches were <em>highlighted</em>")
+      )
+    )
   }
 
   companion object {

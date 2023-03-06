@@ -96,6 +96,13 @@ object ContactGenerator {
       typeDescription = "Unique Description",
       date = LocalDate.of(2023, 1, 1),
       notes = "New Year Contact"
+    ),
+    generate(
+      crn = "H123456",
+      typeCode = "HIGH",
+      typeDescription = "Matches should be highlighted",
+      outcomeCode = "HIGH",
+      outcomeDescription = "Matches were highlighted"
     )
   )
 }
