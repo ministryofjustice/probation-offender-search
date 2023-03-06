@@ -26,7 +26,7 @@ dependencies {
 
   implementation("org.springframework.data:spring-data-elasticsearch:4.2.12")
 
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.420")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.+")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 
