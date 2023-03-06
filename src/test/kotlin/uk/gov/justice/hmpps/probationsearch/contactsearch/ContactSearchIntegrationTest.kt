@@ -12,6 +12,8 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.indices.CreateIndexRequest
 import org.elasticsearch.client.indices.GetIndexRequest
+import org.elasticsearch.client.indices.PutIndexTemplateRequest
+import org.elasticsearch.common.xcontent.XContentType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -24,6 +26,7 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.util.ResourceUtils
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator.contacts
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 
@@ -45,6 +48,13 @@ class ContactSearchIntegrationTest {
     RestAssured.port = port
     val indexName = "contact-search-a"
     val aliasName = "contact-search-primary"
+    val templateJson = ResourceUtils.getFile("classpath:elasticsearchdata/contact-template.json").readText()
+    es.execute {
+      it.indices().putTemplate(
+        PutIndexTemplateRequest("contact-search-template").source(templateJson, XContentType.JSON),
+        RequestOptions.DEFAULT
+      )
+    }
     es.execute {
       if (it.indices().exists(GetIndexRequest(indexName), RequestOptions.DEFAULT)) {
         it.indices().delete(DeleteIndexRequest(indexName), RequestOptions.DEFAULT)
