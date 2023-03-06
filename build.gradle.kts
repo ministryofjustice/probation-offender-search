@@ -29,6 +29,7 @@ dependencies {
   implementation("com.amazonaws:aws-java-sdk-core:1.12.420")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+
   implementation("io.sentry:sentry-spring-boot-starter:6.15.0")
 
   testImplementation("org.springframework.security:spring-security-test")
