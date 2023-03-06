@@ -17,8 +17,7 @@ fun matchAddresses(addressSearchRequest: AddressSearchRequest, maxResults: Int):
         arrayOf("offenderId", "gender", "otherIds.crn", "dateOfBirth"),
         arrayOf("contactDetails.addresses")
       )
-    )
-    .query(buildSearchQuery(addressSearchRequest))
+    ).query(buildSearchQuery(addressSearchRequest))
 
 private fun AddressSearchRequest.minBoost(): Float =
   listOf(boostOptions.streetName, boostOptions.postcode, boostOptions.buildingName).min()
@@ -26,11 +25,7 @@ private fun AddressSearchRequest.minBoost(): Float =
 fun buildSearchQuery(addressSearchRequest: AddressSearchRequest): QueryBuilder =
   QueryBuilders.nestedQuery(
     "contactDetails.addresses",
-    QueryBuilders.functionScoreQuery(
-      matchQueryBuilder(
-        addressSearchRequest
-      )
-    )
+    QueryBuilders.functionScoreQuery(matchQueryBuilder(addressSearchRequest))
       .setMinScore(addressSearchRequest.minBoost()),
     ScoreMode.Max,
   ).innerHit(InnerHitBuilder("addresses").setFetchSourceContext(FetchSourceContext(true)).setSize(100))

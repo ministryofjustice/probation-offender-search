@@ -574,7 +574,8 @@ class OffenderSearchControllerPhraseTest {
               username = null,
               clientId = "new-tech",
               authSource = "none"
-            ), "allow_when_inclusion_not_matched"
+            ),
+            "allow_when_inclusion_not_matched"
           )
         )
         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -607,7 +608,8 @@ class OffenderSearchControllerPhraseTest {
               username = "karenblacknps",
               clientId = "new-tech",
               authSource = "delius"
-            ), "allow_when_inclusion_not_matched"
+            ),
+            "allow_when_inclusion_not_matched"
           )
         )
         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -640,7 +642,8 @@ class OffenderSearchControllerPhraseTest {
               username = "karenblacknps",
               clientId = "new-tech",
               authSource = "nomis"
-            ), "allow_when_inclusion_not_matched"
+            ),
+            "allow_when_inclusion_not_matched"
           )
         )
         .contentType(MediaType.APPLICATION_JSON_VALUE)

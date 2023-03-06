@@ -11,8 +11,7 @@ import kotlin.math.roundToInt
 @Service
 class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val objectMapper: ObjectMapper) {
   fun performSearch(addressSearchRequest: AddressSearchRequest, maxResults: Int): AddressSearchResponses {
-    val searchSourceBuilder =
-      matchAddresses(addressSearchRequest, maxResults)
+    val searchSourceBuilder = matchAddresses(addressSearchRequest, maxResults)
     val searchRequest = SearchRequest("person-search-primary")
     searchRequest.source(searchSourceBuilder)
     val res = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT)

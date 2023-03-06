@@ -71,11 +71,12 @@ class ContactSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(3)
     assertThat(results.totalResults).isEqualTo(4)
-    assertThat(results.results.map { it.id }).isEqualTo(contacts
-      .filter { it.crn == crn && it.typeCode == "CODE" }
-      .sortedByDescending { it.lastUpdatedDateTime }
-      .map { it.id }
-      .take(3)
+    assertThat(results.results.map { it.id }).isEqualTo(
+      contacts
+        .filter { it.crn == crn && it.typeCode == "CODE" }
+        .sortedByDescending { it.lastUpdatedDateTime }
+        .map { it.id }
+        .take(3)
     )
   }
 
@@ -103,11 +104,12 @@ class ContactSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(4)
     assertThat(results.totalResults).isEqualTo(4)
-    assertThat(results.results.map { it.id }).isEqualTo(contacts
-      .filter { it.crn == crn && it.typeCode == "CODE" }
-      .sortedByDescending { it.date }
-      .map { it.id }
-      .take(4)
+    assertThat(results.results.map { it.id }).isEqualTo(
+      contacts
+        .filter { it.crn == crn && it.typeCode == "CODE" }
+        .sortedByDescending { it.date }
+        .map { it.id }
+        .take(4)
     )
   }
 
@@ -122,11 +124,12 @@ class ContactSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(4)
     assertThat(results.totalResults).isEqualTo(4)
-    assertThat(results.results.map { it.id }).isEqualTo(contacts
-      .filter { it.crn == crn && it.typeCode == "CODE" }
-      .sortedBy { it.lastUpdatedDateTime }
-      .map { it.id }
-      .take(4)
+    assertThat(results.results.map { it.id }).isEqualTo(
+      contacts
+        .filter { it.crn == crn && it.typeCode == "CODE" }
+        .sortedBy { it.lastUpdatedDateTime }
+        .map { it.id }
+        .take(4)
     )
   }
 

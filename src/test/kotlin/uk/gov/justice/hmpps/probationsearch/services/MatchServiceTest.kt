@@ -62,11 +62,16 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // PNC Number results
         .thenReturn(resultsOf()) // name match results
         .thenReturn(resultsOf()) // partial name match results
-        .thenReturn(resultsOf(OffenderDetail(otherIds = IDs("1234"), surname = "smith", offenderId = 99), OffenderDetail(
-          surname = "smith",
-          offenderId = 88,
-          otherIds = IDs("1234"),
-        )))
+        .thenReturn(
+          resultsOf(
+            OffenderDetail(otherIds = IDs("1234"), surname = "smith", offenderId = 99),
+            OffenderDetail(
+              surname = "smith",
+              offenderId = 88,
+              otherIds = IDs("1234"),
+            )
+          )
+        )
     }
 
     @Test

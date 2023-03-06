@@ -17,7 +17,6 @@ import uk.gov.justice.hmpps.probationsearch.dto.OffenderMatch
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderMatches
 import java.time.DateTimeException
 import java.time.LocalDate
-import java.util.Locale
 
 @Service
 class MatchService(
