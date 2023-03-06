@@ -24,7 +24,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-  implementation("org.springframework.data:spring-data-elasticsearch:4.2.12")
+  implementation("org.springframework.data:spring-data-elasticsearch:4.4.9")
 
   implementation("com.amazonaws:aws-java-sdk-core:1.12.+")
 
