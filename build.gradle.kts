@@ -12,7 +12,6 @@ dependencyCheck {
   suppressionFiles.add("dependency-check-suppress-es.xml")
 }
 
-val elasticsearchVersion = "7.13.4"
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -25,15 +24,9 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-  implementation("com.google.code.gson:gson")
-  implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("org.apache.commons:commons-text:1.10.0")
+  implementation("org.springframework.data:spring-data-elasticsearch:4.2.12")
 
-  implementation("org.elasticsearch:elasticsearch:$elasticsearchVersion")
-  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:$elasticsearchVersion")
-  implementation("org.elasticsearch.client:elasticsearch-rest-client:$elasticsearchVersion")
-
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.+")
+  implementation("com.amazonaws:aws-java-sdk-core:1.12.420")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 
@@ -43,7 +36,6 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.1")
   testImplementation("org.mockito:mockito-inline")
-  testImplementation("org.testcontainers:localstack:1.17.6")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")

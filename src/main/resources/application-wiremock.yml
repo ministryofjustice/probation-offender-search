@@ -1,0 +1,4 @@
+elasticsearch:
+  port: 9200
+  host: localhost
+  scheme: http

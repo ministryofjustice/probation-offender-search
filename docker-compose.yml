@@ -6,16 +6,14 @@ services:
       - hmpps
     container_name: probation-offender-search
     depends_on:
-      - localstack
+      - elasticsearch
     ports:
       - "8084:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
     environment:
       - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=localstack,dev
-      - ELASTICSEARCH_HOST=localstack
-      - SPRING_ELASTICSEARCH_URIS=http://localstack:4571
+      - SPRING_PROFILES_ACTIVE=elasticsearch,dev
 
   oauth:
     image: quay.io/hmpps/hmpps-auth:latest
@@ -43,25 +41,19 @@ services:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
 
-  localstack:
-    image: localstack/localstack:0.11.2
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
     networks:
       - hmpps
-    container_name: localstack
-    ports:
-      - "4566-4597:4566-4597"
-      - 8999:8080
     environment:
-      - SERVICES=es
-      - ES_PORT_EXTERNAL=4571
-      - DEBUG=${DEBUG- }
-      - DATA_DIR=/tmp/localstack/data
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - DEFAULT_REGION=eu-west-2
-    volumes:
-      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - $PWD/src/test/resources/localstack:/docker-entrypoint-initaws.d
+      - node.name=elasticsearch
+      - cluster.name=probation-search-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+        - "9200:9200"
 
 networks:
   hmpps:
