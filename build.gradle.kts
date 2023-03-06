@@ -29,7 +29,7 @@ dependencies {
   implementation("com.amazonaws:aws-java-sdk-core:1.12.420")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
-  implementation("io.sentry:sentry-spring-boot-starter:6.14.0")
+  implementation("io.sentry:sentry-spring-boot-starter:6.15.0")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
@@ -82,7 +82,7 @@ jib {
   container {
     creationTime.set("USE_CURRENT_TIMESTAMP")
     jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
-    mainClass = "uk.gov.justice.hmpps.offendersearch.OffenderSearchApplicationKt"
+    mainClass = "uk.gov.justice.hmpps.probationsearch.OffenderSearchApplicationKt"
     user = "2000:2000"
   }
   from {
