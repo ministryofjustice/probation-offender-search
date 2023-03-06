@@ -48,10 +48,9 @@ class ContactSearchIntegrationTest {
     RestAssured.port = port
     val indexName = "contact-search-a"
     val aliasName = "contact-search-primary"
-    val templateJson = ResourceUtils.getFile("classpath:elasticsearchdata/contact-template.json").readText()
     es.execute {
       it.indices().putTemplate(
-        PutIndexTemplateRequest("contact-search-template").source(templateJson, XContentType.JSON),
+        PutIndexTemplateRequest("contact-search-template").source(TEMPLATE_JSON, XContentType.JSON),
         RequestOptions.DEFAULT
       )
     }
@@ -163,6 +162,8 @@ class ContactSearchIntegrationTest {
 
     @JvmStatic
     fun datesForFind() = listOf("2023-01-01", "01-01-2023", "1/1/23", "01/01/2023", "1st Jan 2023")
+
+    private val TEMPLATE_JSON = ResourceUtils.getFile("classpath:elasticsearchdata/contact-template.json").readText()
   }
 
   private fun RequestSpecification.authorised(): RequestSpecification =

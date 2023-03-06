@@ -2,651 +2,646 @@
   "index_patterns": [
     "contact-search-*"
   ],
-  "template": {
-    "settings": {
-      "index": {
-        "mapping": {
-          "ignore_malformed": "true"
-        },
-        "analysis": {
-          "filter": {
-            "dates_iso8601": {
-              "pattern": "^(\\d{4})-(\\d{2})-(\\d{2})t\\d{2}:00:00(?:\\.000)?z?$",
-              "type": "pattern_replace",
-              "replacement": "$3.$2.$1"
-            },
-            "dates_aug": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]aug(?:ust)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.08.$2"
-            },
-            "dates_reformat": {
-              "pattern": "^(\\d{2})\\.(0[1-9]|1[0-2])\\.((?:19|20)\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$3-$2-$1"
-            },
-            "dates_year_month_day": {
-              "pattern": "^((?:19|20)\\d{2})[\\s\\-\\./]?(0?[1-9]|1[0-2])[\\s\\-\\./]?(\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$3.$2.$1"
-            },
-            "remove_single_chars": {
-              "type": "length",
-              "min": "2"
-            },
-            "dates_short_year_19": {
-              "pattern": "^(\\d{1,2})[\\s\\-\\./](0?[1-9]|1[0-2])[\\s\\-\\./]([8-9]\\d)$",
-              "type": "pattern_replace",
-              "replacement": "$1.$2.19$3"
-            },
-            "delimit_words": {
-              "type": "word_delimiter_graph",
-              "preserve_original": "true",
-              "generate_number_parts": "false"
-            },
-            "probation_synonyms_search": {
-              "type": "synonym",
-              "synonyms": [
-                "failed to attend, fta, abs, absence failed attend, failure to attend => failedtoattend",
-                "failed to report, ftr => failedtoreport",
-                "failed to comply, ftc => failedtocomply",
-                "unacceptable absence, ua => unacceptableabsence",
-                "acceptable absence, aa => acceptableabsence",
-                "grevious bodily harm, gbh => greviousbodilyharm gbh",
-                "actual bodily harm, abh => actualbodilyharm abh",
-                "domestic violence, domestic abuse, dv, da => domesticviolence",
-                "offender manager, om => offendermanager",
-                "community practitioner, cppt => offendermanager",
-                "probation practitioner, ppt => offendermanager",
-                "community probation practitioner, com => offendermanager",
-                "prison offender manager, pom => prisonoffendermanager",
-                "program manager, programme manager => programmanager",
-                "treatment manager => programmanager",
-                "tutor => programmanager",
-                "intervention manager, intervension manager, im => interventionmanager",
-                "supervisor => unpaidworkmanager supervisor",
-                "unpaid work manager => unpaidworkmanager",
-                "unpaid work supervisor => unpaidworkmanager",
-                "upw supervisor => unpaidworkmanager",
-                "cp manager => unpaidworkmanager",
-                "cp supervisor => unpaidworkmanager",
-                "offender management unit, omu => offendermanagermentunit",
-                "general practitioner, gp, doctor => generalpractitioner",
-                "mental health, mh => mentalhealth",
-                "warrant not backed bail, wnbb, summons => warrantnotbackedbail",
-                "warrant backed for bail, wbb, summons => warrantbackedbail",
-                "magistrates court, mc, mags court => magistratescourt",
-                "crown court, crn court, cc => crowncourt",
-                "risk of serious harm, risk of harm, rosh, rosha => riskofharm",
-                "sex offences protection order, sopo, sor, shpo, sex offender register, sexual harm prevention order, sro => sexoffencesprotectionorder",
-                "independent inquiry into child sexual abuse, child abuse, iicsa => independentinquiryintochildsexualabuse",
-                "victim liaison officer, victim liason unit, womens safety worker, wsw, vlo, vlu => victimliaisonofficer",
-                "unpaid work, upw, cs, community service, community payback, cp => unpaidwork",
-                "community order, co, com, comm order probation order => communityorder",
-                "previous convictions, precon, pre-cons => previousconviction",
-                "police constable, pc => policeconstable, pc",
-                "accredited program, accredited programme, acc_prog, ap => accreditedprogram",
-                "service user, person on probation, pop, client, offender => persononprobation",
-                "remanded in custody, ric => remandedincustody ric",
-                "universal credit, uc => univeralcredit",
-                "social services, ss, social worker, social care => socialservices",
-                "national insurance number, ni number, ni, nino => ninumber",
-                "sentence plan, initial sentence plan, final sentence plan, sp, isp, fsp => sentenceplan plan",
-                "national standards, ns => nationalstandards",
-                "local admin unit, Probation Delivery Unit, ldu, lau, cluster, pdu => localadminunit",
-                "commissioned rehabilitative services crs => commissioned rehabilitative services",
-                "rehabilitation activity requirement, rar => rehabilitationactivityrequirement",
-                "non structured intervention, nsi, non statutory invervention => nonstatutoryintervention",
-                "structured interventions, si, tsi, structured intervension => structuredintervention",
-                "national delius => nationaldelius",
-                "delius => national delius",
-                "dob, d o b, date of birth, d.o.b => dateofbirth",
-                "safe guarding, safeguarding, safegarding, safe-guarding, safegaurding, safe  gaurding => safeguarding",
-                "dwp, department for work pensions, dwp => dwp, department work pensions",
-                "hand over, h/o, handover => handover",
-                "self harm, self-harm => selfharm"
-              ]
-            },
-            "dates_short_day": {
-              "pattern": "^(\\d{1})[\\s\\-\\./](0?[1-9]|1[0-2])[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "0$1.$2.$3"
-            },
-            "probation_synonyms_common": {
-              "type": "synonym",
-              "synonyms": [
-                "apt, appt => appointment, apt, appt",
-                "upw duty manager, upw operations manager, upw placement manager, upw om, upw requirement manager, upw work manager, upw management, upw delivery manager",
-                "general practitioner, gp, doctor",
-                "mental health, mh",
-                "adjourned, adj",
-                "report, rept, rep, rpt",
-                "magistrates court, magistratescourt, mc, mags, mag court",
-                "crown court, cc, crowncourt, crn court",
-                "accredited program, accreditedprogram, ap, prog, program",
-                "sentence plan, initial sentence plan, final sentence plan, sp, isp, fsp, sentenceplan plan",
-                "self harm, selfharm, self-harm",
-                "wife, partner",
-                "transfer, tfr",
-                "meds, medication, medicine",
-                "dad, father, pa",
-                "mom, mum, mother",
-                "msg, message",
-                "disqualified, disq",
-                "intelligence, intel",
-                "text, sms, tc",
-                "afternoon, pm",
-                "morning, am",
-                "employment, empl",
-                "licence, lic",
-                "cert, certification",
-                "rls, release",
-                "pics, pictures",
-                "unlawfully at large, ual",
-                "standard, std",
-                "years, yrs",
-                "ooh, out of hours",
-                "wfh, work from home",
-                "adj, adjourned",
-                "pts, points",
-                "television, tv",
-                "att => att, attend",
-                "absence, ab, abs",
-                "fialed, filed => failed, fialed filed",
-                "girlfriend, gf",
-                "abs, absence",
-                "home office, ho",
-                "appt, apt, appointment",
-                "e-mail, email",
-                "video link, videolink, video-link",
-                "referral, referal",
-                "term, termination",
-                "time table, timetable, time-table",
-                "summ, summary",
-                "criminal number, cro",
-                "antidepressants, anti-depressants",
-                "fostercare, foster-care",
-                "departure, depart",
-                "disclose, disclosure",
-                "expose, exposure",
-                "work sheet, worksheet",
-                "antisocial, anti-social, anti social",
-                "sfo, serious further offence",
-                "hrs, hours",
-                "years, yrs",
-                "girlfriend, gf",
-                "accomodation, accom, accommodation",
-                "home office, ho",
-                "alcohol, alc",
-                "address, addr",
-                "drugs, drg",
-                "programme, program",
-                "domestic, dom",
-                "sexual, sex",
-                "well being, wellbeing, welbeing, well-being, wellbeing",
-                "solicitor, lawyer",
-                "rehab, rehabilitation",
-                "nan, grand mother, grandmother, grandma",
-                "grandfather, grand father, grandad",
-                "grandchild, grand child",
-                "preg, pregnant",
-                "pip, benefits",
-                "docs, documents",
-                "key worker, keyworker, key-worker",
-                "min, minutes",
-                "child, children, kid",
-                "admission, admit",
-                "exclusion, excl",
-                "initial, inital",
-                "intro, introduction",
-                "mgr => manager",
-                "passed away, died",
-                "pictures, pics",
-                "racial, racist",
-                "register, registration, registry",
-                "one, 1",
-                "2, two",
-                "3, three",
-                "4, four",
-                "5, five",
-                "6, six",
-                "7, seven",
-                "8, eight",
-                "9, nine",
-                "10, ten",
-                "11, eleven",
-                "12, twelve",
-                "13, thirteen",
-                "14, fourteen",
-                "15, fifteen",
-                "16, sixteen",
-                "17, seventeen",
-                "18, eighteen",
-                "19, nineteen",
-                "20, twenty",
-                "30, thirty",
-                "40, forty",
-                "50, fifty",
-                "60, sixty",
-                "70, seventy",
-                "80, eighty",
-                "90, ninety",
-                "1 am, 1am, 0100",
-                "2 am, 2am, 0200",
-                "3 am, 3am, 0300",
-                "4 am, 4am, 0400",
-                "5 am, 5am, 0500",
-                "6 am, 6am, 0600",
-                "7 am, 7am, 0700",
-                "8 am, 8am, 0800",
-                "9 am, 9am, 0900",
-                "10 am, 10am, 1000",
-                "11 am, 11am, 1100",
-                "12 pm, 12pm, 1200",
-                "1 pm, 1pm, 1300",
-                "2 pm, 2pm, 1400",
-                "3 pm, 3pm, 1500",
-                "4 pm, 4pm, 1600",
-                "5 pm, 5pm, 1700",
-                "6 pm, 6pm, 1800",
-                "7 pm, 7pm, 1900",
-                "8 pm, 8pm, 2000",
-                "9 pm, 9pm, 2100",
-                "10 pm, 10pm, 2200",
-                "11 pm, 11pm, 2300",
-                "12 am, 12am, 0000"
-              ]
-            },
-            "probation_synonyms_index": {
-              "type": "synonym",
-              "synonyms": [
-                "failed to attend, fta, abs, absence, failure to attend => failedtoattend failed absence fta",
-                "failed to report, ftr => failedtoreport failed  ftr report",
-                "failed to comply, ftc => failedtocomply ftc failed comply",
-                "unacceptable absence, ua => unacceptableabsence ua unacceptable",
-                "acceptable absence, aa => acceptableabsence acceptable absence aa",
-                "grievous bodily harm, gbh => grievousbodilyharm gbh",
-                "actual bodily harm, abh => actualbodilyharm abh",
-                "domestic violence, domestic abuse, dv, da => domesticviolence dv da abuse violence domestic",
-                "offender manager, om => om offendermanager manager",
-                "community practitioner, cppt => offendermanager manager cppt  practitioner",
-                "probation practitioner, ppt => ppt offendermanager manager  practitioner",
-                "community practitioner, com => offendermanager manager com practitioner",
-                "prison offender manager, pom => pom, prisonoffendermanager, manager",
-                "program manager, programme manaer => programmanager, manager",
-                "treatment manager => programmanager, manager",
-                "tutor => programmanager, tutor",
-                "intervention manager, im, intervension manager => interventionmanager, manager, im",
-                "supervisor => unpaidworkmanager manager supervisor",
-                "unpaid work manager => unpaidworkmanager manager supervisor",
-                "unpaid work supervisor => unpaidworkmanager manager supervisor",
-                "upw supervisor => unpaidworkmanager manager supervisor",
-                "cp manager => unpaidworkmanager manager supervisor",
-                "cp supervisor => unpaidworkmanager manager supervisor",
-                "offender management unit, omu => omu offendermanagermentunit",
-                "warrant not backed bail, wnbb => warrantnotbackedbail warrant  summons wnbb",
-                "warrant backed for  bail, wbb => warrantbackedbail warrant  summons wbb",
-                "wnbb => warrantnotbackedbail warrant  summons wnbb",
-                "wbb => warrantbackedbail warrant  summons wbb",
-                "risk of serious harm, risk of harm, rosh, rosha => riskofharm risk harm serious rosh rosha",
-                "sex offences protection order, sopo, sor, shpo, sex offender register, sexual harm prevention order, sro => sexoffencesprotectionorder, sex, register, harm, prevention, offence",
-                "independent inquiry into child sexual abuse, child abuse, iicsa => independentinquiryintochildsexualabuse, child, abuse, sexual",
-                "prolific priority offender, ppo => prolificpriorityoffender, prolific, offender, priority",
-                "victim liaison officer, victim liaison contact, victim liaison unit, vlo, vlu => victimliaisonofficer victim liaison officer unit",
-                "womens safety worker, wsw => victimliaisonofficer women safety worker",
-                "unpaid work, upw, cp, cs, community service => unpaidwork, upw",
-                "cs, community service => unpaidwork, cs, community service",
-                "community payback, cp => unpaidwork, cp, comminity payback",
-                "community order, co, com, comm order probation order => communityorder, order, community, co, com",
-                "previous convictions, prev convictions, precon, pre cons, pre-cons => previousconviction, conviction",
-                "police constable, pc => policeconstable, pc, constable, police",
-                "accredited program, accredited programme, acc prog, ap, iaps => accreditedprogram, ap, program, iaps",
-                "person on probation, pop, client => persononprobation, offender, person",
-                "service user => persononprobation, service user",
-                "client => persononprobation, client",
-                "offender => persononprobation, offender",
-                "remanded in custody, ric => remandedincustody, remanded, custody, ric",
-                "universal credit, uc => universalcredit, uc, benefits, credit, universal",
-                "social services, ss, social worker, adult services, adult care, adultcare => socialservices, social services adult",
-                "national insurance number => ninumber, ni, nino",
-                "ni => ninumber, ni, nino",
-                "nino => ninumber, ni, nino",
-                "ni number => ninumber ni, nino",
-                "national standards => nationalstandards ns national standards",
-                "local admin unit, probation delivery unit, ldu, lau, cluster, pdu => localadminunit delivery local ldu lau cluster pdu",
-                "commissioned rehabilitative services, crs => commissioned rehabilitative services crs",
-                "rehabilitation activity requirement, rar => rehabilitationactivityrequirement rar requirement rehabilitation",
-                "non structured intervention, non structured intervension, nsi, non statutory intervention => nonstatutoryintervention, nsi, intervention",
-                "structured interventions, si, tsi, structured intervension => structuredintervention structured si, tsi, intervention, interension",
-                "national delius, nd => nationaldelius, delius, nd",
-                "delius => nationaldelius",
-                "dob, d o b, date of birth, d.o.b => dateofbirth, birth, date",
-                "safe guarding, safeguarding, safegaurding, safe gaurding, safegarding, safe-guarding => safeguarding",
-                "dwp, department for work pensions, dwp => dwp, department work pensions",
-                "hand over => handover, h/o",
-                "self harm, self-harm => selfharm",
-                "aftercare, after care, after-care",
-                "annual, yearly",
-                "chronology, cronolgy, chron, cron"
-              ]
-            },
-            "capture_numbers": {
-              "type": "pattern_capture",
-              "preserve_original": "true",
-              "patterns": [
-                "(\\d{4}-\\d{2}-\\d{2})t00:00:00(?:\\.000)?z?",
-                "(\\d+[\\d\\W]+\\d+)"
-              ]
-            },
-            "dates_may": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]may[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.05.$2"
-            },
-            "dates_apr": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]apr(?:il)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.04.$2"
-            },
-            "remove_non_digits": {
-              "pattern": "\\D",
-              "type": "pattern_replace"
-            },
-            "dates_oct": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]oct(?:ober)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.10.$2"
-            },
-            "dates_mar": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]mar(?:ch)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.03.$2"
-            },
-            "dates_sep": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]sept?(?:ember)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.09.$2"
-            },
-            "dates_nov": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]nov(?:ember)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.11.$2"
-            },
-            "dates_short_year_20": {
-              "pattern": "^(\\d{1,2})[\\s\\-\\./](0?[1-9]|1[0-2])[\\s\\-\\./]([0-7]\\d)$",
-              "type": "pattern_replace",
-              "replacement": "$1.$2.20$3"
-            },
-            "dates_jan": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]jan(?:uary)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.01.$2"
-            },
-            "catenate_non_dates": {
-              "filter": [
-                "remove_non_digits"
-              ],
-              "type": "condition",
-              "script": {
-                "source": "!(token.getTerm().toString() ==~ /^(?:19|20)\\d{2}-(0[1-9]|1[0-2])-\\d{2}$/) && token.getTerm().toString() ==~ /^[\\d\\W]+$/"
-              }
-            },
-            "dates_long_year": {
-              "pattern": "^(\\d{1,2})[\\s\\-\\./](0?[1-9]|1[0-2])[\\s\\-\\./]((?:19|20)\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.$2.$3"
-            },
-            "dates_month_day_year": {
-              "pattern": "^(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|(?:nov|dec)(?:ember)?)[\\s\\-\\./](\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$2.$1.$3"
-            },
-            "replace_dialcodes": {
-              "pattern": "^(?:00|\\+)?44\\W*0?(.*)$",
-              "type": "pattern_replace",
-              "preserve_original": "true",
-              "replacement": "0$1"
-            },
-            "dates_dec": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]dec(?:ember)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.12.$2"
-            },
-            "dates_jun": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]june?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.06.$2"
-            },
-            "dates_feb": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]feb(?:ruary)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.02.$2"
-            },
-            "unique_tokens": {
-              "type": "unique",
-              "only_on_same_position": "true"
-            },
-            "override_stemmer": {
-              "type": "stemmer_override",
-              "rules": [
-                "officer => officer",
-                "officers => officer",
-                "office => office",
-                "offices => office",
-                "nps => nps",
-                "one => one",
-                "nomis => nomis",
-                "delius => delius",
-                "ndelius => ndelius",
-                "nationaldelius => nationaldelius"
-              ]
-            },
-            "dates_jul": {
-              "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]july?[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.07.$2"
-            },
-            "dates_short_month": {
-              "pattern": "^(\\d{2})[\\s\\-\\./](\\d{1})[\\s\\-\\./]((?:19|20)?\\d{2})$",
-              "type": "pattern_replace",
-              "replacement": "$1.0$2.$3"
+  "settings": {
+    "index": {
+      "analysis": {
+        "filter": {
+          "dates_iso8601": {
+            "pattern": "^(\\d{4})-(\\d{2})-(\\d{2})t\\d{2}:00:00(?:\\.000)?z?$",
+            "type": "pattern_replace",
+            "replacement": "$3.$2.$1"
+          },
+          "dates_aug": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]aug(?:ust)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.08.$2"
+          },
+          "dates_reformat": {
+            "pattern": "^(\\d{2})\\.(0[1-9]|1[0-2])\\.((?:19|20)\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$3-$2-$1"
+          },
+          "dates_year_month_day": {
+            "pattern": "^((?:19|20)\\d{2})[\\s\\-\\./]?(0?[1-9]|1[0-2])[\\s\\-\\./]?(\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$3.$2.$1"
+          },
+          "remove_single_chars": {
+            "type": "length",
+            "min": "2"
+          },
+          "dates_short_year_19": {
+            "pattern": "^(\\d{1,2})[\\s\\-\\./](0?[1-9]|1[0-2])[\\s\\-\\./]([8-9]\\d)$",
+            "type": "pattern_replace",
+            "replacement": "$1.$2.19$3"
+          },
+          "delimit_words": {
+            "type": "word_delimiter_graph",
+            "preserve_original": "true",
+            "generate_number_parts": "false"
+          },
+          "probation_synonyms_search": {
+            "type": "synonym",
+            "synonyms": [
+              "failed to attend, fta, abs, absence failed attend, failure to attend => failedtoattend",
+              "failed to report, ftr => failedtoreport",
+              "failed to comply, ftc => failedtocomply",
+              "unacceptable absence, ua => unacceptableabsence",
+              "acceptable absence, aa => acceptableabsence",
+              "grevious bodily harm, gbh => greviousbodilyharm gbh",
+              "actual bodily harm, abh => actualbodilyharm abh",
+              "domestic violence, domestic abuse, dv, da => domesticviolence",
+              "offender manager, om => offendermanager",
+              "community practitioner, cppt => offendermanager",
+              "probation practitioner, ppt => offendermanager",
+              "community probation practitioner, com => offendermanager",
+              "prison offender manager, pom => prisonoffendermanager",
+              "program manager, programme manager => programmanager",
+              "treatment manager => programmanager",
+              "tutor => programmanager",
+              "intervention manager, intervension manager, im => interventionmanager",
+              "supervisor => unpaidworkmanager supervisor",
+              "unpaid work manager => unpaidworkmanager",
+              "unpaid work supervisor => unpaidworkmanager",
+              "upw supervisor => unpaidworkmanager",
+              "cp manager => unpaidworkmanager",
+              "cp supervisor => unpaidworkmanager",
+              "offender management unit, omu => offendermanagermentunit",
+              "general practitioner, gp, doctor => generalpractitioner",
+              "mental health, mh => mentalhealth",
+              "warrant not backed bail, wnbb, summons => warrantnotbackedbail",
+              "warrant backed for bail, wbb, summons => warrantbackedbail",
+              "magistrates court, mc, mags court => magistratescourt",
+              "crown court, crn court, cc => crowncourt",
+              "risk of serious harm, risk of harm, rosh, rosha => riskofharm",
+              "sex offences protection order, sopo, sor, shpo, sex offender register, sexual harm prevention order, sro => sexoffencesprotectionorder",
+              "independent inquiry into child sexual abuse, child abuse, iicsa => independentinquiryintochildsexualabuse",
+              "victim liaison officer, victim liason unit, womens safety worker, wsw, vlo, vlu => victimliaisonofficer",
+              "unpaid work, upw, cs, community service, community payback, cp => unpaidwork",
+              "community order, co, com, comm order probation order => communityorder",
+              "previous convictions, precon, pre-cons => previousconviction",
+              "police constable, pc => policeconstable, pc",
+              "accredited program, accredited programme, acc_prog, ap => accreditedprogram",
+              "service user, person on probation, pop, client, offender => persononprobation",
+              "remanded in custody, ric => remandedincustody ric",
+              "universal credit, uc => univeralcredit",
+              "social services, ss, social worker, social care => socialservices",
+              "national insurance number, ni number, ni, nino => ninumber",
+              "sentence plan, initial sentence plan, final sentence plan, sp, isp, fsp => sentenceplan plan",
+              "national standards, ns => nationalstandards",
+              "local admin unit, Probation Delivery Unit, ldu, lau, cluster, pdu => localadminunit",
+              "commissioned rehabilitative services crs => commissioned rehabilitative services",
+              "rehabilitation activity requirement, rar => rehabilitationactivityrequirement",
+              "non structured intervention, nsi, non statutory invervention => nonstatutoryintervention",
+              "structured interventions, si, tsi, structured intervension => structuredintervention",
+              "national delius => nationaldelius",
+              "delius => national delius",
+              "dob, d o b, date of birth, d.o.b => dateofbirth",
+              "safe guarding, safeguarding, safegarding, safe-guarding, safegaurding, safe  gaurding => safeguarding",
+              "dwp, department for work pensions, dwp => dwp, department work pensions",
+              "hand over, h/o, handover => handover",
+              "self harm, self-harm => selfharm"
+            ]
+          },
+          "dates_short_day": {
+            "pattern": "^(\\d{1})[\\s\\-\\./](0?[1-9]|1[0-2])[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "0$1.$2.$3"
+          },
+          "probation_synonyms_common": {
+            "type": "synonym",
+            "synonyms": [
+              "apt, appt => appointment, apt, appt",
+              "upw duty manager, upw operations manager, upw placement manager, upw om, upw requirement manager, upw work manager, upw management, upw delivery manager",
+              "general practitioner, gp, doctor",
+              "mental health, mh",
+              "adjourned, adj",
+              "report, rept, rep, rpt",
+              "magistrates court, magistratescourt, mc, mags, mag court",
+              "crown court, cc, crowncourt, crn court",
+              "accredited program, accreditedprogram, ap, prog, program",
+              "sentence plan, initial sentence plan, final sentence plan, sp, isp, fsp, sentenceplan plan",
+              "self harm, selfharm, self-harm",
+              "wife, partner",
+              "transfer, tfr",
+              "meds, medication, medicine",
+              "dad, father, pa",
+              "mom, mum, mother",
+              "msg, message",
+              "disqualified, disq",
+              "intelligence, intel",
+              "text, sms, tc",
+              "afternoon, pm",
+              "morning, am",
+              "employment, empl",
+              "licence, lic",
+              "cert, certification",
+              "rls, release",
+              "pics, pictures",
+              "unlawfully at large, ual",
+              "standard, std",
+              "years, yrs",
+              "ooh, out of hours",
+              "wfh, work from home",
+              "adj, adjourned",
+              "pts, points",
+              "television, tv",
+              "att => att, attend",
+              "absence, ab, abs",
+              "fialed, filed => failed, fialed filed",
+              "girlfriend, gf",
+              "abs, absence",
+              "home office, ho",
+              "appt, apt, appointment",
+              "e-mail, email",
+              "video link, videolink, video-link",
+              "referral, referal",
+              "term, termination",
+              "time table, timetable, time-table",
+              "summ, summary",
+              "criminal number, cro",
+              "antidepressants, anti-depressants",
+              "fostercare, foster-care",
+              "departure, depart",
+              "disclose, disclosure",
+              "expose, exposure",
+              "work sheet, worksheet",
+              "antisocial, anti-social, anti social",
+              "sfo, serious further offence",
+              "hrs, hours",
+              "years, yrs",
+              "girlfriend, gf",
+              "accomodation, accom, accommodation",
+              "home office, ho",
+              "alcohol, alc",
+              "address, addr",
+              "drugs, drg",
+              "programme, program",
+              "domestic, dom",
+              "sexual, sex",
+              "well being, wellbeing, welbeing, well-being, wellbeing",
+              "solicitor, lawyer",
+              "rehab, rehabilitation",
+              "nan, grand mother, grandmother, grandma",
+              "grandfather, grand father, grandad",
+              "grandchild, grand child",
+              "preg, pregnant",
+              "pip, benefits",
+              "docs, documents",
+              "key worker, keyworker, key-worker",
+              "min, minutes",
+              "child, children, kid",
+              "admission, admit",
+              "exclusion, excl",
+              "initial, inital",
+              "intro, introduction",
+              "mgr => manager",
+              "passed away, died",
+              "pictures, pics",
+              "racial, racist",
+              "register, registration, registry",
+              "one, 1",
+              "2, two",
+              "3, three",
+              "4, four",
+              "5, five",
+              "6, six",
+              "7, seven",
+              "8, eight",
+              "9, nine",
+              "10, ten",
+              "11, eleven",
+              "12, twelve",
+              "13, thirteen",
+              "14, fourteen",
+              "15, fifteen",
+              "16, sixteen",
+              "17, seventeen",
+              "18, eighteen",
+              "19, nineteen",
+              "20, twenty",
+              "30, thirty",
+              "40, forty",
+              "50, fifty",
+              "60, sixty",
+              "70, seventy",
+              "80, eighty",
+              "90, ninety",
+              "1 am, 1am, 0100",
+              "2 am, 2am, 0200",
+              "3 am, 3am, 0300",
+              "4 am, 4am, 0400",
+              "5 am, 5am, 0500",
+              "6 am, 6am, 0600",
+              "7 am, 7am, 0700",
+              "8 am, 8am, 0800",
+              "9 am, 9am, 0900",
+              "10 am, 10am, 1000",
+              "11 am, 11am, 1100",
+              "12 pm, 12pm, 1200",
+              "1 pm, 1pm, 1300",
+              "2 pm, 2pm, 1400",
+              "3 pm, 3pm, 1500",
+              "4 pm, 4pm, 1600",
+              "5 pm, 5pm, 1700",
+              "6 pm, 6pm, 1800",
+              "7 pm, 7pm, 1900",
+              "8 pm, 8pm, 2000",
+              "9 pm, 9pm, 2100",
+              "10 pm, 10pm, 2200",
+              "11 pm, 11pm, 2300",
+              "12 am, 12am, 0000"
+            ]
+          },
+          "probation_synonyms_index": {
+            "type": "synonym",
+            "synonyms": [
+              "failed to attend, fta, abs, absence, failure to attend => failedtoattend failed absence fta",
+              "failed to report, ftr => failedtoreport failed  ftr report",
+              "failed to comply, ftc => failedtocomply ftc failed comply",
+              "unacceptable absence, ua => unacceptableabsence ua unacceptable",
+              "acceptable absence, aa => acceptableabsence acceptable absence aa",
+              "grievous bodily harm, gbh => grievousbodilyharm gbh",
+              "actual bodily harm, abh => actualbodilyharm abh",
+              "domestic violence, domestic abuse, dv, da => domesticviolence dv da abuse violence domestic",
+              "offender manager, om => om offendermanager manager",
+              "community practitioner, cppt => offendermanager manager cppt  practitioner",
+              "probation practitioner, ppt => ppt offendermanager manager  practitioner",
+              "community practitioner, com => offendermanager manager com practitioner",
+              "prison offender manager, pom => pom, prisonoffendermanager, manager",
+              "program manager, programme manaer => programmanager, manager",
+              "treatment manager => programmanager, manager",
+              "tutor => programmanager, tutor",
+              "intervention manager, im, intervension manager => interventionmanager, manager, im",
+              "supervisor => unpaidworkmanager manager supervisor",
+              "unpaid work manager => unpaidworkmanager manager supervisor",
+              "unpaid work supervisor => unpaidworkmanager manager supervisor",
+              "upw supervisor => unpaidworkmanager manager supervisor",
+              "cp manager => unpaidworkmanager manager supervisor",
+              "cp supervisor => unpaidworkmanager manager supervisor",
+              "offender management unit, omu => omu offendermanagermentunit",
+              "warrant not backed bail, wnbb => warrantnotbackedbail warrant  summons wnbb",
+              "warrant backed for  bail, wbb => warrantbackedbail warrant  summons wbb",
+              "wnbb => warrantnotbackedbail warrant  summons wnbb",
+              "wbb => warrantbackedbail warrant  summons wbb",
+              "risk of serious harm, risk of harm, rosh, rosha => riskofharm risk harm serious rosh rosha",
+              "sex offences protection order, sopo, sor, shpo, sex offender register, sexual harm prevention order, sro => sexoffencesprotectionorder, sex, register, harm, prevention, offence",
+              "independent inquiry into child sexual abuse, child abuse, iicsa => independentinquiryintochildsexualabuse, child, abuse, sexual",
+              "prolific priority offender, ppo => prolificpriorityoffender, prolific, offender, priority",
+              "victim liaison officer, victim liaison contact, victim liaison unit, vlo, vlu => victimliaisonofficer victim liaison officer unit",
+              "womens safety worker, wsw => victimliaisonofficer women safety worker",
+              "unpaid work, upw, cp, cs, community service => unpaidwork, upw",
+              "cs, community service => unpaidwork, cs, community service",
+              "community payback, cp => unpaidwork, cp, comminity payback",
+              "community order, co, com, comm order probation order => communityorder, order, community, co, com",
+              "previous convictions, prev convictions, precon, pre cons, pre-cons => previousconviction, conviction",
+              "police constable, pc => policeconstable, pc, constable, police",
+              "accredited program, accredited programme, acc prog, ap, iaps => accreditedprogram, ap, program, iaps",
+              "person on probation, pop, client => persononprobation, offender, person",
+              "service user => persononprobation, service user",
+              "client => persononprobation, client",
+              "offender => persononprobation, offender",
+              "remanded in custody, ric => remandedincustody, remanded, custody, ric",
+              "universal credit, uc => universalcredit, uc, benefits, credit, universal",
+              "social services, ss, social worker, adult services, adult care, adultcare => socialservices, social services adult",
+              "national insurance number => ninumber, ni, nino",
+              "ni => ninumber, ni, nino",
+              "nino => ninumber, ni, nino",
+              "ni number => ninumber ni, nino",
+              "national standards => nationalstandards ns national standards",
+              "local admin unit, probation delivery unit, ldu, lau, cluster, pdu => localadminunit delivery local ldu lau cluster pdu",
+              "commissioned rehabilitative services, crs => commissioned rehabilitative services crs",
+              "rehabilitation activity requirement, rar => rehabilitationactivityrequirement rar requirement rehabilitation",
+              "non structured intervention, non structured intervension, nsi, non statutory intervention => nonstatutoryintervention, nsi, intervention",
+              "structured interventions, si, tsi, structured intervension => structuredintervention structured si, tsi, intervention, interension",
+              "national delius, nd => nationaldelius, delius, nd",
+              "delius => nationaldelius",
+              "dob, d o b, date of birth, d.o.b => dateofbirth, birth, date",
+              "safe guarding, safeguarding, safegaurding, safe gaurding, safegarding, safe-guarding => safeguarding",
+              "dwp, department for work pensions, dwp => dwp, department work pensions",
+              "hand over => handover, h/o",
+              "self harm, self-harm => selfharm",
+              "aftercare, after care, after-care",
+              "annual, yearly",
+              "chronology, cronolgy, chron, cron"
+            ]
+          },
+          "capture_numbers": {
+            "type": "pattern_capture",
+            "preserve_original": "true",
+            "patterns": [
+              "(\\d{4}-\\d{2}-\\d{2})t00:00:00(?:\\.000)?z?",
+              "(\\d+[\\d\\W]+\\d+)"
+            ]
+          },
+          "dates_may": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]may[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.05.$2"
+          },
+          "dates_apr": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]apr(?:il)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.04.$2"
+          },
+          "remove_non_digits": {
+            "pattern": "\\D",
+            "type": "pattern_replace"
+          },
+          "dates_oct": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]oct(?:ober)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.10.$2"
+          },
+          "dates_mar": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]mar(?:ch)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.03.$2"
+          },
+          "dates_sep": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]sept?(?:ember)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.09.$2"
+          },
+          "dates_nov": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]nov(?:ember)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.11.$2"
+          },
+          "dates_short_year_20": {
+            "pattern": "^(\\d{1,2})[\\s\\-\\./](0?[1-9]|1[0-2])[\\s\\-\\./]([0-7]\\d)$",
+            "type": "pattern_replace",
+            "replacement": "$1.$2.20$3"
+          },
+          "dates_jan": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]jan(?:uary)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.01.$2"
+          },
+          "catenate_non_dates": {
+            "filter": [
+              "remove_non_digits"
+            ],
+            "type": "condition",
+            "script": {
+              "source": "!(token.getTerm().toString() ==~ /^(?:19|20)\\d{2}-(0[1-9]|1[0-2])-\\d{2}$/) && token.getTerm().toString() ==~ /^[\\d\\W]+$/"
             }
           },
-          "analyzer": {
-            "probation_search_analyzer": {
-              "filter": [
-                "asciifolding",
-                "lowercase",
-                "capture_numbers",
-                "replace_dialcodes",
-                "dates_iso8601",
-                "dates_month_day_year",
-                "dates_jan",
-                "dates_feb",
-                "dates_mar",
-                "dates_apr",
-                "dates_may",
-                "dates_jun",
-                "dates_jul",
-                "dates_aug",
-                "dates_sep",
-                "dates_oct",
-                "dates_nov",
-                "dates_dec",
-                "dates_year_month_day",
-                "dates_long_year",
-                "dates_short_year_19",
-                "dates_short_year_20",
-                "dates_short_day",
-                "dates_short_month",
-                "dates_reformat",
-                "catenate_non_dates",
-                "override_stemmer",
-                "stemmer",
-                "probation_synonyms_common",
-                "probation_synonyms_search",
-                "delimit_words",
-                "flatten_graph",
-                "override_stemmer",
-                "stemmer",
-                "trim",
-                "remove_single_chars",
-                "unique_tokens"
-              ],
-              "tokenizer": "custom-whitespace"
-            },
-            "probation_text_analyzer": {
-              "filter": [
-                "asciifolding",
-                "lowercase",
-                "capture_numbers",
-                "replace_dialcodes",
-                "dates_iso8601",
-                "dates_month_day_year",
-                "dates_jan",
-                "dates_feb",
-                "dates_mar",
-                "dates_apr",
-                "dates_may",
-                "dates_jun",
-                "dates_jul",
-                "dates_aug",
-                "dates_sep",
-                "dates_oct",
-                "dates_nov",
-                "dates_dec",
-                "dates_year_month_day",
-                "dates_long_year",
-                "dates_short_year_19",
-                "dates_short_year_20",
-                "dates_short_day",
-                "dates_short_month",
-                "dates_reformat",
-                "catenate_non_dates",
-                "override_stemmer",
-                "stemmer",
-                "probation_synonyms_common",
-                "probation_synonyms_index",
-                "delimit_words",
-                "flatten_graph",
-                "override_stemmer",
-                "stemmer",
-                "trim",
-                "remove_single_chars",
-                "unique_tokens"
-              ],
-              "tokenizer": "custom-whitespace"
-            }
+          "dates_long_year": {
+            "pattern": "^(\\d{1,2})[\\s\\-\\./](0?[1-9]|1[0-2])[\\s\\-\\./]((?:19|20)\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.$2.$3"
           },
-          "tokenizer": {
-            "custom-whitespace": {
-              "flags": "CASE_INSENSITIVE|COMMENTS",
-              "pattern": "( \\b\\d{1,2}(?:st|nd|rd|th)?[\\ \\-\\./]         # capture space-separated dates (e.g. \"1st february 1999\", \"1 feb 99\")\n    (?:jan(?:uary)?|feb(?:ruary)?\n      |mar(?:ch)?|apr(?:il)?|may\n      |june?|july?|aug(?:ust)?\n      |sept?(?:ember)?|oct(?:ober)?\n      |(?:nov|dec)(?:ember)?)\n    [\\ \\-\\./](?:19|20)?\\d{2}\\b\n| \\b(?:jan(?:uary)?|feb(?:ruary)?            # capture space-separated dates, with month first (e.g. \"feb 1st 99\", \"feb 01 1999\")\n      |mar(?:ch)?|apr(?:il)?|may\n      |june?|july?|aug(?:ust)?\n      |sept?(?:ember)?|oct(?:ober)?\n      |(?:nov|dec)(?:ember)?)\n    [\\ \\-\\./]\\d{1,2}(?:st|nd|rd|th)?\n    [\\ \\-\\./](?:19|20)?\\d{2}\\b\n| \\(?\\+?\\d+[\\ \\-\\./\\(\\)][\\d\\ \\-\\./\\(\\)]+\\d+  # capture space-separated numbers (e.g. \"phone 0123 456 78\" => [\"phone\", \"0123 456 78\"])\n| [a-z]{1,2}\\d[a-z\\d]?\\ \\d[a-z]{2}           # capture space-separated postcodes (e.g. \"M20 0AA is the postcode\" => [\"M20 0AA\", \"is\", \"the\", \"postcode\"])\n| \\S+                                        # tokenize everything else on whitespace\n)\n",
-              "type": "pattern",
-              "group": "1"
-            }
+          "dates_month_day_year": {
+            "pattern": "^(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|(?:nov|dec)(?:ember)?)[\\s\\-\\./](\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$2.$1.$3"
+          },
+          "replace_dialcodes": {
+            "pattern": "^(?:00|\\+)?44\\W*0?(.*)$",
+            "type": "pattern_replace",
+            "preserve_original": "true",
+            "replacement": "0$1"
+          },
+          "dates_dec": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]dec(?:ember)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.12.$2"
+          },
+          "dates_jun": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]june?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.06.$2"
+          },
+          "dates_feb": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]feb(?:ruary)?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.02.$2"
+          },
+          "unique_tokens": {
+            "type": "unique",
+            "only_on_same_position": "true"
+          },
+          "override_stemmer": {
+            "type": "stemmer_override",
+            "rules": [
+              "officer => officer",
+              "officers => officer",
+              "office => office",
+              "offices => office",
+              "nps => nps",
+              "one => one",
+              "nomis => nomis",
+              "delius => delius",
+              "ndelius => ndelius",
+              "nationaldelius => nationaldelius"
+            ]
+          },
+          "dates_jul": {
+            "pattern": "^(\\d{1,2})(?:st|nd|rd|th)?[\\s\\-\\./]july?[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.07.$2"
+          },
+          "dates_short_month": {
+            "pattern": "^(\\d{2})[\\s\\-\\./](\\d{1})[\\s\\-\\./]((?:19|20)?\\d{2})$",
+            "type": "pattern_replace",
+            "replacement": "$1.0$2.$3"
           }
         },
-        "number_of_shards": "18",
-        "number_of_replicas": "1"
-      }
-    },
-    "mappings": {
-      "properties": {
-        "date": {
-          "copy_to": "notes",
-          "analyzer": "probation_text_analyzer",
-          "type": "text",
-          "fields": {
-            "date": {
-              "format": "date_optional_time||yyyy-MM-dd||dd-MM-yyyy",
-              "type": "date"
-            }
+        "analyzer": {
+          "probation_search_analyzer": {
+            "filter": [
+              "asciifolding",
+              "lowercase",
+              "capture_numbers",
+              "replace_dialcodes",
+              "dates_iso8601",
+              "dates_month_day_year",
+              "dates_jan",
+              "dates_feb",
+              "dates_mar",
+              "dates_apr",
+              "dates_may",
+              "dates_jun",
+              "dates_jul",
+              "dates_aug",
+              "dates_sep",
+              "dates_oct",
+              "dates_nov",
+              "dates_dec",
+              "dates_year_month_day",
+              "dates_long_year",
+              "dates_short_year_19",
+              "dates_short_year_20",
+              "dates_short_day",
+              "dates_short_month",
+              "dates_reformat",
+              "catenate_non_dates",
+              "override_stemmer",
+              "stemmer",
+              "probation_synonyms_common",
+              "probation_synonyms_search",
+              "delimit_words",
+              "flatten_graph",
+              "override_stemmer",
+              "stemmer",
+              "trim",
+              "remove_single_chars",
+              "unique_tokens"
+            ],
+            "tokenizer": "custom-whitespace"
+          },
+          "probation_text_analyzer": {
+            "filter": [
+              "asciifolding",
+              "lowercase",
+              "capture_numbers",
+              "replace_dialcodes",
+              "dates_iso8601",
+              "dates_month_day_year",
+              "dates_jan",
+              "dates_feb",
+              "dates_mar",
+              "dates_apr",
+              "dates_may",
+              "dates_jun",
+              "dates_jul",
+              "dates_aug",
+              "dates_sep",
+              "dates_oct",
+              "dates_nov",
+              "dates_dec",
+              "dates_year_month_day",
+              "dates_long_year",
+              "dates_short_year_19",
+              "dates_short_year_20",
+              "dates_short_day",
+              "dates_short_month",
+              "dates_reformat",
+              "catenate_non_dates",
+              "override_stemmer",
+              "stemmer",
+              "probation_synonyms_common",
+              "probation_synonyms_index",
+              "delimit_words",
+              "flatten_graph",
+              "override_stemmer",
+              "stemmer",
+              "trim",
+              "remove_single_chars",
+              "unique_tokens"
+            ],
+            "tokenizer": "custom-whitespace"
           }
         },
-        "startTime": {
-          "type": "date",
-          "format": "hour_minute_second"
-        },
-        "endTime": {
-          "type": "date",
-          "format": "hour_minute_second"
-        },
-        "attended": {
-          "copy_to": "outcome",
-          "type": "keyword"
-        },
-        "notes": {
-          "search_analyzer": "probation_search_analyzer",
-          "analyzer": "probation_text_analyzer",
-          "boost": 5,
-          "type": "text"
-        },
-        "rowVersion": {
-          "index": false,
-          "type": "double"
-        },
-        "contactId": {
-          "type": "integer"
-        },
-        "description": {
-          "search_analyzer": "probation_search_analyzer",
-          "analyzer": "probation_text_analyzer",
-          "boost": 4,
-          "type": "text"
-        },
-        "typeDescription": {
-          "copy_to": "type",
-          "type": "keyword"
-        },
-        "outcomeCode": {
-          "copy_to": "outcome",
-          "type": "keyword"
-        },
-        "type": {
-          "store": true,
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword"
-            }
+        "tokenizer": {
+          "custom-whitespace": {
+            "flags": "CASE_INSENSITIVE|COMMENTS",
+            "pattern": "( \\b\\d{1,2}(?:st|nd|rd|th)?[\\ \\-\\./]         # capture space-separated dates (e.g. \"1st february 1999\", \"1 feb 99\")\n    (?:jan(?:uary)?|feb(?:ruary)?\n      |mar(?:ch)?|apr(?:il)?|may\n      |june?|july?|aug(?:ust)?\n      |sept?(?:ember)?|oct(?:ober)?\n      |(?:nov|dec)(?:ember)?)\n    [\\ \\-\\./](?:19|20)?\\d{2}\\b\n| \\b(?:jan(?:uary)?|feb(?:ruary)?            # capture space-separated dates, with month first (e.g. \"feb 1st 99\", \"feb 01 1999\")\n      |mar(?:ch)?|apr(?:il)?|may\n      |june?|july?|aug(?:ust)?\n      |sept?(?:ember)?|oct(?:ober)?\n      |(?:nov|dec)(?:ember)?)\n    [\\ \\-\\./]\\d{1,2}(?:st|nd|rd|th)?\n    [\\ \\-\\./](?:19|20)?\\d{2}\\b\n| \\(?\\+?\\d+[\\ \\-\\./\\(\\)][\\d\\ \\-\\./\\(\\)]+\\d+  # capture space-separated numbers (e.g. \"phone 0123 456 78\" => [\"phone\", \"0123 456 78\"])\n| [a-z]{1,2}\\d[a-z\\d]?\\ \\d[a-z]{2}           # capture space-separated postcodes (e.g. \"M20 0AA is the postcode\" => [\"M20 0AA\", \"is\", \"the\", \"postcode\"])\n| \\S+                                        # tokenize everything else on whitespace\n)\n",
+            "type": "pattern",
+            "group": "1"
           }
-        },
-        "complied": {
-          "copy_to": "outcome",
-          "type": "keyword"
-        },
-        "typeCode": {
-          "copy_to": "type",
-          "type": "keyword"
-        },
-        "outcomeDescription": {
-          "copy_to": "outcome",
-          "type": "keyword"
-        },
-        "offenderId": {
-          "type": "integer"
-        },
-        "lastUpdatedDateTime": {
-          "type": "date"
-        },
-        "crn": {
-          "type": "keyword"
-        },
-        "outcome": {
-          "boost": 2,
-          "store": true,
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword"
-            }
-          }
-        },
-        "typeShortDescription": {
-          "copy_to": "type",
-          "type": "keyword"
         }
+      },
+      "number_of_shards": "1",
+      "number_of_replicas": "0"
+    }
+  },
+  "mappings": {
+    "properties": {
+      "date": {
+        "copy_to": "notes",
+        "analyzer": "probation_text_analyzer",
+        "type": "text",
+        "fields": {
+          "date": {
+            "format": "date_optional_time||yyyy-MM-dd||dd-MM-yyyy",
+            "type": "date"
+          }
+        }
+      },
+      "startTime": {
+        "type": "date",
+        "format": "hour_minute_second"
+      },
+      "endTime": {
+        "type": "date",
+        "format": "hour_minute_second"
+      },
+      "attended": {
+        "copy_to": "outcome",
+        "type": "keyword"
+      },
+      "notes": {
+        "search_analyzer": "probation_search_analyzer",
+        "analyzer": "probation_text_analyzer",
+        "boost": 5,
+        "type": "text"
+      },
+      "rowVersion": {
+        "index": false,
+        "type": "double"
+      },
+      "contactId": {
+        "type": "integer"
+      },
+      "description": {
+        "search_analyzer": "probation_search_analyzer",
+        "analyzer": "probation_text_analyzer",
+        "boost": 4,
+        "type": "text"
+      },
+      "typeDescription": {
+        "copy_to": "type",
+        "type": "keyword"
+      },
+      "outcomeCode": {
+        "copy_to": "outcome",
+        "type": "keyword"
+      },
+      "type": {
+        "store": true,
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "complied": {
+        "copy_to": "outcome",
+        "type": "keyword"
+      },
+      "typeCode": {
+        "copy_to": "type",
+        "type": "keyword"
+      },
+      "outcomeDescription": {
+        "copy_to": "outcome",
+        "type": "keyword"
+      },
+      "offenderId": {
+        "type": "integer"
+      },
+      "lastUpdatedDateTime": {
+        "type": "date"
+      },
+      "crn": {
+        "type": "keyword"
+      },
+      "outcome": {
+        "boost": 2,
+        "store": true,
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "typeShortDescription": {
+        "copy_to": "type",
+        "type": "keyword"
       }
     }
   }
