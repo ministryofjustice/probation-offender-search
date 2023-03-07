@@ -190,7 +190,7 @@ class ContactSearchIntegrationTest {
 
   private fun RequestSpecification.authorised(): RequestSpecification =
     this.auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION_CONTACT_SEARCH"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
 
   private fun RequestSpecification.search(csr: ContactSearchRequest, queryParams: Map<String, Any> = mapOf()) =
