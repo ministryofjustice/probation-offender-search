@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/search/contacts")
 class ContactSearchController(val contactSearchService: ContactSearchService) {
-  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @PreAuthorize("hasRole('ROLE_PROBATION_CONTACT_SEARCH')")
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   fun searchContact(
     @RequestBody request: ContactSearchRequest,
