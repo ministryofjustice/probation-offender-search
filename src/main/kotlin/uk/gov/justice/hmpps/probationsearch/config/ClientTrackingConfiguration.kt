@@ -16,12 +16,7 @@ import java.text.ParseException
 @Configuration
 class ClientTrackingConfiguration(private val clientTrackingInterceptor: ClientTrackingInterceptor) : WebMvcConfigurer {
   override fun addInterceptors(registry: InterceptorRegistry) {
-    log.info("Adding application insights client tracking interceptor")
     registry.addInterceptor(clientTrackingInterceptor).addPathPatterns("/**")
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
 

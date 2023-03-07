@@ -26,11 +26,19 @@ class OffenderMatchController(private val matchService: MatchService) {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  @Operation(summary = "Match for an offender in Delius ElasticSearch. It will return the best group of matching offenders based on the request", description = "Specify the request criteria to match against", operationId = "match")
-  @ApiResponses(value = [ApiResponse(responseCode = "200", description = "OK"), ApiResponse(responseCode = "400", description = "Invalid Request"), ApiResponse(responseCode = "404", description = "Not found")])
+  @Operation(
+    summary = "Match for an offender in Delius ElasticSearch. It will return the best group of matching offenders based on the request",
+    description = "Specify the request criteria to match against",
+    operationId = "match"
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "OK"), ApiResponse(
+        responseCode = "400",
+        description = "Invalid Request"
+      ), ApiResponse(responseCode = "404", description = "Not found")
+    ]
+  )
   @PostMapping
-  fun matchOffenders(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches {
-    log.info("Match called with {}", matchRequest)
-    return matchService.match(matchRequest)
-  }
+  fun matchOffenders(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches = matchService.match(matchRequest)
 }

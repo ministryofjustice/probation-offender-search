@@ -23,7 +23,6 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
       ex.bindingResult.fieldErrors.map { FieldError(it.field, it.defaultMessage) },
       HttpStatus.BAD_REQUEST
     )
-    println(ex)
     return ResponseEntity(errors, errors.status)
   }
 }

@@ -63,7 +63,6 @@ class PersonSearchHelper(private val esClient: RestHighLevelClient) {
   }
 
   private fun loadOffender(key: String, offender: String) {
-    log.debug("Loading offender: {}", offender)
     esClient.index(
       IndexRequest()
         .source(offender, JSON)
@@ -75,7 +74,6 @@ class PersonSearchHelper(private val esClient: RestHighLevelClient) {
   }
 
   private fun destroyIndex() {
-    log.debug("Dropping offender index")
     if (esClient.indices().exists(GetIndexRequest(indexName), RequestOptions.DEFAULT)) {
       esClient.indices().delete(DeleteIndexRequest(indexName), RequestOptions.DEFAULT)
     }
@@ -88,11 +86,9 @@ class PersonSearchHelper(private val esClient: RestHighLevelClient) {
       RequestOptions.DEFAULT
     )
     esClient.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)
-    log.debug("Build index")
   }
 
   private fun buildPipeline() {
-    log.debug("Build pipeline")
     esClient.ingest()
       .putPipeline(PutPipelineRequest("person-search-pipeline", "/elasticsearchdata/create-pipeline.json".resourceAsByteReference(), JSON), RequestOptions.DEFAULT)
   }

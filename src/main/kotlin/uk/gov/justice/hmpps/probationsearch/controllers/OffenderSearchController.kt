@@ -69,10 +69,7 @@ class OffenderSearchController(
   )
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @RequestMapping("/search", method = [POST, GET])
-  fun searchOffenders(@RequestBody searchForm: SearchDto): List<OffenderDetail?>? {
-    log.info("Search called with {}", searchForm)
-    return searchService.performSearch(searchForm)
-  }
+  fun searchOffenders(@RequestBody searchForm: SearchDto): List<OffenderDetail?>? = searchService.performSearch(searchForm)
 
   @Operation(
     summary = "Search for an offender in Delius ElasticSearch using a search phrase. Only offenders matching all request attributes will be returned",
@@ -122,14 +119,11 @@ class OffenderSearchController(
   fun searchOffendersByPhrase(
     @Valid @RequestBody searchPhraseFilter: SearchPhraseFilter,
     @PageableDefault pageable: Pageable
-  ): SearchPhraseResults {
-    log.info("Search called with {}", searchPhraseFilter)
-    return searchService.performSearch(
-      searchPhraseFilter,
-      pageable,
-      getOffenderUserAccessFromScopes(securityUserContext)
-    )
-  }
+  ): SearchPhraseResults = searchService.performSearch(
+    searchPhraseFilter,
+    pageable,
+    getOffenderUserAccessFromScopes(securityUserContext)
+  )
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @ApiResponses(
@@ -253,10 +247,7 @@ class OffenderSearchController(
   fun searchOffendersByLduCode(
     @PathVariable lduCode: String,
     @PageableDefault pageable: Pageable,
-  ): SearchPagedResults {
-    log.info("Searching for offenders by ldu code: {}", lduCode)
-    return searchService.findByLduCode(lduCode, pageable)
-  }
+  ): SearchPagedResults = searchService.findByLduCode(lduCode, pageable)
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @Operation(summary = "Match prisoners by a team code", description = "Requires ROLE_COMMUNITY role")
@@ -278,10 +269,7 @@ class OffenderSearchController(
   fun searchOffendersByTeamCode(
     @PathVariable teamCode: String,
     @PageableDefault pageable: Pageable,
-  ): SearchPagedResults {
-    log.info("Searching for offenders by team code: {}", teamCode)
-    return searchService.findByTeamCode(teamCode, pageable)
-  }
+  ): SearchPagedResults = searchService.findByTeamCode(teamCode, pageable)
 
   @GetMapping("/synthetic-monitor")
   fun syntheticMonitor() {

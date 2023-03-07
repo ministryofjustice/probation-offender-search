@@ -76,7 +76,6 @@ class SearchService @Autowired constructor(
 
   private fun validateSearchForm(searchOptions: SearchDto) {
     if (!searchOptions.isValid) {
-      log.warn("Invalid search  - no criteria provided")
       throw uk.gov.justice.hmpps.probationsearch.BadRequestException("Invalid search  - please provide at least 1 search parameter")
     }
   }
@@ -117,7 +116,6 @@ class SearchService @Autowired constructor(
       return offenderAccessService.canAccessOffender(offenderDetail, offenderUserAccess)
     }
 
-    log.info("Search was: \"${searchPhraseFilter.phrase}\"")
     val searchRequest = personSearchRequest()
       .source(
         SearchSourceBuilder()
