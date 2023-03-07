@@ -32,10 +32,12 @@ class OffenderMatchController(private val matchService: MatchService) {
     operationId = "match"
   )
   @ApiResponses(
-    value = [ApiResponse(responseCode = "200", description = "OK"), ApiResponse(
-      responseCode = "400",
-      description = "Invalid Request"
-    ), ApiResponse(responseCode = "404", description = "Not found")]
+    value = [
+      ApiResponse(responseCode = "200", description = "OK"), ApiResponse(
+        responseCode = "400",
+        description = "Invalid Request"
+      ), ApiResponse(responseCode = "404", description = "Not found")
+    ]
   )
   @PostMapping
   fun matchOffenders(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches = matchService.match(matchRequest)

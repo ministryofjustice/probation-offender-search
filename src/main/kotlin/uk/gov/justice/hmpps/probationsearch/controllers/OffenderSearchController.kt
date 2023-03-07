@@ -269,7 +269,7 @@ class OffenderSearchController(
   fun searchOffendersByTeamCode(
     @PathVariable teamCode: String,
     @PageableDefault pageable: Pageable,
-  ): SearchPagedResults= searchService.findByTeamCode(teamCode, pageable)
+  ): SearchPagedResults = searchService.findByTeamCode(teamCode, pageable)
 
   @GetMapping("/synthetic-monitor")
   fun syntheticMonitor() {
