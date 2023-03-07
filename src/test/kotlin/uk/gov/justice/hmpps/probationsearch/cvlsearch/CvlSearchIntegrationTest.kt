@@ -79,8 +79,6 @@ internal class CvlSearchIntegrationTest : ElasticIntegrationBase() {
       .body()
       .`as`(ErrorsResponse::class.java)
 
-    println(res)
-
     assertThat(res.fieldErrors).containsAll(
       listOf(
         FieldError("teamCodes", "must not be empty"),
