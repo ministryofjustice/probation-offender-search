@@ -45,7 +45,6 @@ class ControllerAdvice {
 
   @ExceptionHandler(AccessDeniedException::class)
   fun handleException(e: AccessDeniedException?): ResponseEntity<ErrorResponse> {
-    log.debug("Forbidden (403) returned", e)
     return ResponseEntity
       .status(HttpStatus.FORBIDDEN)
       .body(ErrorResponse(status = HttpStatus.FORBIDDEN.value()))
@@ -53,7 +52,6 @@ class ControllerAdvice {
 
   @ExceptionHandler(NotFoundException::class)
   fun handleException(e: NotFoundException): ResponseEntity<ErrorResponse> {
-    log.debug("Not Found (404) returned", e)
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
       .body(ErrorResponse(status = HttpStatus.NOT_FOUND.value(), developerMessage = e.message))
@@ -61,7 +59,6 @@ class ControllerAdvice {
 
   @ExceptionHandler(UnauthorisedException::class)
   fun handleException(e: UnauthorisedException): ResponseEntity<ErrorResponse> {
-    log.debug("Unauthorised (401) returned", e)
     return ResponseEntity
       .status(HttpStatus.UNAUTHORIZED)
       .body(ErrorResponse(status = HttpStatus.UNAUTHORIZED.value(), developerMessage = e.message))
@@ -69,7 +66,6 @@ class ControllerAdvice {
 
   @ExceptionHandler(InvalidRequestException::class)
   fun handleException(e: InvalidRequestException): ResponseEntity<ErrorResponse> {
-    log.debug("Bad Request (400) returned", e)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
@@ -77,7 +73,6 @@ class ControllerAdvice {
 
   @ExceptionHandler(uk.gov.justice.hmpps.probationsearch.BadRequestException::class)
   fun handleException(e: uk.gov.justice.hmpps.probationsearch.BadRequestException): ResponseEntity<ErrorResponse> {
-    log.debug("Bad request (400) returned", e)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
@@ -85,7 +80,6 @@ class ControllerAdvice {
 
   @ExceptionHandler(JsonMappingException::class)
   fun handleException(e: JsonMappingException): ResponseEntity<ErrorResponse> {
-    log.debug("Bad request (400) returned", e)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
@@ -93,7 +87,6 @@ class ControllerAdvice {
 
   @ExceptionHandler(MethodArgumentNotValidException::class)
   fun handleException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-    log.debug("Bad request (400) returned", e)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.developerMessage()))

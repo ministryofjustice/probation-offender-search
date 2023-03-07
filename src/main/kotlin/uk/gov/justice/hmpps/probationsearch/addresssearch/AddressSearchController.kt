@@ -93,8 +93,5 @@ class AddressSearchController(
   fun searchOffenders(
     @RequestBody addressSearchRequest: AddressSearchRequest,
     @RequestParam(required = false, defaultValue = "100") maxResults: Int
-  ): AddressSearchResponses {
-    log.info("Search called with {}", addressSearchRequest)
-    return addressSearchService.performSearch(addressSearchRequest, maxResults)
-  }
+  ): AddressSearchResponses = addressSearchService.performSearch(addressSearchRequest, maxResults)
 }
