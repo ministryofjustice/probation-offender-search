@@ -29,7 +29,7 @@ import java.util.Locale
 class SearchService @Autowired constructor(
   private val offenderAccessService: OffenderAccessService,
   private val hlClient: SearchClient,
-  private val mapper: ObjectMapper
+  private val mapper: ObjectMapper,
 ) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -109,9 +109,8 @@ class SearchService @Autowired constructor(
   fun performSearch(
     searchPhraseFilter: SearchPhraseFilter,
     pageable: Pageable,
-    offenderUserAccess: OffenderUserAccess
+    offenderUserAccess: OffenderUserAccess,
   ): SearchPhraseResults {
-
     fun canAccessOffender(offenderDetail: OffenderDetail): Boolean {
       return offenderAccessService.canAccessOffender(offenderDetail, offenderUserAccess)
     }
@@ -130,11 +129,11 @@ class SearchService @Autowired constructor(
           .suggest(
             SuggestBuilder()
               .addSuggestion("surname", TermSuggestionBuilder("surname").text(searchPhraseFilter.phrase))
-              .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase))
+              .addSuggestion("firstName", TermSuggestionBuilder("firstName").text(searchPhraseFilter.phrase)),
           )
           .apply {
             buildProbationAreaFilter(searchPhraseFilter.probationAreasFilter)?.run { postFilter(this) }
-          }
+          },
       )
     val response = hlClient.search(searchRequest)
     return SearchPhraseResults(
@@ -142,12 +141,12 @@ class SearchService @Autowired constructor(
         hits = response.hits.hits,
         phrase = searchPhraseFilter.phrase,
         offenderParser = ::parseOffenderDetail,
-        accessChecker = ::canAccessOffender
+        accessChecker = ::canAccessOffender,
       ),
       pageable = pageable,
       total = response.hits.totalHits?.value ?: 0,
       probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
-      suggestions = response.suggest
+      suggestions = response.suggest,
     )
   }
 
@@ -232,7 +231,7 @@ class SearchService @Autowired constructor(
     return SearchPagedResults(
       content = getSearchResult(response),
       pageable = pageable,
-      total = response.hits.totalHits?.value ?: 0
+      total = response.hits.totalHits?.value ?: 0,
     )
   }
 
@@ -256,7 +255,7 @@ class SearchService @Autowired constructor(
     return SearchPagedResults(
       content = getSearchResult(response),
       pageable = pageable,
-      total = response.hits.totalHits?.value ?: 0
+      total = response.hits.totalHits?.value ?: 0,
     )
   }
 
@@ -268,8 +267,8 @@ class SearchService @Autowired constructor(
           .mustWhenPresent("offenderManagers.active", true)
           .mustWhenPresent("offenderManagers.softDeleted", false)
           .mustWhenPresent(searchField, code),
-        ScoreMode.Max
-      )
+        ScoreMode.Max,
+      ),
     )
   }
 }

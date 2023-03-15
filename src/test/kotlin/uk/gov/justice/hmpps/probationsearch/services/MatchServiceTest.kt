@@ -69,8 +69,8 @@ internal class MatchServiceTest {
               surname = "smith",
               offenderId = 88,
               otherIds = IDs("1234"),
-            )
-          )
+            ),
+          ),
         )
     }
 
@@ -83,8 +83,8 @@ internal class MatchServiceTest {
           dateOfBirth = LocalDate.of(1965, 7, 19),
           croNumber = "SF80/655108T",
           pncNumber = "2018/0003456X",
-          nomsNumber = "G5555TT"
-        )
+          nomsNumber = "G5555TT",
+        ),
       )
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
@@ -95,8 +95,8 @@ internal class MatchServiceTest {
         assertThat(mustNames()).containsExactlyInAnyOrderEntriesOf(
           mapOf(
             "surname" to "smith",
-            "softDeleted" to false
-          )
+            "softDeleted" to false,
+          ),
         )
         val query = source().query() as BoolQueryBuilder
         val dateMatches = query.must().filterIsInstance<BoolQueryBuilder>().first().should()
@@ -115,13 +115,13 @@ internal class MatchServiceTest {
           "1965-09-19".toLocalDate(),
           "1965-10-19".toLocalDate(),
           "1965-11-19".toLocalDate(),
-          "1965-12-19".toLocalDate()
+          "1965-12-19".toLocalDate(),
         )
 
         assertThat(mustMultiMatchNames()).containsExactlyInAnyOrderEntriesOf(
           mapOf(
-            "john" to listOf("firstName", "offenderAliases.firstName").sorted()
-          )
+            "john" to listOf("firstName", "offenderAliases.firstName").sorted(),
+          ),
         )
       }
     }
@@ -135,8 +135,8 @@ internal class MatchServiceTest {
           dateOfBirth = LocalDate.of(1965, 2, 28),
           croNumber = "SF80/655108T",
           pncNumber = "2018/0003456X",
-          nomsNumber = "G5555TT"
-        )
+          nomsNumber = "G5555TT",
+        ),
       )
 
       val searchRequestCaptor = argumentCaptor<SearchRequest>()
@@ -158,7 +158,7 @@ internal class MatchServiceTest {
         "1965-09-28".toLocalDate(),
         "1965-10-28".toLocalDate(),
         "1965-11-28".toLocalDate(),
-        "1965-12-28".toLocalDate()
+        "1965-12-28".toLocalDate(),
       )
     }
   }
@@ -171,7 +171,7 @@ internal class MatchServiceTest {
       dateOfBirth = LocalDate.of(1965, 7, 19),
       croNumber = "SF80/655108T",
       pncNumber = "2018/0003456X",
-      nomsNumber = "G5555TT"
+      nomsNumber = "G5555TT",
     )
 
     @Test
@@ -179,8 +179,8 @@ internal class MatchServiceTest {
       whenever(searchClient.search(any())).thenReturn(
         resultsOf(
           OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234")),
-          OffenderDetail(surname = "smith", offenderId = 88, otherIds = IDs("1234"))
-        )
+          OffenderDetail(surname = "smith", offenderId = 88, otherIds = IDs("1234")),
+        ),
       )
 
       val results = service.match(matchRequest)
@@ -191,8 +191,8 @@ internal class MatchServiceTest {
     fun `will return matched by ALL_SUPPLIED when matching all parameters`() {
       whenever(searchClient.search(any())).thenReturn(
         resultsOf(
-          OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"))
-        )
+          OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234")),
+        ),
       )
 
       val results = service.match(matchRequest)
@@ -205,8 +205,8 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // full match
         .thenReturn(
           resultsOf(
-            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"))
-          )
+            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234")),
+          ),
         )
 
       val results = service.match(matchRequest)
@@ -220,8 +220,8 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // full match alias
         .thenReturn(
           resultsOf(
-            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"))
-          )
+            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234")),
+          ),
         )
 
       val results = service.match(matchRequest)
@@ -236,8 +236,8 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // NOMS number match
         .thenReturn(
           resultsOf(
-            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"))
-          )
+            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234")),
+          ),
         )
 
       val results = service.match(matchRequest)
@@ -253,8 +253,8 @@ internal class MatchServiceTest {
         .thenReturn(resultsOf()) // CRO number match
         .thenReturn(
           resultsOf(
-            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234"))
-          )
+            OffenderDetail(surname = "smith", offenderId = 99, otherIds = IDs("1234")),
+          ),
         )
 
       val results = service.match(matchRequest)

@@ -127,7 +127,7 @@ internal class ExtractProbationAreaAggregation {
     assertThat(extractProbationAreaAggregation(aggregations)).containsExactlyInAnyOrder(
       ProbationAreaAggregation("N01", 3),
       ProbationAreaAggregation("N07", 2),
-      ProbationAreaAggregation("N02", 1)
+      ProbationAreaAggregation("N02", 1),
     )
   }
 
@@ -229,7 +229,7 @@ fun getDefaultNamedXContents(): List<Entry> {
   val contentParsers = mapOf(
     StringTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedStringTerms.fromXContent(parser, name as String) },
     NestedAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedNested.fromXContent(parser, name as String) },
-    LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedLongTerms.fromXContent(parser, name as String) }
+    LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedLongTerms.fromXContent(parser, name as String) },
   )
   return contentParsers
     .toList()
@@ -240,7 +240,7 @@ fun String.toAggregation(): Aggregations {
   val parser = JSON.xContent().createParser(
     NamedXContentRegistry(getDefaultNamedXContents()),
     DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
-    this
+    this,
   )
   parser.nextToken() // simulate ES moving to first aggregation
   return Aggregations.fromXContent(parser)

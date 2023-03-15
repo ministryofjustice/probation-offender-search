@@ -36,8 +36,8 @@ class ElasticSearchMockServer : WireMockServer(WIREMOCK_PORT) {
   fun stubSearch(response: String) {
     stubFor(
       WireMock.post(WireMock.anyUrl()).willReturn(
-        WireMock.okForContentType("application/json", response)
-      )
+        WireMock.okForContentType("application/json", response),
+      ),
     )
   }
 
@@ -64,11 +64,11 @@ class ElasticSearchMockServer : WireMockServer(WIREMOCK_PORT) {
             "task_max_waiting_in_queue_millis":0,
             "active_shards_percent_as_number":50.0
           }          
-            """.trimIndent()
+            """.trimIndent(),
           )
           .withHeader("content-type", "application/json; charset=UTF-8")
-          .withStatus(status)
-      )
+          .withStatus(status),
+      ),
     )
   }
 }

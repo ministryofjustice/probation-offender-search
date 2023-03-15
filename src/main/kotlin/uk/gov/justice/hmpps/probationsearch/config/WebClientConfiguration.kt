@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient
 @Configuration
 class WebClientConfiguration(
   @Value("\${community.endpoint.url}") private val communityRootUri: String,
-  private val securityUserContext: SecurityUserContext
+  private val securityUserContext: SecurityUserContext,
 ) {
 
   @Bean

@@ -10,7 +10,7 @@ import java.time.LocalTime
 class ContactSearchRequest(
   val crn: String,
   query: String? = "",
-  val matchAllTerms: Boolean = true
+  val matchAllTerms: Boolean = true,
 ) {
   val query = query ?: ""
 }
@@ -20,7 +20,7 @@ data class ContactSearchResponse(
   val page: Int,
   val totalResults: Long,
   val totalPages: Int,
-  val results: List<ContactSearchResult>
+  val results: List<ContactSearchResult>,
 )
 
 data class ContactSearchResult(

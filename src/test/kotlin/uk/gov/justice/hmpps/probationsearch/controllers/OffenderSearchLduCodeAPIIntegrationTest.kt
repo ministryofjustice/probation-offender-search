@@ -16,50 +16,50 @@ class OffenderSearchLduCodeAPIIntegrationTest : ElasticIntegrationBase() {
         offenderManagers = listOf(
           OffenderManagerReplacement(
             team = TeamReplacement(
-              localDeliveryUnit = KeyValue(code = "N01ALL")
-            )
-          )
-        )
+              localDeliveryUnit = KeyValue(code = "N01ALL"),
+            ),
+          ),
+        ),
       ),
       OffenderReplacement(
         offenderManagers = listOf(
           OffenderManagerReplacement(
             team = TeamReplacement(
-              localDeliveryUnit = KeyValue(code = "N01ALL")
-            )
-          )
-        )
+              localDeliveryUnit = KeyValue(code = "N01ALL"),
+            ),
+          ),
+        ),
       ),
       OffenderReplacement(
         deleted = true,
         offenderManagers = listOf(
           OffenderManagerReplacement(
             team = TeamReplacement(
-              localDeliveryUnit = KeyValue(code = "N03ALL")
-            )
-          )
-        )
+              localDeliveryUnit = KeyValue(code = "N03ALL"),
+            ),
+          ),
+        ),
       ),
       OffenderReplacement(
         offenderManagers = listOf(
           OffenderManagerReplacement(
             active = false,
             team = TeamReplacement(
-              localDeliveryUnit = KeyValue(code = "N04ALL")
-            )
-          )
-        )
+              localDeliveryUnit = KeyValue(code = "N04ALL"),
+            ),
+          ),
+        ),
       ),
       OffenderReplacement(
         offenderManagers = listOf(
           OffenderManagerReplacement(
             softDeleted = true,
             team = TeamReplacement(
-              localDeliveryUnit = KeyValue(code = "N05ALL")
-            )
-          )
-        )
-      )
+              localDeliveryUnit = KeyValue(code = "N05ALL"),
+            ),
+          ),
+        ),
+      ),
     )
   }
 
@@ -68,9 +68,9 @@ class OffenderSearchLduCodeAPIIntegrationTest : ElasticIntegrationBase() {
       OffenderReplacement(
         offenderManagers = listOf(
           OffenderManagerReplacement(
-            team = TeamReplacement(localDeliveryUnit = KeyValue(code = "N09ALL"))
-          )
-        )
+            team = TeamReplacement(localDeliveryUnit = KeyValue(code = "N09ALL")),
+          ),
+        ),
       )
     }.toTypedArray()
     loadOffenders(*offendersToLoad)

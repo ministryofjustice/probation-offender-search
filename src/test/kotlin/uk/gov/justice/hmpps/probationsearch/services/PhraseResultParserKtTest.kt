@@ -64,7 +64,7 @@ internal class PhraseResultParserKtTest {
            }
          ]
       }
-      """.trimIndent()
+      """.trimIndent(),
     )
     whenever(searchHit.highlightFields).thenReturn(mapOf())
   }
@@ -75,7 +75,7 @@ internal class PhraseResultParserKtTest {
       hits = arrayOf(searchHit),
       phrase = "john smith",
       offenderParser = ::offenderParser,
-      accessChecker = { true }
+      accessChecker = { true },
     )
 
     assertThat(offenders).hasSize(1)
@@ -91,7 +91,7 @@ internal class PhraseResultParserKtTest {
       hits = arrayOf(searchHit),
       phrase = "john smith",
       offenderParser = ::offenderParser,
-      accessChecker = { false }
+      accessChecker = { false },
     )
 
     assertThat(offenders).hasSize(1)
@@ -106,7 +106,7 @@ internal class PhraseResultParserKtTest {
       hits = arrayOf(searchHit),
       phrase = "john smith",
       offenderParser = ::offenderParser,
-      accessChecker = { false }
+      accessChecker = { false },
     )
 
     assertThat(offenders[0].offenderId).isEqualTo(99)

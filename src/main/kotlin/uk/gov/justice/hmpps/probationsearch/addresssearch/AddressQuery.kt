@@ -15,8 +15,8 @@ fun matchAddresses(addressSearchRequest: AddressSearchRequest, maxResults: Int):
       FetchSourceContext(
         true,
         arrayOf("offenderId", "gender", "otherIds.crn", "dateOfBirth"),
-        arrayOf("contactDetails.addresses")
-      )
+        arrayOf("contactDetails.addresses"),
+      ),
     ).query(buildSearchQuery(addressSearchRequest))
 
 private fun AddressSearchRequest.minBoost(): Float =
@@ -36,19 +36,19 @@ private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
       "contactDetails.addresses.streetName_analyzed",
       addressSearchRequest.streetName,
       addressSearchRequest.boostOptions.streetName,
-      "streetName"
+      "streetName",
     )
     .shouldMatchNonNull(
       "contactDetails.addresses.postcode_analyzed",
       addressSearchRequest.postcode,
       addressSearchRequest.boostOptions.postcode,
-      "postcode"
+      "postcode",
     )
     .shouldMatchNonNull(
       "contactDetails.addresses.buildingName",
       addressSearchRequest.buildingName,
       addressSearchRequest.boostOptions.buildingName,
-      "buildingName"
+      "buildingName",
     )
     .shouldMatchNonNull("contactDetails.addresses.addressNumber", addressSearchRequest.addressNumber, 1f)
     .shouldMatchNonNull("contactDetails.addresses.district", addressSearchRequest.district, 1f)
@@ -60,7 +60,7 @@ fun BoolQueryBuilder.shouldMatchNonNull(
   name: String,
   value: String?,
   boost: Float,
-  queryName: String? = null
+  queryName: String? = null,
 ): BoolQueryBuilder {
   if (value != null && value.isNotBlank()) {
     val qb = QueryBuilders.matchQuery(name, value).boost(boost)

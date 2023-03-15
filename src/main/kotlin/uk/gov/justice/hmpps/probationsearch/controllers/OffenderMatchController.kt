@@ -29,16 +29,19 @@ class OffenderMatchController(private val matchService: MatchService) {
   @Operation(
     summary = "Match for an offender in Delius ElasticSearch. It will return the best group of matching offenders based on the request",
     description = "Specify the request criteria to match against",
-    operationId = "match"
+    operationId = "match",
   )
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "OK"), ApiResponse(
         responseCode = "400",
-        description = "Invalid Request"
-      ), ApiResponse(responseCode = "404", description = "Not found")
-    ]
+        description = "Invalid Request",
+      ), ApiResponse(responseCode = "404", description = "Not found"),
+    ],
   )
   @PostMapping
-  fun matchOffenders(@Valid @RequestBody matchRequest: MatchRequest): OffenderMatches = matchService.match(matchRequest)
+  fun matchOffenders(
+    @Valid @RequestBody
+    matchRequest: MatchRequest,
+  ): OffenderMatches = matchService.match(matchRequest)
 }

@@ -23,7 +23,6 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.S
 @Service
 class ContactSearchService(private val es: ElasticsearchRestTemplate) {
   fun performSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-
     val query = QueryBuilders.boolQuery().fromRequest(request)
 
     val nsq = NativeSearchQueryBuilder()
@@ -37,7 +36,7 @@ class ContactSearchService(private val es: ElasticsearchRestTemplate) {
           .field("type")
           .field("outcome")
           .field("description")
-          .fragmentSize(200)
+          .fragmentSize(200),
       ).withSorts(pageable.sort)
 
     val searchResponse = es.search(nsq, ContactSearchResult::class.java, IndexCoordinates.of("contact-search-primary"))
@@ -45,14 +44,19 @@ class ContactSearchService(private val es: ElasticsearchRestTemplate) {
 
     val response = PageImpl(results, pageable, searchResponse.totalHits)
     return ContactSearchResponse(
-      response.numberOfElements, response.pageable.pageNumber, response.totalElements, response.totalPages, results
+      response.numberOfElements,
+      response.pageable.pageNumber,
+      response.totalElements,
+      response.totalPages,
+      results,
     )
   }
 
   enum class SortType(val alias: String, val searchField: String) {
     DATE("date", "date.date"),
     LAST_UPDATED_DATETIME("lastUpdated", "lastUpdatedDateTime"),
-    SCORE("relevance", "_score");
+    SCORE("relevance", "_score"),
+    ;
   }
 }
 
@@ -76,8 +80,8 @@ private fun BoolQueryBuilder.fromRequest(request: ContactSearchRequest): BoolQue
           SimpleQueryStringFlag.PRECEDENCE,
           SimpleQueryStringFlag.ESCAPE,
           SimpleQueryStringFlag.FUZZY,
-          SimpleQueryStringFlag.SLOP
-        )
+          SimpleQueryStringFlag.SLOP,
+        ),
     )
   }
   return this
@@ -106,7 +110,7 @@ private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
         when (sorted.fieldName) {
           SCORE.alias -> SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(sorted.order())
           else -> SortBuilders.fieldSort(SCORE.searchField).order(sorted.order())
-        }
+        },
       )
     }
     else -> sorts.forEach(::withSort)

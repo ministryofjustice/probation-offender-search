@@ -20,7 +20,7 @@ class OpeanAPIConfiguration {
         Info().title("Offender search API Documentation")
           .description("API for searching for offenders in Delius.")
           .version(version)
-          .contact(contactInfo())
+          .contact(contactInfo()),
       )
   }
 

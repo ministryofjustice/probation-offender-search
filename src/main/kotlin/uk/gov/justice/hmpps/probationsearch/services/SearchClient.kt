@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class SearchClient(
-  @param:Qualifier("elasticSearchClient") private val elasticSearchClient: RestHighLevelClient
+  @param:Qualifier("elasticSearchClient") private val elasticSearchClient: RestHighLevelClient,
 ) {
   fun search(searchRequest: SearchRequest): SearchResponse = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT)
 }

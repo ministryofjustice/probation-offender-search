@@ -52,7 +52,6 @@ internal class CommunityServiceTest {
   inner class CanAccessOffender {
     @Test
     fun `will get access limitation using the crn `() {
-
       CommunityApiExtension.communityApi.stubUserAccess(
         "X12345",
         """
@@ -60,14 +59,14 @@ internal class CommunityServiceTest {
             "userRestricted": false,
             "userExcluded": false
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
 
       val accessLimitation = service.canAccessOffender("X12345")
 
       CommunityApiExtension.communityApi.verify(
         getRequestedFor(urlEqualTo("/secure/offenders/crn/X12345/userAccess"))
-          .withHeader("Authorization", WireMock.equalTo("Bearer ${jwt.tokenValue}"))
+          .withHeader("Authorization", WireMock.equalTo("Bearer ${jwt.tokenValue}")),
       )
 
       assertThat(accessLimitation.userExcluded).isFalse
@@ -76,7 +75,6 @@ internal class CommunityServiceTest {
 
     @Test
     fun `will handle access denied`() {
-
       CommunityApiExtension.communityApi.stubUserAccessDenied(
         "X12345",
         """
@@ -84,14 +82,14 @@ internal class CommunityServiceTest {
             "userRestricted": false,
             "userExcluded": true
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
 
       val accessLimitation = service.canAccessOffender("X12345")
 
       CommunityApiExtension.communityApi.verify(
         getRequestedFor(urlEqualTo("/secure/offenders/crn/X12345/userAccess"))
-          .withHeader("Authorization", WireMock.equalTo("Bearer ${jwt.tokenValue}"))
+          .withHeader("Authorization", WireMock.equalTo("Bearer ${jwt.tokenValue}")),
       )
 
       assertThat(accessLimitation.userExcluded).isTrue

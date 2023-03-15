@@ -11,5 +11,5 @@ data class ErrorResponse(
   val developerMessage: String? = null,
   @Schema(required = true, description = "Internal Error Code", example = "20012") val errorCode: Int? = null,
   @Schema(required = true, description = "Error message information", example = "Offender Not Found") val userMessage: String? = null,
-  @Schema(required = false, description = "Additional information about the error", example = "Hard disk failure") val moreInfo: String? = null
+  @Schema(required = false, description = "Additional information about the error", example = "Hard disk failure") val moreInfo: String? = null,
 )

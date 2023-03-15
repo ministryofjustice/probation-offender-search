@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono
 @Service
 class CommunityService(
   @Qualifier("communityApiWebClient") private val webClient: WebClient,
-  private val objectMapper: ObjectMapper
+  private val objectMapper: ObjectMapper,
 ) {
   fun canAccessOffender(crn: String): AccessLimitation =
     webClient.get()
@@ -23,18 +23,26 @@ class CommunityService(
       .block()!!
 
   private fun noAccessIfNotFound(exception: Throwable): Mono<out AccessLimitation> {
-    return if (exception is WebClientResponseException.NotFound) Mono.just(
-      AccessLimitation(
-        userRestricted = true,
-        userExcluded = true
+    return if (exception is WebClientResponseException.NotFound) {
+      Mono.just(
+        AccessLimitation(
+          userRestricted = true,
+          userExcluded = true,
+        ),
       )
-    ) else Mono.error(exception)
+    } else {
+      Mono.error(exception)
+    }
   }
 
   private fun noAccessIfForbidden(exception: Throwable): Mono<out AccessLimitation> {
-    return if (exception is WebClientResponseException.Forbidden) Mono.just(
-      objectMapper.readValue<AccessLimitation>(exception.responseBodyAsString)
-    ) else Mono.error(exception)
+    return if (exception is WebClientResponseException.Forbidden) {
+      Mono.just(
+        objectMapper.readValue<AccessLimitation>(exception.responseBodyAsString),
+      )
+    } else {
+      Mono.error(exception)
+    }
   }
 }
 

@@ -17,7 +17,7 @@ class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
       clientOnly = jwt.subject == jwt.claims["client_id"],
       subject = jwt.subject,
       deliusUser = "delius" == jwt.claims["auth_source"],
-      authorities = extractAuthorities(jwt)
+      authorities = extractAuthorities(jwt),
     )
   }
 
@@ -37,5 +37,5 @@ class AuthAwareAuthenticationToken(
   val clientOnly: Boolean,
   val deliusUser: Boolean,
   val subject: String,
-  authorities: Collection<GrantedAuthority>
+  authorities: Collection<GrantedAuthority>,
 ) : JwtAuthenticationToken(jwt, authorities)

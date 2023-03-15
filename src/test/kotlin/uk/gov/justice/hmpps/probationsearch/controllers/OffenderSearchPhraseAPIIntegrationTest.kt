@@ -35,8 +35,8 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         OffenderReplacement(crn = "X00001"),
         OffenderReplacement(
           surname = "Gramsci",
-          crn = "X99999"
-        )
+          crn = "X99999",
+        ),
       )
 
       hasSingleMatch(phrase = "gramsci", expectedCrn = "X99999")
@@ -48,7 +48,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         OffenderReplacement(
           crn = "X00001",
           aliases = listOf(AliasReplacement("Smith", "John")),
-          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London"))
+          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London")),
         ),
       )
       doSearch("X00001", true)
@@ -92,8 +92,8 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
           postcode = "H1 1WA",
           offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London")),
           phoneNumber = "0191 1234567",
-          mobileNumber = "077888888888"
-        )
+          mobileNumber = "077888888888",
+        ),
       )
     }
 
@@ -230,7 +230,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
           county = "Hampshire",
           postcode = "H1 1WA",
           offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London")),
-          phoneNumber = "01918888888"
+          phoneNumber = "01918888888",
         ),
         OffenderReplacement(
           surname = "Gramsci",
@@ -248,8 +248,8 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
           town = "Southampton",
           county = "Hampshire",
           postcode = "H1 1WA",
-          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London"))
-        )
+          offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London")),
+        ),
       )
     }
 
@@ -367,8 +367,8 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
           county = "Hampshire",
           postcode = "H1 1WA",
           offenderManagers = listOf(OffenderManagerReplacement("N03", "NPS London")),
-          phoneNumber = "0191 7654321"
-        )
+          phoneNumber = "0191 7654321",
+        ),
       )
     }
 
@@ -457,7 +457,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       hasSingleMatch(
         phrase = "gramsci Anne Jane Joanna 1988-01-06 Female X99999 G5555TT 2018/0123456X SF80/655108T NE112233X Hyde Southampton Hampshire H1 1WA 01917654321",
         expectedCrn = "X99999",
-        matchAllTerms = matchAllTerms
+        matchAllTerms = matchAllTerms,
       )
     }
   }
@@ -471,8 +471,8 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         OffenderReplacement(crn = "X00001"),
         OffenderReplacement(
           dateOfBirth = LocalDate.parse("1988-01-06"),
-          crn = "X99999"
-        )
+          crn = "X99999",
+        ),
       )
     }
 
@@ -509,7 +509,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       "d/MM/yyyy",
       "d-MM-yyyy",
       "d/M/yyyy",
-      "d-M-yyyy"
+      "d-M-yyyy",
     ).map { LocalDate.parse("1988-01-06").format(DateTimeFormatter.ofPattern(it)) }
 
     @ParameterizedTest
@@ -528,8 +528,8 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         OffenderReplacement(crn = "X00001"),
         OffenderReplacement(
           crn = "X99999",
-          pncNumber = "2018/0023456X"
-        )
+          pncNumber = "2018/0023456X",
+        ),
       )
     }
 
@@ -542,7 +542,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       "18/0023456X",
       "18/0023456x",
       "18/023456X",
-      "18/23456X"
+      "18/23456X",
     )
 
     @ParameterizedTest
@@ -563,8 +563,8 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         OffenderReplacement(
           crn = "X99999",
           surname = "Gramsci",
-          firstName = "Antonio"
-        )
+          firstName = "Antonio",
+        ),
       )
     }
 
@@ -574,7 +574,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       "Anton",
       "Anto",
       "Ant",
-      "An"
+      "An",
     )
 
     @ParameterizedTest
@@ -607,12 +607,12 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       loadOffenders(
         OffenderReplacement(
           crn = "X99999",
-          deleted = true
+          deleted = true,
         ),
         OffenderReplacement(
           crn = "X888888",
-          deleted = false
-        )
+          deleted = false,
+        ),
       )
     }
 
@@ -761,29 +761,29 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             crn = "X00001",
             aliases = listOf(AliasReplacement(firstName = "Fred", surname = "Jones")),
             firstName = "Antonio",
-            surname = "Gramsci"
+            surname = "Gramsci",
           ),
           OffenderReplacement(
             offenderId = 2,
             crn = "X00002",
             aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "Gramsci")),
             surname = "Jones",
-            firstName = "Fred"
+            firstName = "Fred",
           ),
           OffenderReplacement(
             offenderId = 3,
             crn = "X00003",
             aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "Jones")),
             firstName = "Fred",
-            surname = "Gramsci"
+            surname = "Gramsci",
           ),
           OffenderReplacement(
             offenderId = 4,
             crn = "X00004",
             aliases = listOf(AliasReplacement(firstName = "Fred", surname = "Gramsci")),
             firstName = "Antonio",
-            surname = "Jones"
-          )
+            surname = "Jones",
+          ),
         )
       }
 
@@ -851,15 +851,15 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             crn = "X00001",
             firstName = "Antonio",
             middleNames = listOf("Fred"),
-            surname = "Gramsci"
+            surname = "Gramsci",
           ),
           OffenderReplacement(
             offenderId = 2,
             crn = "X00002",
             firstName = "Fred",
             middleNames = listOf("Antonio"),
-            surname = "Gramsci"
-          )
+            surname = "Gramsci",
+          ),
         )
       }
 
@@ -892,15 +892,15 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             crn = "X00001",
             surname = "Gramsci",
             streetName = "1 Main Street",
-            postcode = "S10 2BJ"
+            postcode = "S10 2BJ",
           ),
           OffenderReplacement(
             offenderId = 2,
             crn = "X00002",
             surname = "Gramsci",
             streetName = "9 High Road",
-            postcode = "N17 3NH"
-          )
+            postcode = "N17 3NH",
+          ),
         )
       }
 
@@ -932,15 +932,15 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             crn = "X00001",
             firstName = "Antonio",
             surname = "Gramsci",
-            dateOfBirth = LocalDate.parse("1987-01-29")
+            dateOfBirth = LocalDate.parse("1987-01-29"),
           ),
           OffenderReplacement(
             offenderId = 2,
             crn = "X00002",
             firstName = "Antonio",
             surname = "Smith",
-            dateOfBirth = LocalDate.parse("1984-02-21")
-          )
+            dateOfBirth = LocalDate.parse("1984-02-21"),
+          ),
         )
       }
 
@@ -973,13 +973,13 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "gramsci")),
             pncNumber = "2019/1X",
             croNumber = "123456/99a",
-            nomsNumber = "A1234X"
+            nomsNumber = "A1234X",
           ),
           OffenderReplacement(
             offenderId = 2,
             crn = "X00002",
-            aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "gramsci"))
-          )
+            aliases = listOf(AliasReplacement(firstName = "Antonio", surname = "gramsci")),
+          ),
         )
       }
 
@@ -1046,9 +1046,9 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             OffenderManagerReplacement(
               code = "N01",
               description = "NPS North West",
-              active = true
-            )
-          )
+              active = true,
+            ),
+          ),
         ),
         OffenderReplacement(
           crn = "X00002",
@@ -1057,9 +1057,9 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             OffenderManagerReplacement(
               code = "N01",
               description = "NPS North West",
-              active = true
-            )
-          )
+              active = true,
+            ),
+          ),
         ),
         OffenderReplacement(
           crn = "X00003",
@@ -1068,9 +1068,9 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             OffenderManagerReplacement(
               code = "N01",
               description = "NPS North West",
-              active = true
-            )
-          )
+              active = true,
+            ),
+          ),
         ),
         OffenderReplacement(
           crn = "X00004",
@@ -1079,9 +1079,9 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             OffenderManagerReplacement(
               code = "N02",
               description = "NPS North East",
-              active = true
-            )
-          )
+              active = true,
+            ),
+          ),
         ),
         OffenderReplacement(
           crn = "X00005",
@@ -1090,23 +1090,23 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             OffenderManagerReplacement(
               code = "N03",
               description = "NPS Midlands",
-              active = true
-            )
-          )
+              active = true,
+            ),
+          ),
         ),
         OffenderReplacement(
           crn = "X00006",
           surname = "Gramsci",
-          offenderManagers = listOf(OffenderManagerReplacement(code = "N07", description = "NPS London", active = true))
+          offenderManagers = listOf(OffenderManagerReplacement(code = "N07", description = "NPS London", active = true)),
         ),
         OffenderReplacement(
           crn = "X00007",
           surname = "Gramsci",
           offenderManagers = listOf(
             OffenderManagerReplacement(code = "N01", description = "NPS North West", active = false),
-            OffenderManagerReplacement(code = "N07", description = "NPS London", active = true)
-          )
-        )
+            OffenderManagerReplacement(code = "N07", description = "NPS London", active = true),
+          ),
+        ),
       )
     }
 
@@ -1137,7 +1137,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         "Gramsci",
         matchAllTerms,
         listOf("X00001", "X00002", "X00003", "X00004"),
-        filter = listOf("N01", "N02")
+        filter = listOf("N01", "N02"),
       )
     }
 
@@ -1148,7 +1148,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         "Gramsci",
         matchAllTerms,
         listOf("X00001", "X00002", "X00003", "X00004", "X00006", "X00007"),
-        filter = listOf()
+        filter = listOf(),
       )
     }
 
@@ -1180,12 +1180,12 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
           crn = "X00001",
           surname = "Smith",
           firstName = "John",
-          dateOfBirth = LocalDate.parse("1999-12-22")
+          dateOfBirth = LocalDate.parse("1999-12-22"),
         ),
         OffenderReplacement(
           crn = "X00002",
           surname = "John",
-          firstName = "Smith"
+          firstName = "Smith",
         ),
         OffenderReplacement(
           crn = "X00003",
@@ -1194,14 +1194,14 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
           aliases = listOf(
             AliasReplacement(surname = "Smith", firstName = "John"),
             AliasReplacement(surname = "SMITH", firstName = "Jim"),
-            AliasReplacement(surname = "John", firstName = "Smith")
-          )
+            AliasReplacement(surname = "John", firstName = "Smith"),
+          ),
         ),
         OffenderReplacement(
           surname = "Jones",
           crn = "X00004",
-          streetName = "28 Smith Street"
-        )
+          streetName = "28 Smith Street",
+        ),
       )
     }
 
@@ -1216,28 +1216,28 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         .body("content.find { it.otherIds.crn == \"X00002\" }.highlight.firstName[0]", equalTo("Smith"))
         .body(
           "content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.firstName\".size()",
-          equalTo(1)
+          equalTo(1),
         )
         .body(
           "content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.firstName\"[0]",
-          equalTo("Smith")
+          equalTo("Smith"),
         )
         .body("content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\".size()", equalTo(2))
         .body(
           "content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\"[0]",
-          equalTo("Smith")
+          equalTo("Smith"),
         )
         .body(
           "content.find { it.otherIds.crn == \"X00003\" }.highlight.\"offenderAliases.surname\"[1]",
-          equalTo("SMITH")
+          equalTo("SMITH"),
         )
         .body(
           "content.find { it.otherIds.crn == \"X00004\" }.highlight.\"contactDetails.addresses.streetName\".size()",
-          equalTo(1)
+          equalTo(1),
         )
         .body(
           "content.find { it.otherIds.crn == \"X00004\" }.highlight.\"contactDetails.addresses.streetName\"[0]",
-          equalTo("28 Smith Street")
+          equalTo("28 Smith Street"),
         )
     }
 
@@ -1267,35 +1267,35 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
           surname = "Smith",
           firstName = "John",
           currentRestriction = false,
-          currentExclusion = false
+          currentExclusion = false,
         ),
         OffenderReplacement(
           crn = "X00002",
           surname = "Smith",
           firstName = "John",
           currentRestriction = true,
-          currentExclusion = false
+          currentExclusion = false,
         ),
         OffenderReplacement(
           crn = "X00003",
           surname = "Smith",
           firstName = "John",
           currentRestriction = true,
-          currentExclusion = false
+          currentExclusion = false,
         ),
         OffenderReplacement(
           crn = "X00004",
           surname = "Smith",
           firstName = "John",
           currentRestriction = false,
-          currentExclusion = true
+          currentExclusion = true,
         ),
         OffenderReplacement(
           crn = "X00005",
           surname = "Smith",
           firstName = "John",
           currentRestriction = false,
-          currentExclusion = true
+          currentExclusion = true,
         ),
       )
       CommunityApiExtension.communityApi.stubUserAccess(
@@ -1306,7 +1306,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             "userRestricted": true,
             "userExcluded": false
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00003",
@@ -1316,7 +1316,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             "userRestricted": false,
             "userExcluded": false
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00004",
@@ -1326,7 +1326,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             "userRestricted": false,
             "userExcluded": true
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00005",
@@ -1336,7 +1336,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             "userRestricted": false,
             "userExcluded": false
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
     }
 
@@ -1349,9 +1349,9 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             clientId = "new-tech",
             subject = "maryblacknps",
             username = "maryblacknps",
-            authSource = "delius"
+            authSource = "delius",
           ),
-          "read"
+          "read",
         )
 
         @Test
@@ -1409,7 +1409,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
 
           CommunityApiExtension.communityApi.verify(
             WireMock.getRequestedFor(WireMock.urlEqualTo("/secure/offenders/crn/X00004/userAccess"))
-              .withHeader("Authorization", WireMock.equalTo("Bearer $token"))
+              .withHeader("Authorization", WireMock.equalTo("Bearer $token")),
           )
         }
       }
@@ -1421,9 +1421,9 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             clientId = "new-tech",
             subject = "maryblackdps",
             username = "maryblackdps",
-            authSource = "nomis"
+            authSource = "nomis",
           ),
-          "read"
+          "read",
         )
 
         @Test
@@ -1474,9 +1474,10 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             clientId = "new-tech",
             subject = "maryblacknps",
             username = "maryblacknps",
-            authSource = "delius"
+            authSource = "delius",
           ),
-          "read", "ignore_delius_exclusions_always"
+          "read",
+          "ignore_delius_exclusions_always",
         )
 
         @Test
@@ -1532,9 +1533,10 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             clientId = "new-tech",
             subject = "maryblackdps",
             username = "maryblackdps",
-            authSource = "nomis"
+            authSource = "nomis",
           ),
-          "read", "ignore_delius_exclusions_always"
+          "read",
+          "ignore_delius_exclusions_always",
         )
 
         @Test
@@ -1585,9 +1587,10 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             clientId = "new-tech",
             subject = "maryblacknps",
             username = "maryblacknps",
-            authSource = "delius"
+            authSource = "delius",
           ),
-          "read", "ignore_delius_inclusions_always"
+          "read",
+          "ignore_delius_inclusions_always",
         )
 
         @Test
@@ -1643,9 +1646,10 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
             clientId = "new-tech",
             subject = "maryblackdps",
             username = "maryblackdps",
-            authSource = "nomis"
+            authSource = "nomis",
           ),
-          "read", "ignore_delius_inclusions_always"
+          "read",
+          "ignore_delius_inclusions_always",
         )
 
         @Test
@@ -1691,7 +1695,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
   private fun hasSingleMatch(
     phrase: String,
     @Suppress("SameParameterValue") expectedCrn: String,
-    matchAllTerms: Boolean = false
+    matchAllTerms: Boolean = false,
   ) {
     doSearch(phrase = phrase, matchAllTerms = matchAllTerms)
       .body("totalElements", equalTo(1))
@@ -1702,7 +1706,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
     phrase: String,
     matchAllTerms: Boolean = false,
     expectedCrns: List<String>,
-    filter: List<String> = listOf()
+    filter: List<String> = listOf(),
   ) {
     val response = doSearch(phrase = phrase, matchAllTerms = matchAllTerms, filter = filter)
 
@@ -1726,7 +1730,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
     size: Int? = null,
     page: Int? = null,
     filter: List<String> = listOf(),
-    token: String = jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY")
+    token: String = jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"),
   ): ValidatableResponse {
     val searchPhraseFilter =
       SearchPhraseFilter(phrase = phrase, matchAllTerms = matchAllTerms, probationAreasFilter = filter)
@@ -1770,13 +1774,13 @@ data class OffenderReplacement(
   val currentExclusion: Boolean = false,
   val phoneNumber: String? = null,
   val mobileNumber: String? = null,
-  val previousCrn: String? = null
+  val previousCrn: String? = null,
 )
 
 data class AliasReplacement(
   val surname: String,
   val firstName: String,
-  val dateOfBirth: LocalDate = LocalDate.parse("1965-07-18")
+  val dateOfBirth: LocalDate = LocalDate.parse("1965-07-18"),
 )
 
 data class OffenderManagerReplacement(
@@ -1790,5 +1794,5 @@ data class OffenderManagerReplacement(
 data class TeamReplacement(
   val code: String = "N09000",
   val localDeliveryUnit: KeyValue = KeyValue(code = "ABC123", description = "description"),
-  val description: String = "OMU A"
+  val description: String = "OMU A",
 )

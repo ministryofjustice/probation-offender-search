@@ -7,5 +7,5 @@ data class Disability(
   val disabilityType: KeyValue? = null,
   val startDate: LocalDate? = null,
   val endDate: LocalDate? = null,
-  val notes: String? = null
+  val notes: String? = null,
 )

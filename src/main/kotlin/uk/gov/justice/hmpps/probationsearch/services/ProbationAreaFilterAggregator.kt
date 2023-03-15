@@ -24,8 +24,8 @@ internal fun buildAggregationRequest(): NestedAggregationBuilder {
         .field("offenderManagers.active").subAggregation(
           AggregationBuilders
             .terms(probationAreaCodeBucket).size(1000)
-            .field("offenderManagers.probationArea.code")
-        )
+            .field("offenderManagers.probationArea.code"),
+        ),
     )
 }
 
@@ -60,7 +60,7 @@ private fun probationAreaFilter(probationAreasCodes: List<String>): BoolQueryBui
               must(QueryBuilders.termQuery("offenderManagers.active", true))
               must(QueryBuilders.termQuery("offenderManagers.probationArea.code", it))
             },
-            None
+            None,
           )
-        }
+        },
     )

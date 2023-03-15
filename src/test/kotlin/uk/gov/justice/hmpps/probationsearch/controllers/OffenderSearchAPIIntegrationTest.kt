@@ -41,7 +41,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
     PersonSearchHelper(esClient).loadData()
     RestAssured.port = Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port"))!!.toInt()
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper }
+      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )
   }
 
@@ -105,7 +105,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
         .statusCode(200)
         .extract()
         .body()
-        .`as`(Array<OffenderDetail>::class.java)
+        .`as`(Array<OffenderDetail>::class.java),
     ).hasSize(2)
 
     assertThat(
@@ -119,7 +119,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
         .statusCode(200)
         .extract()
         .body()
-        .`as`(Array<OffenderDetail>::class.java)
+        .`as`(Array<OffenderDetail>::class.java),
     ).hasSize(2)
   }
 

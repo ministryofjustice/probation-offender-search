@@ -40,12 +40,11 @@ class JwtAuthenticationHelper(private val keyPair: KeyPair) {
     roles: List<String> = listOf(),
     expiryTime: Duration = Duration.ofDays(1),
   ): String {
-
     val claims = mutableMapOf(
       "authorities" to roles,
       "scope" to scope,
       "client_id" to clientId,
-      "auth_source" to authSource
+      "auth_source" to authSource,
     ).apply { username?.let { this["user_name"] = it } }
 
     return Jwts.builder()
@@ -61,6 +60,6 @@ class JwtAuthenticationHelper(private val keyPair: KeyPair) {
     val clientId: String,
     val subject: String,
     val username: String? = null,
-    val authSource: String = "delius"
+    val authSource: String = "delius",
   )
 }

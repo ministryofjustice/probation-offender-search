@@ -15,7 +15,7 @@ class ContactSearchController(val contactSearchService: ContactSearchService) {
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   fun searchContact(
     @RequestBody request: ContactSearchRequest,
-    @PageableDefault pageable: Pageable
+    @PageableDefault pageable: Pageable,
   ): ContactSearchResponse {
     return contactSearchService.performSearch(request, pageable)
   }

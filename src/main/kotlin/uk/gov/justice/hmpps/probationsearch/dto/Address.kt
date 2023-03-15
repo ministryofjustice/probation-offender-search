@@ -16,5 +16,5 @@ data class Address(
   val county: String? = null,
   val postcode: String? = null,
   val telephoneNumber: String? = null,
-  val status: KeyValue? = null
+  val status: KeyValue? = null,
 )

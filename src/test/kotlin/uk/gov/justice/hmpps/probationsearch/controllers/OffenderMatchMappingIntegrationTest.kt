@@ -13,8 +13,8 @@ import java.time.LocalDate
 
 @TestPropertySource(
   properties = [
-    "search.supported.mapping.version=2"
-  ]
+    "search.supported.mapping.version=2",
+  ],
 )
 @DirtiesContext
 internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegrationBase() {
@@ -30,9 +30,9 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
         pncNumber = "2015/0123456X",
         aliases = listOf(
           Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1)),
-          Alias(firstName = "Bhimrao", surname = "Ambedkar", dateOfBirth = LocalDate.of(1891, 4, 14))
-        )
-      )
+          Alias(firstName = "Bhimrao", surname = "Ambedkar", dateOfBirth = LocalDate.of(1891, 4, 14)),
+        ),
+      ),
     )
   }
 
@@ -49,8 +49,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Abbagnano",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1891, 4, 14),
-            croNumber = "AA99/655108T"
-          )
+            croNumber = "AA99/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -70,8 +70,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Adorno",
             firstName = "Theodor",
             dateOfBirth = LocalDate.of(1903, 11, 11),
-            croNumber = "AA99/655108T"
-          )
+            croNumber = "AA99/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -91,8 +91,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Ambedkar",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1891, 4, 14),
-            croNumber = "AA99/655108T"
-          )
+            croNumber = "AA99/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -112,8 +112,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Ambedkar",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1999, 4, 14),
-            croNumber = "AA99/655108T"
-          )
+            croNumber = "AA99/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -122,6 +122,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
         .body("matches.findall.size()", equalTo(1))
     }
   }
+
   @Nested
   inner class PNCNumberMatching {
     @Test
@@ -135,8 +136,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Abbagnano",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1891, 4, 14),
-            pncNumber = "2015/0123456X"
-          )
+            pncNumber = "2015/0123456X",
+          ),
         )
         .post("/match")
         .then()
@@ -156,8 +157,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Adorno",
             firstName = "Theodor",
             dateOfBirth = LocalDate.of(1903, 11, 11),
-            pncNumber = "2015/0123456X"
-          )
+            pncNumber = "2015/0123456X",
+          ),
         )
         .post("/match")
         .then()
@@ -177,8 +178,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Ambedkar",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1891, 4, 14),
-            pncNumber = "2015/0123456X"
-          )
+            pncNumber = "2015/0123456X",
+          ),
         )
         .post("/match")
         .then()
@@ -198,8 +199,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Ambedkar",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1999, 4, 14),
-            pncNumber = "2015/0123456X"
-          )
+            pncNumber = "2015/0123456X",
+          ),
         )
         .post("/match")
         .then()
@@ -222,8 +223,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Abbagnano",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1891, 4, 14),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -243,8 +244,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Adorno",
             firstName = "Theodor",
             dateOfBirth = LocalDate.of(1903, 11, 11),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -264,8 +265,8 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
             surname = "Ambedkar",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1891, 4, 14),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()

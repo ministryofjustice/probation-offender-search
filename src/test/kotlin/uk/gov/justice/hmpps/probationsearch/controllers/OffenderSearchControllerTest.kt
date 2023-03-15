@@ -56,7 +56,7 @@ class OffenderSearchControllerTest {
     PersonSearchHelper(esClient).loadData()
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper }
+      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )
   }
 
@@ -133,7 +133,7 @@ class OffenderSearchControllerTest {
           assertThat(it["results"]).containsOnlyDigits()
           assertThat(it["timeMs"]).containsOnlyDigits()
         },
-        isNull()
+        isNull(),
       )
     }
   }

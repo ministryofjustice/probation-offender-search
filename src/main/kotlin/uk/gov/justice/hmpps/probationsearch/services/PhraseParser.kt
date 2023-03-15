@@ -81,7 +81,7 @@ private val supportedDateFormats: List<String> = listOf(
   "dd-MM-yyyy",
   "dd/M/yyyy", "dd-M-yyyy",
   "d/MM/yyyy", "d-MM-yyyy",
-  "d/M/yyyy", "d-M-yyyy"
+  "d/M/yyyy", "d-M-yyyy",
 )
 
 private val supportedDateFormatters by lazy { supportedDateFormats.map { DateTimeFormatter.ofPattern(it) } }
@@ -99,7 +99,9 @@ private fun <T, U : Any> Sequence<T>.tryOrRemove(block: (T) -> U): Sequence<U> {
 private fun String.canonicalCRONumberOrNull(): String? =
   if (this.isCRONumber()) {
     lowercase()
-  } else null
+  } else {
+    null
+  }
 
 private fun String.isCRONumber(): Boolean {
   return this.matches("^[0-9]{1,6}/[0-9]{2}[a-zA-Z]".toRegex()) ||
@@ -109,4 +111,6 @@ private fun String.isCRONumber(): Boolean {
 private fun String.phoneNumberOrNull(): String? =
   if (this.matches("^/d{6,15}$".toRegex())) {
     this
-  } else null
+  } else {
+    null
+  }

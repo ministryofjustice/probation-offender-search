@@ -10,7 +10,7 @@ class JwtAuthInterceptor : ClientHttpRequestInterceptor {
   override fun intercept(
     request: HttpRequest,
     body: ByteArray,
-    execution: ClientHttpRequestExecution
+    execution: ClientHttpRequestExecution,
   ): ClientHttpResponse {
     val headers = request.headers
     headers.add(HttpHeaders.AUTHORIZATION, UserContext.getAuthToken())

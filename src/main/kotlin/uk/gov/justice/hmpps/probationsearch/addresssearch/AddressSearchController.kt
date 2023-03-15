@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(
   name = "address-search",
-  description = "Provides address search features for Delius elastic search"
+  description = "Provides address search features for Delius elastic search",
 )
 @RestController
 @RequestMapping("/search/addresses")
 @Validated
 class AddressSearchController(
-  private val addressSearchService: AddressSearchService
+  private val addressSearchService: AddressSearchService,
 ) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -34,7 +34,7 @@ class AddressSearchController(
       ApiResponse(
         responseCode = "400",
         description = "Invalid Request",
-        content = [Content()]
+        content = [Content()],
       ),
       ApiResponse(
         responseCode = "200",
@@ -80,18 +80,18 @@ class AddressSearchController(
                   "matchScore": 100
               }
             ]
-           }"""
-              )
-            ]
-          )
-        ]
-      )
-    ]
+           }""",
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
   )
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   fun searchOffenders(
     @RequestBody addressSearchRequest: AddressSearchRequest,
-    @RequestParam(required = false, defaultValue = "100") maxResults: Int
+    @RequestParam(required = false, defaultValue = "100") maxResults: Int,
   ): AddressSearchResponses = addressSearchService.performSearch(addressSearchRequest, maxResults)
 }

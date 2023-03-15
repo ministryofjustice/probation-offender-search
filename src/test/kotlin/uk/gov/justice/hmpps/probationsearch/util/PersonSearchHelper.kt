@@ -69,7 +69,7 @@ class PersonSearchHelper(private val esClient: RestHighLevelClient) {
         .id(key)
         .type("_doc")
         .index(indexName),
-      RequestOptions.DEFAULT
+      RequestOptions.DEFAULT,
     )
   }
 
@@ -83,7 +83,7 @@ class PersonSearchHelper(private val esClient: RestHighLevelClient) {
     esClient.indices().putTemplate(
       PutIndexTemplateRequest(templateName)
         .source("/elasticsearchdata/create-template.json".resourceAsString(), JSON),
-      RequestOptions.DEFAULT
+      RequestOptions.DEFAULT,
     )
     esClient.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)
   }

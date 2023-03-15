@@ -53,15 +53,15 @@ abstract class OffenderMatchAPIIntegrationBase {
           crn = it.crn,
           nomsNumber = it.nomsNumber,
           croNumber = it.croNumber,
-          pncNumber = it.pncNumber
+          pncNumber = it.pncNumber,
         ),
         offenderAliases = it.aliases.map { alias ->
           OffenderAlias(
             firstName = alias.firstName,
             surname = alias.surname,
-            dateOfBirth = alias.dateOfBirth
+            dateOfBirth = alias.dateOfBirth,
           )
-        }
+        },
       )
     }.map { objectMapper.writeValueAsString(it) }
 
@@ -83,11 +83,11 @@ data class OffenderIdentification(
   val aliases: List<Alias> = listOf(),
   val nomsNumber: String? = null,
   val croNumber: String? = null,
-  val pncNumber: String? = null
+  val pncNumber: String? = null,
 )
 
 data class Alias(
   val surname: String,
   val firstName: String,
-  val dateOfBirth: LocalDate
+  val dateOfBirth: LocalDate,
 )

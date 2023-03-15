@@ -33,12 +33,12 @@ class LicenceCaseloadService(val elasticSearchClient: RestHighLevelClient, val o
         Name(
           offenderManagers[0].staff.surname,
           staffForenames[0],
-          if (staffForenames.size > 1) staffForenames[1] else null
+          if (staffForenames.size > 1) staffForenames[1] else null,
         ),
         offenderManagers[0].team,
-        offenderManagers[0].probationArea
+        offenderManagers[0].probationArea,
       ),
-      offenderManagers[0].fromDate
+      offenderManagers[0].fromDate,
     )
   }
 
