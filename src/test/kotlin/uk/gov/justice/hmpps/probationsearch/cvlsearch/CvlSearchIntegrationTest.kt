@@ -65,7 +65,7 @@ internal class CvlSearchIntegrationTest : ElasticIntegrationBase() {
   fun `cvl search returns 400 for invalid requests and lists all errors`() {
     val request = LicenceCaseloadRequest(
       teamCodes = listOf(),
-      sortBy = listOf(SortBy("crn", "ascending"), SortBy("name"), SortBy("staff.name", "DESCENDING"))
+      sortBy = listOf(SortBy("crn", "ascending"), SortBy("name"), SortBy("staff.name", "DESCENDING")),
     )
     val res = RestAssured.given()
       .auth()
@@ -87,7 +87,7 @@ internal class CvlSearchIntegrationTest : ElasticIntegrationBase() {
         FieldError("sortBy[1].field", FIELD_MESSAGE),
         FieldError("sortBy[2].field", FIELD_MESSAGE),
         FieldError("sortBy[2].direction", DIRECTION_MESSAGE),
-      )
+      ),
     )
   }
 
@@ -120,12 +120,12 @@ internal class CvlSearchIntegrationTest : ElasticIntegrationBase() {
       Arguments.of(listOf(SortBy("name.surname"), SortBy("name.forename")), listOf("X00010", "X00002", "X00001")),
       Arguments.of(
         listOf(SortBy("name.surname", "desc"), SortBy("name.forename", "desc")),
-        listOf("X00001", "X00002", "X00010")
+        listOf("X00001", "X00002", "X00010"),
       ),
       Arguments.of(listOf(SortBy("manager.name.forename")), listOf("X00002", "X00001", "X00010")),
       Arguments.of(
         listOf(SortBy("manager.name.surname", "desc"), SortBy("manager.name.forename", "desc")),
-        listOf("X00001", "X00002", "X00010")
+        listOf("X00001", "X00002", "X00010"),
       ),
     )
   }

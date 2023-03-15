@@ -51,7 +51,7 @@ class AWSRequestSigningApacheInterceptor(
   /**
    * The source of AWS credentials for signing.
    */
-  private val awsCredentialsProvider: AWSCredentialsProvider
+  private val awsCredentialsProvider: AWSCredentialsProvider,
 ) : HttpRequestInterceptor {
 
   /**

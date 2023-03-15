@@ -9,5 +9,5 @@ data class ProbationArea(
   val nps: Boolean? = null,
   val organisation: KeyValue? = null,
   val institution: Institution? = null,
-  val teams: List<AllTeam>? = null
+  val teams: List<AllTeam>? = null,
 )

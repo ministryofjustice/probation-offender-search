@@ -13,5 +13,5 @@ data class OffenderManager(
   val fromDate: LocalDate? = null,
   val toDate: LocalDate? = null,
   val active: Boolean? = null,
-  val allocationReason: KeyValue? = null
+  val allocationReason: KeyValue? = null,
 )

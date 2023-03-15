@@ -28,10 +28,10 @@ data class SortBy(
   @field:NotBlank
   @field:Pattern(
     regexp = FIELD_REGEX,
-    message = FIELD_MESSAGE
+    message = FIELD_MESSAGE,
   )
   val field: String,
-  @field:Pattern(regexp = "^asc\$|^desc\$", message = DIRECTION_MESSAGE) val direction: String = "asc"
+  @field:Pattern(regexp = "^asc\$|^desc\$", message = DIRECTION_MESSAGE) val direction: String = "asc",
 )
 
 enum class SortField(val input: String, val searchField: String) {
@@ -39,7 +39,8 @@ enum class SortField(val input: String, val searchField: String) {
   FORENAME(FORENAME_INPUT, "firstName.raw"),
   SURNAME(SURNAME_INPUT, "surname.raw"),
   MANAGER_FORENAME(MANAGER_FORENAMES_INPUT, "offenderManagers.staff.forenames.raw"),
-  MANAGER_SURNAME(MANAGER_SURNAME_INPUT, "offenderManagers.staff.surname.raw");
+  MANAGER_SURNAME(MANAGER_SURNAME_INPUT, "offenderManagers.staff.surname.raw"),
+  ;
 
   companion object {
     fun fromInput(input: String) = values().firstOrNull { it.input == input }

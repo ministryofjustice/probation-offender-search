@@ -8,5 +8,5 @@ data class Institution(
   val institutionName: String? = null,
   val establishmentType: KeyValue? = null,
   val isPrivate: Boolean? = null,
-  val nomsPrisonInstitutionCode: String? = null
+  val nomsPrisonInstitutionCode: String? = null,
 )

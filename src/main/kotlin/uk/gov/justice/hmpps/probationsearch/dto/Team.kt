@@ -8,5 +8,5 @@ data class Team(
   @Schema(description = "Team telephone, often not populated", required = false, example = "OMU A") val telephone: String? = null,
   @Schema(description = "Local Delivery Unit - LDU") val localDeliveryUnit: KeyValue? = null,
   @Schema(description = "Team's district") val district: KeyValue? = null,
-  @Schema(description = "Team's borough") val borough: KeyValue? = null
+  @Schema(description = "Team's borough") val borough: KeyValue? = null,
 )

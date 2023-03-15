@@ -32,7 +32,7 @@ class MatchService(
     matchBy(matchRequest) { fullMatchAlias(it) } onMatch {
       return OffenderMatches(
         it.matches,
-        MatchedBy.ALL_SUPPLIED_ALIAS
+        MatchedBy.ALL_SUPPLIED_ALIAS,
       )
     }
     matchBy(matchRequest) { nomsNumber(it) } onMatch { return OffenderMatches(it.matches, MatchedBy.HMPPS_KEY) }
@@ -42,13 +42,13 @@ class MatchService(
     matchBy(matchRequest) { partialNameMatch(it) } onMatch {
       return OffenderMatches(
         it.matches,
-        MatchedBy.PARTIAL_NAME
+        MatchedBy.PARTIAL_NAME,
       )
     }
     matchBy(matchRequest) { partialNameMatchDateOfBirthLenient(it) } onMatch {
       return OffenderMatches(
         it.matches,
-        MatchedBy.PARTIAL_NAME_DOB_LENIENT
+        MatchedBy.PARTIAL_NAME_DOB_LENIENT,
       )
     }
     return OffenderMatches()
@@ -70,7 +70,7 @@ class MatchService(
           .must(
             QueryBuilders.boolQuery()
               .shouldMultiMatch(surname, "surname", "offenderAliases.surname")
-              .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
+              .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth"),
           )
       }
     }
@@ -84,7 +84,7 @@ class MatchService(
           .must(
             QueryBuilders.boolQuery()
               .shouldMultiMatch(surname, "surname", "offenderAliases.surname")
-              .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth")
+              .shouldMultiMatch(dateOfBirth, "dateOfBirth", "offenderAliases.dateOfBirth"),
           )
       }
     }
@@ -97,7 +97,7 @@ class MatchService(
         .mustMultiMatchKeyword(
           pncNumber?.canonicalPNCNumber(),
           "otherIds.pncNumberLongYear",
-          "otherIds.pncNumberShortYear"
+          "otherIds.pncNumberShortYear",
         )
         .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
         .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
@@ -113,7 +113,7 @@ class MatchService(
         .mustMultiMatchKeyword(
           pncNumber?.canonicalPNCNumber(),
           "otherIds.pncNumberLongYear",
-          "otherIds.pncNumberShortYear"
+          "otherIds.pncNumberShortYear",
         )
         .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
         .mustWhenTrue({ activeSentence }, "currentDisposal", "1").apply {
@@ -129,7 +129,7 @@ class MatchService(
         .must(
           QueryBuilders.boolQuery()
             .should(nameQuery(matchRequest))
-            .should(aliasQuery(matchRequest))
+            .should(aliasQuery(matchRequest)),
         )
     }
   }
@@ -141,7 +141,7 @@ class MatchService(
           QueryBuilders.boolQuery()
             .mustWhenPresent("surname", surname)
             .mustWhenPresent("firstName", firstName)
-            .mustWhenPresent("dateOfBirth", dateOfBirth)
+            .mustWhenPresent("dateOfBirth", dateOfBirth),
         )
     }
   }
@@ -156,8 +156,8 @@ class MatchService(
               .mustWhenPresent("offenderAliases.surname", surname)
               .mustWhenPresent("offenderAliases.firstName", firstName)
               .mustWhenPresent("offenderAliases.dateOfBirth", dateOfBirth),
-            ScoreMode.Max
-          )
+            ScoreMode.Max,
+          ),
         )
     }
   }
@@ -207,7 +207,7 @@ class MatchService(
 
   private fun matchBy(
     matchRequest: MatchRequest,
-    queryBuilder: (matchRequest: MatchRequest) -> BoolQueryBuilder?
+    queryBuilder: (matchRequest: MatchRequest) -> BoolQueryBuilder?,
   ): Result {
     val matchQuery = queryBuilder(matchRequest)
     return matchQuery?.let {

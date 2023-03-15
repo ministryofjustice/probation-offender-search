@@ -39,8 +39,8 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(if (status == 200) "pong" else "some error")
-          .withStatus(status)
-      )
+          .withStatus(status),
+      ),
     )
   }
 
@@ -50,8 +50,8 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(response)
-          .withStatus(200)
-      )
+          .withStatus(200),
+      ),
     )
   }
   fun stubUserAccessDenied(crn: String, response: String) {
@@ -60,8 +60,8 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(response)
-          .withStatus(403)
-      )
+          .withStatus(403),
+      ),
     )
   }
   fun stubUserAccessNotFound(crn: String) {
@@ -70,8 +70,8 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody("{\"error\": \"not found\"}")
-          .withStatus(HttpURLConnection.HTTP_NOT_FOUND)
-      )
+          .withStatus(HttpURLConnection.HTTP_NOT_FOUND),
+      ),
     )
   }
   fun stubUserAccessError(crn: String) {
@@ -79,8 +79,8 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
       get("/secure/offenders/crn/$crn/userAccess").willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
-          .withStatus(HttpURLConnection.HTTP_INTERNAL_ERROR)
-      )
+          .withStatus(HttpURLConnection.HTTP_INTERNAL_ERROR),
+      ),
     )
   }
 }

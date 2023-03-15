@@ -16,6 +16,9 @@ class LicenceCaseloadSearchController(val licenceCaseloadService: LicenceCaseloa
 
   @PreAuthorize("hasRole('ROLE_CVL_SEARCH')")
   @RequestMapping("by-team", method = [GET, POST])
-  fun findLicenceCaseloadByTeam(@RequestBody @Valid request: LicenceCaseloadRequest) =
+  fun findLicenceCaseloadByTeam(
+    @RequestBody @Valid
+    request: LicenceCaseloadRequest,
+  ) =
     licenceCaseloadService.findLicenceCaseload(request)
 }

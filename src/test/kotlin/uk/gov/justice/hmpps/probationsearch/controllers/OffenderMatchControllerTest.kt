@@ -28,10 +28,13 @@ import java.lang.reflect.Type
 internal class OffenderMatchControllerTest {
   @LocalServerPort
   var port = 0
+
   @Autowired
   private lateinit var objectMapper: ObjectMapper
+
   @Autowired
   private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
+
   @MockBean
   private lateinit var matchService: MatchService
 
@@ -39,7 +42,7 @@ internal class OffenderMatchControllerTest {
   fun setUp() {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper }
+      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )
     whenever(matchService.match(any())).thenReturn(OffenderMatches(listOf()))
   }

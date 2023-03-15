@@ -20,12 +20,15 @@ class LicenceCaseloadQueryBuilder(private val request: LicenceCaseloadRequest) {
           FetchSourceContext(
             true,
             arrayOf("otherIds", "firstName", "middleNames", "surname", "offenderManagers"),
-            arrayOf()
-          )
+            arrayOf(),
+          ),
         )
 
-      if (request.query.isNotBlank()) sb.query(QueryBuilders.boolQuery().must(searchQuery()).must(filterQuery()))
-      else sb.query(filterQuery())
+      if (request.query.isNotBlank()) {
+        sb.query(QueryBuilders.boolQuery().must(searchQuery()).must(filterQuery()))
+      } else {
+        sb.query(filterQuery())
+      }
       return sb.sort(buildSort())
     }
 
@@ -33,39 +36,39 @@ class LicenceCaseloadQueryBuilder(private val request: LicenceCaseloadRequest) {
     QueryBuilders.nestedQuery(
       "offenderManagers",
       QueryBuilders.boolQuery().filter(QueryBuilders.termsQuery("offenderManagers.team.code", request.teamCodes)),
-      ScoreMode.None
+      ScoreMode.None,
     )
 
   private fun searchQuery(): QueryBuilder =
     QueryBuilders.boolQuery()
       .should(
-        QueryBuilders.wildcardQuery("otherIds.crn", "*${request.query.lowercase()}*")
+        QueryBuilders.wildcardQuery("otherIds.crn", "*${request.query.lowercase()}*"),
       )
       .should(
-        QueryBuilders.wildcardQuery("otherIds.previousCrn", "*${request.query.lowercase()}*")
+        QueryBuilders.wildcardQuery("otherIds.previousCrn", "*${request.query.lowercase()}*"),
       )
       .should(
-        QueryBuilders.wildcardQuery("firstName", "*${request.query.lowercase()}*")
+        QueryBuilders.wildcardQuery("firstName", "*${request.query.lowercase()}*"),
       )
       .should(
-        QueryBuilders.wildcardQuery("surname", "*${request.query.lowercase()}*")
+        QueryBuilders.wildcardQuery("surname", "*${request.query.lowercase()}*"),
       )
       .should(
-        QueryBuilders.wildcardQuery("middleNames", "*${request.query.lowercase()}*")
+        QueryBuilders.wildcardQuery("middleNames", "*${request.query.lowercase()}*"),
       )
       .should(
         QueryBuilders.nestedQuery(
           "offenderManagers",
           QueryBuilders.wildcardQuery("offenderManagers.staff.surname", "*${request.query.lowercase()}*"),
-          ScoreMode.None
-        )
+          ScoreMode.None,
+        ),
       )
       .should(
         QueryBuilders.nestedQuery(
           "offenderManagers",
           QueryBuilders.wildcardQuery("offenderManagers.staff.forenames", "*${request.query.lowercase()}*"),
-          ScoreMode.None
-        )
+          ScoreMode.None,
+        ),
       )
 
   private fun buildSort(): List<FieldSortBuilder> {

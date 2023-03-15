@@ -25,7 +25,7 @@ class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val obj
         if (listOf("streetName", "buildingName", "postcode").matches(it.matchedQueries)) {
           Pair(
             objectMapper.readValue(it.sourceAsString, PersonAddress::class.java).toAddress(),
-            ((it.score / maxScore) * 100).roundToInt()
+            ((it.score / maxScore) * 100).roundToInt(),
           )
         } else {
           null

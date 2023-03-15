@@ -97,6 +97,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
       Arguments.of("2SW", 1),
       Arguments.of("GG1 1BB", 0),
     )
+
     @JvmStatic
     fun streetNameResults(): List<Arguments> = listOf(
       Arguments.of("church street", 1),

@@ -13,5 +13,5 @@ data class OffenderProfile(
   val remandStatus: String? = null,
   val previousConviction: PreviousConviction? = null,
   val riskColour: String? = null,
-  val disabilities: List<Disability>? = null
+  val disabilities: List<Disability>? = null,
 )

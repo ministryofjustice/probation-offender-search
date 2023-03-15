@@ -9,21 +9,21 @@ data class PersonDetail(
   val firstName: String,
   val middleNames: List<String>,
   val surname: String,
-  val offenderManagers: List<PersonManager>
+  val offenderManagers: List<PersonManager>,
 )
 
 data class PersonIdentifiers(
   val crn: String,
   val croNumber: String?,
   val nomsNumber: String?,
-  val pncNumber: String?
+  val pncNumber: String?,
 )
 
 data class PersonManager(
   val staff: Staff,
   val team: Team,
   val probationArea: CodedValue,
-  val fromDate: LocalDate
+  val fromDate: LocalDate,
 )
 
 data class Staff(

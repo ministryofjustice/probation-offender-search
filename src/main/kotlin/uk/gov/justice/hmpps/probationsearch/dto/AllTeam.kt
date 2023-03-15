@@ -13,5 +13,5 @@ data class AllTeam(
   val scProvider: KeyValue? = null,
   val localDeliveryUnit: KeyValue? = null,
   val district: KeyValue? = null,
-  val borough: KeyValue? = null
+  val borough: KeyValue? = null,
 )

@@ -47,14 +47,14 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           crn = "X00007",
           nomsNumber = "G5555TT",
           croNumber = "SF80/655108T",
-          pncNumber = "2018/0123456X"
+          pncNumber = "2018/0123456X",
         ),
         OffenderIdentification(
           surname = "smith",
           firstName = "john",
           dateOfBirth = LocalDate.of(1921, 1, 6),
-          crn = "X00001"
-        )
+          crn = "X00001",
+        ),
       )
 
       given()
@@ -69,8 +69,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             nomsNumber = "G5555TT",
             croNumber = "SF80/655108T",
             pncNumber = "2018/0123456X",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -92,7 +92,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           dateOfBirth = LocalDate.of(1988, 1, 6),
           crn = "X00001",
           pncNumber = "2015/0123456X",
-          aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1)))
+          aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1))),
         ),
         OffenderIdentification(
           surname = "gramsci",
@@ -100,7 +100,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           dateOfBirth = LocalDate.of(1988, 1, 6),
           crn = "X888888",
           pncNumber = "2015/0123456X",
-          deleted = true
+          deleted = true,
         ),
         OffenderIdentification(
           surname = "gramsci",
@@ -108,7 +108,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           dateOfBirth = LocalDate.of(1988, 1, 6),
           crn = "X999999",
           pncNumber = "2015/0123456X",
-          activeSentence = false
+          activeSentence = false,
         ),
         OffenderIdentification(
           surname = "gramsci",
@@ -116,8 +116,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           dateOfBirth = LocalDate.of(1988, 1, 6),
           crn = "X00002",
           pncNumber = "2015/0123456Z",
-          nomsNumber = "G5555TT"
-        )
+          nomsNumber = "G5555TT",
+        ),
       )
     }
 
@@ -133,8 +133,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "june",
             dateOfBirth = LocalDate.of(1988, 1, 6),
             pncNumber = "2015/0123456X",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -156,8 +156,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "june",
             dateOfBirth = LocalDate.of(1988, 1, 6),
             pncNumber = "15/123456X",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -179,8 +179,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             dateOfBirth = LocalDate.of(1988, 1, 6),
             pncNumber = "2015/0123456X",
             activeSentence = true,
-            nomsNumber = "G5555TT"
-          )
+            nomsNumber = "G5555TT",
+          ),
         )
         .post("/match")
         .then()
@@ -202,8 +202,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "adi",
             dateOfBirth = LocalDate.of(1977, 1, 6),
             pncNumber = "2015/0123456X",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -223,8 +223,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "june",
             dateOfBirth = LocalDate.of(1977, 1, 6),
             pncNumber = "2015/0123456X",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -245,8 +245,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "adi",
             dateOfBirth = LocalDate.of(1988, 1, 6),
             pncNumber = "2015/0123456X",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -267,8 +267,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "june",
             dateOfBirth = LocalDate.of(1977, 1, 6),
             pncNumber = "2015/0123456X",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -289,8 +289,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "adi",
             dateOfBirth = LocalDate.of(1990, 9, 1),
             pncNumber = "2015/0123456X",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -311,7 +311,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           dateOfBirth = LocalDate.of(1988, 1, 6),
           crn = "X00001",
           croNumber = "SF80/655108T",
-          aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1)))
+          aliases = listOf(Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1))),
         ),
         OffenderIdentification(
           surname = "gramsci",
@@ -319,7 +319,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           dateOfBirth = LocalDate.of(1988, 1, 6),
           crn = "X888888",
           croNumber = "SF80/655108T",
-          deleted = true
+          deleted = true,
         ),
         OffenderIdentification(
           surname = "gramsci",
@@ -327,7 +327,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           dateOfBirth = LocalDate.of(1988, 1, 6),
           crn = "X999999",
           croNumber = "SF80/655108T",
-          activeSentence = false
+          activeSentence = false,
         ),
         OffenderIdentification(
           surname = "gramsci",
@@ -335,8 +335,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           dateOfBirth = LocalDate.of(1988, 1, 6),
           crn = "X00002",
           croNumber = "SF79/666108T",
-          nomsNumber = "G5555TT"
-        )
+          nomsNumber = "G5555TT",
+        ),
       )
     }
 
@@ -352,8 +352,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "june",
             dateOfBirth = LocalDate.of(1988, 1, 6),
             croNumber = "SF80/655108T",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -376,8 +376,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             dateOfBirth = LocalDate.of(1988, 1, 6),
             croNumber = "SF80/655108T",
             activeSentence = true,
-            nomsNumber = "G5555TT"
-          )
+            nomsNumber = "G5555TT",
+          ),
         )
         .post("/match")
         .then()
@@ -399,8 +399,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "adi",
             dateOfBirth = LocalDate.of(1977, 1, 6),
             croNumber = "SF80/655108T",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -420,8 +420,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "june",
             dateOfBirth = LocalDate.of(1977, 1, 6),
             croNumber = "SF80/655108T",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -442,8 +442,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "adi",
             dateOfBirth = LocalDate.of(1988, 1, 6),
             croNumber = "SF80/655108T",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -464,8 +464,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "june",
             dateOfBirth = LocalDate.of(1977, 1, 6),
             croNumber = "SF80/655108T",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -486,8 +486,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             firstName = "adi",
             dateOfBirth = LocalDate.of(1990, 9, 1),
             croNumber = "SF80/655108T",
-            activeSentence = true
-          )
+            activeSentence = true,
+          ),
         )
         .post("/match")
         .then()
@@ -509,9 +509,9 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           crn = "X00001",
           aliases = listOf(
             Alias(firstName = "Nicola", surname = "Abbagnano", dateOfBirth = LocalDate.of(1990, 9, 1)),
-            Alias(firstName = "Bhimrao", surname = "Ambedkar", dateOfBirth = LocalDate.of(1891, 4, 14))
-          )
-        )
+            Alias(firstName = "Bhimrao", surname = "Ambedkar", dateOfBirth = LocalDate.of(1891, 4, 14)),
+          ),
+        ),
       )
     }
 
@@ -526,8 +526,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "adorno",
             firstName = "theodor",
             dateOfBirth = LocalDate.of(1903, 11, 11),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -548,8 +548,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "Abbagnano",
             firstName = "Nicola",
             dateOfBirth = LocalDate.of(1990, 9, 1),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -567,8 +567,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "Ambedkar",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1891, 4, 14),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -589,8 +589,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "Abbagnano",
             firstName = "Bhimrao",
             dateOfBirth = LocalDate.of(1903, 11, 11),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -610,8 +610,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "roger",
             firstName = "rabbit",
             dateOfBirth = LocalDate.of(2013, 12, 7),
-            croNumber = "SF55/765108T"
-          )
+            croNumber = "SF55/765108T",
+          ),
         )
         .post("/match")
         .then()
@@ -630,8 +630,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           surname = "Adorno",
           firstName = "Theodor",
           dateOfBirth = LocalDate.of(1903, 11, 11),
-          crn = "X00001"
-        )
+          crn = "X00001",
+        ),
       )
     }
 
@@ -646,8 +646,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "adorno",
             firstName = "bobby",
             dateOfBirth = LocalDate.of(1903, 11, 11),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -668,8 +668,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "adorno",
             firstName = "rabbit",
             dateOfBirth = LocalDate.of(2013, 12, 7),
-            croNumber = "SF55/765108T"
-          )
+            croNumber = "SF55/765108T",
+          ),
         )
         .post("/match")
         .then()
@@ -688,8 +688,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
           surname = "Adorno",
           firstName = "Theodor",
           dateOfBirth = LocalDate.of(1903, 11, 7),
-          crn = "X00001"
-        )
+          crn = "X00001",
+        ),
       )
     }
 
@@ -704,8 +704,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "adorno",
             firstName = "Theodor",
             dateOfBirth = LocalDate.of(1903, 7, 11),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -726,8 +726,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "adorno",
             firstName = "Theodor",
             dateOfBirth = LocalDate.of(1903, 11, 8),
-            croNumber = "SF80/655108T"
-          )
+            croNumber = "SF80/655108T",
+          ),
         )
         .post("/match")
         .then()
@@ -748,8 +748,8 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
             surname = "adorno",
             firstName = "rabbit",
             dateOfBirth = LocalDate.of(2013, 12, 7),
-            croNumber = "SF55/765108T"
-          )
+            croNumber = "SF55/765108T",
+          ),
         )
         .post("/match")
         .then()

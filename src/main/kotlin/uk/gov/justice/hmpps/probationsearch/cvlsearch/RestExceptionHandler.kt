@@ -16,12 +16,12 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
     ex: MethodArgumentNotValidException,
     headers: HttpHeaders,
     status: HttpStatusCode,
-    request: WebRequest
+    request: WebRequest,
   ): ResponseEntity<Any> {
     val errors = ErrorsResponse(
       (request as ServletWebRequest).request.requestURI,
       ex.bindingResult.fieldErrors.map { FieldError(it.field, it.defaultMessage) },
-      HttpStatus.BAD_REQUEST
+      HttpStatus.BAD_REQUEST,
     )
     return ResponseEntity(errors, errors.status)
   }

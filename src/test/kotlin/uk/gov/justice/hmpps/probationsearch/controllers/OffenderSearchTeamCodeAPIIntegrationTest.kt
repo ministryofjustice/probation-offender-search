@@ -15,50 +15,50 @@ class OffenderSearchTeamCodeAPIIntegrationTest : ElasticIntegrationBase() {
         offenderManagers = listOf(
           OffenderManagerReplacement(
             team = TeamReplacement(
-              code = "N01000"
-            )
-          )
-        )
+              code = "N01000",
+            ),
+          ),
+        ),
       ),
       OffenderReplacement(
         offenderManagers = listOf(
           OffenderManagerReplacement(
             team = TeamReplacement(
-              code = "N01000"
-            )
-          )
-        )
+              code = "N01000",
+            ),
+          ),
+        ),
       ),
       OffenderReplacement(
         offenderManagers = listOf(
           OffenderManagerReplacement(
             active = false,
             team = TeamReplacement(
-              code = "N03000"
-            )
-          )
-        )
+              code = "N03000",
+            ),
+          ),
+        ),
       ),
       OffenderReplacement(
         deleted = true,
         offenderManagers = listOf(
           OffenderManagerReplacement(
             team = TeamReplacement(
-              code = "N04000"
-            )
-          )
-        )
+              code = "N04000",
+            ),
+          ),
+        ),
       ),
       OffenderReplacement(
         offenderManagers = listOf(
           OffenderManagerReplacement(
             softDeleted = true,
             team = TeamReplacement(
-              code = "N05000"
-            )
-          )
-        )
-      )
+              code = "N05000",
+            ),
+          ),
+        ),
+      ),
     )
   }
 
@@ -67,9 +67,9 @@ class OffenderSearchTeamCodeAPIIntegrationTest : ElasticIntegrationBase() {
       OffenderReplacement(
         offenderManagers = listOf(
           OffenderManagerReplacement(
-            team = TeamReplacement()
-          )
-        )
+            team = TeamReplacement(),
+          ),
+        ),
       )
     }.toTypedArray()
     loadOffenders(*offendersToLoad)

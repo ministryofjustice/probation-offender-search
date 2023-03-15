@@ -8,5 +8,5 @@ data class OffenderAlias(
   val firstName: String? = null,
   val middleNames: List<String>? = null,
   val surname: String? = null,
-  val gender: String? = null
+  val gender: String? = null,
 )

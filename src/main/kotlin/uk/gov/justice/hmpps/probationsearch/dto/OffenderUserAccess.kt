@@ -19,5 +19,5 @@ package uk.gov.justice.hmpps.probationsearch.dto
 data class OffenderUserAccess(
   val username: String? = null,
   val ignoreExclusionsAlways: Boolean = false,
-  val ignoreInclusionsAlways: Boolean = false
+  val ignoreInclusionsAlways: Boolean = false,
 )

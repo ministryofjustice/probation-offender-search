@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort
 class OffsetPageRequest(
   private val pageSize: Int = 100,
   private val offset: Int = 0,
-  private val sort: Sort
+  private val sort: Sort,
 ) : Pageable {
 
   override fun getPageNumber() = offset / pageSize

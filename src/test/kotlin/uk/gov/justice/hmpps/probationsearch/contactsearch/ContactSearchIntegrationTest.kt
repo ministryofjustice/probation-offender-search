@@ -51,7 +51,7 @@ class ContactSearchIntegrationTest {
     es.execute {
       it.indices().putTemplate(
         PutIndexTemplateRequest("contact-search-template").source(TEMPLATE_JSON, XContentType.JSON),
-        RequestOptions.DEFAULT
+        RequestOptions.DEFAULT,
       )
     }
     es.execute {
@@ -64,7 +64,7 @@ class ContactSearchIntegrationTest {
     await untilCallTo {
       es.count(
         Query.findAll(),
-        IndexCoordinates.of(aliasName)
+        IndexCoordinates.of(aliasName),
       )
     } matches { it == contacts.size.toLong() }
   }
@@ -85,7 +85,7 @@ class ContactSearchIntegrationTest {
         .filter { it.crn == crn && it.typeCode == "CODE" }
         .sortedByDescending { it.lastUpdatedDateTime }
         .map { it.id }
-        .take(3)
+        .take(3),
     )
   }
 
@@ -120,7 +120,7 @@ class ContactSearchIntegrationTest {
         .filter { it.crn == crn && it.typeCode == "CODE" }
         .sortedByDescending { it.date }
         .map { it.id }
-        .take(4)
+        .take(4),
     )
   }
 
@@ -140,7 +140,7 @@ class ContactSearchIntegrationTest {
         .filter { it.crn == crn && it.typeCode == "CODE" }
         .sortedBy { it.lastUpdatedDateTime }
         .map { it.id }
-        .take(4)
+        .take(4),
     )
   }
 
@@ -173,8 +173,8 @@ class ContactSearchIntegrationTest {
     assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(
       mapOf(
         "type" to listOf("Matches should be <em>highlighted</em>"),
-        "outcome" to listOf("Matches were <em>highlighted</em>")
-      )
+        "outcome" to listOf("Matches were <em>highlighted</em>"),
+      ),
     )
   }
 

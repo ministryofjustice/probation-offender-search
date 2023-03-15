@@ -61,29 +61,33 @@ abstract class ElasticIntegrationBase {
           croNumber = it.croNumber,
           pncNumber = it.pncNumber,
           niNumber = it.niNumber,
-          previousCrn = it.previousCrn
+          previousCrn = it.previousCrn,
         ),
         offenderAliases = it.aliases.map { alias ->
           OffenderAlias(
             id = nextInt().toString(),
             firstName = alias.firstName,
             surname = alias.surname,
-            dateOfBirth = alias.dateOfBirth
+            dateOfBirth = alias.dateOfBirth,
           )
         },
         contactDetails = templateOffender.contactDetails?.copy(
           addresses = templateOffender.contactDetails?.addresses?.map { address ->
-            if (address.status?.code == "M") address.copy(
-              streetName = it.streetName,
-              town = it.town,
-              county = it.county,
-              postcode = it.postcode
-            ) else address
+            if (address.status?.code == "M") {
+              address.copy(
+                streetName = it.streetName,
+                town = it.town,
+                county = it.county,
+                postcode = it.postcode,
+              )
+            } else {
+              address
+            }
           },
           phoneNumbers = listOf(
             PhoneNumber(it.phoneNumber, TELEPHONE),
-            PhoneNumber(it.mobileNumber, MOBILE)
-          ).filter { it.number != null }
+            PhoneNumber(it.mobileNumber, MOBILE),
+          ).filter { it.number != null },
         ),
         offenderManagers = templateOffender.offenderManagers?.map { offenderManager ->
           it.offenderManagers.find { replacement -> replacement.active == offenderManager.active }
@@ -91,12 +95,12 @@ abstract class ElasticIntegrationBase {
               offenderManager.copy(
                 probationArea = ProbationArea(code = matchingReplacement?.code, description = matchingReplacement?.description),
                 team = Team(code = matchingReplacement?.team?.code, localDeliveryUnit = matchingReplacement?.team?.localDeliveryUnit),
-                softDeleted = matchingReplacement?.softDeleted
+                softDeleted = matchingReplacement?.softDeleted,
               )
             }
         },
         currentExclusion = it.currentExclusion,
-        currentRestriction = it.currentRestriction
+        currentRestriction = it.currentRestriction,
       )
     }.map { objectMapper.writeValueAsString(it) }
 

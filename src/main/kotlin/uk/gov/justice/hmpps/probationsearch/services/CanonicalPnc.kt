@@ -3,12 +3,16 @@ package uk.gov.justice.hmpps.probationsearch.services
 internal fun String.canonicalPNCNumber() =
   if (this.isPNCNumber()) {
     toPNCNumber()
-  } else this
+  } else {
+    this
+  }
 
 internal fun String.canonicalPNCNumberOrNull(): String? =
   if (this.isPNCNumber()) {
     toPNCNumber()
-  } else null
+  } else {
+    null
+  }
 
 private fun String.isPNCNumber(): Boolean {
   return this.matches("^([0-9]{2}|[0-9]{4})/[0-9]+[a-zA-Z]".toRegex())

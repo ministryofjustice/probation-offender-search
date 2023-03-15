@@ -7,5 +7,5 @@ data class ProbationStatus(
   val previouslyKnownTerminationDate: LocalDate? = null,
   val inBreach: Boolean? = null,
   val preSentenceActivity: Boolean = false,
-  val awaitingPsr: Boolean = false
+  val awaitingPsr: Boolean = false,
 )

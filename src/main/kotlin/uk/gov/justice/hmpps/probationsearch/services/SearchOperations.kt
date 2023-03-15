@@ -49,7 +49,7 @@ fun BoolQueryBuilder.mustMultiMatchKeyword(value: Any?, vararg query: String): B
   }?.let {
     this.must().add(
       QueryBuilders.multiMatchQuery(value, *query)
-        .analyzer("keyword")
+        .analyzer("keyword"),
     )
   }
   return this
@@ -63,7 +63,7 @@ fun BoolQueryBuilder.mustMultiMatch(value: Any?, vararg query: String): BoolQuer
     }
   }?.let {
     this.must().add(
-      QueryBuilders.multiMatchQuery(value, *query)
+      QueryBuilders.multiMatchQuery(value, *query),
     )
   }
   return this

@@ -13,24 +13,24 @@ data class AddressSearchRequest(
   val county: String?,
   val postcode: String?,
   val telephoneNumber: String?,
-  val boostOptions: BoostOptions = BoostOptions()
+  val boostOptions: BoostOptions = BoostOptions(),
 )
 data class BoostOptions(
   val postcode: Float = 20f,
   val streetName: Float = 10f,
-  val buildingName: Float = 5f
+  val buildingName: Float = 5f,
 )
 
 data class CodedValue(
   val code: String? = null,
-  val description: String? = null
+  val description: String? = null,
 )
 
 data class Person(
   val id: Long,
   val crn: String,
   val dob: LocalDate,
-  val gender: String
+  val gender: String,
 )
 
 data class Address(
@@ -50,10 +50,10 @@ data class Address(
   val lastUpdatedDateTime: ZonedDateTime,
   val status: CodedValue,
   val type: CodedValue? = null,
-  val noFixedAbode: Boolean
+  val noFixedAbode: Boolean,
 )
 data class AddressSearchResponses(
-  val personAddresses: List<AddressSearchResponse>
+  val personAddresses: List<AddressSearchResponse>,
 )
 
 data class AddressSearchResponse(
@@ -68,11 +68,11 @@ data class PersonDetail(
   @JsonAlias("otherIds")
   val identifiers: Identifiers,
   val dateOfBirth: LocalDate,
-  val gender: String
+  val gender: String,
 )
 
 data class Identifiers(
-  val crn: String
+  val crn: String,
 )
 
 data class PersonAddress(
@@ -92,14 +92,14 @@ data class PersonAddress(
   val status: CodedValue,
   val type: CodedValue?,
   val createdDateTime: ZonedDateTime,
-  val lastUpdatedDateTime: ZonedDateTime
+  val lastUpdatedDateTime: ZonedDateTime,
 )
 
 fun PersonDetail.toPerson() = Person(
   id,
   identifiers.crn,
   dateOfBirth,
-  gender
+  gender,
 )
 
 fun PersonAddress.toAddress() = Address(

@@ -58,7 +58,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun setUp() {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper }
+      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )
     whenever(searchService.performSearch(any(), any(), any())).thenReturn(
       SearchPhraseResults(
@@ -66,8 +66,8 @@ class OffenderSearchControllerPhraseTest {
         pageable = PageRequest.of(0, 10),
         total = 0,
         listOf(),
-        suggestions = null
-      )
+        suggestions = null,
+      ),
     )
   }
 
@@ -78,7 +78,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -94,7 +95,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -123,7 +125,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -139,7 +142,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -150,7 +154,7 @@ class OffenderSearchControllerPhraseTest {
       check {
         assertThat(it.pageNumber).isEqualTo(0)
       },
-      any()
+      any(),
     )
   }
 
@@ -164,7 +168,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -175,7 +180,7 @@ class OffenderSearchControllerPhraseTest {
       check {
         assertThat(it.pageNumber).isEqualTo(28)
       },
-      any()
+      any(),
     )
   }
 
@@ -188,7 +193,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -199,7 +205,7 @@ class OffenderSearchControllerPhraseTest {
       check {
         assertThat(it.pageSize).isEqualTo(10)
       },
-      any()
+      any(),
     )
   }
 
@@ -213,7 +219,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -224,7 +231,7 @@ class OffenderSearchControllerPhraseTest {
       check {
         assertThat(it.pageSize).isEqualTo(99)
       },
-      any()
+      any(),
     )
   }
 
@@ -237,7 +244,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -248,7 +256,7 @@ class OffenderSearchControllerPhraseTest {
         assertThat(it.matchAllTerms).isFalse()
       },
       any(),
-      any()
+      any(),
     )
   }
 
@@ -262,7 +270,8 @@ class OffenderSearchControllerPhraseTest {
         """{
           | "phrase": "john smith 19/7/1965",
           | "matchAllTerms": true
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -273,7 +282,7 @@ class OffenderSearchControllerPhraseTest {
         assertThat(it.matchAllTerms).isTrue()
       },
       any(),
-      any()
+      any(),
     )
   }
 
@@ -286,7 +295,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -297,7 +307,7 @@ class OffenderSearchControllerPhraseTest {
         assertThat(it.probationAreasFilter).isEmpty()
       },
       any(),
-      any()
+      any(),
     )
   }
 
@@ -314,7 +324,8 @@ class OffenderSearchControllerPhraseTest {
           |   "N01",
           |   "N02"
           | ]
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -325,7 +336,7 @@ class OffenderSearchControllerPhraseTest {
         assertThat(it.probationAreasFilter).containsExactly("N01", "N02")
       },
       any(),
-      any()
+      any(),
     )
   }
 
@@ -339,14 +350,14 @@ class OffenderSearchControllerPhraseTest {
             firstName = "John",
             surname = "Smith",
             dateOfBirth = LocalDate.parse("1965-07-19"),
-            otherIds = IDs(crn = "X123456")
-          )
+            otherIds = IDs(crn = "X123456"),
+          ),
         ),
         total = 1,
         probationAreaAggregations = listOf(),
         suggestions = null,
-        pageable = PageRequest.of(0, 10)
-      )
+        pageable = PageRequest.of(0, 10),
+      ),
     )
 
     RestAssured.given()
@@ -356,7 +367,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -379,23 +391,23 @@ class OffenderSearchControllerPhraseTest {
             firstName = "John",
             surname = "Smith",
             dateOfBirth = LocalDate.parse("1965-07-19"),
-            otherIds = IDs(crn = "X123456")
-          )
+            otherIds = IDs(crn = "X123456"),
+          ),
         ),
         pageable = PageRequest.of(0, 10),
         total = 1,
         probationAreaAggregations = listOf(
           ProbationAreaAggregation(
             code = "N01",
-            count = 8
+            count = 8,
           ),
           ProbationAreaAggregation(
             code = "N02",
-            count = 2
-          )
+            count = 2,
+          ),
         ),
-        suggestions = null
-      )
+        suggestions = null,
+      ),
     )
 
     RestAssured.given()
@@ -405,7 +417,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -424,7 +437,7 @@ class OffenderSearchControllerPhraseTest {
           this.addOption(TermSuggestion.Entry.Option(Text("smith"), 1, 0.8f))
           this.addOption(TermSuggestion.Entry.Option(Text("smita"), 1, 0.8f))
           this.addOption(TermSuggestion.Entry.Option(Text("sumith"), 1, 0.8f))
-        }
+        },
       )
     }
     whenever(searchService.performSearch(any(), any(), any())).thenReturn(
@@ -435,14 +448,14 @@ class OffenderSearchControllerPhraseTest {
             firstName = "John",
             surname = "Smith",
             dateOfBirth = LocalDate.parse("1965-07-19"),
-            otherIds = IDs(crn = "X123456")
-          )
+            otherIds = IDs(crn = "X123456"),
+          ),
         ),
         total = 1,
         probationAreaAggregations = listOf(),
         suggestions = Suggest(listOf(suggestion)),
-        pageable = PageRequest.of(0, 10)
-      )
+        pageable = PageRequest.of(0, 10),
+      ),
     )
 
     RestAssured.given()
@@ -452,7 +465,8 @@ class OffenderSearchControllerPhraseTest {
       .body(
         """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+        """.trimMargin(),
       )
       .post("/phrase")
       .then()
@@ -476,7 +490,8 @@ class OffenderSearchControllerPhraseTest {
         .body(
           """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+          """.trimMargin(),
         )
         .post("/phrase")
         .then()
@@ -487,7 +502,7 @@ class OffenderSearchControllerPhraseTest {
         any(),
         check {
           assertThat(it.ignoreInclusionsAlways).isFalse()
-        }
+        },
       )
     }
 
@@ -500,7 +515,8 @@ class OffenderSearchControllerPhraseTest {
         .body(
           """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+          """.trimMargin(),
         )
         .post("/phrase")
         .then()
@@ -511,7 +527,7 @@ class OffenderSearchControllerPhraseTest {
         any(),
         check {
           assertThat(it.ignoreInclusionsAlways).isTrue()
-        }
+        },
       )
     }
 
@@ -524,7 +540,8 @@ class OffenderSearchControllerPhraseTest {
         .body(
           """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+          """.trimMargin(),
         )
         .post("/phrase")
         .then()
@@ -535,7 +552,7 @@ class OffenderSearchControllerPhraseTest {
         any(),
         check {
           assertThat(it.ignoreExclusionsAlways).isFalse()
-        }
+        },
       )
     }
 
@@ -548,7 +565,8 @@ class OffenderSearchControllerPhraseTest {
         .body(
           """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+          """.trimMargin(),
         )
         .post("/phrase")
         .then()
@@ -559,7 +577,7 @@ class OffenderSearchControllerPhraseTest {
         any(),
         check {
           assertThat(it.ignoreExclusionsAlways).isTrue()
-        }
+        },
       )
     }
 
@@ -573,16 +591,17 @@ class OffenderSearchControllerPhraseTest {
               subject = "new-tech",
               username = null,
               clientId = "new-tech",
-              authSource = "none"
+              authSource = "none",
             ),
-            "allow_when_inclusion_not_matched"
-          )
+            "allow_when_inclusion_not_matched",
+          ),
         )
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+          """.trimMargin(),
         )
         .post("/phrase")
         .then()
@@ -593,7 +612,7 @@ class OffenderSearchControllerPhraseTest {
         any(),
         check {
           assertThat(it.username).isNull()
-        }
+        },
       )
     }
 
@@ -607,16 +626,17 @@ class OffenderSearchControllerPhraseTest {
               subject = "karenblacknps",
               username = "karenblacknps",
               clientId = "new-tech",
-              authSource = "delius"
+              authSource = "delius",
             ),
-            "allow_when_inclusion_not_matched"
-          )
+            "allow_when_inclusion_not_matched",
+          ),
         )
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+          """.trimMargin(),
         )
         .post("/phrase")
         .then()
@@ -627,7 +647,7 @@ class OffenderSearchControllerPhraseTest {
         any(),
         check {
           assertThat(it.username).isEqualTo("karenblacknps")
-        }
+        },
       )
     }
 
@@ -641,16 +661,17 @@ class OffenderSearchControllerPhraseTest {
               subject = "karenblacknps",
               username = "karenblacknps",
               clientId = "new-tech",
-              authSource = "nomis"
+              authSource = "nomis",
             ),
-            "allow_when_inclusion_not_matched"
-          )
+            "allow_when_inclusion_not_matched",
+          ),
         )
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           """{
           | "phrase": "john smith 19/7/1965"
-          |}""".trimMargin()
+          |}
+          """.trimMargin(),
         )
         .post("/phrase")
         .then()
@@ -661,7 +682,7 @@ class OffenderSearchControllerPhraseTest {
         any(),
         check {
           assertThat(it.username).isNull()
-        }
+        },
       )
     }
   }

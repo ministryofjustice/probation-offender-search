@@ -41,14 +41,14 @@ internal class HighlightingTest {
       val offenderDetail = OffenderDetail(offenderId = 99, otherIds = IDs("1234"))
       val highlights = mapOf(
         "surname" to HighlightField("surname", arrayOf(Text("Smith"))),
-        "offenderAlias.surname" to HighlightField("surname", arrayOf(Text("smith")))
+        "offenderAlias.surname" to HighlightField("surname", arrayOf(Text("smith"))),
       )
       assertThat(offenderDetail.mergeHighlights(highlightFields = highlights, phrase = "smith").highlight)
         .containsExactlyEntriesOf(
           mapOf(
             "surname" to listOf("Smith"),
-            "offenderAlias.surname" to listOf("smith")
-          )
+            "offenderAlias.surname" to listOf("smith"),
+          ),
         )
     }
 
@@ -56,13 +56,13 @@ internal class HighlightingTest {
     fun `will highlight date of birth when format is same`() {
       val offenderDetail = OffenderDetail(otherIds = IDs("1234"), offenderId = 99, dateOfBirth = LocalDate.parse("1965-07-19"))
       val highlights = mapOf(
-        "dateOfBirth" to HighlightField("dateOfBirth", arrayOf(Text("1965-07-19")))
+        "dateOfBirth" to HighlightField("dateOfBirth", arrayOf(Text("1965-07-19"))),
       )
       assertThat(offenderDetail.mergeHighlights(highlightFields = highlights, phrase = "1965-07-19").highlight)
         .containsExactlyEntriesOf(
           mapOf(
-            "dateOfBirth" to listOf("1965-07-19")
-          )
+            "dateOfBirth" to listOf("1965-07-19"),
+          ),
         )
     }
 
@@ -72,8 +72,8 @@ internal class HighlightingTest {
       assertThat(offenderDetail.mergeHighlights(mapOf(), "19/7/1965").highlight)
         .containsExactlyEntriesOf(
           mapOf(
-            "dateOfBirth" to listOf("1965-07-19")
-          )
+            "dateOfBirth" to listOf("1965-07-19"),
+          ),
         )
     }
   }
