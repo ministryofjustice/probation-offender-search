@@ -1,6 +1,6 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.2"
-  kotlin("plugin.spring") version "1.8.10"
+  kotlin("plugin.spring") version "1.8.20"
   id("com.google.cloud.tools.jib") version "3.3.1"
 }
 
