@@ -94,13 +94,15 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .body("{\"addressNumber\": \"29\", \"streetName\": \"Church Street\"}")
+      .body(body)
       .post("/search/addresses")
       .then()
       .statusCode(200)
       .extract()
       .body()
       .`as`(AddressSearchResponses::class.java)
+
+    assertThat(existing.personAddresses.size).isEqualTo(noOfResults)
   }
 
   companion object {
@@ -127,8 +129,8 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
     fun multipartResults(): List<Arguments> = listOf(
       Arguments.of("{\"postcode\": \"NE1  2SW\", \"streetName\": \"Church Street\"}", 1),
       Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church St\"}", 1),
-      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 0),
-      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 0)
+      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 1), // match on postcode
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 1) // match on street name
     )
   }
 }
