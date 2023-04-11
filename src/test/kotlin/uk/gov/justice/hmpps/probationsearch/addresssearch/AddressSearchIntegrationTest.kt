@@ -130,7 +130,8 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
       Arguments.of("{\"postcode\": \"NE1  2SW\", \"streetName\": \"Church Street\"}", 1),
       Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church St\"}", 1),
       Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 1), // match on postcode
-      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 1) // match on street name
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 1), // match on street name
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Lane\"}", 0), // match on neither
     )
   }
 }
