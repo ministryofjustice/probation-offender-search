@@ -87,14 +87,32 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
     assertThat(results.personAddresses).hasSize(0)
   }
 
+  @ParameterizedTest
+  @MethodSource("multipartResults")
+  fun `must match on all provided parts`(body: String, noOfResults: Int) {
+    val existing = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body(body)
+      .post("/search/addresses")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(AddressSearchResponses::class.java)
+
+    assertThat(existing.personAddresses.size).isEqualTo(noOfResults)
+  }
+
   companion object {
     @JvmStatic
     fun postcodeResults(): List<Arguments> = listOf(
       Arguments.of("NE1 2SW", 1),
       Arguments.of("ne1 2sw", 1),
-      Arguments.of("NE1", 1),
       Arguments.of("NE12SW", 1),
-      Arguments.of("2SW", 1),
+      Arguments.of("NE1", 0),
+      Arguments.of("2SW", 0),
       Arguments.of("GG1 1BB", 0),
     )
 
@@ -103,8 +121,17 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
       Arguments.of("church street", 1),
       Arguments.of("Church St", 1),
       Arguments.of("Church", 1),
-      Arguments.of("no street", 1),
+      Arguments.of("no street", 0),
       Arguments.of("cathedral view", 0),
+    )
+
+    @JvmStatic
+    fun multipartResults(): List<Arguments> = listOf(
+      Arguments.of("{\"postcode\": \"NE1  2SW\", \"streetName\": \"Church Street\"}", 1),
+      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church St\"}", 1),
+      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 1), // match on postcode
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 1), // match on street name
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Lane\"}", 0), // match on neither
     )
   }
 }

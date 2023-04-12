@@ -3,6 +3,7 @@ package uk.gov.justice.hmpps.probationsearch.addresssearch
 import org.apache.lucene.search.join.ScoreMode
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.InnerHitBuilder
+import org.elasticsearch.index.query.Operator
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.builder.SearchSourceBuilder
@@ -62,8 +63,8 @@ fun BoolQueryBuilder.shouldMatchNonNull(
   boost: Float,
   queryName: String? = null,
 ): BoolQueryBuilder {
-  if (value != null && value.isNotBlank()) {
-    val qb = QueryBuilders.matchQuery(name, value).boost(boost)
+  if (!value.isNullOrBlank()) {
+    val qb = QueryBuilders.matchQuery(name, value).boost(boost).operator(Operator.AND)
     if (queryName != null) qb.queryName(queryName)
     should(qb)
   }
