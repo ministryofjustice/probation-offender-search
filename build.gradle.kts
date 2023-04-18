@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.3"
   kotlin("plugin.spring") version "1.8.20"
@@ -68,7 +70,7 @@ tasks {
     dependsOn += copyAgentJar
   }
 
-  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+  withType<KotlinCompile> {
     kotlinOptions {
       jvmTarget = "17"
     }
@@ -87,7 +89,7 @@ jib {
     user = "2000:2000"
   }
   from {
-    image = "ghcr.io/ministryofjustice/hmpps-probation-integration-services/eclipse-temurin:17-jre-alpine"
+    image = "eclipse-temurin:17-jre-alpine"
   }
   extraDirectories {
     paths {

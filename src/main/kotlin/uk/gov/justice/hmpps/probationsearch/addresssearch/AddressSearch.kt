@@ -18,7 +18,7 @@ data class AddressSearchRequest(
 data class BoostOptions(
   val postcode: Float = 20f,
   val streetName: Float = 10f,
-  val buildingName: Float = 5f,
+  val town: Float = 5f,
 )
 
 data class CodedValue(
