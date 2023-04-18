@@ -61,7 +61,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .body("{\"addressNumber\": \"29\", \"streetName\": \"Church Street\"}")
+      .body("{\"addressNumber\": \"29\", \"streetName\": \"Church Street\", \"postcode\": \"NE1 2SW\"}")
       .post("/search/addresses")
       .then()
       .statusCode(200)
@@ -105,6 +105,24 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
     assertThat(existing.personAddresses.size).isEqualTo(noOfResults)
   }
 
+  @ParameterizedTest
+  @MethodSource("townResults")
+  fun `must match on complete town`(body: String, noOfResults: Int) {
+    val existing = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body(body)
+      .post("/search/addresses")
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(AddressSearchResponses::class.java)
+
+    assertThat(existing.personAddresses.size).isEqualTo(noOfResults)
+  }
+
   companion object {
     @JvmStatic
     fun postcodeResults(): List<Arguments> = listOf(
@@ -119,8 +137,8 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
     @JvmStatic
     fun streetNameResults(): List<Arguments> = listOf(
       Arguments.of("church street", 1),
-      Arguments.of("Church St", 1),
-      Arguments.of("Church", 1),
+      Arguments.of("Church St", 0),
+      Arguments.of("Church", 0),
       Arguments.of("no street", 0),
       Arguments.of("cathedral view", 0),
     )
@@ -128,10 +146,18 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
     @JvmStatic
     fun multipartResults(): List<Arguments> = listOf(
       Arguments.of("{\"postcode\": \"NE1  2SW\", \"streetName\": \"Church Street\"}", 1),
-      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church St\"}", 1),
-      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 1), // match on postcode
-      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 1), // match on street name
-      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Lane\"}", 0), // match on neither
+      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church St\"}", 0),
+      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 0),
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 0),
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Lane\"}", 0),
+    )
+
+    @JvmStatic
+    fun townResults(): List<Arguments> = listOf(
+      Arguments.of("{\"town\": \"Newcastle upon Tyne\"}", 1),
+      Arguments.of("{\"town\": \"newcastle upon tyne\"}", 1),
+      Arguments.of("{\"town\": \"Newcastle under Lyme\"}", 1),
+      Arguments.of("{\"town\": \"Newcastle\"}", 0),
     )
   }
 }
