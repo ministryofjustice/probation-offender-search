@@ -38,7 +38,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
 
   @ParameterizedTest
   @MethodSource("streetNameResults")
-  fun `street name search test`(streetName: String, noOfResults: Int) {
+  fun `must not match on street name only`(streetName: String, noOfResults: Int) {
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -107,7 +107,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
 
   @ParameterizedTest
   @MethodSource("townResults")
-  fun `must match on complete town`(body: String, noOfResults: Int) {
+  fun `must not match on town only`(body: String, noOfResults: Int) {
     val existing = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -136,7 +136,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
 
     @JvmStatic
     fun streetNameResults(): List<Arguments> = listOf(
-      Arguments.of("church street", 1),
+      Arguments.of("church street", 0),
       Arguments.of("Church St", 0),
       Arguments.of("Church", 0),
       Arguments.of("no street", 0),
@@ -150,13 +150,14 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
       Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 0),
       Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 0),
       Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Lane\"}", 0),
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street Lane\"}", 1),
     )
 
     @JvmStatic
     fun townResults(): List<Arguments> = listOf(
-      Arguments.of("{\"town\": \"Newcastle upon Tyne\"}", 1),
-      Arguments.of("{\"town\": \"newcastle upon tyne\"}", 1),
-      Arguments.of("{\"town\": \"Newcastle under Lyme\"}", 1),
+      Arguments.of("{\"town\": \"Newcastle upon Tyne\"}", 0),
+      Arguments.of("{\"town\": \"newcastle upon tyne\"}", 0),
+      Arguments.of("{\"town\": \"Newcastle under Lyme\"}", 0),
       Arguments.of("{\"town\": \"Newcastle\"}", 0),
     )
   }
