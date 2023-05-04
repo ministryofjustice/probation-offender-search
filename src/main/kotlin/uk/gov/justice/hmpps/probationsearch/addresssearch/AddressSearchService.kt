@@ -31,7 +31,7 @@ class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val obj
           )
         }
     }
-    .sortedByDescending { it.matchScore }
+    .sortedWith(compareByDescending<AddressSearchResponse> { it.matchScore }.thenBy { it.address.id })
     .take(maxResults)
 
   private fun Array<String>.matches(): Boolean = map {
