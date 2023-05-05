@@ -15,7 +15,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
 
   @BeforeEach
   fun setUp() {
-    PersonSearchHelper(esClient).loadData()
+    PersonSearchHelper(openSearchClient).loadData()
   }
 
   @ParameterizedTest

@@ -1,10 +1,10 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
-import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.CROSS_FIELDS
-import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.MOST_FIELDS
-import org.elasticsearch.index.query.Operator
-import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
+import org.opensearch.index.query.MultiMatchQueryBuilder.Type.CROSS_FIELDS
+import org.opensearch.index.query.MultiMatchQueryBuilder.Type.MOST_FIELDS
+import org.opensearch.index.query.Operator
+import org.opensearch.index.query.QueryBuilder
+import org.opensearch.index.query.QueryBuilders
 
 fun buildQuery(phrase: String, matchAllTerms: Boolean): QueryBuilder =
 

@@ -6,10 +6,10 @@ import io.restassured.RestAssured.given
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.CoreMatchers
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType

@@ -2,11 +2,11 @@ package uk.gov.justice.hmpps.probationsearch.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.lucene.search.join.ScoreMode
-import org.elasticsearch.action.search.SearchRequest
-import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.search.builder.SearchSourceBuilder
+import org.opensearch.action.search.SearchRequest
+import org.opensearch.action.search.SearchResponse
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 @Service
 class MatchService(
-  private val elasticSearchClient: SearchClient,
+  private val openSearchClient: SearchClient,
   private val mapper: ObjectMapper,
 ) {
   companion object {
@@ -215,7 +215,7 @@ class MatchService(
         query(matchQuery.withDefaults(matchRequest))
       }
       val searchRequest = SearchRequest(arrayOf("person-search-primary"), searchSourceBuilder)
-      val offenderMatches = getSearchResult(elasticSearchClient.search(searchRequest))
+      val offenderMatches = getSearchResult(openSearchClient.search(searchRequest))
       return if (offenderMatches.isEmpty()) Result.NoMatch else Result.Match(offenderMatches)
     } ?: Result.NoMatch
   }

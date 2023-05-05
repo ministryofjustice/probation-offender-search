@@ -51,7 +51,7 @@ class OffenderSearchController(
   }
 
   @Operation(
-    summary = "Search for an offender in Delius ElasticSearch. Only offenders matching all request attributes will be returned",
+    summary = "Search for an offender in Delius. Only offenders matching all request attributes will be returned",
     description = "Specify the request criteria to match against",
     operationId = "search",
   )
@@ -72,7 +72,7 @@ class OffenderSearchController(
   fun searchOffenders(@RequestBody searchForm: SearchDto): List<OffenderDetail?>? = searchService.performSearch(searchForm)
 
   @Operation(
-    summary = "Search for an offender in Delius ElasticSearch using a search phrase. Only offenders matching all request attributes will be returned",
+    summary = "Search for an offender in Delius using a search phrase. Only offenders matching all request attributes will be returned",
     description =
     """The phrase can contain one or more of the following:
         

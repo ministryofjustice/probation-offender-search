@@ -1,32 +1,32 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
-import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.Operator
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.index.query.SimpleQueryStringFlag
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder
-import org.elasticsearch.search.sort.SortBuilders
-import org.elasticsearch.search.sort.SortOrder
+import org.opensearch.data.client.orhlc.NativeSearchQuery
+import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
+import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.Operator
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.index.query.QueryBuilders.boolQuery
+import org.opensearch.index.query.SimpleQueryStringFlag
+import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
+import org.opensearch.search.sort.SortBuilders
+import org.opensearch.search.sort.SortOrder
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
+import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
 
 @Service
-class ContactSearchService(private val es: ElasticsearchRestTemplate) {
+class ContactSearchService(private val restTemplate: OpenSearchRestTemplate) {
   fun performSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    val query = QueryBuilders.boolQuery().fromRequest(request)
-
-    val nsq = NativeSearchQueryBuilder()
-      .withQuery(query)
+    val query: Query = NativeSearchQueryBuilder()
+      .withQuery(boolQuery().fromRequest(request))
       .withPageable(PageRequest.of(pageable.pageNumber, pageable.pageSize))
       .withTrackTotalHits(true)
       .withHighlightBuilder(
@@ -39,7 +39,7 @@ class ContactSearchService(private val es: ElasticsearchRestTemplate) {
           .fragmentSize(200),
       ).withSorts(pageable.sort)
 
-    val searchResponse = es.search(nsq, ContactSearchResult::class.java, IndexCoordinates.of("contact-search-primary"))
+    val searchResponse = restTemplate.search(query, ContactSearchResult::class.java, IndexCoordinates.of("contact-search-primary"))
     val results = searchResponse.searchHits.mapNotNull { it.content.copy(highlights = it.highlightFields) }
 
     val response = PageImpl(results, pageable, searchResponse.totalHits)

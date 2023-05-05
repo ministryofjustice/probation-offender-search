@@ -1,13 +1,15 @@
 package uk.gov.justice.hmpps.probationsearch.addresssearch
 
 import org.apache.lucene.search.join.ScoreMode
-import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.InnerHitBuilder
-import org.elasticsearch.index.query.Operator
-import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.search.builder.SearchSourceBuilder
-import org.elasticsearch.search.fetch.subphase.FetchSourceContext
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.InnerHitBuilder
+import org.opensearch.index.query.Operator
+import org.opensearch.index.query.QueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.index.query.QueryBuilders.functionScoreQuery
+import org.opensearch.index.query.QueryBuilders.nestedQuery
+import org.opensearch.search.builder.SearchSourceBuilder
+import org.opensearch.search.fetch.subphase.FetchSourceContext
 
 fun matchAddresses(addressSearchRequest: AddressSearchRequest, maxResults: Int): SearchSourceBuilder =
   SearchSourceBuilder()
@@ -29,15 +31,14 @@ private fun AddressSearchRequest.minBoost(): Float =
 
 private fun String?.withBoost(boost: Float) = if (isNullOrBlank()) 0.0F else boost
 
-fun buildSearchQuery(addressSearchRequest: AddressSearchRequest): QueryBuilder =
-  QueryBuilders.nestedQuery(
+fun buildSearchQuery(addressSearchRequest: AddressSearchRequest) =
+  nestedQuery(
     "contactDetails.addresses",
-    QueryBuilders.functionScoreQuery(matchQueryBuilder(addressSearchRequest))
-      .setMinScore(addressSearchRequest.minBoost()),
+    functionScoreQuery(matchQueryBuilder(addressSearchRequest)).setMinScore(addressSearchRequest.minBoost()),
     ScoreMode.Max,
   ).innerHit(InnerHitBuilder("addresses").setFetchSourceContext(FetchSourceContext(true)).setSize(100))
 
-private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
+private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest): QueryBuilder =
   QueryBuilders.boolQuery()
     .mustMatchNonNull(
       "contactDetails.addresses.streetName_analyzed",
@@ -59,7 +60,7 @@ private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest) =
     )
     .mustMatchNonNull("contactDetails.addresses.addressNumber", addressSearchRequest.addressNumber, 1f)
     .mustMatchNonNull("contactDetails.addresses.district", addressSearchRequest.district, 1f)
-    .mustMatchNonNull("contactDetails.addresses.town", addressSearchRequest.buildingName, 1f)
+    .mustMatchNonNull("contactDetails.addresses.buildingName", addressSearchRequest.buildingName, 1f)
     .mustMatchNonNull("contactDetails.addresses.county", addressSearchRequest.county, 1f)
     .mustMatchNonNull("contactDetails.addresses.telephoneNumber", addressSearchRequest.telephoneNumber, 1f)
 

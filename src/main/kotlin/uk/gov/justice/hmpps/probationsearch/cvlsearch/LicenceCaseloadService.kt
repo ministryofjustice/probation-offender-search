@@ -1,10 +1,10 @@
 package uk.gov.justice.hmpps.probationsearch.cvlsearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.elasticsearch.action.search.SearchRequest
-import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.search.SearchHits
+import org.opensearch.action.search.SearchRequest
+import org.opensearch.client.RequestOptions
+import org.opensearch.client.RestHighLevelClient
+import org.opensearch.search.SearchHits
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Sort
@@ -12,14 +12,14 @@ import org.springframework.data.domain.Sort.Direction.valueOf
 import org.springframework.stereotype.Service
 
 @Service
-class LicenceCaseloadService(val elasticSearchClient: RestHighLevelClient, val objectMapper: ObjectMapper) {
+class LicenceCaseloadService(val openSearchClient: RestHighLevelClient, val objectMapper: ObjectMapper) {
 
   fun findLicenceCaseload(request: LicenceCaseloadRequest): Page<LicenceCaseloadPerson> {
     val sort: Sort = Sort.by(request.sortBy.map { Sort.Order(valueOf(it.direction.uppercase()), it.field) })
     val pageable = OffsetPageRequest(request.pageSize, request.offset, sort)
     val searchRequest = SearchRequest("person-search-primary")
     searchRequest.source(LicenceCaseloadQueryBuilder(request).sourceBuilder)
-    val res = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT)
+    val res = openSearchClient.search(searchRequest, RequestOptions.DEFAULT)
     return res.hits.toLicenceCaseload(pageable)
   }
 

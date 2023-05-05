@@ -1,19 +1,19 @@
 package uk.gov.justice.hmpps.probationsearch.addresssearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.elasticsearch.action.search.SearchRequest
-import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.search.SearchHits
+import org.opensearch.action.search.SearchRequest
+import org.opensearch.client.RequestOptions
+import org.opensearch.client.RestHighLevelClient
+import org.opensearch.search.SearchHits
 import org.springframework.stereotype.Service
 
 @Service
-class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val objectMapper: ObjectMapper) {
+class AddressSearchService(val openSearchClient: RestHighLevelClient, val objectMapper: ObjectMapper) {
   fun performSearch(addressSearchRequest: AddressSearchRequest, maxResults: Int): AddressSearchResponses {
     val searchSourceBuilder = matchAddresses(addressSearchRequest, maxResults)
     val searchRequest = SearchRequest("person-search-primary")
     searchRequest.source(searchSourceBuilder)
-    val res = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT)
+    val res = openSearchClient.search(searchRequest, RequestOptions.DEFAULT)
     return AddressSearchResponses(res.hits.toAddressSearchResponse(maxResults))
   }
 

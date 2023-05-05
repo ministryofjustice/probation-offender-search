@@ -7,18 +7,20 @@ orbs:
 
 executors:
   build-gradle:
+    resource_class: medium+
     docker:
       - image: cimg/openjdk:17.0
         environment:
           JAVA_TOOL_OPTIONS: -Xmx4g -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process
           TESTCONTAINERS_ELASTICSEARCH_ENABLED: 'false'
-      - image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+      - image: opensearchproject/opensearch:2.5.0
         environment:
-          node.name: elasticsearch
+          node.name: opensearch
           cluster.name: probation-search-cluster
           discovery.type: single-node
           bootstrap.memory_lock: true
-          ES_JAVA_OPTS: -Xms512m -Xmx512m
+          plugins.security.disabled: true
+          OPENSEARCH_JAVA_OPTS: -Xms1g -Xmx1g
 
 jobs:
   validate:

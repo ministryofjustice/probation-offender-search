@@ -1,8 +1,8 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
-import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.QueryBuilder
+import org.opensearch.index.query.QueryBuilders
 
 fun BoolQueryBuilder.mustWhenPresent(query: String, value: Any?): BoolQueryBuilder {
   value.takeIf {

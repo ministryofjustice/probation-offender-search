@@ -1,14 +1,14 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
 import org.apache.lucene.search.join.ScoreMode.None
-import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.index.query.QueryBuilders.nestedQuery
-import org.elasticsearch.search.aggregations.AggregationBuilders
-import org.elasticsearch.search.aggregations.Aggregations
-import org.elasticsearch.search.aggregations.bucket.nested.Nested
-import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder
-import org.elasticsearch.search.aggregations.bucket.terms.Terms
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.index.query.QueryBuilders.nestedQuery
+import org.opensearch.search.aggregations.AggregationBuilders
+import org.opensearch.search.aggregations.Aggregations
+import org.opensearch.search.aggregations.bucket.nested.Nested
+import org.opensearch.search.aggregations.bucket.nested.NestedAggregationBuilder
+import org.opensearch.search.aggregations.bucket.terms.Terms
 import uk.gov.justice.hmpps.probationsearch.dto.ProbationAreaAggregation
 
 const val offenderManagersAggregation = "offenderManagers"

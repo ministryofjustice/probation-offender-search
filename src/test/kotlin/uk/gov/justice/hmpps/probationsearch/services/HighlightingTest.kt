@@ -1,11 +1,11 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.common.text.Text
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder.Field
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightField
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.opensearch.common.text.Text
+import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder.Field
+import org.opensearch.search.fetch.subphase.highlight.HighlightField
 import uk.gov.justice.hmpps.probationsearch.dto.IDs
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import java.time.LocalDate

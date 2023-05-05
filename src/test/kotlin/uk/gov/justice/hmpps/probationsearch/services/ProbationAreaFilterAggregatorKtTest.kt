@@ -1,27 +1,27 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.common.ParseField
-import org.elasticsearch.common.xcontent.ContextParser
-import org.elasticsearch.common.xcontent.DeprecationHandler
-import org.elasticsearch.common.xcontent.NamedXContentRegistry
-import org.elasticsearch.common.xcontent.NamedXContentRegistry.Entry
-import org.elasticsearch.common.xcontent.XContentParser
-import org.elasticsearch.common.xcontent.XContentType.JSON
-import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.NestedQueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.search.aggregations.Aggregation
-import org.elasticsearch.search.aggregations.Aggregations
-import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder
-import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested
-import org.elasticsearch.search.aggregations.bucket.terms.LongTerms
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.opensearch.common.ParseField
+import org.opensearch.common.xcontent.ContextParser
+import org.opensearch.common.xcontent.DeprecationHandler
+import org.opensearch.common.xcontent.NamedXContentRegistry
+import org.opensearch.common.xcontent.NamedXContentRegistry.Entry
+import org.opensearch.common.xcontent.XContentParser
+import org.opensearch.common.xcontent.XContentType.JSON
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.NestedQueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.search.aggregations.Aggregation
+import org.opensearch.search.aggregations.Aggregations
+import org.opensearch.search.aggregations.bucket.nested.NestedAggregationBuilder
+import org.opensearch.search.aggregations.bucket.nested.ParsedNested
+import org.opensearch.search.aggregations.bucket.terms.LongTerms
+import org.opensearch.search.aggregations.bucket.terms.ParsedLongTerms
+import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms
+import org.opensearch.search.aggregations.bucket.terms.StringTerms
+import org.opensearch.search.aggregations.bucket.terms.TermsAggregationBuilder
 import uk.gov.justice.hmpps.probationsearch.dto.ProbationAreaAggregation
 
 internal class ProbationAreaFilterAggregatorKtTest {

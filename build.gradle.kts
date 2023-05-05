@@ -10,10 +10,6 @@ configurations {
   implementation { exclude(group = "tomcat-jdbc") }
 }
 
-dependencyCheck {
-  suppressionFiles.add("dependency-check-suppress-es.xml")
-}
-
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -26,9 +22,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-  implementation("org.springframework.data:spring-data-elasticsearch:4.2.12")
-
-  implementation("com.amazonaws:aws-java-sdk-core:1.12.+")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:1.0.1")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 

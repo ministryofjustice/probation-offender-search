@@ -2,8 +2,8 @@ package uk.gov.justice.hmpps.probationsearch.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
-import org.elasticsearch.client.RestHighLevelClient
 import org.junit.jupiter.api.BeforeEach
+import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -36,14 +36,14 @@ abstract class ElasticIntegrationBase {
   }
 
   @Autowired
-  @Qualifier("elasticSearchClient")
-  internal lateinit var esClient: RestHighLevelClient
+  @Qualifier("openSearchClient")
+  internal lateinit var openSearchClient: RestHighLevelClient
 
   @Autowired
   private lateinit var objectMapper: ObjectMapper
 
   fun loadOffenders(vararg offenders: OffenderReplacement) {
-    val template = "/elasticsearchdata/offender-template.json".readResourceAsText()
+    val template = "/searchdata/offender-template.json".readResourceAsText()
     val templateOffender = objectMapper.readValue(template, OffenderDetail::class.java)
 
     val offendersToLoad = offenders.map { it ->
@@ -104,7 +104,7 @@ abstract class ElasticIntegrationBase {
       )
     }.map { objectMapper.writeValueAsString(it) }
 
-    PersonSearchHelper(esClient).loadData(offendersToLoad)
+    PersonSearchHelper(openSearchClient).loadData(offendersToLoad)
   }
 
   private fun String.readResourceAsText(): String {
