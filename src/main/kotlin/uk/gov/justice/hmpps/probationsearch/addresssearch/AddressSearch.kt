@@ -59,7 +59,7 @@ data class AddressSearchResponses(
 data class AddressSearchResponse(
   val person: Person,
   val address: Address,
-  val matchScore: Int,
+  val matchScore: Float,
 )
 
 data class PersonDetail(

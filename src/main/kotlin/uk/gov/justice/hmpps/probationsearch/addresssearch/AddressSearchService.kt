@@ -6,7 +6,6 @@ import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.search.SearchHits
 import org.springframework.stereotype.Service
-import kotlin.math.roundToInt
 
 @Service
 class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val objectMapper: ObjectMapper) {
@@ -18,21 +17,22 @@ class AddressSearchService(val elasticSearchClient: RestHighLevelClient, val obj
     return AddressSearchResponses(res.hits.toAddressSearchResponse(maxResults))
   }
 
-  fun SearchHits.toAddressSearchResponse(maxResults: Int): List<AddressSearchResponse> = hits.flatMap { hit ->
-    val personDetail = objectMapper.readValue(hit.sourceAsString, PersonDetail::class.java).toPerson()
-    hit.innerHits.values.flatMap { innerHit ->
-      innerHit.hits.mapNotNull {
-        if (it.matchedQueries.matches()) {
-          Pair(
+  fun SearchHits.toAddressSearchResponse(maxResults: Int): List<AddressSearchResponse> = hits
+    .flatMap { hit ->
+      val personDetail = objectMapper.readValue(hit.sourceAsString, PersonDetail::class.java).toPerson()
+      hit.innerHits.values
+        .flatMap { it.hits.toList() }
+        .filter { it.matchedQueries.matches() }
+        .map {
+          AddressSearchResponse(
+            personDetail,
             objectMapper.readValue(it.sourceAsString, PersonAddress::class.java).toAddress(),
-            ((it.score / maxScore) * 100).roundToInt(),
+            it.score,
           )
-        } else {
-          null
         }
-      }
-    }.map { AddressSearchResponse(personDetail, it.first, it.second) }
-  }.sortedByDescending { it.matchScore }.take(maxResults)
+    }
+    .sortedWith(compareByDescending<AddressSearchResponse> { it.matchScore }.thenBy { it.address.id })
+    .take(maxResults)
 
   private fun Array<String>.matches(): Boolean = map {
     when (it) {
