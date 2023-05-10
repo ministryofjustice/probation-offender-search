@@ -15,7 +15,7 @@ internal class CvlSearchIntegrationTest : ElasticIntegrationBase() {
 
   @BeforeEach
   fun setUp() {
-    PersonSearchHelper(esClient).loadData()
+    PersonSearchHelper(openSearchClient).loadData()
   }
 
   private fun cvlSearchRole() = jwtAuthenticationHelper.createJwt("ROLE_CVL_SEARCH")

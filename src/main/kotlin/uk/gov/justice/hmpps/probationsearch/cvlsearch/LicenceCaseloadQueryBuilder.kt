@@ -1,14 +1,14 @@
 package uk.gov.justice.hmpps.probationsearch.cvlsearch
 
 import org.apache.lucene.search.join.ScoreMode
-import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.search.builder.SearchSourceBuilder
-import org.elasticsearch.search.fetch.subphase.FetchSourceContext
-import org.elasticsearch.search.sort.FieldSortBuilder
-import org.elasticsearch.search.sort.NestedSortBuilder
-import org.elasticsearch.search.sort.SortBuilders
-import org.elasticsearch.search.sort.SortOrder
+import org.opensearch.index.query.QueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.search.builder.SearchSourceBuilder
+import org.opensearch.search.fetch.subphase.FetchSourceContext
+import org.opensearch.search.sort.FieldSortBuilder
+import org.opensearch.search.sort.NestedSortBuilder
+import org.opensearch.search.sort.SortBuilders
+import org.opensearch.search.sort.SortOrder
 
 class LicenceCaseloadQueryBuilder(private val request: LicenceCaseloadRequest) {
   val sourceBuilder: SearchSourceBuilder
@@ -29,7 +29,8 @@ class LicenceCaseloadQueryBuilder(private val request: LicenceCaseloadRequest) {
       } else {
         sb.query(filterQuery())
       }
-      return sb.sort(buildSort())
+      buildSort().forEach { sb.sort(it) }
+      return sb
     }
 
   private fun filterQuery(): QueryBuilder =

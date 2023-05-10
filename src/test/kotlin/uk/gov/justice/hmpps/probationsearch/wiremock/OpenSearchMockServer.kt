@@ -9,26 +9,26 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 
-class ElasticSearchExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class OpenSearchExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
   companion object {
     @JvmField
-    val elasticSearch = ElasticSearchMockServer()
+    val openSearch = OpenSearchMockServer()
   }
 
   override fun beforeAll(context: ExtensionContext) {
-    elasticSearch.start()
+    openSearch.start()
   }
 
   override fun beforeEach(context: ExtensionContext) {
-    elasticSearch.resetRequests()
+    openSearch.resetRequests()
   }
 
   override fun afterAll(context: ExtensionContext) {
-    elasticSearch.stop()
+    openSearch.stop()
   }
 }
 
-class ElasticSearchMockServer : WireMockServer(WIREMOCK_PORT) {
+class OpenSearchMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
     private const val WIREMOCK_PORT = 4444
   }
@@ -48,7 +48,7 @@ class ElasticSearchMockServer : WireMockServer(WIREMOCK_PORT) {
           .withBody(
             """
           {
-            "cluster_name":"elasticsearch",
+            "cluster_name":"opensearch",
             "status":"yellow",
             "timed_out":false,
             "number_of_nodes":1,

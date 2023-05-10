@@ -20,22 +20,22 @@ API to provides searching of offender records in Delius via Elastic search
 - `/health`: provides information about the application health and its dependencies.  This should be used the notm-montor & PagerDuty.
 - `/info`: provides information about the version of the deployed application, used by the notm-monitor.
 
-## Running elasticSearch for tests
-The integration tests use the 'test' profile and require an elasticsearch docker container:
+## Running OpenSearch for tests
+The integration tests use the 'test' profile and require an [OpenSearch docker container](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/docker/):
 ```bash
-$ docker-compose pull docker.elastic.co/elasticsearch/elasticsearch:7.10.2
-$ TMPDIR=/tmp docker-compose up elasticsearch
+$ docker-compose pull opensearch
+$ docker-compose up opensearch
 ```
 
 Running the test `uk.gov.justice.hmpps.offendersearch.controllers.OffenderSearchAPIIntegrationTest` will insert an Offender Index on 
-the locally running Elasticsearch instance and populate with Offender test data. ES has been added to the CircleCI configuration for 
-the build pipeline too.
+the locally running OpenSearch instance and populate with Offender test data. OpenSearch has been added to the CircleCI configuration for 
+the build pipeline too. See [config.yml](./.circleci/config.yml).
 
 #### Building & Running
 
-Note the required Elasticsearch container for both tests and local running.
+Note the OpenSearch container is required for both tests and local running.
 
 ```$bash
-$ ./gradlew clean install test
-$ ./gradlew bootRun --args='--spring.profiles.active=dev,elasticsearch'
+$ ./gradlew test
+$ SPRING_PROFILES_ACTIVE=dev,opensearch ./gradlew bootRun
 ```

@@ -27,7 +27,7 @@ class OffenderMatchController(private val matchService: MatchService) {
   }
 
   @Operation(
-    summary = "Match for an offender in Delius ElasticSearch. It will return the best group of matching offenders based on the request",
+    summary = "Match for an offender in Delius. It will return the best group of matching offenders based on the request",
     description = "Specify the request criteria to match against",
     operationId = "match",
   )

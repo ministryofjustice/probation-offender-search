@@ -9,9 +9,9 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.hmpps.probationsearch.wiremock.CommunityApiExtension
-import uk.gov.justice.hmpps.probationsearch.wiremock.ElasticSearchExtension
+import uk.gov.justice.hmpps.probationsearch.wiremock.OpenSearchExtension
 
-@ExtendWith(CommunityApiExtension::class, ElasticSearchExtension::class)
+@ExtendWith(CommunityApiExtension::class, OpenSearchExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test"])
 @DirtiesContext(classMode = BEFORE_CLASS)
@@ -103,6 +103,6 @@ class HealthCheckTest {
 
   private fun stubPingWithResponse(status: Int) {
     CommunityApiExtension.communityApi.stubHealthPing(status)
-    ElasticSearchExtension.elasticSearch.stubHealth(status)
+    OpenSearchExtension.openSearch.stubHealth(status)
   }
 }

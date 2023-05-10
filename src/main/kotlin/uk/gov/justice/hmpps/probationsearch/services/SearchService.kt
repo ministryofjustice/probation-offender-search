@@ -2,15 +2,15 @@ package uk.gov.justice.hmpps.probationsearch.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.lucene.search.join.ScoreMode
-import org.elasticsearch.action.search.SearchRequest
-import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.search.SearchHit
-import org.elasticsearch.search.builder.SearchSourceBuilder
-import org.elasticsearch.search.sort.SortOrder.DESC
-import org.elasticsearch.search.suggest.SuggestBuilder
-import org.elasticsearch.search.suggest.term.TermSuggestionBuilder
+import org.opensearch.action.search.SearchRequest
+import org.opensearch.action.search.SearchResponse
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.search.SearchHit
+import org.opensearch.search.builder.SearchSourceBuilder
+import org.opensearch.search.sort.SortOrder
+import org.opensearch.search.suggest.SuggestBuilder
+import org.opensearch.search.suggest.term.TermSuggestionBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -122,7 +122,7 @@ class SearchService @Autowired constructor(
           .size(pageable.pageSize)
           .from(pageable.offset.toInt())
           .sort("_score")
-          .sort("offenderId", DESC)
+          .sort("offenderId", SortOrder.DESC)
           .trackTotalHits(true)
           .aggregation(buildAggregationRequest())
           .highlighter(buildHighlightRequest())

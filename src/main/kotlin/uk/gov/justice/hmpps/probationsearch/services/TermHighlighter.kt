@@ -1,7 +1,7 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightField
+import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
+import org.opensearch.search.fetch.subphase.highlight.HighlightField
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import java.time.format.DateTimeFormatter
 

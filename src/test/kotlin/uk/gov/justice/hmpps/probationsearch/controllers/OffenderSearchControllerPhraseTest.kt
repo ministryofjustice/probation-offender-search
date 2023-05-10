@@ -5,10 +5,6 @@ import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.common.text.Text
-import org.elasticsearch.search.suggest.SortBy.SCORE
-import org.elasticsearch.search.suggest.Suggest
-import org.elasticsearch.search.suggest.term.TermSuggestion
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -20,6 +16,10 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.opensearch.common.text.Text
+import org.opensearch.search.suggest.SortBy.SCORE
+import org.opensearch.search.suggest.Suggest
+import org.opensearch.search.suggest.term.TermSuggestion
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean

@@ -12,7 +12,7 @@ class MappaDetailsIntegrationTest : ElasticIntegrationBase() {
 
   @BeforeEach
   fun `load offenders`() {
-    PersonSearchHelper(esClient).loadData()
+    PersonSearchHelper(openSearchClient).loadData()
   }
 
   @Nested

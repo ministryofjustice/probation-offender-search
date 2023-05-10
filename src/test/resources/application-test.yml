@@ -1,10 +1,7 @@
 server:
   shutdown: immediate
 
-elasticsearch:
-  port: 9200
-  host: localhost
-  scheme: http
+opensearch.uris: http://localhost:9200
 
 spring:
   security:

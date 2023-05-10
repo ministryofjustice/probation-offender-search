@@ -1,6 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
-import org.elasticsearch.search.SearchHit
+import org.opensearch.search.SearchHit
 import uk.gov.justice.hmpps.probationsearch.dto.IDs
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 

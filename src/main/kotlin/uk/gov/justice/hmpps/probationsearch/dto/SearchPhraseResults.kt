@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import io.swagger.v3.oas.annotations.media.Schema
-import org.elasticsearch.search.suggest.Suggest
+import org.opensearch.search.suggest.Suggest
 import org.springframework.boot.jackson.JsonComponent
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable

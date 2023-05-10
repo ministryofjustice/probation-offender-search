@@ -7,21 +7,21 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
-import org.elasticsearch.action.admin.indices.alias.Alias
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
-import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.indices.CreateIndexRequest
-import org.elasticsearch.client.indices.GetIndexRequest
-import org.elasticsearch.client.indices.PutIndexTemplateRequest
-import org.elasticsearch.common.xcontent.XContentType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.opensearch.action.admin.indices.alias.Alias
+import org.opensearch.action.admin.indices.delete.DeleteIndexRequest
+import org.opensearch.client.RequestOptions
+import org.opensearch.client.indices.CreateIndexRequest
+import org.opensearch.client.indices.GetIndexRequest
+import org.opensearch.client.indices.PutIndexTemplateRequest
+import org.opensearch.common.xcontent.XContentType
+import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.http.MediaType
@@ -38,7 +38,7 @@ class ContactSearchIntegrationTest {
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 
   @Autowired
-  internal lateinit var es: ElasticsearchRestTemplate
+  internal lateinit var openSearchRestTemplate: OpenSearchRestTemplate
 
   @Value("\${local.server.port}")
   internal val port: Int = 0
@@ -48,21 +48,21 @@ class ContactSearchIntegrationTest {
     RestAssured.port = port
     val indexName = "contact-search-a"
     val aliasName = "contact-search-primary"
-    es.execute {
+    openSearchRestTemplate.execute {
       it.indices().putTemplate(
         PutIndexTemplateRequest("contact-search-template").source(TEMPLATE_JSON, XContentType.JSON),
         RequestOptions.DEFAULT,
       )
     }
-    es.execute {
+    openSearchRestTemplate.execute {
       if (it.indices().exists(GetIndexRequest(indexName), RequestOptions.DEFAULT)) {
         it.indices().delete(DeleteIndexRequest(indexName), RequestOptions.DEFAULT)
       }
       it.indices().create(CreateIndexRequest(indexName).alias(Alias(aliasName)), RequestOptions.DEFAULT)
     }
-    es.save(contacts, IndexCoordinates.of(aliasName))
+    openSearchRestTemplate.save(contacts, IndexCoordinates.of(aliasName))
     await untilCallTo {
-      es.count(
+      openSearchRestTemplate.count(
         Query.findAll(),
         IndexCoordinates.of(aliasName),
       )
@@ -185,7 +185,7 @@ class ContactSearchIntegrationTest {
     @JvmStatic
     fun datesForFind() = listOf("2023-01-01", "01-01-2023", "1/1/23", "01/01/2023", "1st Jan 2023")
 
-    private val TEMPLATE_JSON = ResourceUtils.getFile("classpath:elasticsearchdata/contact-template.json").readText()
+    private val TEMPLATE_JSON = ResourceUtils.getFile("classpath:searchdata/contact-template.json").readText()
   }
 
   private fun RequestSpecification.authorised(): RequestSpecification =

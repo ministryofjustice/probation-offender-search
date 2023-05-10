@@ -6,7 +6,6 @@ import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.client.RestHighLevelClient
 import org.hamcrest.CoreMatchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -16,6 +15,7 @@ import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
+import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -26,12 +26,12 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.util.PersonSearchHelper
-import uk.gov.justice.hmpps.probationsearch.wiremock.ElasticSearchExtension
+import uk.gov.justice.hmpps.probationsearch.wiremock.OpenSearchExtension
 import java.lang.reflect.Type
 import java.nio.file.Files
 import java.nio.file.Paths
 
-@ExtendWith(ElasticSearchExtension::class)
+@ExtendWith(OpenSearchExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test", "wiremock"])
 class OffenderSearchControllerTest {
@@ -39,8 +39,8 @@ class OffenderSearchControllerTest {
   var port = 0
 
   @Autowired
-  @Qualifier("elasticSearchClient")
-  internal lateinit var esClient: RestHighLevelClient
+  @Qualifier("openSearchClient")
+  internal lateinit var openSearchClient: RestHighLevelClient
 
   @Autowired
   private lateinit var objectMapper: ObjectMapper
@@ -53,7 +53,7 @@ class OffenderSearchControllerTest {
 
   @BeforeEach
   fun setup() {
-    PersonSearchHelper(esClient).loadData()
+    PersonSearchHelper(openSearchClient).loadData()
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
       ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
@@ -62,7 +62,7 @@ class OffenderSearchControllerTest {
 
   @Test
   fun offenderSearch() {
-    ElasticSearchExtension.elasticSearch.stubSearch(response("src/test/resources/elasticsearchdata/singleMatch.json"))
+    OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
@@ -112,7 +112,7 @@ class OffenderSearchControllerTest {
 
     @Test
     fun `endpoint is unsecured`() {
-      ElasticSearchExtension.elasticSearch.stubSearch(response("src/test/resources/elasticsearchdata/singleMatch.json"))
+      OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
       RestAssured.given()
         .get("/synthetic-monitor")
         .then()
@@ -121,7 +121,7 @@ class OffenderSearchControllerTest {
 
     @Test
     fun `telemetry is recorded`() {
-      ElasticSearchExtension.elasticSearch.stubSearch(response("src/test/resources/elasticsearchdata/singleMatch.json"))
+      OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
       RestAssured.given()
         .get("/synthetic-monitor")
         .then()
