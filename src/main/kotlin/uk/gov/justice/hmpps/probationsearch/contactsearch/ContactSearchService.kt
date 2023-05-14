@@ -100,20 +100,22 @@ private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
   val sorts = sort.fieldSorts()
   when (sorts.size) {
     0 -> {
-      withSort(SortBuilders.fieldSort(SCORE.searchField).order(SortOrder.DESC))
-      withSort(SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(SortOrder.DESC))
+      withSorts(
+        SortBuilders.fieldSort(SCORE.searchField).order(SortOrder.DESC),
+        SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(SortOrder.DESC),
+      )
     }
     1 -> {
       val sorted = sorts.first()
-      withSort(sorted)
-      withSort(
+      withSorts(
+        sorted,
         when (sorted.fieldName) {
           SCORE.alias -> SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(sorted.order())
           else -> SortBuilders.fieldSort(SCORE.searchField).order(sorted.order())
         },
       )
     }
-    else -> sorts.forEach(::withSort)
+    else -> withSorts(sorts)
   }
   return build()
 }
