@@ -26,7 +26,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
-  implementation("io.sentry:sentry-spring-boot-starter:6.18.1")
+  implementation("io.sentry:sentry-spring-boot-starter:6.19.1")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
