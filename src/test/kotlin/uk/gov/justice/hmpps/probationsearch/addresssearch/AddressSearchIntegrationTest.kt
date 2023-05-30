@@ -69,7 +69,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
       .body()
       .`as`(AddressSearchResponses::class.java)
 
-    assertThat(existing.personAddresses).hasSize(1)
+    assertThat(existing.personAddresses).hasSize(2)
 
     // searching on number alone gives no results
     val results = RestAssured.given()
@@ -126,9 +126,9 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
   companion object {
     @JvmStatic
     fun postcodeResults(): List<Arguments> = listOf(
-      Arguments.of("NE1 2SW", 1),
-      Arguments.of("ne1 2sw", 1),
-      Arguments.of("NE12SW", 1),
+      Arguments.of("NE1 2SW", 2),
+      Arguments.of("ne1 2sw", 2),
+      Arguments.of("NE12SW", 2),
       Arguments.of("NE1", 0),
       Arguments.of("2SW", 0),
       Arguments.of("GG1 1BB", 0),
@@ -145,11 +145,11 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
 
     @JvmStatic
     fun multipartResults(): List<Arguments> = listOf(
-      Arguments.of("{\"postcode\": \"NE1  2SW\", \"streetName\": \"Church Street\"}", 1),
-      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church St\"}", 0),
-      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 0),
-      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 0),
-      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Lane\"}", 0),
+      Arguments.of("{\"postcode\": \"NE1  2SW\", \"streetName\": \"Church Street\"}", 2),
+      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church St\"}", 2),
+      Arguments.of("{\"postcode\": \"NE1 2SW\", \"streetName\": \"Church Lane\"}", 2),
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 1),
+      Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Lane\"}", 1),
       Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street Lane\"}", 1),
     )
 

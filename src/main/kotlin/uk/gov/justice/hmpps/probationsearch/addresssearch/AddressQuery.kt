@@ -3,7 +3,6 @@ package uk.gov.justice.hmpps.probationsearch.addresssearch
 import org.apache.lucene.search.join.ScoreMode
 import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.InnerHitBuilder
-import org.opensearch.index.query.Operator
 import org.opensearch.index.query.QueryBuilder
 import org.opensearch.index.query.QueryBuilders
 import org.opensearch.index.query.QueryBuilders.functionScoreQuery
@@ -27,7 +26,7 @@ private fun AddressSearchRequest.minBoost(): Float =
     streetName.withBoost(boostOptions.streetName),
     town.withBoost(boostOptions.town),
     postcode.withBoost(boostOptions.postcode),
-  ).sum()
+  ).max()
 
 private fun String?.withBoost(boost: Float) = if (isNullOrBlank()) 0.0F else boost
 
@@ -40,40 +39,40 @@ fun buildSearchQuery(addressSearchRequest: AddressSearchRequest) =
 
 private fun matchQueryBuilder(addressSearchRequest: AddressSearchRequest): QueryBuilder =
   QueryBuilders.boolQuery()
-    .mustMatchNonNull(
+    .shouldMatchNonNull(
       "contactDetails.addresses.streetName_analyzed",
       addressSearchRequest.streetName,
       addressSearchRequest.boostOptions.streetName,
       "streetName",
     )
-    .mustMatchNonNull(
+    .shouldMatchNonNull(
       "contactDetails.addresses.postcode_analyzed",
       addressSearchRequest.postcode,
       addressSearchRequest.boostOptions.postcode,
       "postcode",
     )
-    .mustMatchNonNull(
+    .shouldMatchNonNull(
       "contactDetails.addresses.town_analyzed",
       addressSearchRequest.town,
       addressSearchRequest.boostOptions.town,
       "town",
     )
-    .mustMatchNonNull("contactDetails.addresses.addressNumber", addressSearchRequest.addressNumber, 1f)
-    .mustMatchNonNull("contactDetails.addresses.district", addressSearchRequest.district, 1f)
-    .mustMatchNonNull("contactDetails.addresses.buildingName", addressSearchRequest.buildingName, 1f)
-    .mustMatchNonNull("contactDetails.addresses.county", addressSearchRequest.county, 1f)
-    .mustMatchNonNull("contactDetails.addresses.telephoneNumber", addressSearchRequest.telephoneNumber, 1f)
+    .shouldMatchNonNull("contactDetails.addresses.addressNumber", addressSearchRequest.addressNumber, 1f)
+    .shouldMatchNonNull("contactDetails.addresses.district", addressSearchRequest.district, 1f)
+    .shouldMatchNonNull("contactDetails.addresses.buildingName", addressSearchRequest.buildingName, 1f)
+    .shouldMatchNonNull("contactDetails.addresses.county", addressSearchRequest.county, 1f)
+    .shouldMatchNonNull("contactDetails.addresses.telephoneNumber", addressSearchRequest.telephoneNumber, 1f)
 
-fun BoolQueryBuilder.mustMatchNonNull(
+fun BoolQueryBuilder.shouldMatchNonNull(
   name: String,
   value: String?,
   boost: Float,
   queryName: String? = null,
 ): BoolQueryBuilder {
   if (!value.isNullOrBlank()) {
-    val qb = QueryBuilders.matchQuery(name, value).boost(boost).operator(Operator.AND)
+    val qb = QueryBuilders.matchQuery(name, value).boost(boost)
     if (queryName != null) qb.queryName(queryName)
-    must(qb)
+    should(qb)
   }
   return this
 }
