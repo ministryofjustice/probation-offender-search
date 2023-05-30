@@ -151,6 +151,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
       Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street\"}", 1),
       Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Lane\"}", 1),
       Arguments.of("{\"postcode\": \"NE2 2SW\", \"streetName\": \"Church Street Lane\"}", 1),
+      Arguments.of("{\"town\": \"Newcastle upon Tyne\", \"streetName\": \"Postcodeless Street\"}", 1),
     )
 
     @JvmStatic

@@ -37,9 +37,9 @@
         "noFixedAbode": true,
         "notes": "string",
         "postcode": "string",
-        "streetName": "string",
+        "streetName": "Postcodeless Street",
         "telephoneNumber": "string",
-        "town": "string"
+        "town": "Newcastle under Lyme"
       }
     ],
     "emailAddresses": [],
