@@ -17,4 +17,5 @@ data class Address(
   val postcode: String? = null,
   val telephoneNumber: String? = null,
   val status: KeyValue? = null,
+  val type: KeyValue? = null,
 )
