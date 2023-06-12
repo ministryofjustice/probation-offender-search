@@ -7,6 +7,6 @@ data class Provision(
   val provisionType: KeyValue? = null,
   val category: KeyValue? = null,
   val startDate: LocalDate? = null,
-  val finishDate: LocalDate? = null,
+  val endDate: LocalDate? = null,
   val notes: String? = null,
 )
