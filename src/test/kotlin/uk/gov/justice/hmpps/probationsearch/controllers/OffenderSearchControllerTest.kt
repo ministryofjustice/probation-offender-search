@@ -79,6 +79,24 @@ class OffenderSearchControllerTest {
   }
 
   @Test
+  fun offenderSearchWithAliases() {
+    OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
+    val results = RestAssured.given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"surname\":\"smith\", \"includeAliases\": true}")
+      .`when`()["/search"]
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(3)
+    assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane", "James")
+  }
+
+  @Test
   fun noSearchParameters_badRequest() {
     RestAssured.given()
       .auth()
@@ -88,7 +106,10 @@ class OffenderSearchControllerTest {
       .`when`()["/search"]
       .then()
       .statusCode(400)
-      .body("developerMessage", CoreMatchers.containsString("Invalid search  - please provide at least 1 search parameter"))
+      .body(
+        "developerMessage",
+        CoreMatchers.containsString("Invalid search  - please provide at least 1 search parameter"),
+      )
   }
 
   @Test
