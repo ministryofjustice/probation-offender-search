@@ -17,6 +17,7 @@
   "currentDisposal": "1",
   "partitionArea": "National Data",
   "offenderAliases": [
+    { "firstName": "John" ,"surname":  "Smith", "dateOfBirth": "1978-01-06" }
   ],
   "offenderProfile": {
     "riskColour": "yellow"

@@ -6,7 +6,6 @@ import org.opensearch.action.search.SearchRequest
 import org.opensearch.action.search.SearchResponse
 import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.QueryBuilders
-import org.opensearch.search.SearchHit
 import org.opensearch.search.builder.SearchSourceBuilder
 import org.opensearch.search.sort.SortOrder
 import org.opensearch.search.suggest.SuggestBuilder
@@ -22,7 +21,7 @@ import uk.gov.justice.hmpps.probationsearch.dto.SearchDto
 import uk.gov.justice.hmpps.probationsearch.dto.SearchPagedResults
 import uk.gov.justice.hmpps.probationsearch.dto.SearchPhraseFilter
 import uk.gov.justice.hmpps.probationsearch.dto.SearchPhraseResults
-import java.util.Arrays
+import java.time.LocalDate
 import java.util.Locale
 
 @Service
@@ -63,15 +62,41 @@ class SearchService @Autowired constructor(
       }
       matchingAllFieldsQuery
         .mustWhenPresent("otherIds.nomsNumber", nomsNumber)
-        .mustWhenPresent("firstName", firstName)
-        .mustWhenPresent("surname", surname)
-        .mustWhenPresent("dateOfBirth", dateOfBirth)
       if (!crn.isNullOrBlank()) {
         matchingAllFieldsQuery.atLeastOneMatches(listOf("otherIds.crn", "otherIds.previousCrn"), crn)
       }
+
+      matchesPersonOrAlias(matchingAllFieldsQuery)
     }
 
     return matchingAllFieldsQuery
+  }
+
+  private fun SearchDto.matchesPersonOrAlias(matchingAllFieldsQuery: BoolQueryBuilder) {
+    PersonAliasSearch.from(firstName, surname, dateOfBirth)?.run {
+      val matchPerson = QueryBuilders.boolQuery().minimumShouldMatch(numberOfFieldsToMatch())
+      val matchAlias = QueryBuilders.boolQuery().minimumShouldMatch(numberOfFieldsToMatch())
+      firstName?.let {
+        matchPerson.should(QueryBuilders.matchQuery("firstName", it))
+        matchAlias.should(QueryBuilders.matchQuery("offenderAliases.firstName", it))
+      }
+      surname?.let {
+        matchPerson.should(QueryBuilders.matchQuery("surname", it))
+        matchAlias.should(QueryBuilders.matchQuery("offenderAliases.surname", it))
+      }
+      dob?.let {
+        matchPerson.should(QueryBuilders.matchQuery("dateOfBirth", it))
+        matchAlias.should(QueryBuilders.matchQuery("offenderAliases.dateOfBirth", it))
+      }
+
+      val matchPersonOrAlias = QueryBuilders.boolQuery().minimumShouldMatch(1)
+      matchPersonOrAlias.should(matchPerson)
+      if (includeAliases == true) {
+        matchPersonOrAlias.should(matchAlias)
+      }
+
+      matchingAllFieldsQuery.must(matchPersonOrAlias)
+    }
   }
 
   private fun validateSearchForm(searchOptions: SearchDto) {
@@ -80,17 +105,8 @@ class SearchService @Autowired constructor(
     }
   }
 
-  private fun getSearchResult(response: SearchResponse): List<OffenderDetail> {
-    val searchHit = response.hits.hits
-    val offenderDetailList = ArrayList<OffenderDetail>()
-    if (searchHit.isNotEmpty()) {
-      Arrays.stream(searchHit)
-        .forEach { hit: SearchHit ->
-          offenderDetailList
-            .add(parseOffenderDetail(hit.sourceAsString))
-        }
-    }
-    return offenderDetailList
+  private fun getSearchResult(response: SearchResponse): List<OffenderDetail> = response.hits.hits.map {
+    parseOffenderDetail(it.sourceAsString)
   }
 
   private fun parseOffenderDetail(src: String): OffenderDetail {
@@ -274,3 +290,19 @@ class SearchService @Autowired constructor(
 }
 
 private fun personSearchRequest() = SearchRequest("person-search-primary")
+
+data class PersonAliasSearch(val firstName: String?, val surname: String?, val dob: LocalDate?) {
+
+  fun numberOfFieldsToMatch() = listOfNotNull(blankToNull(firstName), blankToNull(surname), dob).count()
+
+  companion object {
+    fun from(firstName: String?, surname: String?, dob: LocalDate?) =
+      if (firstName.isNullOrBlank() && surname.isNullOrBlank() && dob == null) {
+        null
+      } else {
+        PersonAliasSearch(blankToNull(firstName), blankToNull(surname), dob)
+      }
+
+    private fun blankToNull(value: String?) = if (value?.isBlank() != false) null else value
+  }
+}

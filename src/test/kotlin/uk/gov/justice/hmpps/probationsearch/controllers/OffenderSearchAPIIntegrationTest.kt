@@ -81,7 +81,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .body("{\"surname\":\"smith\"}")
+      .body("{\"surname\":\"smith\", \"includeAliases\": false}")
       .`when`()["/search"]
       .then()
       .statusCode(200)
@@ -90,6 +90,23 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
       .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(2)
     assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane")
+  }
+
+  @Test
+  fun surnameSearchWithAliases() {
+    val results = given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"surname\":\"smith\", \"includeAliases\": true}")
+      .`when`()["/search"]
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(3)
+    assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane", "James")
   }
 
   @Test
@@ -188,6 +205,23 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
       .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(1)
     assertThat(results).extracting("firstName").containsExactly("John")
+  }
+
+  @Test
+  fun dateOfBirthSearchWithAliases() {
+    val results = given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"dateOfBirth\": \"1978-01-06\", \"includeAliases\": true}")
+      .`when`()["/search"]
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(3)
+    assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "James", "Antonio")
   }
 
   @Test
@@ -369,5 +403,22 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
     assertThat(results).hasSize(1)
     assertThat(results).extracting("firstName").contains("John")
     assertThat(results).extracting("surname").contains("Smith")
+  }
+
+  @Test
+  fun findsOnlyCompleteMatchesWhenUsingAlias() {
+    val results = given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .body("{\"surname\": \"smith\",\"firstName\": \"John\", \"dateOfBirth\": \"1978-01-06\", \"includeAliases\": true}\n")
+      .`when`()["/search"]
+      .then()
+      .statusCode(200)
+      .extract()
+      .body()
+      .`as`(Array<OffenderDetail>::class.java)
+    assertThat(results).hasSize(2)
+    assertThat(results).extracting("firstName").containsExactly("John", "James")
   }
 }
