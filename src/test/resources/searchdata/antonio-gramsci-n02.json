@@ -19,7 +19,8 @@
   "partitionArea": "some name",
 
   "offenderAliases": [
-    { "firstName": "John", "surname": "Brown", "dateOfBirth": "1978-01-06" }
+    { "firstName": "John", "surname": "Brown", "dateOfBirth": "1978-01-06" },
+    { "firstName": "Phillip", "surname": "Smith", "dateOfBirth": "1978-06-01" }
   ],
 
   "contactDetails": {
