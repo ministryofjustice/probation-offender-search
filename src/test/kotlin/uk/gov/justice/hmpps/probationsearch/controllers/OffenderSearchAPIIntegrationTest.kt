@@ -105,8 +105,8 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
       .extract()
       .body()
       .`as`(Array<OffenderDetail>::class.java)
-    assertThat(results).hasSize(3)
-    assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane", "James")
+    assertThat(results).hasSize(4)
+    assertThat(results).extracting("firstName").containsExactlyInAnyOrder("John", "Jane", "James", "Antonio")
   }
 
   @Test

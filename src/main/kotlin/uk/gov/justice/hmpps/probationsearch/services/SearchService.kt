@@ -92,7 +92,7 @@ class SearchService @Autowired constructor(
       val matchPersonOrAlias = QueryBuilders.boolQuery().minimumShouldMatch(1)
       matchPersonOrAlias.should(matchPerson)
       if (includeAliases == true) {
-        matchPersonOrAlias.should(matchAlias)
+        matchPersonOrAlias.should(QueryBuilders.nestedQuery("offenderAliases", matchAlias, ScoreMode.Max))
       }
 
       matchingAllFieldsQuery.must(matchPersonOrAlias)
