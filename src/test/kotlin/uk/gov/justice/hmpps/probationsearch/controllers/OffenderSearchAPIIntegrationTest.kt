@@ -7,6 +7,7 @@ import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers
+import org.hamcrest.Matchers
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.opensearch.client.RestHighLevelClient
@@ -39,7 +40,8 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
     val objectMapper = testContext.applicationContext.getBean(ObjectMapper::class.java)
     val esClient = testContext.applicationContext.getBean(RestHighLevelClient::class.java)
     PersonSearchHelper(esClient).loadData()
-    RestAssured.port = Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port"))!!.toInt()
+    RestAssured.port =
+      Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port"))!!.toInt()
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
       ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )
@@ -369,7 +371,10 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
       .`when`()["/search"]
       .then()
       .statusCode(400)
-      .body("developerMessage", CoreMatchers.containsString("Invalid search  - please provide at least 1 search parameter"))
+      .body(
+        "developerMessage",
+        CoreMatchers.containsString("Invalid search  - please provide at least 1 search parameter"),
+      )
   }
 
   @Test
@@ -420,5 +425,23 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
       .`as`(Array<OffenderDetail>::class.java)
     assertThat(results).hasSize(2)
     assertThat(results).extracting("firstName").containsExactly("John", "James")
+  }
+
+  @Test
+  fun `paginated search returns count and results`() {
+    given()
+      .auth()
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .queryParam("page", 1)
+      .queryParam("size", 2)
+      .body("{\"surname\":\"smith\", \"includeAliases\": true}")
+      .`when`()["/search/people"]
+      .then()
+      .statusCode(200)
+      .body("content.size()", Matchers.equalTo(2))
+      .body("totalElements", Matchers.equalTo(4))
+      .body("totalPages", Matchers.equalTo(2))
+      .body("pageable.offset", Matchers.equalTo(2))
   }
 }
