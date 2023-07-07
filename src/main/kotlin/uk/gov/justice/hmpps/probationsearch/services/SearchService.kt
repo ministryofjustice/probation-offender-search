@@ -48,6 +48,20 @@ class SearchService @Autowired constructor(
     return getSearchResult(response)
   }
 
+  fun performPagedSearch(pageable: Pageable, searchOptions: SearchDto): SearchPagedResults {
+    validateSearchForm(searchOptions)
+    val searchSourceBuilder = SearchSourceBuilder()
+      .size(pageable.pageSize)
+      .from(pageable.offset.toInt())
+      .query(buildMatchWithAllProvidedParameters(searchOptions).withDefaults())
+
+    val response = hlClient.search(personSearchRequest().source(searchSourceBuilder))
+    return SearchPagedResults(
+      content = getSearchResult(response),
+      pageable = pageable,
+      total = response.hits.totalHits?.value ?: 0,
+    )
+  }
   protected fun buildMatchWithAllProvidedParameters(searchOptions: SearchDto): BoolQueryBuilder {
     val matchingAllFieldsQuery = QueryBuilders
       .boolQuery()

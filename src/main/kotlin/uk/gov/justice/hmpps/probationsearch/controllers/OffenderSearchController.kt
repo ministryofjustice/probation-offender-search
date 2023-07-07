@@ -50,6 +50,11 @@ class OffenderSearchController(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
+  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @RequestMapping("/search/people", method = [POST, GET])
+  fun pagedSearch(@PageableDefault pageable: Pageable, @RequestBody searchOptions: SearchDto): SearchPagedResults =
+    searchService.performPagedSearch(pageable, searchOptions)
+
   @Operation(
     summary = "Search for an offender in Delius. Only offenders matching all request attributes will be returned",
     description = "Specify the request criteria to match against",
