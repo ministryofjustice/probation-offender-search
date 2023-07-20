@@ -14,6 +14,7 @@ data class SearchDto( // todo confirm description and examples
   @Schema(required = false, example = "G5555TT") val nomsNumber: String? = null,
   @Schema(required = false, example = "false") val includeAliases: Boolean? = false,
 ) {
+  @get:Schema(hidden = true)
   val isValid: Boolean
     get() = StringUtils.isNotBlank(firstName) || StringUtils.isNotBlank(surname) || dateOfBirth != null || StringUtils.isNotBlank(pncNumber) || StringUtils.isNotBlank(crn) ||
       StringUtils.isNotBlank(nomsNumber) || StringUtils.isNotBlank(croNumber)
