@@ -12,6 +12,7 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.NotEmpty
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springdoc.core.annotations.ParameterObject
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.MediaType
@@ -52,7 +53,11 @@ class OffenderSearchController(
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
   @RequestMapping("/search/people", method = [POST, GET])
-  fun pagedSearch(@PageableDefault pageable: Pageable, @RequestBody searchOptions: SearchDto): SearchPagedResults =
+  fun pagedSearch(
+    @ParameterObject @PageableDefault
+    pageable: Pageable,
+    @RequestBody searchOptions: SearchDto,
+  ): SearchPagedResults =
     searchService.performPagedSearch(pageable, searchOptions)
 
   @Operation(
@@ -124,7 +129,8 @@ class OffenderSearchController(
   fun searchOffendersByPhrase(
     @Valid @RequestBody
     searchPhraseFilter: SearchPhraseFilter,
-    @PageableDefault pageable: Pageable,
+    @ParameterObject @PageableDefault
+    pageable: Pageable,
   ): SearchPhraseResults = searchService.performSearch(
     searchPhraseFilter,
     pageable,
@@ -200,7 +206,8 @@ class OffenderSearchController(
     @RequestBody
     @NotEmpty
     lduList: List<String>,
-    @PageableDefault pageable: Pageable,
+    @ParameterObject @PageableDefault
+    pageable: Pageable,
   ): SearchPagedResults {
     return searchService.findByListOfLdu(pageable, lduList)
   }
@@ -229,6 +236,7 @@ class OffenderSearchController(
   @Operation(description = "Match prisoners by a list of team codes", summary = "Requires ROLE_COMMUNITY role")
   fun findByTeamCode(
     @Parameter(required = true, name = "teamCodeList")
+    @ParameterObject
     @PageableDefault
     pageable: Pageable,
     @RequestBody @NotEmpty
@@ -256,7 +264,8 @@ class OffenderSearchController(
   @GetMapping("/ldu-codes/{lduCode}")
   fun searchOffendersByLduCode(
     @PathVariable lduCode: String,
-    @PageableDefault pageable: Pageable,
+    @ParameterObject @PageableDefault
+    pageable: Pageable,
   ): SearchPagedResults = searchService.findByLduCode(lduCode, pageable)
 
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
@@ -278,7 +287,8 @@ class OffenderSearchController(
   @GetMapping("/team-codes/{teamCode}")
   fun searchOffendersByTeamCode(
     @PathVariable teamCode: String,
-    @PageableDefault pageable: Pageable,
+    @ParameterObject @PageableDefault
+    pageable: Pageable,
   ): SearchPagedResults = searchService.findByTeamCode(teamCode, pageable)
 
   @GetMapping("/synthetic-monitor")
