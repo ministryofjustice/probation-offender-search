@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
+import org.springdoc.core.annotations.ParameterObject
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.access.prepost.PreAuthorize
@@ -15,7 +16,8 @@ class ContactSearchController(val contactSearchService: ContactSearchService) {
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   fun searchContact(
     @RequestBody request: ContactSearchRequest,
-    @PageableDefault pageable: Pageable,
+    @ParameterObject @PageableDefault
+    pageable: Pageable,
   ): ContactSearchResponse {
     return contactSearchService.performSearch(request, pageable)
   }
