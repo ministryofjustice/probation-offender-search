@@ -24,7 +24,7 @@ dependencies {
 
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.2.0")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
   implementation("io.sentry:sentry-spring-boot-starter:6.27.0")
 
