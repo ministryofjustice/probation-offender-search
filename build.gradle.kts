@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.2.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.3.0"
   kotlin("plugin.spring") version "1.9.0"
   id("com.google.cloud.tools.jib") version "3.3.2"
 }
@@ -24,9 +24,9 @@ dependencies {
 
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.2.0")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
-  implementation("io.sentry:sentry-spring-boot-starter:6.27.0")
+  implementation("io.sentry:sentry-spring-boot-starter:6.28.0")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
