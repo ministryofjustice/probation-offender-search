@@ -18,7 +18,8 @@ class SearchPhraseResults(
 ) : PageImpl<OffenderDetail>(content, pageable, total)
 
 data class ProbationAreaAggregation(
-  @Schema(description = "Probation area code", example = "N02") val code: String,
+  @Schema(description = "Probation area code", example = "N07") val code: String,
+  @Schema(description = "Probation area description", example = "London") val description: String?,
   @Schema(description = "Count of matching offenders in this area", example = "78") val count: Long,
 )
 

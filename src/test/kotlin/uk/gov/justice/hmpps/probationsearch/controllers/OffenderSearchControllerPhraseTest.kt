@@ -399,10 +399,12 @@ class OffenderSearchControllerPhraseTest {
         probationAreaAggregations = listOf(
           ProbationAreaAggregation(
             code = "N01",
+            description = "North West",
             count = 8,
           ),
           ProbationAreaAggregation(
             code = "N02",
+            description = "North East",
             count = 2,
           ),
         ),
