@@ -9,11 +9,13 @@ import org.opensearch.search.aggregations.Aggregations
 import org.opensearch.search.aggregations.bucket.nested.Nested
 import org.opensearch.search.aggregations.bucket.nested.NestedAggregationBuilder
 import org.opensearch.search.aggregations.bucket.terms.Terms
+import org.opensearch.search.aggregations.metrics.TopHits
 import uk.gov.justice.hmpps.probationsearch.dto.ProbationAreaAggregation
 
 const val offenderManagersAggregation = "offenderManagers"
 const val activeOffenderManagerBucket = "active"
 const val probationAreaCodeBucket = "byProbationAreaCode"
+const val probationAreaDescriptionBucket = "probationAreaDescription"
 
 internal fun buildAggregationRequest(): NestedAggregationBuilder {
   return AggregationBuilders
@@ -24,7 +26,12 @@ internal fun buildAggregationRequest(): NestedAggregationBuilder {
         .field("offenderManagers.active").subAggregation(
           AggregationBuilders
             .terms(probationAreaCodeBucket).size(1000)
-            .field("offenderManagers.probationArea.code"),
+            .field("offenderManagers.probationArea.code").subAggregation(
+              AggregationBuilders
+                .topHits(probationAreaDescriptionBucket)
+                .fetchSource(arrayOf("offenderManagers.probationArea.description"), emptyArray())
+                .size(1),
+            ),
         ),
     )
 }
@@ -37,7 +44,11 @@ internal fun extractProbationAreaAggregation(aggregations: Aggregations): List<P
   return possibleActiveBucket?.let { bucket ->
     val possibleProbationCodeBuckets = bucket.aggregations.asMap()[probationAreaCodeBucket] as Terms?
     possibleProbationCodeBuckets?.let { terms ->
-      terms.buckets.map { ProbationAreaAggregation(code = it.keyAsString, count = it.docCount) }
+      terms.buckets.map {
+        val topHit = (it.aggregations.asMap()[probationAreaDescriptionBucket] as TopHits).hits.hits[0]
+        val description = (topHit.sourceAsMap["probationArea"] as Map<*, *>)["description"] as String
+        ProbationAreaAggregation(code = it.keyAsString, description = description, count = it.docCount)
+      }
     }
   } ?: listOf()
 }

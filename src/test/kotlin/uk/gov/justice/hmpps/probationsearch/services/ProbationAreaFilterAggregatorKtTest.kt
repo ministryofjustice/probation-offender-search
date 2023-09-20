@@ -22,6 +22,8 @@ import org.opensearch.search.aggregations.bucket.terms.ParsedLongTerms
 import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms
 import org.opensearch.search.aggregations.bucket.terms.StringTerms
 import org.opensearch.search.aggregations.bucket.terms.TermsAggregationBuilder
+import org.opensearch.search.aggregations.metrics.ParsedTopHits
+import org.opensearch.search.aggregations.metrics.TopHitsAggregationBuilder
 import uk.gov.justice.hmpps.probationsearch.dto.ProbationAreaAggregation
 
 internal class ProbationAreaFilterAggregatorKtTest {
@@ -92,7 +94,20 @@ internal class ExtractProbationAreaAggregation {
                       "buckets": [
                         {
                           "key": "N01",
-                          "doc_count": 1
+                          "doc_count": 1,
+                          "top_hits#probationAreaDescription": {
+                            "hits": {
+                              "hits": [
+                                {
+                                  "_source": {
+                                    "probationArea": {
+                                      "description": "North East"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
                         }
                       ]
                     }
@@ -107,15 +122,54 @@ internal class ExtractProbationAreaAggregation {
                       "buckets": [
                         {
                           "key": "N01",
-                          "doc_count": 3
+                          "doc_count": 3,
+                          "top_hits#probationAreaDescription": {
+                            "hits": {
+                              "hits": [
+                                {
+                                  "_source": {
+                                    "probationArea": {
+                                      "description": "North West"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
                         },
                         {
                           "key": "N07",
-                          "doc_count": 2
+                          "doc_count": 2,
+                          "top_hits#probationAreaDescription": {
+                            "hits": {
+                              "hits": [
+                                {
+                                  "_source": {
+                                    "probationArea": {
+                                      "description": "London"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
                         },
                         {
                           "key": "N02",
-                          "doc_count": 1
+                          "doc_count": 1,
+                          "top_hits#probationAreaDescription": {
+                            "hits": {
+                              "hits": [
+                                {
+                                  "_source": {
+                                    "probationArea": {
+                                      "description": "North East"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
                         }
                       ]
                     }
@@ -125,9 +179,9 @@ internal class ExtractProbationAreaAggregation {
             }
           }""".toAggregation()
     assertThat(extractProbationAreaAggregation(aggregations)).containsExactlyInAnyOrder(
-      ProbationAreaAggregation("N01", 3),
-      ProbationAreaAggregation("N07", 2),
-      ProbationAreaAggregation("N02", 1),
+      ProbationAreaAggregation("N01", "North West", 3),
+      ProbationAreaAggregation("N07", "London", 2),
+      ProbationAreaAggregation("N02", "North East", 1),
     )
   }
 
@@ -152,7 +206,20 @@ internal class ExtractProbationAreaAggregation {
                       "buckets": [
                         {
                           "key": "N01",
-                          "doc_count": 1
+                          "doc_count": 1,
+                          "top_hits#probationAreaDescription": {
+                            "hits": {
+                              "hits": [
+                                {
+                                  "_source": {
+                                    "probationArea": {
+                                      "description": "North West"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
                         }
                       ]
                     }
@@ -185,7 +252,20 @@ internal class ExtractProbationAreaAggregation {
                       "buckets": [
                         {
                           "key": "N01",
-                          "doc_count": 1
+                          "doc_count": 1,
+                          "top_hits#probationAreaDescription": {
+                            "hits": {
+                              "hits": [
+                                {
+                                  "_source": {
+                                    "probationArea": {
+                                      "description": "North West"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
                         }
                       ]
                     }
@@ -230,6 +310,7 @@ fun getDefaultNamedXContents(): List<Entry> {
     StringTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedStringTerms.fromXContent(parser, name as String) },
     NestedAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedNested.fromXContent(parser, name as String) },
     LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedLongTerms.fromXContent(parser, name as String) },
+    TopHitsAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedTopHits.fromXContent(parser, name as String) },
   )
   return contentParsers
     .toList()
