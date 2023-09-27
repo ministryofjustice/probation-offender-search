@@ -52,10 +52,10 @@ class ContactSearchService(private val restTemplate: OpenSearchRestTemplate) {
     )
   }
 
-  enum class SortType(val alias: String, val searchField: String) {
-    DATE("date", "date.date"),
-    LAST_UPDATED_DATETIME("lastUpdated", "lastUpdatedDateTime"),
-    SCORE("relevance", "_score"),
+  enum class SortType(val aliases: List<String>, val searchField: String) {
+    DATE(listOf("date", "CONTACT_DATE"), "date.date"),
+    LAST_UPDATED_DATETIME(listOf("lastUpdated"), "lastUpdatedDateTime"),
+    SCORE(listOf("relevance", "RELEVANCE"), "_score"),
     ;
   }
 }
@@ -92,8 +92,8 @@ private fun Sort.Direction.toSortOrder() = when (this) {
   Sort.Direction.DESC -> SortOrder.DESC
 }
 
-private fun Sort.fieldSorts() = SortType.values().mapNotNull { type ->
-  getOrderFor(type.alias)?.let { SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder()) }
+private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
+  type.aliases.mapNotNull { alias -> getOrderFor(alias)?.let { SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder()) } }
 }
 
 private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
@@ -110,7 +110,7 @@ private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
       withSorts(
         sorted,
         when (sorted.fieldName) {
-          SCORE.alias -> SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(sorted.order())
+          in SCORE.aliases -> SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(sorted.order())
           else -> SortBuilders.fieldSort(SCORE.searchField).order(sorted.order())
         },
       )
