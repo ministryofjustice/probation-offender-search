@@ -125,6 +125,26 @@ class ContactSearchIntegrationTest {
   }
 
   @Test
+  fun `can sort by CONTACT_DATE`() {
+    val crn = "N123456"
+    val results = RestAssured.given()
+      .`when`()
+      .search(ContactSearchRequest(crn, "CODE"), mapOf("size" to 5, "sort" to "CONTACT_DATE,desc"))
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(4)
+    assertThat(results.totalResults).isEqualTo(4)
+    assertThat(results.results.map { it.id }).isEqualTo(
+      contacts
+        .filter { it.crn == crn && it.typeCode == "CODE" }
+        .sortedByDescending { it.date }
+        .map { it.id }
+        .take(4),
+    )
+  }
+
+  @Test
   fun `can sort by last updated`() {
     val crn = "T123456"
     val results = RestAssured.given()
