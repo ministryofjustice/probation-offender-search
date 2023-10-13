@@ -1,7 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.util
 
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.stereotype.Component
 import java.security.KeyPair
 import java.time.Duration
@@ -48,11 +47,11 @@ class JwtAuthenticationHelper(private val keyPair: KeyPair) {
     ).apply { username?.let { this["user_name"] = it } }
 
     return Jwts.builder()
-      .setId(UUID.randomUUID().toString())
-      .setSubject(subject)
-      .addClaims(claims)
-      .setExpiration(Date(System.currentTimeMillis() + expiryTime.toMillis()))
-      .signWith(keyPair.private, SignatureAlgorithm.RS256)
+      .id(UUID.randomUUID().toString())
+      .subject(subject)
+      .claims(claims)
+      .expiration(Date(System.currentTimeMillis() + expiryTime.toMillis()))
+      .signWith(keyPair.private, Jwts.SIG.RS256)
       .compact()
   }
 
