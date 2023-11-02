@@ -1,4 +1,3 @@
----
 # Environment specific values, override helm_deploy/probation-offender-search/values.yaml
 
 generic-service:
@@ -12,21 +11,14 @@ generic-service:
     SENTRY_ENVIRONMENT: preprod
 
   allowlist:
-    office: "217.33.148.210/32"
-    health-kick: "35.177.252.195/32"
-    mojvpn: "81.134.202.29/32"
-    cloudplatform-live1-1: "35.178.209.113/32"
-    cloudplatform-live1-2: "3.8.51.207/32"
-    cloudplatform-live1-3: "35.177.252.54/32"
-    delius-aws-1: "52.56.240.62/32"
-    delius-aws-2: "18.130.110.168/32"
-    delius-aws-3: "35.178.44.184/32"
-    delius-aws-perf-1: "3.10.200.35/32"
-    delius-aws-perf-2: "3.11.166.247/32"
-    delius-aws-perf-3: "52.56.136.138/32"
-    analyticplatform-1: "34.250.17.221/32"
-    analyticplatform-2: "34.251.212.33/32"
-    analyticplatform-3: "34.252.4.39/32"
+    delius-pre-prod-1: 52.56.240.62/32
+    delius-pre-prod-2: 18.130.110.168/32
+    delius-pre-prod-3: 35.178.44.184/32
+    analyticplatform-1: 34.250.17.221/32
+    analyticplatform-2: 34.251.212.33/32
+    analyticplatform-3: 34.252.4.39/32
+    groups:
+      - internal
 
 cron:
   SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"

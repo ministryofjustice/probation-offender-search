@@ -1,4 +1,3 @@
----
 # Values here are the same across all environments
 generic-service:
   nameOverride: probation-offender-search
@@ -9,7 +8,7 @@ generic-service:
 
   image:
     repository: quay.io/hmpps/probation-offender-search
-    tag: app_version    # override at deployment time
+    tag: app_version # override at deployment time
     port: 8080
 
   ingress:
@@ -41,19 +40,14 @@ generic-service:
       OPENSEARCH_URIS: "url"
 
   allowlist:
-    office: "217.33.148.210/32"
-    health-kick: "35.177.252.195/32"
-    mojvpn: "81.134.202.29/32"
-    global-protect: "35.176.93.186/32"
-    cloudplatform-live1-1: "35.178.209.113/32"
-    cloudplatform-live1-2: "3.8.51.207/32"
-    cloudplatform-live1-3: "35.177.252.54/32"
-    delius-aws-1: "52.56.115.146/32"
-    delius-aws-2: "35.178.104.253/32"
-    delius-aws-3: "35.177.47.45/32"
-    analyticplatform-1: "34.250.17.221/32"
-    analyticplatform-2: "34.251.212.33/32"
-    analyticplatform-3: "34.252.4.39/32"
+    delius-prod-1: 52.56.115.146/32
+    delius-prod-2: 35.178.104.253/32
+    delius-prod-3: 35.177.47.45/32
+    analyticplatform-1: 34.250.17.221/32
+    analyticplatform-2: 34.251.212.33/32
+    analyticplatform-3: 34.252.4.39/32
+    groups:
+      - internal
 
 generic-prometheus-alerts:
   targetApplication: probation-offender-search
