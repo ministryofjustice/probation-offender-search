@@ -22,7 +22,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
-  implementation("org.opensearch.client:spring-data-opensearch-starter:1.2.0")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:1.2.1")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
