@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.9.0"
-  kotlin("plugin.spring") version "1.9.20"
+  kotlin("plugin.spring") version "1.9.21"
   id("com.google.cloud.tools.jib") version "3.4.0"
 }
 
