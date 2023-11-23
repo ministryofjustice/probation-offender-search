@@ -1,2 +1,8 @@
 # Suppressed as we do not process any untrusted YML content
 CVE-2022-1471 exp:2023-12-01
+
+# Suppressed doesn't serve static resources
+CVE-2023-34062 exp:2023-12-01
+
+#Suppressed as low probability of issue
+CVE-2023-5363 exp:2023-12-01
