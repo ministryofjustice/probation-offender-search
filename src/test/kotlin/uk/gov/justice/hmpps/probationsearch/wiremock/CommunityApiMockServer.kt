@@ -54,6 +54,7 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
     )
   }
+
   fun stubUserAccessDenied(crn: String, response: String) {
     stubFor(
       get("/secure/offenders/crn/$crn/userAccess").willReturn(
@@ -64,6 +65,7 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
     )
   }
+
   fun stubUserAccessNotFound(crn: String) {
     stubFor(
       get("/secure/offenders/crn/$crn/userAccess").willReturn(
@@ -74,6 +76,7 @@ class CommunityApiMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
     )
   }
+
   fun stubUserAccessError(crn: String) {
     stubFor(
       get("/secure/offenders/crn/$crn/userAccess").willReturn(

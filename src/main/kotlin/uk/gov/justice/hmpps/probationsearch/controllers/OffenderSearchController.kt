@@ -70,11 +70,13 @@ class OffenderSearchController(
       ApiResponse(
         responseCode = "200",
         description = "OK",
-      ), ApiResponse(
+      ),
+      ApiResponse(
         responseCode = "400",
         description = "Invalid Request",
         content = [Content(examples = [])],
-      ), ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
+      ),
+      ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
     ],
   )
   @PreAuthorize("hasRole('ROLE_COMMUNITY')")
@@ -252,11 +254,13 @@ class OffenderSearchController(
       ApiResponse(
         responseCode = "200",
         description = "OK",
-      ), ApiResponse(
+      ),
+      ApiResponse(
         responseCode = "400",
         description = "Invalid Request",
         content = [Content(examples = [])],
-      ), ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
+      ),
+      ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])]),
     ],
@@ -275,11 +279,13 @@ class OffenderSearchController(
       ApiResponse(
         responseCode = "200",
         description = "OK",
-      ), ApiResponse(
+      ),
+      ApiResponse(
         responseCode = "400",
         description = "Invalid Request",
         content = [Content(examples = [])],
-      ), ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
+      ),
+      ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_COMMUNITY", content = [Content(examples = [])]),
     ],

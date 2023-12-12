@@ -4,7 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema
 import org.apache.commons.lang3.StringUtils
 import java.time.LocalDate
 
-data class SearchDto( // todo confirm description and examples
+data class SearchDto(
+  // todo confirm description and examples
   @Schema(required = false) val firstName: String? = null,
   @Schema(required = false) val surname: String? = null,
   @Schema(required = false, example = "1996-02-10") val dateOfBirth: LocalDate? = null,

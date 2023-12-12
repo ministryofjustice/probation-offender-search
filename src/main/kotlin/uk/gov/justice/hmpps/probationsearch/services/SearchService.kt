@@ -62,6 +62,7 @@ class SearchService @Autowired constructor(
       total = response.hits.totalHits?.value ?: 0,
     )
   }
+
   protected fun buildMatchWithAllProvidedParameters(searchOptions: SearchDto): BoolQueryBuilder {
     val matchingAllFieldsQuery = QueryBuilders
       .boolQuery()

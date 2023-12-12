@@ -238,6 +238,7 @@ inline infix fun Result.onMatch(block: (Result.Match) -> Nothing) {
   return when (this) {
     is Result.NoMatch -> {
     }
+
     is Result.Match -> block(this)
   }
 }

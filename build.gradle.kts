@@ -98,3 +98,10 @@ jib {
     }
   }
 }
+
+// Disable ktlint in favour of IntelliJ formatting
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+  filter {
+    exclude("**/*")
+  }
+}
