@@ -15,7 +15,7 @@ import org.mockito.kotlin.whenever
 import org.opensearch.action.search.SearchRequest
 import org.opensearch.action.search.SearchResponse
 import org.opensearch.action.search.SearchResponseSections
-import org.opensearch.common.bytes.BytesArray
+import org.opensearch.core.common.bytes.BytesArray
 import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.MatchQueryBuilder
 import org.opensearch.index.query.MultiMatchQueryBuilder

@@ -12,8 +12,8 @@ import org.opensearch.client.core.CountRequest
 import org.opensearch.client.indices.CreateIndexRequest
 import org.opensearch.client.indices.GetIndexRequest
 import org.opensearch.client.indices.PutIndexTemplateRequest
-import org.opensearch.common.bytes.BytesArray
 import org.opensearch.common.xcontent.XContentType.JSON
+import org.opensearch.core.common.bytes.BytesArray
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.UUID

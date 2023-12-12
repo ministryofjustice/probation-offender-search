@@ -3,7 +3,7 @@ package uk.gov.justice.hmpps.probationsearch.services
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.opensearch.common.text.Text
+import org.opensearch.core.common.text.Text
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder.Field
 import org.opensearch.search.fetch.subphase.highlight.HighlightField
 import uk.gov.justice.hmpps.probationsearch.dto.IDs

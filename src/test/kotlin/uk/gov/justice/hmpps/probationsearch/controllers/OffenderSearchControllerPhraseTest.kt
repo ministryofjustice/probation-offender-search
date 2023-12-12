@@ -16,7 +16,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.opensearch.common.text.Text
+import org.opensearch.core.common.text.Text
 import org.opensearch.search.suggest.SortBy.SCORE
 import org.opensearch.search.suggest.Suggest
 import org.opensearch.search.suggest.term.TermSuggestion
