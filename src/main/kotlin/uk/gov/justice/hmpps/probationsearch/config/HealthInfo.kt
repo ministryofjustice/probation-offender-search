@@ -14,6 +14,7 @@ class HealthInfo(@param:Autowired private val buildProperties: BuildProperties) 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
+
   override fun health(): Health {
     return try {
       Health.up().withDetail("version", version).build()

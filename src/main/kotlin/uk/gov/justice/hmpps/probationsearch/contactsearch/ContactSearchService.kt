@@ -105,6 +105,7 @@ private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
         SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(SortOrder.DESC),
       )
     }
+
     1 -> {
       val sorted = sorts.first()
       withSorts(
@@ -115,6 +116,7 @@ private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
         },
       )
     }
+
     else -> withSorts(sorts)
   }
   return build()

@@ -71,6 +71,7 @@ private fun dateOfBirthQuery(term: String): QueryBuilder =
 private fun phoneQueries(phrase: String): List<QueryBuilder> =
   extractPhoneNumberLikeTerms(phrase)
     .map { phoneNumberQuery(it) }
+
 private fun phoneNumberQuery(term: String): QueryBuilder =
   QueryBuilders.matchQuery("contactNumbers", term)
     .boost(10f)
