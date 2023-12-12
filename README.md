@@ -6,11 +6,11 @@
 
 API to provides searching of offender records in Delius via Elastic search
 
-##Intellij setup
+## Intellij setup
 
-- Install jdk 11
-- Enable Gradle using jdk 11
-- Set jdk in project structure
+- Install JDK 17
+- Enable Gradle using JDK 17
+- Set JDK in project structure
 - Enable the lombok plugin and restart if necessary
 - Enable Annotation Processors at "Settings > Build > Compiler > Annotation Processors"
 
