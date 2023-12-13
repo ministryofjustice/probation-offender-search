@@ -33,10 +33,12 @@ class OffenderMatchController(private val matchService: MatchService) {
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "OK"), ApiResponse(
+      ApiResponse(responseCode = "200", description = "OK"),
+      ApiResponse(
         responseCode = "400",
         description = "Invalid Request",
-      ), ApiResponse(responseCode = "404", description = "Not found"),
+      ),
+      ApiResponse(responseCode = "404", description = "Not found"),
     ],
   )
   @PostMapping
