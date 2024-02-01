@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.13.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.1"
   kotlin("plugin.spring") version "1.9.22"
   id("com.google.cloud.tools.jib") version "3.4.0"
 }
@@ -19,14 +19,14 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.data:spring-data-jpa")
 
-  implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
-  implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
+  implementation("io.jsonwebtoken:jjwt-impl:0.12.4")
+  implementation("io.jsonwebtoken:jjwt-jackson:0.12.4")
 
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.3.0")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
-  implementation("io.sentry:sentry-spring-boot-starter:7.1.0")
+  implementation("io.sentry:sentry-spring-boot-starter:7.3.0")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
@@ -35,7 +35,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.19")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.20")
 }
 
 java {
