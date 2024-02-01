@@ -20,7 +20,7 @@ dependencies {
   implementation("org.springframework.data:spring-data-jpa")
 
   implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
-  implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
+  implementation("io.jsonwebtoken:jjwt-jackson:0.12.4")
 
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.3.0")
 
