@@ -39,7 +39,7 @@ dependencies {
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 tasks {
@@ -65,7 +65,7 @@ tasks {
 
   withType<KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "17"
+      jvmTarget = "21"
     }
   }
 
@@ -82,7 +82,7 @@ jib {
     user = "2000:2000"
   }
   from {
-    image = "eclipse-temurin:17-jre-alpine"
+    image = "eclipse-temurin:21-jre-alpine"
   }
   extraDirectories {
     paths {
