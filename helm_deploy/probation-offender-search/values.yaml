@@ -36,6 +36,8 @@ generic-service:
     probation-offender-search:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
       SENTRY_DSN: "SENTRY_DSN"
+    sqs-hmpps-audit-secret:
+      HMPPS_SQS_QUEUES_AUDIT_QUEUE_NAME: "Digital-Prison-Services-dev-hmpps_audit_queue"
     opensearch:
       OPENSEARCH_URIS: "url"
 
