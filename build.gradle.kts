@@ -26,7 +26,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
-  implementation("io.sentry:sentry-spring-boot-starter:7.3.0")
+  implementation("io.sentry:sentry-spring-boot-starter:7.4.0")
 
   implementation("uk.gov.justice.service.hmpps:hmpps-audit-sdk:1.0.0")
 
