@@ -9,7 +9,7 @@ executors:
   build-gradle:
     resource_class: medium+
     docker:
-      - image: cimg/openjdk:17.0
+      - image: cimg/openjdk:21.0
         environment:
           JAVA_TOOL_OPTIONS: -Xmx4g -Dorg.gradle.daemon=false
             -Dkotlin.compiler.execution.strategy=in-process
@@ -59,7 +59,7 @@ jobs:
   jib-build:
     executor:
       name: hmpps/java
-      tag: "17.0"
+      tag: "21.0"
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2
         -XX:ParallelGCThreads=2

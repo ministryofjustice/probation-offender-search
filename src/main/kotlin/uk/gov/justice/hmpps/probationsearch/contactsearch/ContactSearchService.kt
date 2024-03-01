@@ -1,5 +1,7 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.opentelemetry.api.trace.Span
 import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
@@ -17,14 +19,32 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsauditsdk.AuditService
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
 
 @Service
-class ContactSearchService(private val restTemplate: OpenSearchRestTemplate) {
+class ContactSearchService(
+  private val restTemplate: OpenSearchRestTemplate,
+  private val auditService: AuditService,
+  private val objectMapper: ObjectMapper
+) {
   fun performSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
+    auditService.publishEvent(
+      what = "Search Contacts",
+      who = SecurityContextHolder.getContext().authentication.name,
+      subjectId = request.crn,
+      subjectType = "CRN",
+      correlationId = Span.current().spanContext.traceId,
+      service = "probation-search",
+      details = objectMapper.writeValueAsString(request)
+    )
+
     val query: Query = NativeSearchQueryBuilder()
       .withQuery(boolQuery().fromRequest(request))
       .withPageable(PageRequest.of(pageable.pageNumber, pageable.pageSize))
@@ -39,7 +59,8 @@ class ContactSearchService(private val restTemplate: OpenSearchRestTemplate) {
           .fragmentSize(200),
       ).withSorts(pageable.sort)
 
-    val searchResponse = restTemplate.search(query, ContactSearchResult::class.java, IndexCoordinates.of("contact-search-primary"))
+    val searchResponse =
+      restTemplate.search(query, ContactSearchResult::class.java, IndexCoordinates.of("contact-search-primary"))
     val results = searchResponse.searchHits.mapNotNull { it.content.copy(highlights = it.highlightFields) }
 
     val response = PageImpl(results, pageable, searchResponse.totalHits)
@@ -93,7 +114,11 @@ private fun Sort.Direction.toSortOrder() = when (this) {
 }
 
 private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
-  type.aliases.mapNotNull { alias -> getOrderFor(alias)?.let { SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder()) } }
+  type.aliases.mapNotNull { alias ->
+    getOrderFor(alias)?.let {
+      SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder())
+    }
+  }
 }
 
 private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
