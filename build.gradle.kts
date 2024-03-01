@@ -28,7 +28,7 @@ dependencies {
 
   implementation("io.sentry:sentry-spring-boot-starter:7.3.0")
 
-  implementation("uk.gov.justice.service.hmpps:hmpps-audit-sdk:1.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
