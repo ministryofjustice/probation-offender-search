@@ -33,23 +33,25 @@ import java.time.Instant
 @Service
 class ContactSearchService(
   private val restTemplate: OpenSearchRestTemplate,
-  private val auditService: HmppsAuditService,
+  private val auditService: HmppsAuditService?,
   private val objectMapper: ObjectMapper
 ) {
 
   private val scope = CoroutineScope(Dispatchers.IO)
   fun performSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    scope.launch {
-      auditService.publishEvent(
-        what = "Search Contacts",
-        who = SecurityContextHolder.getContext().authentication.name,
-        `when` = Instant.now(),
-        subjectId = request.crn,
-        subjectType = "CRN",
-        correlationId = Span.current().spanContext.traceId,
-        service = "probation-search",
-        details = objectMapper.writeValueAsString(request),
-      )
+    auditService?.run {
+      scope.launch {
+        publishEvent(
+          what = "Search Contacts",
+          who = SecurityContextHolder.getContext().authentication.name,
+          `when` = Instant.now(),
+          subjectId = request.crn,
+          subjectType = "CRN",
+          correlationId = Span.current().spanContext.traceId,
+          service = "probation-search",
+          details = objectMapper.writeValueAsString(request),
+        )
+      }
     }
 
     val query: Query = NativeSearchQueryBuilder()
@@ -71,6 +73,7 @@ class ContactSearchService(
     val results = searchResponse.searchHits.mapNotNull { it.content.copy(highlights = it.highlightFields) }
 
     val response = PageImpl(results, pageable, searchResponse.totalHits)
+
     return ContactSearchResponse(
       response.numberOfElements,
       response.pageable.pageNumber,
