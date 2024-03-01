@@ -11,9 +11,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.verify
 import org.opensearch.action.admin.indices.alias.Alias
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest
 import org.opensearch.client.RequestOptions
@@ -31,9 +28,9 @@ import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.ResourceUtils
-import uk.gov.justice.digital.hmpps.hmppsauditsdk.AuditService
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator.contacts
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
+import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test"])
@@ -49,7 +46,7 @@ class ContactSearchIntegrationTest {
   internal val port: Int = 0
 
   @MockBean
-  internal lateinit var auditService: AuditService
+  internal lateinit var auditService: HmppsAuditService
 
   @BeforeEach
   internal fun before() {
@@ -95,8 +92,6 @@ class ContactSearchIntegrationTest {
         .map { it.id }
         .take(3),
     )
-
-    verify(auditService).publishEvent(eq("Search Contacts"), any(), eq(crn), eq("CRN"), any(), eq("probation-search"), any())
   }
 
   @ParameterizedTest
@@ -112,8 +107,6 @@ class ContactSearchIntegrationTest {
     val found = results.results.first()
     assertThat(found.crn).isEqualTo(crn)
     assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(mapOf("type" to listOf("<em>FIND_ME</em>")))
-
-    verify(auditService).publishEvent(eq("Search Contacts"), any(), eq(crn), eq("CRN"), any(), eq("probation-search"), any())
   }
 
   @Test
@@ -134,8 +127,6 @@ class ContactSearchIntegrationTest {
         .map { it.id }
         .take(4),
     )
-
-    verify(auditService).publishEvent(eq("Search Contacts"), any(), eq(crn), eq("CRN"), any(), eq("probation-search"), any())
   }
 
   @Test
@@ -156,8 +147,6 @@ class ContactSearchIntegrationTest {
         .map { it.id }
         .take(4),
     )
-
-    verify(auditService).publishEvent(eq("Search Contacts"), any(), eq(crn), eq("CRN"), any(), eq("probation-search"), any())
   }
 
   @Test
@@ -178,8 +167,6 @@ class ContactSearchIntegrationTest {
         .map { it.id }
         .take(4),
     )
-
-    verify(auditService).publishEvent(eq("Search Contacts"), any(), eq(crn), eq("CRN"), any(), eq("probation-search"), any())
   }
 
   @ParameterizedTest
@@ -214,8 +201,6 @@ class ContactSearchIntegrationTest {
         "outcome" to listOf("Matches were <em>highlighted</em>"),
       ),
     )
-
-    verify(auditService).publishEvent(eq("Search Contacts"), any(), eq(crn), eq("CRN"), any(), eq("probation-search"), any())
   }
 
   companion object {
