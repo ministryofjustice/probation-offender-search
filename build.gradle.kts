@@ -32,7 +32,7 @@ dependencies {
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.4")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
