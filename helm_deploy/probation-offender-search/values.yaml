@@ -1,6 +1,8 @@
 # Values here are the same across all environments
 generic-service:
   nameOverride: probation-offender-search
+  serviceAccountName: probation-search
+
   resources:
     requests:
       cpu: 1
