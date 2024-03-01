@@ -2,6 +2,9 @@ package uk.gov.justice.hmpps.probationsearch.contactsearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.opentelemetry.api.trace.Span
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
@@ -19,31 +22,35 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsauditsdk.AuditService
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
+import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
+import java.time.Instant
 
 @Service
 class ContactSearchService(
   private val restTemplate: OpenSearchRestTemplate,
-  private val auditService: AuditService,
+  private val auditService: HmppsAuditService,
   private val objectMapper: ObjectMapper
 ) {
+
+  private val scope = CoroutineScope(Dispatchers.IO)
   fun performSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    auditService.publishEvent(
-      what = "Search Contacts",
-      who = SecurityContextHolder.getContext().authentication.name,
-      subjectId = request.crn,
-      subjectType = "CRN",
-      correlationId = Span.current().spanContext.traceId,
-      service = "probation-search",
-      details = objectMapper.writeValueAsString(request)
-    )
+    scope.launch {
+      auditService.publishEvent(
+        what = "Search Contacts",
+        who = SecurityContextHolder.getContext().authentication.name,
+        `when` = Instant.now(),
+        subjectId = request.crn,
+        subjectType = "CRN",
+        correlationId = Span.current().spanContext.traceId,
+        service = "probation-search",
+        details = objectMapper.writeValueAsString(request),
+      )
+    }
 
     val query: Query = NativeSearchQueryBuilder()
       .withQuery(boolQuery().fromRequest(request))
