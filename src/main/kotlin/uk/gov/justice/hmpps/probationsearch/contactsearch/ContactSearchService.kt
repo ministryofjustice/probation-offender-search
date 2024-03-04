@@ -39,11 +39,12 @@ class ContactSearchService(
 
   private val scope = CoroutineScope(Dispatchers.IO)
   fun performSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
+    val name = SecurityContextHolder.getContext().authentication.name
     auditService?.run {
       scope.launch {
         publishEvent(
           what = "Search Contacts",
-          who = SecurityContextHolder.getContext().authentication.name,
+          who = name,
           `when` = Instant.now(),
           subjectId = request.crn,
           subjectType = "CRN",
