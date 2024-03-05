@@ -11,7 +11,7 @@ data class IDs(
   val croNumber: String? = null,
   @Schema(example = "AA123456A", description = "National Insurance Number")
   val niNumber: String? = null,
-  @Schema(example = "AA1234A", description = "Prison Offender Number")
+  @Schema(example = "G5555TT", description = "Prison Offender Number")
   val nomsNumber: String? = null,
   val immigrationNumber: String? = null,
   val mostRecentPrisonerNumber: String? = null,
