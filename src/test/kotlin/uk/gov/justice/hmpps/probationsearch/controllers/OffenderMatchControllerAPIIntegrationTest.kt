@@ -13,11 +13,11 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
   @Nested
   inner class BasicOperation {
     @Test
-    internal fun `access allowed with ROLE_COMMUNITY`() {
+    internal fun `access allowed with ROLE_PROBATION__SEARCH_PERSON`() {
       loadOffenders()
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"Smith\"}")
         .post("/match")
@@ -26,7 +26,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     }
 
     @Test
-    internal fun `without ROLE_COMMUNITY access is denied`() {
+    internal fun `without ROLE_PROBATION__SEARCH_PERSON access is denied`() {
       given()
         .auth()
         .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
@@ -59,7 +59,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
 
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -125,7 +125,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using PNC number ignoring deleted and inactive sentences`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -148,7 +148,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using short form of PNC number`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -170,7 +170,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `noms number takes precedence over PNC Number when present`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -194,7 +194,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should not match using PNC number if no other data matches the record other then PNC number`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -215,7 +215,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using PNC number if PNC and surname match`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -237,7 +237,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using PNC number if PNC and date of birth match`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -259,7 +259,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using PNC number if PNC and surname alias match`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -281,7 +281,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using PNC number if PNC and date of birth alias match`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -344,7 +344,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using CRO number ignoring deleted and inactive sentences`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -367,7 +367,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `noms number takes precedence over CRO Number when present`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -391,7 +391,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should not match using CRO number if no other data matches the record other then CRO number`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -412,7 +412,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using CRO number if CRO and surname match`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -434,7 +434,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using CRO number if CRO and date of birth match`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -456,7 +456,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using CRO number if CRO and alias surname match`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -478,7 +478,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using CRO number if CRO and alias date of birth match`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -519,7 +519,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using name and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -541,7 +541,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using any alias name and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -560,7 +560,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
 
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -582,7 +582,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should not cross match across aliases and primary names and date of births`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -603,7 +603,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should not anything when nothing matches`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -639,7 +639,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using surname and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -661,7 +661,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should not match when just surname matches`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -697,7 +697,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using surname and date of birth with swapped day month`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -719,7 +719,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should match using surname and date of birth with different day`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -741,7 +741,7 @@ internal class OffenderMatchControllerAPIIntegrationTest : OffenderMatchAPIInteg
     internal fun `should not match when just surname matches`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(

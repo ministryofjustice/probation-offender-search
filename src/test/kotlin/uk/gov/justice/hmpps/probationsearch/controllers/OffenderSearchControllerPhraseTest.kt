@@ -87,7 +87,7 @@ class OffenderSearchControllerPhraseTest {
   }
 
   @Test
-  internal fun `ROLE_COMMUNITY is required`() {
+  internal fun `ROLE_PROBATION__SEARCH_PERSON is required`() {
     RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BANANAS"))
@@ -107,7 +107,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `phrase is mandatory`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{}")
       .post("/phrase")
@@ -120,7 +120,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `will return 200 when a valid search is performed`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -137,7 +137,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `will default page to zero`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -162,7 +162,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `can supply page number`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 28)
       .body(
@@ -188,7 +188,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `will default page size to ten`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -213,7 +213,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `can supply page size`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("size", 99)
       .body(
@@ -239,7 +239,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `will default to an OR search`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -264,7 +264,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `can supply search type`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -290,7 +290,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `will by default not include probation area filter`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -315,7 +315,7 @@ class OffenderSearchControllerPhraseTest {
   internal fun `can supply a probation area filter`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -362,7 +362,7 @@ class OffenderSearchControllerPhraseTest {
 
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -414,7 +414,7 @@ class OffenderSearchControllerPhraseTest {
 
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{
@@ -462,7 +462,7 @@ class OffenderSearchControllerPhraseTest {
 
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(
         """{

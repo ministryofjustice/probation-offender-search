@@ -21,7 +21,7 @@ class MappaDetailsIntegrationTest : ElasticIntegrationBase() {
     fun `MAPPA details are returned from the search`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"crn": "X00001"}""")
         .post("/search")
@@ -51,7 +51,7 @@ class MappaDetailsIntegrationTest : ElasticIntegrationBase() {
     fun `Missing MAPPA details are not included in the response`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"crn": "X00002"}""")
         .post("/search")
@@ -71,7 +71,7 @@ class MappaDetailsIntegrationTest : ElasticIntegrationBase() {
     fun `MAPPA details are returned from the search`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"surname": "Smith", "dateOfBirth": "1978-01-06"}""")
         .post("/match")
@@ -101,7 +101,7 @@ class MappaDetailsIntegrationTest : ElasticIntegrationBase() {
     fun `Missing MAPPA details are not included in the response`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"surname": "Smith", "dateOfBirth": "1978-01-16"}""")
         .post("/match")

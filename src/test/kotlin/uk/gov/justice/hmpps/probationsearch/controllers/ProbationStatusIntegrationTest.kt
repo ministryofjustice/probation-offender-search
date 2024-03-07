@@ -21,7 +21,7 @@ class ProbationStatusIntegrationTest : ElasticIntegrationBase() {
     fun `ProbationStatus is returned from the search`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"crn": "X00001"}""")
         .post("/search")
@@ -42,7 +42,7 @@ class ProbationStatusIntegrationTest : ElasticIntegrationBase() {
     fun `ProbationStatus with null fields is handled in the response`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"crn": "X00004"}""")
         .post("/search")
@@ -63,7 +63,7 @@ class ProbationStatusIntegrationTest : ElasticIntegrationBase() {
     fun `Missing ProbationStatus is not included in the response`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"crn": "X00002"}""")
         .post("/search")
@@ -83,7 +83,7 @@ class ProbationStatusIntegrationTest : ElasticIntegrationBase() {
     fun `ProbationStatus is returned from the match`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"surname": "Smith", "dateOfBirth": "1978-01-06"}""")
         .post("/match")
@@ -104,7 +104,7 @@ class ProbationStatusIntegrationTest : ElasticIntegrationBase() {
     fun `ProbationStatus with null fields is returned from the match`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"surname": "Gramsci", "dateOfBirth": "1988-01-06"}""")
         .post("/match")
@@ -125,7 +125,7 @@ class ProbationStatusIntegrationTest : ElasticIntegrationBase() {
     fun `Missing ProbationStatus is not included in the response`() {
       val response = RestAssured.given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("""{"surname": "Smith", "dateOfBirth": "1978-01-16"}""")
         .post("/match")

@@ -51,7 +51,7 @@ internal class OffenderMatchControllerTest {
   fun `surname is mandatory`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{}")
       .post("/match")
@@ -64,7 +64,7 @@ internal class OffenderMatchControllerTest {
   fun `date of birth must be in the past`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\": \"Smith\", \"dateOfBirth\":\"2199-07-02\"}")
       .post("/match")
@@ -77,7 +77,7 @@ internal class OffenderMatchControllerTest {
   fun `OK response with valid request`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\": \"Smith\"}")
       .post("/match")

@@ -65,7 +65,7 @@ class OffenderSearchControllerTest {
     OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\":\"smith\"}")
       .`when`()["/search"]
@@ -83,7 +83,7 @@ class OffenderSearchControllerTest {
     OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\":\"smith\", \"includeAliases\": true}")
       .`when`()["/search"]
@@ -100,7 +100,7 @@ class OffenderSearchControllerTest {
   fun noSearchParameters_badRequest() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{}")
       .`when`()["/search"]
@@ -116,7 +116,7 @@ class OffenderSearchControllerTest {
   fun invalidDateOfBirthFormat_badRequest() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"dateOfBirth\":\"23/11/1976\"}")
       .`when`()["/search"]

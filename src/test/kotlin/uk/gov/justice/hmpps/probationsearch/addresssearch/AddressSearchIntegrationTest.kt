@@ -23,7 +23,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
   fun `postcode search test`(postCode: String, noOfResults: Int) {
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_ADDRESS"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"postcode\": \"$postCode\"}")
       .post("/search/addresses")
@@ -41,7 +41,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
   fun `must not match on street name only`(streetName: String, noOfResults: Int) {
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_ADDRESS"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"streetName\": \"$streetName\"}")
       .post("/search/addresses")
@@ -59,7 +59,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
     // given data exists with a matching address number and street
     val existing = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_ADDRESS"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"addressNumber\": \"29\", \"streetName\": \"Church Street\", \"postcode\": \"NE1 2SW\"}")
       .post("/search/addresses")
@@ -74,7 +74,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
     // searching on number alone gives no results
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_ADDRESS"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"addressNumber\": \"29\"}")
       .post("/search/addresses")
@@ -92,7 +92,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
   fun `must match on all provided parts`(body: String, noOfResults: Int) {
     val existing = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_ADDRESS"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(body)
       .post("/search/addresses")
@@ -110,7 +110,7 @@ internal class AddressSearchIntegrationTest : ElasticIntegrationBase() {
   fun `must not match on town only`(body: String, noOfResults: Int) {
     val existing = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_ADDRESS"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(body)
       .post("/search/addresses")

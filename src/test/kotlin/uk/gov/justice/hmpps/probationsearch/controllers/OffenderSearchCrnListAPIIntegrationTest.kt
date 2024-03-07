@@ -34,7 +34,7 @@ class OffenderSearchCrnListAPIIntegrationTest : ElasticIntegrationBase() {
   fun crnListSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"X00001\",\"X00003\"]")
       .post("/crns")
@@ -51,7 +51,7 @@ class OffenderSearchCrnListAPIIntegrationTest : ElasticIntegrationBase() {
   fun previousCrnSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"X10001\"]")
       .post("/crns")
@@ -75,7 +75,7 @@ class OffenderSearchCrnListAPIIntegrationTest : ElasticIntegrationBase() {
     loadOffenders(*offendersToLoad)
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(offendersToSearch)
       .post("/crns")
@@ -92,7 +92,7 @@ class OffenderSearchCrnListAPIIntegrationTest : ElasticIntegrationBase() {
   fun crnListSearch_ignoreNotFoundIds() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"X00001\",\"X00002\"]")
       .post("/crns")
@@ -109,7 +109,7 @@ class OffenderSearchCrnListAPIIntegrationTest : ElasticIntegrationBase() {
   fun shouldFilterOutSoftDeletedRecords() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"X00088\"]")
       .post("/crns")
@@ -125,7 +125,7 @@ class OffenderSearchCrnListAPIIntegrationTest : ElasticIntegrationBase() {
   fun noCrnList_badRequest() {
     given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .post("/crns")
       .then()
@@ -141,7 +141,7 @@ class OffenderSearchCrnListAPIIntegrationTest : ElasticIntegrationBase() {
     }.toTypedArray()
     given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(offendersToSearch)
       .post("/crns")
@@ -155,7 +155,7 @@ class OffenderSearchCrnListAPIIntegrationTest : ElasticIntegrationBase() {
   fun noResults() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"AB1\",\"AB2\"]")
       .post("/crns")

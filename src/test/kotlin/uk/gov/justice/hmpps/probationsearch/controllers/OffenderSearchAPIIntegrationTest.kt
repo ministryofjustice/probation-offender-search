@@ -66,7 +66,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   }
 
   @Test
-  fun `not allowed to do a search without COMMUNITY role`() {
+  fun `not allowed to do a search without appropriate role`() {
     given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_BINGO"))
@@ -81,7 +81,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun surnameSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\":\"smith\", \"includeAliases\": false}")
       .`when`()["/search"]
@@ -98,7 +98,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun surnameSearchWithAliases() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\":\"smith\", \"includeAliases\": true}")
       .`when`()["/search"]
@@ -116,7 +116,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
     assertThat(
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"smith\"}")
         .post("/search")
@@ -130,7 +130,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
     assertThat(
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body("{\"surname\": \"smith\"}")
         .get("/search")
@@ -146,7 +146,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun shouldFilterOutSoftDeletedRecords() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\":\"Jones\"}")
       .`when`()["/search"]
@@ -162,7 +162,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun nomsNumberSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"nomsNumber\":\"G8020GG\"}")
       .`when`()["/search"]
@@ -179,7 +179,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun prisonNumberSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"nomsNumber\":\"G8020GG\"}")
       .`when`()["/search"]
@@ -196,7 +196,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun dateOfBirthSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"dateOfBirth\": \"1978-01-06\"}")
       .`when`()["/search"]
@@ -213,7 +213,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun dateOfBirthSearchWithAliases() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"dateOfBirth\": \"1978-01-06\", \"includeAliases\": true}")
       .`when`()["/search"]
@@ -230,7 +230,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun pncNumberShortFormatSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"pncNumber\":\"18/123456X\"}")
       .`when`()["/search"]
@@ -247,7 +247,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun pncNumberLongFormatSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"pncNumber\":\"2018/0123456X\"}")
       .`when`()["/search"]
@@ -264,7 +264,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun croNumberLongFormatSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"croNumber\":\"SF80/777108T\"}")
       .`when`()["/search"]
@@ -281,7 +281,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun croNumberLongFormatSearchAndSurname() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"croNumber\":\"SF80/777108T\",\"surname\":\"SMITH\"}")
       .`when`()["/search"]
@@ -298,7 +298,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun pncNumberLongFormatSearchAndSurname() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"pncNumber\":\"2018/0123456X\", \"surname\":\"SMITH\"}")
       .`when`()["/search"]
@@ -315,7 +315,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun pncNumberLongFormatSearchAndWrongSurname() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"pncNumber\":\"2018/0123456X\", \"surname\":\"Denton\"}")
       .`when`()["/search"]
@@ -331,7 +331,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun allParameters() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\": \"smith\",\"firstName\": \"John\",\"crn\": \"X00001\",\"croNumber\": \"SF80/655108T\", \"nomsNumber\": \"G8020GG\",\"pncNumber\": \"2018/0123456X\", \"dateOfBirth\": \"1978-01-06\"}\n")
       .`when`()["/search"]
@@ -348,7 +348,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun blanksShouldBeIgnored() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\": \" \",\"firstName\": \" \",\"crn\": \" \",\"croNumber\": \" \", \"nomsNumber\": \" \",\"pncNumber\": \" \", \"dateOfBirth\": \"1978-01-06\"}\n")
       .`when`()["/search"]
@@ -365,7 +365,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun noSearchParameters_badRequest() {
     given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{}")
       .`when`()["/search"]
@@ -381,7 +381,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun noResults() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\":\"potter\"}")
       .`when`()["/search"]
@@ -396,7 +396,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun previousCrnSearch() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"crn\":\"X10001\"}")
       .`when`()["/search"]
@@ -414,7 +414,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun findsOnlyCompleteMatchesWhenUsingAlias() {
     val results = given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("{\"surname\": \"smith\",\"firstName\": \"John\", \"dateOfBirth\": \"1978-01-06\", \"includeAliases\": true}\n")
       .`when`()["/search"]
@@ -431,7 +431,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
   fun `paginated search returns count and results`() {
     given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 1)
       .queryParam("size", 2)

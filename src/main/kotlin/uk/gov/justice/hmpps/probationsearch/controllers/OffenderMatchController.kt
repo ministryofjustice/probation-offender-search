@@ -20,7 +20,7 @@ import uk.gov.justice.hmpps.probationsearch.services.MatchService
 @Tag(name = "offender-match", description = "Provides offender matching features for Delius elastic search")
 @RestController
 @RequestMapping(value = ["match"], produces = [MediaType.APPLICATION_JSON_VALUE])
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasAnyRole('ROLE_COMMUNITY', 'ROLE_PROBATION__SEARCH_PERSON')")
 class OffenderMatchController(private val matchService: MatchService) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

@@ -88,7 +88,7 @@ class AddressSearchController(
       ),
     ],
   )
-  @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+  @PreAuthorize("hasAnyRole('ROLE_COMMUNITY', 'ROLE_PROBATION__SEARCH_ADDRESS')")
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   fun searchOffenders(
     @RequestBody addressSearchRequest: AddressSearchRequest,
