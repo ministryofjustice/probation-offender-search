@@ -100,7 +100,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
   fun `search for offenders by team code`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 0)
       .body("""["N01000"]""")
@@ -116,7 +116,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
   fun `should ignore non-active offender manager results`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 0)
       .body("""["N01000","N03000"]""")
@@ -132,7 +132,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
   fun `should ignore id's that are not found`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 0)
       .body("""["N01000", "N02000", "AAAA123"]""")
@@ -149,7 +149,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
   fun `should filter out offenders that are soft deleted`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 0)
       .body("""["N04000"]""")
@@ -163,7 +163,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
   fun `should filter out offenders that have a manager that is soft deleted`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 0)
       .body("""["N05000"]""")
@@ -178,7 +178,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
     loadBulkUsers()
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("""["N09000"]""")
       .post("/team-codes")
@@ -199,7 +199,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
     loadBulkUsers()
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 1)
       .body("""["N09000"]""")
@@ -217,7 +217,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
     loadBulkUsers()
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("size", 5)
       .body("""["N09000"]""")
@@ -234,7 +234,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
   fun `a bad request should return a 400 status code`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 0)
       .post("/team-codes")
@@ -246,7 +246,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
   fun `a request body containing an empty list should return a 400 status code`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("""[]""")
       .post("/team-codes")
@@ -258,7 +258,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
   fun `no results should be returned if there are no matching id's`() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .queryParam("page", 0)
       .body("""["AAA123", "BBB123"]""")

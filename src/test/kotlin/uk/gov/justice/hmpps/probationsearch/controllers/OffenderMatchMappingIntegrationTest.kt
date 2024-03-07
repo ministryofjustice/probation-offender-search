@@ -42,7 +42,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will only partial match for a particular alias and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -63,7 +63,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will match for a particular name and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -84,7 +84,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will match for a particular alias and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -105,7 +105,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will partial match for a particular alias and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -129,7 +129,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will only partial match for a particular alias and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -150,7 +150,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will match for a particular name and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -171,7 +171,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will match for a particular alias and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -192,7 +192,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will partial match for a particular alias and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -216,7 +216,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will not cross match across aliases and date of births`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -237,7 +237,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will match for a particular name and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(
@@ -258,7 +258,7 @@ internal class OffenderMatchMappingIntegrationTest : OffenderMatchAPIIntegration
     internal fun `will match for a particular alias and date of birth`() {
       given()
         .auth()
-        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+        .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .body(
           MatchRequest(

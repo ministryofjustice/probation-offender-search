@@ -34,7 +34,7 @@ class OffenderSearchNomsListAPIIntegrationTest : ElasticIntegrationBase() {
   fun nomsNumberListSearch() {
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"G8020GG\",\"G8020GH\"]")
       .post("/nomsNumbers")
@@ -58,7 +58,7 @@ class OffenderSearchNomsListAPIIntegrationTest : ElasticIntegrationBase() {
     loadOffenders(*offendersToLoad)
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body(offendersToSearch)
       .post("/nomsNumbers")
@@ -75,7 +75,7 @@ class OffenderSearchNomsListAPIIntegrationTest : ElasticIntegrationBase() {
   fun nomsNumberListSearch_ignoreNotFoundIds() {
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"G8020GG\",\"G7010GG\"]")
       .post("/nomsNumbers")
@@ -92,7 +92,7 @@ class OffenderSearchNomsListAPIIntegrationTest : ElasticIntegrationBase() {
   fun shouldFilterOutSoftDeletedRecords() {
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"G8020GI\"]")
       .post("/nomsNumbers")
@@ -108,7 +108,7 @@ class OffenderSearchNomsListAPIIntegrationTest : ElasticIntegrationBase() {
   fun noNomsNumberList_badRequest() {
     RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .post("/nomsNumbers")
       .then()
@@ -121,7 +121,7 @@ class OffenderSearchNomsListAPIIntegrationTest : ElasticIntegrationBase() {
   fun noResults() {
     val results = RestAssured.given()
       .auth()
-      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"))
+      .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
       .contentType(MediaType.APPLICATION_JSON_VALUE)
       .body("[\"AB1\",\"AB2\"]")
       .post("/nomsNumbers")

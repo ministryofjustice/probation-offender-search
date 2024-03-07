@@ -1730,7 +1730,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
     size: Int? = null,
     page: Int? = null,
     filter: List<String> = listOf(),
-    token: String = jwtAuthenticationHelper.createJwt("ROLE_COMMUNITY"),
+    token: String = jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"),
   ): ValidatableResponse {
     val searchPhraseFilter =
       SearchPhraseFilter(phrase = phrase, matchAllTerms = matchAllTerms, probationAreasFilter = filter)
