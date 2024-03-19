@@ -1,9 +1,11 @@
 package uk.gov.justice.hmpps.probationsearch.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
+import org.springframework.http.codec.json.Jackson2JsonEncoder
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
@@ -19,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfiguration(
   @Value("\${community.endpoint.url}") private val communityRootUri: String,
   @Value("\${delius.endpoint.url}") private val deliusRootUri: String,
+  private val objectMapper: ObjectMapper,
   private val securityUserContext: SecurityUserContext,
 ) {
 
@@ -37,6 +40,7 @@ class WebClientConfiguration(
     return WebClient.builder()
       .baseUrl(deliusRootUri)
       .apply(oauth2Client.oauth2Configuration())
+      .codecs { it.defaultCodecs().jackson2JsonEncoder(Jackson2JsonEncoder(objectMapper)) }
       .build()
   }
 
