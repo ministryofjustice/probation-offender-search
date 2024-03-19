@@ -15,7 +15,7 @@ class DeliusService(@Qualifier("searchAndDeliusApiWebClient") private val webCli
       .uri("/audit/contact-search")
       .bodyValue(contactSearchAuditRequest)
       .awaitExchangeOrNull {
-        it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))).subscribe()
+        it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))).onErrorComplete().subscribe()
       }
   }
 }
