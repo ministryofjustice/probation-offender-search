@@ -6,6 +6,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZonedDateTime
 
 class ContactSearchRequest(
   val crn: String,
@@ -17,7 +18,8 @@ class ContactSearchRequest(
 
 data class ContactSearchAuditRequest(
   val search: ContactSearchRequest,
-  val pagination: PageRequest
+  val pagination: PageRequest,
+  val dateTime: ZonedDateTime = ZonedDateTime.now()
 ) {
   data class PageRequest(
     val page: Int,
