@@ -17,6 +17,19 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  security:
+    oauth2:
+      client:
+        registration:
+          probation-search-and-delius:
+            provider: hmpps-auth
+            client-id: ${oauth.client.id}
+            client-secret: ${oauth.client.secret}
+            authorization-grant-type: client_credentials
+            scope: read
+        provider:
+          hmpps-auth:
+            token-uri: ${oauth.endpoint.url}/auth/oauth/token
 
 server:
   port: 8080

@@ -38,6 +38,9 @@ generic-service:
     probation-offender-search:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
       SENTRY_DSN: "SENTRY_DSN"
+    probation-search-client-credentials:
+      OAUTH_CLIENT_ID: CLIENT_ID
+      OAUTH_CLIENT_SECRET: CLIENT_SECRET
     sqs-hmpps-audit-secret:
       HMPPS_SQS_QUEUES_AUDIT_QUEUE_NAME: sqs_queue_name
     opensearch:
