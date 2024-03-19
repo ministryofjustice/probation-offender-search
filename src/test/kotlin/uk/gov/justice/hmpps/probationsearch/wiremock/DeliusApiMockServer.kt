@@ -39,7 +39,8 @@ class DeliusApiMockServer : WireMockServer(WIREMOCK_PORT) {
         WireMock.aResponse()
           .withHeader("Content-Type", "application/json")
           .withStatus(HttpURLConnection.HTTP_OK)
-          .withBody("""
+          .withBody(
+            """
             {
                 "access_token": "token",
                 "token_type": "bearer",
@@ -48,7 +49,8 @@ class DeliusApiMockServer : WireMockServer(WIREMOCK_PORT) {
                 "sub": "probation-search",
                 "auth_source": "none"
             }
-          """.trimIndent())
+          """.trimIndent()
+          )
       ),
     )
 
