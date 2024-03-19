@@ -16,3 +16,5 @@ management.endpoint:
 
 community:
   endpoint.url: http://localhost:9091
+
+delius.endpoint.url: http://localhost:9092/probation-search

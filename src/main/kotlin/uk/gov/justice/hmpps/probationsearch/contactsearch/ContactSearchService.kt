@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
+import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
 
@@ -34,7 +35,8 @@ import java.time.Instant
 class ContactSearchService(
   private val restTemplate: OpenSearchRestTemplate,
   private val auditService: HmppsAuditService?,
-  private val objectMapper: ObjectMapper
+  private val objectMapper: ObjectMapper,
+  private val deliusService: DeliusService,
 ) {
 
   private val scope = CoroutineScope(Dispatchers.IO)
@@ -53,6 +55,21 @@ class ContactSearchService(
           details = objectMapper.writeValueAsString(request),
         )
       }
+    }
+
+    scope.launch {
+      val sorts = pageable.sort.fieldSorts()
+      deliusService.auditContactSearch(
+          ContactSearchAuditRequest(
+              request,
+              ContactSearchAuditRequest.PageRequest(
+                  pageable.pageNumber,
+                  pageable.pageSize,
+                  sorts.joinToString { it.fieldName },
+                  sorts.joinToString { it.order().name },
+              ),
+          ),
+      )
     }
 
     val query: Query = NativeSearchQueryBuilder()

@@ -15,6 +15,18 @@ class ContactSearchRequest(
   val query = query ?: ""
 }
 
+data class ContactSearchAuditRequest(
+  val search: ContactSearchRequest,
+  val pagination: PageRequest
+) {
+  data class PageRequest(
+    val page: Int,
+    val pageSize: Int,
+    val sort: String?,
+    val direction: String?
+  )
+}
+
 data class ContactSearchResponse(
   val size: Int,
   val page: Int,

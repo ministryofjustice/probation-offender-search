@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient
 @Configuration
 class WebClientConfiguration(
   @Value("\${community.endpoint.url}") private val communityRootUri: String,
+  @Value("\${delius.endpoint.url}") private val deliusRootUri: String,
   private val securityUserContext: SecurityUserContext,
 ) {
 
@@ -19,6 +20,14 @@ class WebClientConfiguration(
   fun communityApiWebClient(): WebClient {
     return WebClient.builder()
       .baseUrl(communityRootUri)
+      .filter(addAuthHeaderFilterFunction())
+      .build()
+  }
+
+  @Bean
+  fun searchAndDeliusApiWebClient(): WebClient {
+    return WebClient.builder()
+      .baseUrl(deliusRootUri)
       .filter(addAuthHeaderFilterFunction())
       .build()
   }
