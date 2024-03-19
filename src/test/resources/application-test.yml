@@ -18,3 +18,9 @@ community:
   endpoint.url: http://localhost:9091
 
 delius.endpoint.url: http://localhost:9092/probation-search
+
+oauth:
+  client:
+    id: probation-offender-search
+    secret: probation-offender-search
+  endpoint.url: http://localhost:9092/hmpps-auth/auth/oauth/token
