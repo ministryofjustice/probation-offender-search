@@ -60,15 +60,15 @@ class ContactSearchService(
     scope.launch {
       val sorts = pageable.sort.fieldSorts()
       deliusService.auditContactSearch(
-          ContactSearchAuditRequest(
-              request,
-              ContactSearchAuditRequest.PageRequest(
-                  pageable.pageNumber,
-                  pageable.pageSize,
-                  sorts.joinToString { it.fieldName },
-                  sorts.joinToString { it.order().name },
-              ),
+        ContactSearchAuditRequest(
+          request,
+          ContactSearchAuditRequest.PageRequest(
+            pageable.pageNumber,
+            pageable.pageSize,
+            sorts.joinToString { it.fieldName },
+            sorts.joinToString { it.order().name },
           ),
+        ),
       )
     }
 
