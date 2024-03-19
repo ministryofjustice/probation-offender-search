@@ -23,20 +23,20 @@ class WebClientConfiguration(
 ) {
 
   @Bean
-  fun communityApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
-    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-    oauth2Client.setDefaultClientRegistrationId("probation-search-and-delius")
+  fun communityApiWebClient(): WebClient {
     return WebClient.builder()
       .baseUrl(communityRootUri)
-      .apply(oauth2Client.oauth2Configuration())
+      .filter(addAuthHeaderFilterFunction())
       .build()
   }
 
   @Bean
-  fun searchAndDeliusApiWebClient(): WebClient {
+  fun searchAndDeliusApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
+    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
+    oauth2Client.setDefaultClientRegistrationId("probation-search-and-delius")
     return WebClient.builder()
       .baseUrl(deliusRootUri)
-      .filter(addAuthHeaderFilterFunction())
+      .apply(oauth2Client.oauth2Configuration())
       .build()
   }
 
