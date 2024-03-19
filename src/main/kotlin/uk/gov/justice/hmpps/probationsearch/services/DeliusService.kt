@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitExchangeOrNull
@@ -13,6 +14,7 @@ class DeliusService(@Qualifier("searchAndDeliusApiWebClient") private val webCli
   suspend fun auditContactSearch(contactSearchAuditRequest: ContactSearchAuditRequest) {
     webClient.post()
       .uri("/audit/contact-search")
+      .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(contactSearchAuditRequest)
       .awaitExchangeOrNull {
         it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))).onErrorComplete().subscribe()
