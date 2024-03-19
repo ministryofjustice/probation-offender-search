@@ -9,6 +9,7 @@ import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.opensearch.action.admin.indices.alias.Alias
@@ -22,7 +23,6 @@ import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.http.MediaType
@@ -30,8 +30,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.ResourceUtils
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator.contacts
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
-import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
+import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
 
+@ExtendWith(DeliusApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test"])
 class ContactSearchIntegrationTest {
@@ -45,12 +46,12 @@ class ContactSearchIntegrationTest {
   @Value("\${local.server.port}")
   internal val port: Int = 0
 
-  @MockBean
-  internal lateinit var auditService: HmppsAuditService
+  internal val deliusApiMock = DeliusApiExtension.deliusApi
 
   @BeforeEach
   internal fun before() {
     RestAssured.port = port
+    deliusApiMock.stubDeliusAuditSuccess()
     val indexName = "contact-search-a"
     val aliasName = "contact-search-primary"
     openSearchRestTemplate.execute {
