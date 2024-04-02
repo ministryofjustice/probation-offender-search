@@ -57,21 +57,6 @@ class ContactSearchService(
       }
     }
 
-    scope.launch {
-      val sorts = pageable.sort.fieldSorts()
-      deliusService.auditContactSearch(
-        ContactSearchAuditRequest(
-          request,
-          ContactSearchAuditRequest.PageRequest(
-            pageable.pageNumber,
-            pageable.pageSize,
-            sorts.joinToString { it.fieldName },
-            sorts.joinToString { it.order().name },
-          ),
-        ),
-      )
-    }
-
     val query: Query = NativeSearchQueryBuilder()
       .withQuery(boolQuery().fromRequest(request))
       .withPageable(PageRequest.of(pageable.pageNumber, pageable.pageSize))
@@ -85,6 +70,21 @@ class ContactSearchService(
           .field("description")
           .fragmentSize(200),
       ).withSorts(pageable.sort)
+
+    scope.launch {
+      deliusService.auditContactSearch(
+        ContactSearchAuditRequest(
+          request,
+          name,
+          ContactSearchAuditRequest.PageRequest(
+            pageable.pageNumber,
+            pageable.pageSize,
+            query.sort?.fieldSorts()?.mapNotNull { SortType.from(it.fieldName) }?.joinToString(),
+            query.sort?.fieldSorts()?.joinToString { it.order().name },
+          ),
+        ),
+      )
+    }
 
     val searchResponse =
       restTemplate.search(query, ContactSearchResult::class.java, IndexCoordinates.of("contact-search-primary"))
@@ -106,6 +106,10 @@ class ContactSearchService(
     LAST_UPDATED_DATETIME(listOf("lastUpdated"), "lastUpdatedDateTime"),
     SCORE(listOf("relevance", "RELEVANCE"), "_score"),
     ;
+
+    companion object {
+      fun from(searchField: String): SortType? = entries.firstOrNull { it.searchField == searchField }
+    }
   }
 }
 
