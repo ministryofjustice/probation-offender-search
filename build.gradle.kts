@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.5"
   kotlin("plugin.spring") version "1.9.23"
-  id("com.google.cloud.tools.jib") version "3.4.1"
+  id("com.google.cloud.tools.jib") version "3.4.2"
 }
 
 configurations {
@@ -24,11 +24,11 @@ dependencies {
 
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.3.0")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
   implementation("io.sentry:sentry-spring-boot-starter:7.6.0")
 
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
   testImplementation("org.springframework.security:spring-security-test")
