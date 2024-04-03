@@ -14,6 +14,7 @@ import org.opensearch.index.query.QueryBuilders
 import org.opensearch.index.query.QueryBuilders.boolQuery
 import org.opensearch.index.query.SimpleQueryStringFlag
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
+import org.opensearch.search.sort.FieldSortBuilder
 import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder
 import org.springframework.data.domain.PageImpl
@@ -21,7 +22,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
-import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
@@ -57,6 +57,22 @@ class ContactSearchService(
       }
     }
 
+    val fieldSorts = pageable.sort.fieldSorts()
+    scope.launch {
+      deliusService.auditContactSearch(
+        ContactSearchAuditRequest(
+          request,
+          name,
+          ContactSearchAuditRequest.PageRequest(
+            pageable.pageNumber,
+            pageable.pageSize,
+            fieldSorts.mapNotNull { SortType.from(it.fieldName)?.aliases?.first() }.joinToString(),
+            fieldSorts.joinToString { it.order().toString() },
+          ),
+        ),
+      )
+    }
+
     val query: NativeSearchQuery = NativeSearchQueryBuilder()
       .withQuery(boolQuery().fromRequest(request))
       .withPageable(PageRequest.of(pageable.pageNumber, pageable.pageSize))
@@ -69,22 +85,7 @@ class ContactSearchService(
           .field("outcome")
           .field("description")
           .fragmentSize(200),
-      ).withSorts(pageable.sort)
-
-    scope.launch {
-      deliusService.auditContactSearch(
-        ContactSearchAuditRequest(
-          request,
-          name,
-          ContactSearchAuditRequest.PageRequest(
-            pageable.pageNumber,
-            pageable.pageSize,
-            query.openSearchSorts?.mapNotNull { SortType.from(it.writeableName)?.aliases?.first() }?.joinToString(),
-            query.openSearchSorts?.joinToString { it.order().name },
-          ),
-        ),
-      )
-    }
+      ).sorted(fieldSorts)
 
     val searchResponse =
       restTemplate.search(query, ContactSearchResult::class.java, IndexCoordinates.of("contact-search-primary"))
@@ -153,12 +154,11 @@ private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
   }
 }
 
-private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
-  val sorts = sort.fieldSorts()
+private fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): NativeSearchQuery {
   when (sorts.size) {
     0 -> {
       withSorts(
-        SortBuilders.fieldSort(SCORE.searchField).order(SortOrder.DESC),
+        SortBuilders.scoreSort().order(SortOrder.DESC),
         SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(SortOrder.DESC),
       )
     }
@@ -169,7 +169,7 @@ private fun NativeSearchQueryBuilder.withSorts(sort: Sort): NativeSearchQuery {
         sorted,
         when (sorted.fieldName) {
           in SCORE.aliases -> SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(sorted.order())
-          else -> SortBuilders.fieldSort(SCORE.searchField).order(sorted.order())
+          else -> SortBuilders.fieldSort(sorted.fieldName).order(sorted.order())
         },
       )
     }
