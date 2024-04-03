@@ -18,6 +18,7 @@ class ContactSearchRequest(
 
 data class ContactSearchAuditRequest(
   val search: ContactSearchRequest,
+  val username: String,
   val pagination: PageRequest,
   val dateTime: ZonedDateTime = ZonedDateTime.now()
 ) {
