@@ -57,7 +57,7 @@ class ContactSearchService(
       }
     }
 
-    val query: Query = NativeSearchQueryBuilder()
+    val query: NativeSearchQuery = NativeSearchQueryBuilder()
       .withQuery(boolQuery().fromRequest(request))
       .withPageable(PageRequest.of(pageable.pageNumber, pageable.pageSize))
       .withTrackTotalHits(true)
@@ -79,8 +79,8 @@ class ContactSearchService(
           ContactSearchAuditRequest.PageRequest(
             pageable.pageNumber,
             pageable.pageSize,
-            query.sort?.fieldSorts()?.mapNotNull { SortType.from(it.fieldName)?.aliases?.first() }?.joinToString(),
-            query.sort?.fieldSorts()?.joinToString { it.order().name },
+            query.openSearchSorts?.mapNotNull { SortType.from(it.writeableName)?.aliases?.first() }?.joinToString(),
+            query.openSearchSorts?.joinToString { it.order().name },
           ),
         ),
       )
