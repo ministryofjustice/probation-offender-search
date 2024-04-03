@@ -79,7 +79,7 @@ class ContactSearchService(
           ContactSearchAuditRequest.PageRequest(
             pageable.pageNumber,
             pageable.pageSize,
-            query.sort?.fieldSorts()?.mapNotNull { SortType.from(it.fieldName) }?.joinToString(),
+            query.sort?.fieldSorts()?.mapNotNull { SortType.from(it.fieldName)?.aliases?.first() }?.joinToString(),
             query.sort?.fieldSorts()?.joinToString { it.order().name },
           ),
         ),
