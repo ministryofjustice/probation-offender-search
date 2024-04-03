@@ -158,7 +158,7 @@ private fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): Nati
   when (sorts.size) {
     0 -> {
       withSorts(
-        SortBuilders.scoreSort().order(SortOrder.DESC),
+        SortBuilders.fieldSort(SCORE.searchField).order(SortOrder.DESC),
         SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(SortOrder.DESC),
       )
     }
@@ -169,7 +169,7 @@ private fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): Nati
         sorted,
         when (sorted.fieldName) {
           in SCORE.aliases -> SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(sorted.order())
-          else -> SortBuilders.fieldSort(sorted.fieldName).order(sorted.order())
+          else -> SortBuilders.fieldSort(SCORE.searchField).order(sorted.order())
         },
       )
     }
