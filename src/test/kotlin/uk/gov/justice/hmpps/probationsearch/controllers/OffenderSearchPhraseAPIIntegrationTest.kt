@@ -1097,7 +1097,13 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
         OffenderReplacement(
           crn = "X00006",
           surname = "Gramsci",
-          offenderManagers = listOf(OffenderManagerReplacement(code = "N07", description = "NPS London", active = true)),
+          offenderManagers = listOf(
+            OffenderManagerReplacement(
+              code = "N07",
+              description = "NPS London",
+              active = true
+            )
+          ),
         ),
         OffenderReplacement(
           crn = "X00007",

@@ -19,7 +19,12 @@ internal class OffenderAccessServiceTest {
 
   @BeforeEach
   internal fun setUp() {
-    whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = false, userExcluded = false))
+    whenever(communityService.canAccessOffender(any())).thenReturn(
+      AccessLimitation(
+        userRestricted = false,
+        userExcluded = false
+      )
+    )
   }
 
   @Nested
@@ -117,7 +122,12 @@ internal class OffenderAccessServiceTest {
 
         @Test
         fun `Will return true if can userExcluded is false`() {
-          whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = false, userExcluded = false))
+          whenever(communityService.canAccessOffender(any())).thenReturn(
+            AccessLimitation(
+              userRestricted = false,
+              userExcluded = false
+            )
+          )
 
           val canAccess = offenderAccessService.canAccessOffender(
             offender,
@@ -128,7 +138,12 @@ internal class OffenderAccessServiceTest {
 
         @Test
         fun `Will return false if can userExcluded is true`() {
-          whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = false, userExcluded = true))
+          whenever(communityService.canAccessOffender(any())).thenReturn(
+            AccessLimitation(
+              userRestricted = false,
+              userExcluded = true
+            )
+          )
 
           val canAccess = offenderAccessService.canAccessOffender(
             offender,
@@ -226,7 +241,12 @@ internal class OffenderAccessServiceTest {
 
         @Test
         fun `Will return true if can userRestricted is false`() {
-          whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = false, userExcluded = false))
+          whenever(communityService.canAccessOffender(any())).thenReturn(
+            AccessLimitation(
+              userRestricted = false,
+              userExcluded = false
+            )
+          )
 
           val canAccess = offenderAccessService.canAccessOffender(
             offender,
@@ -237,7 +257,12 @@ internal class OffenderAccessServiceTest {
 
         @Test
         fun `Will return false if can userRestricted is true`() {
-          whenever(communityService.canAccessOffender(any())).thenReturn(AccessLimitation(userRestricted = true, userExcluded = false))
+          whenever(communityService.canAccessOffender(any())).thenReturn(
+            AccessLimitation(
+              userRestricted = true,
+              userExcluded = false
+            )
+          )
 
           val canAccess = offenderAccessService.canAccessOffender(
             offender,

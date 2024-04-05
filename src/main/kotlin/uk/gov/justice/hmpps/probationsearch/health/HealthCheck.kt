@@ -18,7 +18,11 @@ abstract class HealthCheck(private val webClient: WebClient, private val timeout
       .retrieve()
       .toEntity(String::class.java)
       .flatMap { Mono.just(Health.up().withDetail("HttpStatus", it?.statusCode).build()) }
-      .onErrorResume(WebClientResponseException::class.java) { Mono.just(Health.down(it).withDetail("body", it.responseBodyAsString).withDetail("HttpStatus", it.statusCode).build()) }
+      .onErrorResume(WebClientResponseException::class.java) {
+        Mono.just(
+          Health.down(it).withDetail("body", it.responseBodyAsString).withDetail("HttpStatus", it.statusCode).build()
+        )
+      }
       .onErrorResume(Exception::class.java) { Mono.just(Health.down(it).build()) }
       .block(timeout)
   }
@@ -26,4 +30,7 @@ abstract class HealthCheck(private val webClient: WebClient, private val timeout
 
 @Component
 class CommunityApiHealth
-constructor(@Qualifier("communityApiHealthWebClient") webClient: WebClient, @Value("\${api.health-timeout:2s}") timeout: Duration) : HealthCheck(webClient, timeout)
+constructor(
+  @Qualifier("communityApiHealthWebClient") webClient: WebClient,
+  @Value("\${api.health-timeout:2s}") timeout: Duration
+) : HealthCheck(webClient, timeout)

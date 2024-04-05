@@ -220,7 +220,8 @@ internal class PhraseParserKtTest {
 
     @Test
     internal fun `will extract even with all combinations`() {
-      val terms = extractSearchableSimpleTermsWithSingleLetters("12345/99Z 2003/0004567A 20/20 SmItH a 19/5/1987 2001-01-12")
+      val terms =
+        extractSearchableSimpleTermsWithSingleLetters("12345/99Z 2003/0004567A 20/20 SmItH a 19/5/1987 2001-01-12")
       assertThat(terms).containsExactly("smith", "a")
     }
   }
