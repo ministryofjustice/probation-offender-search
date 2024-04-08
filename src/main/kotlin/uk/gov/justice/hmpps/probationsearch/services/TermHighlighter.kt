@@ -11,7 +11,10 @@ internal fun buildHighlightRequest() = HighlightBuilder()
   .preTags("")
   .postTags("")
 
-internal fun OffenderDetail.mergeHighlights(highlightFields: Map<String, HighlightField>, phrase: String): OffenderDetail =
+internal fun OffenderDetail.mergeHighlights(
+  highlightFields: Map<String, HighlightField>,
+  phrase: String
+): OffenderDetail =
   this.copy(highlight = extractHighlights(highlightFields) + possibleDateOfBirthHighlight(phrase))
 
 private fun OffenderDetail.possibleDateOfBirthHighlight(phrase: String): Map<String, List<String>> {

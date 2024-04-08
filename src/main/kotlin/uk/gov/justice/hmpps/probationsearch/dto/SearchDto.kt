@@ -17,6 +17,8 @@ data class SearchDto(
 ) {
   @get:Schema(hidden = true)
   val isValid: Boolean
-    get() = StringUtils.isNotBlank(firstName) || StringUtils.isNotBlank(surname) || dateOfBirth != null || StringUtils.isNotBlank(pncNumber) || StringUtils.isNotBlank(crn) ||
+    get() = StringUtils.isNotBlank(firstName) || StringUtils.isNotBlank(surname) || dateOfBirth != null || StringUtils.isNotBlank(
+      pncNumber
+    ) || StringUtils.isNotBlank(crn) ||
       StringUtils.isNotBlank(nomsNumber) || StringUtils.isNotBlank(croNumber)
 }

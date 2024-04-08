@@ -97,7 +97,8 @@ class ProbationStatusIntegrationTest : ElasticIntegrationBase() {
       assertThatJson(response).node("matches[0].offender.probationStatus.inBreach").isEqualTo(true)
       assertThatJson(response).node("matches[0].offender.probationStatus.awaitingPsr").isEqualTo(true)
       assertThatJson(response).node("matches[0].offender.probationStatus.preSentenceActivity").isEqualTo(false)
-      assertThatJson(response).node("matches[0].offender.probationStatus.previouslyKnownTerminationDate").isEqualTo("2021-02-08")
+      assertThatJson(response).node("matches[0].offender.probationStatus.previouslyKnownTerminationDate")
+        .isEqualTo("2021-02-08")
     }
 
     @Test

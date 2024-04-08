@@ -11,5 +11,6 @@ import org.springframework.stereotype.Service
 class SearchClient(
   @param:Qualifier("openSearchClient") private val openSearchClient: RestHighLevelClient,
 ) {
-  fun search(searchRequest: SearchRequest): SearchResponse = openSearchClient.search(searchRequest, RequestOptions.DEFAULT)
+  fun search(searchRequest: SearchRequest): SearchResponse =
+    openSearchClient.search(searchRequest, RequestOptions.DEFAULT)
 }

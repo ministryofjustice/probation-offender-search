@@ -81,7 +81,8 @@ class OffenderSearchController(
   )
   @PreAuthorize("hasAnyRole('ROLE_COMMUNITY', 'ROLE_PROBATION__SEARCH_PERSON')")
   @RequestMapping("/search", method = [POST, GET])
-  fun searchOffenders(@RequestBody searchForm: SearchDto): List<OffenderDetail?>? = searchService.performSearch(searchForm)
+  fun searchOffenders(@RequestBody searchForm: SearchDto): List<OffenderDetail?>? =
+    searchService.performSearch(searchForm)
 
   @Operation(
     summary = "Search for an offender in Delius using a search phrase. Only offenders matching all request attributes will be returned",
@@ -123,8 +124,16 @@ class OffenderSearchController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "OK"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON", content = [Content(examples = [])]),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(examples = [])]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON",
+        content = [Content(examples = [])]
+      ),
     ],
   )
   @PostMapping("/phrase")
@@ -143,9 +152,21 @@ class OffenderSearchController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "OK"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "500", description = "The list of CRNs provided exceeds the maximum of 512", content = [Content(examples = [])]),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(examples = [])]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON",
+        content = [Content(examples = [])]
+      ),
+      ApiResponse(
+        responseCode = "500",
+        description = "The list of CRNs provided exceeds the maximum of 512",
+        content = [Content(examples = [])]
+      ),
     ],
   )
   @PostMapping("/crns")
@@ -169,12 +190,23 @@ class OffenderSearchController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "OK"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON", content = [Content(examples = [])]),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(examples = [])]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON",
+        content = [Content(examples = [])]
+      ),
     ],
   )
   @PostMapping("/nomsNumbers")
-  @Operation(description = "Match prisoners by a list of prisoner noms numbers", summary = "Requires ROLE_PROBATION__SEARCH_PERSON role")
+  @Operation(
+    description = "Match prisoners by a list of prisoner noms numbers",
+    summary = "Requires ROLE_PROBATION__SEARCH_PERSON role"
+  )
   fun findByNomsNumbers(
     @Parameter(required = true, name = "nomsList") @RequestBody nomsList: List<String>,
   ): List<OffenderDetail> {
@@ -185,8 +217,16 @@ class OffenderSearchController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "OK"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON", content = [Content(examples = [])]),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(examples = [])]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON",
+        content = [Content(examples = [])]
+      ),
     ],
   )
   @PostMapping("/ldu-codes")
@@ -202,7 +242,10 @@ class OffenderSearchController(
       example = "10",
     ),
   )
-  @Operation(summary = "Match prisoners by a list of ldu codes", description = "Requires ROLE_PROBATION__SEARCH_PERSON role")
+  @Operation(
+    summary = "Match prisoners by a list of ldu codes",
+    description = "Requires ROLE_PROBATION__SEARCH_PERSON role"
+  )
   fun findByLduCode(
     @Parameter(required = true, name = "lduList")
     @RequestBody
@@ -218,8 +261,16 @@ class OffenderSearchController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "OK"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON", content = [Content(examples = [])]),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(examples = [])]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON",
+        content = [Content(examples = [])]
+      ),
     ],
   )
   @PostMapping("/team-codes")
@@ -235,7 +286,10 @@ class OffenderSearchController(
       example = "10",
     ),
   )
-  @Operation(description = "Match prisoners by a list of team codes", summary = "Requires ROLE_PROBATION__SEARCH_PERSON role")
+  @Operation(
+    description = "Match prisoners by a list of team codes",
+    summary = "Requires ROLE_PROBATION__SEARCH_PERSON role"
+  )
   fun findByTeamCode(
     @Parameter(required = true, name = "teamCodeList")
     @ParameterObject
@@ -261,8 +315,16 @@ class OffenderSearchController(
         content = [Content(examples = [])],
       ),
       ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON", content = [Content(examples = [])]),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(examples = [])]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON",
+        content = [Content(examples = [])]
+      ),
     ],
   )
   @GetMapping("/ldu-codes/{lduCode}")
@@ -286,8 +348,16 @@ class OffenderSearchController(
         content = [Content(examples = [])],
       ),
       ApiResponse(responseCode = "404", description = "Not found", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token", content = [Content(examples = [])]),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON", content = [Content(examples = [])]),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorised, requires a valid Oauth2 token",
+        content = [Content(examples = [])]
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden, requires an authorisation with role ROLE_PROBATION__SEARCH_PERSON",
+        content = [Content(examples = [])]
+      ),
     ],
   )
   @GetMapping("/team-codes/{teamCode}")
@@ -302,6 +372,10 @@ class OffenderSearchController(
     val start = System.currentTimeMillis()
     val results = searchService.performSearch(SearchDto(surname = "Smith"))
 
-    telemetryClient.trackEvent("synthetic-monitor", mapOf("results" to "${results.size}", "timeMs" to (System.currentTimeMillis() - start).toString()), null)
+    telemetryClient.trackEvent(
+      "synthetic-monitor",
+      mapOf("results" to "${results.size}", "timeMs" to (System.currentTimeMillis() - start).toString()),
+      null
+    )
   }
 }
