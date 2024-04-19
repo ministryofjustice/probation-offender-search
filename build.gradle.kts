@@ -28,7 +28,7 @@ dependencies {
 
   implementation("io.sentry:sentry-spring-boot-starter:7.7.0")
 
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
   testImplementation("org.springframework.security:spring-security-test")
