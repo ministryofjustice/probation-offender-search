@@ -93,8 +93,14 @@ abstract class ElasticIntegrationBase {
           it.offenderManagers.find { replacement -> replacement.active == offenderManager.active }
             .let { matchingReplacement ->
               offenderManager.copy(
-                probationArea = ProbationArea(code = matchingReplacement?.code, description = matchingReplacement?.description),
-                team = Team(code = matchingReplacement?.team?.code, localDeliveryUnit = matchingReplacement?.team?.localDeliveryUnit),
+                probationArea = ProbationArea(
+                  code = matchingReplacement?.code,
+                  description = matchingReplacement?.description
+                ),
+                team = Team(
+                  code = matchingReplacement?.team?.code,
+                  localDeliveryUnit = matchingReplacement?.team?.localDeliveryUnit
+                ),
                 softDeleted = matchingReplacement?.softDeleted,
               )
             }

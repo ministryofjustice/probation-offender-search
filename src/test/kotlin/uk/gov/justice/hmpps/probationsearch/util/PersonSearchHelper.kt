@@ -89,9 +89,16 @@ class PersonSearchHelper(private val openSearchClient: RestHighLevelClient) {
 
   private fun buildPipeline() {
     openSearchClient.ingest()
-      .putPipeline(PutPipelineRequest("person-search-pipeline", "/searchdata/create-pipeline.json".resourceAsByteReference(), JSON), RequestOptions.DEFAULT)
+      .putPipeline(
+        PutPipelineRequest(
+          "person-search-pipeline",
+          "/searchdata/create-pipeline.json".resourceAsByteReference(),
+          JSON
+        ), RequestOptions.DEFAULT
+      )
   }
 }
 
 private fun String.resourceAsString() = PersonSearchHelper::class.java.getResource(this)!!.readText()
-private fun String.resourceAsByteReference() = BytesArray(PersonSearchHelper::class.java.getResource(this)!!.readBytes())
+private fun String.resourceAsByteReference() =
+  BytesArray(PersonSearchHelper::class.java.getResource(this)!!.readBytes())

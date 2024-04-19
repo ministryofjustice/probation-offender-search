@@ -54,7 +54,8 @@ internal class HighlightingTest {
 
     @Test
     fun `will highlight date of birth when format is same`() {
-      val offenderDetail = OffenderDetail(otherIds = IDs("1234"), offenderId = 99, dateOfBirth = LocalDate.parse("1965-07-19"))
+      val offenderDetail =
+        OffenderDetail(otherIds = IDs("1234"), offenderId = 99, dateOfBirth = LocalDate.parse("1965-07-19"))
       val highlights = mapOf(
         "dateOfBirth" to HighlightField("dateOfBirth", arrayOf(Text("1965-07-19"))),
       )
@@ -68,7 +69,8 @@ internal class HighlightingTest {
 
     @Test
     fun `will highlight date of birth even when format is different`() {
-      val offenderDetail = OffenderDetail(offenderId = 99, otherIds = IDs("1234"), dateOfBirth = LocalDate.parse("1965-07-19"))
+      val offenderDetail =
+        OffenderDetail(offenderId = 99, otherIds = IDs("1234"), dateOfBirth = LocalDate.parse("1965-07-19"))
       assertThat(offenderDetail.mergeHighlights(mapOf(), "19/7/1965").highlight)
         .containsExactlyEntriesOf(
           mapOf(

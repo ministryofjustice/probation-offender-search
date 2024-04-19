@@ -42,14 +42,16 @@ internal class ProbationAreaFilterAggregatorKtTest {
     @Test
     internal fun `will divide active and inactive offender managers into probation area buckets`() {
       assertThat(aggregation.subAggregations.first().subAggregations).hasSize(1)
-      val probationAreaCodeAggregation = aggregation.subAggregations.first().subAggregations.first() as TermsAggregationBuilder
+      val probationAreaCodeAggregation =
+        aggregation.subAggregations.first().subAggregations.first() as TermsAggregationBuilder
       assertThat(probationAreaCodeAggregation.field()).isEqualTo("offenderManagers.probationArea.code")
       assertThat(probationAreaCodeAggregation.name).isEqualTo("byProbationAreaCode")
     }
 
     @Test
     internal fun `will restrict probation area bucket to more than know number of areas`() {
-      val probationAreaCodeAggregation = aggregation.subAggregations.first().subAggregations.first() as TermsAggregationBuilder
+      val probationAreaCodeAggregation =
+        aggregation.subAggregations.first().subAggregations.first() as TermsAggregationBuilder
       assertThat(probationAreaCodeAggregation.size()).isEqualTo(1000)
     }
   }
@@ -307,10 +309,30 @@ internal class BuildProbationAreaFilter {
 fun getDefaultNamedXContents(): List<Entry> {
   // required by ES to parse the contents of our aggregations
   val contentParsers = mapOf(
-    StringTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedStringTerms.fromXContent(parser, name as String) },
-    NestedAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedNested.fromXContent(parser, name as String) },
-    LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedLongTerms.fromXContent(parser, name as String) },
-    TopHitsAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any -> ParsedTopHits.fromXContent(parser, name as String) },
+    StringTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any ->
+      ParsedStringTerms.fromXContent(
+        parser,
+        name as String
+      )
+    },
+    NestedAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any ->
+      ParsedNested.fromXContent(
+        parser,
+        name as String
+      )
+    },
+    LongTerms.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any ->
+      ParsedLongTerms.fromXContent(
+        parser,
+        name as String
+      )
+    },
+    TopHitsAggregationBuilder.NAME to ContextParser<Any, Aggregation> { parser: XContentParser, name: Any ->
+      ParsedTopHits.fromXContent(
+        parser,
+        name as String
+      )
+    },
   )
   return contentParsers
     .toList()
