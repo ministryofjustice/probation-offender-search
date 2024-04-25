@@ -26,7 +26,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
-  implementation("io.sentry:sentry-spring-boot-starter:7.7.0")
+  implementation("io.sentry:sentry-spring-boot-starter:7.8.0")
 
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")

@@ -94,7 +94,8 @@ class PersonSearchHelper(private val openSearchClient: RestHighLevelClient) {
           "person-search-pipeline",
           "/searchdata/create-pipeline.json".resourceAsByteReference(),
           JSON
-        ), RequestOptions.DEFAULT
+        ),
+        RequestOptions.DEFAULT
       )
   }
 }
