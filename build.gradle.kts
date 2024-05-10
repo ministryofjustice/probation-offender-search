@@ -29,7 +29,7 @@ dependencies {
   implementation("io.sentry:sentry-spring-boot-starter:7.8.0")
 
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.3")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
