@@ -1,15 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6"
-  kotlin("plugin.spring") version "1.9.24"
-  id("com.google.cloud.tools.jib") version "3.4.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6" //Move to 6.0.0 when 1.5 of opensearch available
+  kotlin("plugin.spring") version "2.0.0"
+  id("com.google.cloud.tools.jib") version "3.4.3"
 }
 
 configurations {
   implementation { exclude(group = "tomcat-jdbc") }
 }
-
+ext["jackson-bom.version"] = "2.16.2" //Overriding due to opensearch overriding jackson version
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -18,19 +18,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.data:spring-data-jpa")
-
   implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
-
-  implementation("org.opensearch.client:spring-data-opensearch-starter:1.3.0")
-
+  implementation("org.opensearch.client:spring-data-opensearch-starter:1.4.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-
   implementation("io.sentry:sentry-spring-boot-starter:7.9.0")
-
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.3")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.0.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
