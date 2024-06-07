@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6" //Move to 6.0.0 when 1.5 of opensearch available
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.0" //Move to 6.0.0 when 1.5 of opensearch available
   kotlin("plugin.spring") version "2.0.0"
   id("com.google.cloud.tools.jib") version "3.4.3"
 }
