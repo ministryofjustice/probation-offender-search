@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
@@ -62,8 +64,8 @@ class OffenderSearchControllerPhraseTest {
     )
     whenever(searchService.performSearch(any(), any(), any())).thenReturn(
       SearchPhraseResults(
-        content = listOf(),
         pageable = PageRequest.of(0, 10),
+        content = Page.empty(),
         total = 0,
         listOf(),
         suggestions = null,
@@ -344,13 +346,15 @@ class OffenderSearchControllerPhraseTest {
   internal fun `will return results when matched`() {
     whenever(searchService.performSearch(any(), any(), any())).thenReturn(
       SearchPhraseResults(
-        content = listOf(
-          OffenderDetail(
-            offenderId = 99,
-            firstName = "John",
-            surname = "Smith",
-            dateOfBirth = LocalDate.parse("1965-07-19"),
-            otherIds = IDs(crn = "X123456"),
+        content = PageImpl(
+          listOf(
+            OffenderDetail(
+              offenderId = 99,
+              firstName = "John",
+              surname = "Smith",
+              dateOfBirth = LocalDate.parse("1965-07-19"),
+              otherIds = IDs(crn = "X123456"),
+            ),
           ),
         ),
         total = 1,
@@ -385,13 +389,15 @@ class OffenderSearchControllerPhraseTest {
   internal fun `will return probation area aggregations`() {
     whenever(searchService.performSearch(any(), any(), any())).thenReturn(
       SearchPhraseResults(
-        content = listOf(
-          OffenderDetail(
-            offenderId = 99,
-            firstName = "John",
-            surname = "Smith",
-            dateOfBirth = LocalDate.parse("1965-07-19"),
-            otherIds = IDs(crn = "X123456"),
+        content = PageImpl(
+          listOf(
+            OffenderDetail(
+              offenderId = 99,
+              firstName = "John",
+              surname = "Smith",
+              dateOfBirth = LocalDate.parse("1965-07-19"),
+              otherIds = IDs(crn = "X123456"),
+            ),
           ),
         ),
         pageable = PageRequest.of(0, 10),
@@ -444,13 +450,15 @@ class OffenderSearchControllerPhraseTest {
     }
     whenever(searchService.performSearch(any(), any(), any())).thenReturn(
       SearchPhraseResults(
-        content = listOf(
-          OffenderDetail(
-            offenderId = 99,
-            firstName = "John",
-            surname = "Smith",
-            dateOfBirth = LocalDate.parse("1965-07-19"),
-            otherIds = IDs(crn = "X123456"),
+        content = PageImpl(
+          listOf(
+            OffenderDetail(
+              offenderId = 99,
+              firstName = "John",
+              surname = "Smith",
+              dateOfBirth = LocalDate.parse("1965-07-19"),
+              otherIds = IDs(crn = "X123456"),
+            ),
           ),
         ),
         total = 1,

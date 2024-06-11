@@ -13,16 +13,12 @@ import org.opensearch.search.suggest.term.TermSuggestionBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
-import uk.gov.justice.hmpps.probationsearch.dto.OffenderUserAccess
-import uk.gov.justice.hmpps.probationsearch.dto.SearchDto
-import uk.gov.justice.hmpps.probationsearch.dto.SearchPagedResults
-import uk.gov.justice.hmpps.probationsearch.dto.SearchPhraseFilter
-import uk.gov.justice.hmpps.probationsearch.dto.SearchPhraseResults
+import uk.gov.justice.hmpps.probationsearch.dto.*
 import java.time.LocalDate
-import java.util.Locale
+import java.util.*
 
 @Service
 class SearchService @Autowired constructor(
@@ -57,7 +53,7 @@ class SearchService @Autowired constructor(
 
     val response = hlClient.search(personSearchRequest().source(searchSourceBuilder))
     return SearchPagedResults(
-      content = getSearchResult(response),
+      content = PageImpl(getSearchResult(response), pageable, response.hits.totalHits?.value ?: 0),
       pageable = pageable,
       total = response.hits.totalHits?.value ?: 0,
     )
@@ -168,16 +164,19 @@ class SearchService @Autowired constructor(
       )
     val response = hlClient.search(searchRequest)
     return SearchPhraseResults(
-      content = extractOffenderDetailList(
-        hits = response.hits.hits,
-        phrase = searchPhraseFilter.phrase,
-        offenderParser = ::parseOffenderDetail,
-        accessChecker = ::canAccessOffender,
-      ),
-      pageable = pageable,
-      total = response.hits.totalHits?.value ?: 0,
-      probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
-      suggestions = response.suggest,
+        pageable = pageable,
+        content = PageImpl(
+            extractOffenderDetailList(
+                hits = response.hits.hits,
+                phrase = searchPhraseFilter.phrase,
+                offenderParser = ::parseOffenderDetail,
+                accessChecker = ::canAccessOffender,
+            ),
+            pageable, response.hits.totalHits?.value ?: 0,
+        ),
+        total = response.hits.totalHits?.value ?: 0,
+        probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
+        suggestions = response.suggest,
     )
   }
 
@@ -260,7 +259,7 @@ class SearchService @Autowired constructor(
     val response = hlClient.search(searchRequest)
 
     return SearchPagedResults(
-      content = getSearchResult(response),
+      content = PageImpl(getSearchResult(response), pageable, response.hits.totalHits?.value ?: 0),
       pageable = pageable,
       total = response.hits.totalHits?.value ?: 0,
     )
@@ -284,7 +283,7 @@ class SearchService @Autowired constructor(
     val response = hlClient.search(searchRequest)
 
     return SearchPagedResults(
-      content = getSearchResult(response),
+      content = PageImpl(getSearchResult(response), pageable, response.hits.totalHits?.value ?: 0),
       pageable = pageable,
       total = response.hits.totalHits?.value ?: 0,
     )
