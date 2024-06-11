@@ -164,19 +164,19 @@ class SearchService @Autowired constructor(
       )
     val response = hlClient.search(searchRequest)
     return SearchPhraseResults(
-        pageable = pageable,
-        content = PageImpl(
-            extractOffenderDetailList(
-                hits = response.hits.hits,
-                phrase = searchPhraseFilter.phrase,
-                offenderParser = ::parseOffenderDetail,
-                accessChecker = ::canAccessOffender,
-            ),
-            pageable, response.hits.totalHits?.value ?: 0,
+      pageable = pageable,
+      content = PageImpl(
+        extractOffenderDetailList(
+          hits = response.hits.hits,
+          phrase = searchPhraseFilter.phrase,
+          offenderParser = ::parseOffenderDetail,
+          accessChecker = ::canAccessOffender,
         ),
-        total = response.hits.totalHits?.value ?: 0,
-        probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
-        suggestions = response.suggest,
+        pageable, response.hits.totalHits?.value ?: 0,
+      ),
+      total = response.hits.totalHits?.value ?: 0,
+      probationAreaAggregations = extractProbationAreaAggregation(response.aggregations),
+      suggestions = response.suggest,
     )
   }
 
