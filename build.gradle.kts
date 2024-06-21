@@ -17,7 +17,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.data:spring-data-jpa")
-  implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
+  implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.5.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
