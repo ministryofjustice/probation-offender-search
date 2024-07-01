@@ -77,17 +77,7 @@ jobs:
           settings.
     steps:
       - checkout
-      - run:
-          name: Create app version string
-          command: |
-            DATE=$(date '+%Y-%m-%d')
-            SHORT_SHA1=$(echo $CIRCLE_SHA1 | cut -c1-7)
-            VERSION=${DATE}.${CIRCLE_BUILD_NUM}.${SHORT_SHA1}
-            echo "Created version string: ${VERSION}"
-            echo "export VERSION=$VERSION" >> $BASH_ENV
-      - mem/remember:
-          env_var: APP_VERSION
-          value: "${VERSION}"
+      - hmpps/create_app_version
       - run:
           name: Create IMAGE_NAME env var
           command: |
@@ -99,7 +89,7 @@ jobs:
       - run:
           name: Build container image and publish
           command: |
-            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD} -Djib.to.tags=latest
+            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD} -Djib.to.tags=latest -Djib.container.environment=BUILD_NUMBER="${APP_VERSION}"
       - when:
           condition: << parameters.jira_update >>
           steps:
