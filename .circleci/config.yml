@@ -89,7 +89,8 @@ jobs:
       - run:
           name: Build container image and publish
           command: |
-            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD} -Djib.to.tags=latest -Djib.container.environment=BUILD_NUMBER="${APP_VERSION}"
+            export BUILD_NUMBER="${APP_VERSION}" 
+            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD} -Djib.to.tags=latest -Djib.container.environment=BUILD_NUMBER="${BUILD_NUMBER}"
       - when:
           condition: << parameters.jira_update >>
           steps:
