@@ -11,8 +11,7 @@ generic-service:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
     OAUTH_ENDPOINT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk"
     COMMUNITY_ENDPOINT_URL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
-    DELIUS_ENDPOINT_URL: https://probation-search-and-delius-dev.hmpps.service.justice.gov.uk/probation-search
-    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
+    DELIUS_ENDPOINT_URL: "https://probation-search-and-delius-dev.hmpps.service.justice.gov.uk"
     SENTRY_ENVIRONMENT: dev
 
   allowlist: null

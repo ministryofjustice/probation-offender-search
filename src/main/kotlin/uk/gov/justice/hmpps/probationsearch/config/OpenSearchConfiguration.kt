@@ -1,13 +1,16 @@
 package uk.gov.justice.hmpps.probationsearch.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.http.HttpHost
 import org.opensearch.client.RestClient
 import org.opensearch.client.RestHighLevelClient
+import org.opensearch.client.json.jackson.JacksonJsonpMapper
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 
 @Configuration
 class OpenSearchConfiguration {
@@ -20,4 +23,8 @@ class OpenSearchConfiguration {
   @Bean(name = ["elasticsearchTemplate", "elasticsearchOperations"])
   @ConditionalOnMissingBean(OpenSearchRestTemplate::class)
   fun openSearchRestTemplate(client: RestHighLevelClient) = OpenSearchRestTemplate(client)
+
+  @Bean
+  @Primary
+  fun jsonpMapper(objectMapper: ObjectMapper) = JacksonJsonpMapper(objectMapper)
 }
