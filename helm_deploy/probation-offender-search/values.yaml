@@ -55,6 +55,7 @@ generic-service:
     analyticplatform-3: 34.252.4.39/32
     groups:
       - internal
+      - unilink_staff
 
 generic-prometheus-alerts:
   targetApplication: probation-offender-search

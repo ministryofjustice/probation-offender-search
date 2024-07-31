@@ -15,8 +15,6 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     SENTRY_ENVIRONMENT: dev
 
-  allowlist: null
-
 cron:
   SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"
 
