@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -16,9 +17,11 @@ class ContactSearchController(val contactSearchService: ContactSearchService) {
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   fun searchContact(
     @RequestBody request: ContactSearchRequest,
-    @ParameterObject @PageableDefault
-    pageable: Pageable,
-  ): ContactSearchResponse {
-    return contactSearchService.performSearch(request, pageable)
+    @ParameterObject @PageableDefault pageable: Pageable,
+    @RequestParam(defaultValue = "false") semantic: Boolean = false
+  ) = if (semantic) {
+    contactSearchService.semanticSearch(request, pageable)
+  } else {
+    contactSearchService.keywordSearch(request, pageable)
   }
 }
