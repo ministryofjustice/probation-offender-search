@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.1"
-  kotlin("plugin.spring") version "2.0.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
+  kotlin("plugin.spring") version "2.0.10"
   id("com.google.cloud.tools.jib") version "3.4.3"
 }
 
@@ -20,7 +20,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.5.1")
-  implementation("org.opensearch.client:opensearch-java:2.12.0")
+  implementation("org.opensearch.client:opensearch-java:2.13.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.13.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.1.0")
