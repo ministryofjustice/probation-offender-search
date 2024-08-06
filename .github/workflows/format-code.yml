@@ -1,16 +1,10 @@
 name: Formatting
 
-on:
-  pull_request:
-    types:
-      - edited
-      - opened
-      - ready_for_review
-      - reopened
-      - synchronize
+on: pull_request
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   format-code:
@@ -21,5 +15,13 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
       - name: Format code
         uses: ministryofjustice/hmpps-probation-integration-services/.github/actions/format-code@main
+        with:
+          token: ${{ steps.app-token.outputs.token }}
