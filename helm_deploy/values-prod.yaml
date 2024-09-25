@@ -11,6 +11,7 @@ generic-service:
     OAUTH_ENDPOINT_URL: "https://sign-in.hmpps.service.justice.gov.uk"
     COMMUNITY_ENDPOINT_URL: "https://community-api-secure.probation.service.justice.gov.uk"
     DELIUS_ENDPOINT_URL: "https://probation-search-and-delius.hmpps.service.justice.gov.uk"
+    BEDROCK_MODEL_ID: "5QoSN5EB-CIfwTDlCJYn"
     SENTRY_ENVIRONMENT: prod
 
   allowlist:
