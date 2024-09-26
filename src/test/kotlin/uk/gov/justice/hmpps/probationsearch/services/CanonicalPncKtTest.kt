@@ -40,5 +40,6 @@ internal class CanonicalPncKtTest {
     assertThat("SF68/945674U".canonicalPNCNumber()).isEqualTo("SF68/945674U")
     assertThat("".canonicalPNCNumber()).isEqualTo("")
     assertThat("2010/BBBBBBBA".canonicalPNCNumber()).isEqualTo("2010/BBBBBBBA")
+    assertThat("2003/012345678A".canonicalPNCNumber()).isEqualTo("2003/012345678A")
   }
 }
