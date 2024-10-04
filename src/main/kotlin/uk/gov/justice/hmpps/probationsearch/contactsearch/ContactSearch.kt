@@ -56,4 +56,5 @@ data class ContactSearchResult(
   @field:Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second])
   val lastUpdatedDateTime: LocalDateTime,
   val highlights: Map<String, List<String>> = mapOf(),
+  val score: Double?,
 )

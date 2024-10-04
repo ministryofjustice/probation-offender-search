@@ -62,7 +62,8 @@ class ContactSearchService(
     val keywordQuery = keywordQueryForRestClient(pageable, request)
     val searchResponse =
       restTemplate.search(keywordQuery, ContactSearchResult::class.java, IndexCoordinates.of(indexName))
-    val results = searchResponse.searchHits.mapNotNull { it.content.copy(highlights = it.highlightFields) }
+    val results = searchResponse.searchHits
+      .mapNotNull { it.content.copy(highlights = it.highlightFields, score = it.score.toDouble()) }
 
     val response = PageImpl(results, pageable, searchResponse.totalHits)
 
@@ -113,7 +114,8 @@ class ContactSearchService(
         .sorted(pageable.sort.fieldSorts())
     }
     val searchResponse = openSearchClient.search(searchRequest, ContactSearchResult::class.java)
-    val results = searchResponse.hits().hits().mapNotNull { it.source()?.copy(highlights = it.highlight()) }
+    val results = searchResponse.hits().hits()
+      .mapNotNull { it.source()?.copy(highlights = it.highlight(), score = it.score()) }
     val response = PageImpl(results, pageable, searchResponse.hits().total().value())
 
     return ContactSearchResponse(

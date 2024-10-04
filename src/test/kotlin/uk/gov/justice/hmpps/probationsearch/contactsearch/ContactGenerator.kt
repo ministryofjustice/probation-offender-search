@@ -40,6 +40,7 @@ object ContactGenerator {
     endTime,
     lastUpdatedDateTime,
     highlights,
+    0.5,
   )
 
   val contacts = listOf(
