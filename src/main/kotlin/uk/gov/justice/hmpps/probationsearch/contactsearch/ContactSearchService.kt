@@ -50,7 +50,7 @@ class ContactSearchService(
   private val objectMapper: ObjectMapper,
   private val deliusService: DeliusService,
   private val openSearchClient: OpenSearchClient,
-  @Value("\${bedrock.model.id}") private val bedrockModelId: String // Temp, remove after upgrading to OpenSearch 2.16 - workaround for https://github.com/opensearch-project/OpenSearch/issues/15034
+  @Value("\${bedrock.model.id}") private val bedrockModelId: String, // Temp, remove after upgrading to OpenSearch 2.16 - workaround for https://github.com/opensearch-project/OpenSearch/issues/15034
 ) {
 
   private val scope = CoroutineScope(Dispatchers.IO)
@@ -62,8 +62,12 @@ class ContactSearchService(
     val keywordQuery = keywordQueryForRestClient(pageable, request)
     val searchResponse =
       restTemplate.search(keywordQuery, ContactSearchResult::class.java, IndexCoordinates.of(indexName))
-    val results = searchResponse.searchHits
-      .mapNotNull { it.content.copy(highlights = it.highlightFields, score = it.score.toDouble()) }
+    val results = searchResponse.searchHits.mapNotNull {
+      it.content.copy(
+        highlights = it.highlightFields,
+        score = it.score.toDouble().takeIf { request.includeScores },
+      )
+    }
 
     val response = PageImpl(results, pageable, searchResponse.totalHits)
 
@@ -114,8 +118,12 @@ class ContactSearchService(
         .sorted(pageable.sort.fieldSorts())
     }
     val searchResponse = openSearchClient.search(searchRequest, ContactSearchResult::class.java)
-    val results = searchResponse.hits().hits()
-      .mapNotNull { it.source()?.copy(highlights = it.highlight(), score = it.score()) }
+    val results = searchResponse.hits().hits().mapNotNull {
+      it.source()?.copy(
+        highlights = it.highlight(),
+        score = it.score().takeIf { request.includeScores },
+      )
+    }
     val response = PageImpl(results, pageable, searchResponse.hits().total().value())
 
     return ContactSearchResponse(

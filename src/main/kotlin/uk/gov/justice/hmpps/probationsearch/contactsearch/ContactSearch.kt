@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
@@ -12,8 +13,10 @@ class ContactSearchRequest(
   val crn: String,
   query: String? = "",
   val matchAllTerms: Boolean = true,
+  includeScores: Boolean? = false,
 ) {
   val query = query ?: ""
+  val includeScores: Boolean = includeScores ?: false
 }
 
 data class ContactSearchAuditRequest(
@@ -56,5 +59,6 @@ data class ContactSearchResult(
   @field:Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second])
   val lastUpdatedDateTime: LocalDateTime,
   val highlights: Map<String, List<String>> = mapOf(),
+  @field:JsonInclude(JsonInclude.Include.NON_NULL)
   val score: Double?,
 )
