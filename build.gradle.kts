@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
   kotlin("plugin.spring") version "2.0.21"
-  id("com.google.cloud.tools.jib") version "3.4.3"
+  id("com.google.cloud.tools.jib") version "3.4.4"
 }
 
 configurations {
@@ -20,12 +20,12 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.5.3")
-  implementation("org.opensearch.client:opensearch-java:2.14.0")
+  implementation("org.opensearch.client:opensearch-java:2.15.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.15.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.0.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.8.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.9.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.4.1")
