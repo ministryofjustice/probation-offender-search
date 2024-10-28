@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.8"
   kotlin("plugin.spring") version "2.0.21"
   id("com.google.cloud.tools.jib") version "3.4.4"
 }
@@ -20,10 +20,10 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.5.3")
-  implementation("org.opensearch.client:opensearch-java:2.15.0")
+  implementation("org.opensearch.client:opensearch-java:2.16.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.15.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.0.1")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.16.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.1.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.9.0")
   testImplementation("org.springframework.security:spring-security-test")
@@ -33,7 +33,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.22")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.23")
 }
 
 java {
