@@ -87,7 +87,7 @@ class OffenderSearchController(
   @Operation(
     summary = "Search for an offender in Delius using a search phrase. Only offenders matching all request attributes will be returned",
     description =
-    """The phrase can contain one or more of the following:
+      """The phrase can contain one or more of the following:
         
         - first name
         - middle name
@@ -172,7 +172,7 @@ class OffenderSearchController(
   @PostMapping("/crns")
   @Operation(
     description =
-    """Match prisoners by a list of prisoner CRNs.
+      """Match prisoners by a list of prisoner CRNs.
     
        This checks each CRN in the provided list against the offender's current CRN and also their previous CRN.
        Because of this and because the max limit of clauses that can be in the query is 1024; the maximum number of CRNs

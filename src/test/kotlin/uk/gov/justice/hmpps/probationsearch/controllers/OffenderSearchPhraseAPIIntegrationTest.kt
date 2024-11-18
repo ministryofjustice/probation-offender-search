@@ -1307,7 +1307,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00002",
         response =
-        """
+          """
         {
             "userRestricted": true,
             "userExcluded": false
@@ -1317,7 +1317,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00003",
         response =
-        """
+          """
         {
             "userRestricted": false,
             "userExcluded": false
@@ -1327,7 +1327,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00004",
         response =
-        """
+          """
         {
             "userRestricted": false,
             "userExcluded": true
@@ -1337,7 +1337,7 @@ class OffenderSearchPhraseAPIIntegrationTest : ElasticIntegrationBase() {
       CommunityApiExtension.communityApi.stubUserAccess(
         crn = "X00005",
         response =
-        """
+          """
         {
             "userRestricted": false,
             "userExcluded": false
