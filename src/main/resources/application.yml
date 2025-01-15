@@ -72,6 +72,4 @@ search:
     mapping:
       version: 1
 
-bedrock.model.id: none
-
 sentry.traces-sample-rate: "0.05"
