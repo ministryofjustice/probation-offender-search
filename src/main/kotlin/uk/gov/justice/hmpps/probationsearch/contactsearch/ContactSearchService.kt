@@ -24,7 +24,6 @@ import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
 import org.opensearch.search.sort.FieldSortBuilder
 import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -35,8 +34,7 @@ import org.springframework.data.elasticsearch.core.query.IndexQuery
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.*
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
@@ -50,7 +48,6 @@ class ContactSearchService(
   private val objectMapper: ObjectMapper,
   private val deliusService: DeliusService,
   private val openSearchClient: OpenSearchClient,
-  @Value("\${bedrock.model.id}") private val bedrockModelId: String, // Temp, remove after upgrading to OpenSearch 2.16 - workaround for https://github.com/opensearch-project/OpenSearch/issues/15034
 ) {
 
   private val scope = CoroutineScope(Dispatchers.IO)
@@ -103,7 +100,6 @@ class ContactSearchService(
           query.neural {
             it.field("textEmbedding.knn")
               .queryText(request.query)
-              .modelId(bedrockModelId)
               .k(10)
           }
         }
