@@ -61,4 +61,5 @@ data class ContactSearchResult(
   val highlights: Map<String, List<String>> = mapOf(),
   @field:JsonInclude(JsonInclude.Include.NON_NULL)
   val score: Double?,
+  val complied: String? = null
 )
