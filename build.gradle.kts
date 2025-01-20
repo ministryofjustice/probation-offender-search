@@ -22,10 +22,10 @@ dependencies {
   implementation("org.opensearch.client:spring-data-opensearch-starter:1.6.0")
   implementation("org.opensearch.client:opensearch-java:2.19.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.20.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.20.1")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.11.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.12.0")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.0")
@@ -33,7 +33,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.24")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.25")
 }
 
 java {
