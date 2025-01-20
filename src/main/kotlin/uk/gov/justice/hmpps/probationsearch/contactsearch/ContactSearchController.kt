@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/search/contacts")
 class ContactSearchController(val contactSearchService: ContactSearchService) {
-  @PreAuthorize("hasAnyRole('ROLE_PROBATION_CONTACT_SEARCH', 'ROLE_PROBATION_INTEGRAION_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_PROBATION_CONTACT_SEARCH', 'ROLE_PROBATION_INTEGRATION_ADMIN')")
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   fun searchContact(
     @RequestBody request: ContactSearchRequest,
