@@ -12,6 +12,7 @@ import org.opensearch.client.opensearch._types.query_dsl.MatchQuery
 import org.opensearch.client.opensearch._types.query_dsl.NestedQuery
 import org.opensearch.client.opensearch._types.query_dsl.SimpleQueryStringQuery
 import org.opensearch.client.opensearch.core.SearchRequest
+import org.opensearch.client.opensearch.core.search.HighlighterEncoder
 import org.opensearch.client.opensearch.core.search.TrackHits
 import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
@@ -112,6 +113,15 @@ class ContactSearchService(
         .size(pageable.pageSize)
         .from(pageable.offset.toInt())
         .sorted(pageable.sort.fieldSorts())
+        .highlight { highlight ->
+          highlight
+            .encoder(HighlighterEncoder.Html)
+            .fields("notes") { it }
+            .fields("type") { it }
+            .fields("outcome") { it }
+            .fields("description") { it }
+            .fragmentSize(200)
+        }
     }
     val searchResponse = openSearchClient.search(searchRequest, ContactSearchResult::class.java)
     val results = searchResponse.hits().hits().mapNotNull {
