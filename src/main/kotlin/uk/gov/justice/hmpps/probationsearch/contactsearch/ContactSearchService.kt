@@ -100,7 +100,7 @@ class ContactSearchService(
           query.neural {
             it.field("textEmbedding.knn")
               .queryText(request.query)
-              .k(10)
+              .minScore(0.01F)
           }
         }
     }.toQuery()
@@ -255,7 +255,7 @@ private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
       SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder())
     }
   }
-}
+}.ifEmpty { listOf(SortBuilders.fieldSort(SCORE.searchField).order(SortOrder.DESC)) }
 
 private fun SearchRequest.Builder.sorted(sorts: List<FieldSortBuilder>): SearchRequest.Builder {
   sorted(sorts) { fieldSorts ->
