@@ -113,13 +113,13 @@ class ActivitySearchIntegrationTest {
     assertThat(results.totalResults).isEqualTo(7)
     assertThat(results.results.map { it.id }).isEqualTo(
       contacts
-          .asSequence()
-          .filter { it.crn == crn }
-          .sortedWith(compareByDescending<ContactSearchResult> { it.date }.thenByDescending { it.startTime })
-          .map { it.id }
-          .drop(3)
-          .take(3)
-          .toList(),
+        .asSequence()
+        .filter { it.crn == crn }
+        .sortedWith(compareByDescending<ContactSearchResult> { it.date }.thenByDescending { it.startTime })
+        .map { it.id }
+        .drop(3)
+        .take(3)
+        .toList(),
     )
   }
 
