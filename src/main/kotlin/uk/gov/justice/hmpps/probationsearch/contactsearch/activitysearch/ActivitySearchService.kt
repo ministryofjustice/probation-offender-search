@@ -184,7 +184,7 @@ private fun BoolQueryBuilder.fromActivityRequest(request: ActivitySearchRequest)
         .field("description")
         .field("complied")
         .flags(
-          SimpleQueryStringFlag.AND,q
+          SimpleQueryStringFlag.AND,
           SimpleQueryStringFlag.OR,
           SimpleQueryStringFlag.PREFIX,
           SimpleQueryStringFlag.PHRASE,
