@@ -101,7 +101,7 @@ class ContactSearchService(
           query.neural {
             it.field("textEmbedding.knn")
               .queryText(request.query)
-              .minScore(0.01F)
+              .minScore(0.5F)
           }
         }
     }.toQuery()
@@ -109,17 +109,17 @@ class ContactSearchService(
       searchRequest
         .index(indexName)
         .query { query -> query.hybrid { hybrid -> hybrid.queries(keywordQuery, semanticQuery) } }
-        .trackTotalHits(TrackHits.of { it.count(5000) })
+        .trackTotalHits(TrackHits.of { it.count(10_000) })
         .size(pageable.pageSize)
         .from(pageable.offset.toInt())
         .sorted(pageable.sort.fieldSorts())
         .highlight { highlight ->
           highlight
             .encoder(HighlighterEncoder.Html)
-            .fields("notes") { it }
-            .fields("type") { it }
-            .fields("outcome") { it }
-            .fields("description") { it }
+            .fields("notes") { it.field("notes") }
+            .fields("type") { it.field("type") }
+            .fields("outcome") { it.field("outcome") }
+            .fields("description") { it.field("description") }
             .fragmentSize(200)
         }
     }
