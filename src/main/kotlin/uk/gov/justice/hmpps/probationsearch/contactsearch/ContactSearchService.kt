@@ -248,7 +248,6 @@ private fun BoolQueryBuilder.fromRequest(request: ContactSearchRequest): BoolQue
   return this
 }
 
-
 private fun Sort.Direction.toSortOrder() = when (this) {
   Sort.Direction.ASC -> SortOrder.ASC
   Sort.Direction.DESC -> SortOrder.DESC
