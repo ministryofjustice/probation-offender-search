@@ -249,12 +249,12 @@ private fun BoolQueryBuilder.fromRequest(request: ContactSearchRequest): BoolQue
 }
 
 
-internal fun Sort.Direction.toSortOrder() = when (this) {
+private fun Sort.Direction.toSortOrder() = when (this) {
   Sort.Direction.ASC -> SortOrder.ASC
   Sort.Direction.DESC -> SortOrder.DESC
 }
 
-internal fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
+private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
   type.aliases.mapNotNull { alias ->
     getOrderFor(alias)?.let {
       SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder())
@@ -262,7 +262,7 @@ internal fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
   }
 }
 
-internal fun SearchRequest.Builder.sorted(sorts: List<FieldSortBuilder>): SearchRequest.Builder {
+private fun SearchRequest.Builder.sorted(sorts: List<FieldSortBuilder>): SearchRequest.Builder {
   sorted(sorts) { fieldSorts ->
     this.sort {
       fieldSorts.forEach { fieldSort ->
@@ -278,12 +278,12 @@ internal fun SearchRequest.Builder.sorted(sorts: List<FieldSortBuilder>): Search
   return this
 }
 
-internal fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): NativeSearchQuery {
+private fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): NativeSearchQuery {
   sorted(sorts) { this.withSorts(it) }
   return this.build()
 }
 
-internal fun sorted(sorts: List<FieldSortBuilder>, sortFn: (List<FieldSortBuilder>) -> Unit) {
+private fun sorted(sorts: List<FieldSortBuilder>, sortFn: (List<FieldSortBuilder>) -> Unit) {
   when (sorts.size) {
     0 -> {
       sortFn(

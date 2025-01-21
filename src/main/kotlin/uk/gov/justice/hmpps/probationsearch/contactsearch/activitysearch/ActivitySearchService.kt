@@ -5,28 +5,34 @@ import io.opentelemetry.api.trace.Span
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.MatchQueryBuilder
+import org.opensearch.index.query.Operator
 import org.opensearch.index.query.QueryBuilder
 import org.opensearch.index.query.QueryBuilders
 import org.opensearch.index.query.QueryBuilders.boolQuery
 import org.opensearch.index.query.QueryBuilders.matchQuery
 import org.opensearch.index.query.QueryBuilders.rangeQuery
 import org.opensearch.index.query.QueryBuilders.simpleQueryStringQuery
+import org.opensearch.index.query.QueryBuilders.termsQuery
 import org.opensearch.index.query.SimpleQueryStringFlag
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
+import org.opensearch.search.sort.FieldSortBuilder
+import org.opensearch.search.sort.SortBuilders
+import org.opensearch.search.sort.SortOrder
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchResponse
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchResult
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService
-import uk.gov.justice.hmpps.probationsearch.contactsearch.fieldSorts
-import uk.gov.justice.hmpps.probationsearch.contactsearch.sorted
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
@@ -109,7 +115,7 @@ class ActivitySearchService(
           ActivitySearchAuditRequest.PageRequest(
             pageable.pageNumber,
             pageable.pageSize,
-            fieldSorts.mapNotNull { ContactSearchService.SortType.from(it.fieldName)?.aliases?.first() }.joinToString(),
+            fieldSorts.mapNotNull { SortType.from(it.fieldName)?.aliases?.first() }.joinToString(),
             fieldSorts.joinToString { it.order().toString() },
           ),
         ),
@@ -128,26 +134,57 @@ class ActivitySearchService(
       ),
     )
   }
+
+  enum class SortType(val aliases: List<String>, val searchField: String) {
+    DATE(listOf("date", "CONTACT_DATE"), "date.date"),
+    START_TIME(listOf("startTime"), "startTime"),
+    SCORE(listOf("relevance", "RELEVANCE"), "_score"),
+    ;
+
+    companion object {
+      fun from(searchField: String): SortType? = entries.firstOrNull { it.searchField == searchField }
+    }
+  }
+}
+
+
+private fun santitizeQueries(inQueries: List<QueryBuilder>): List<QueryBuilder> {
+  //Combine multiple match queries on the same field into a termsQuery
+  val x = inQueries.filterIsInstance<MatchQueryBuilder>().groupBy { q -> q.fieldName() }
+    .filter { it.value.size > 1 }
+  val queries = inQueries.filter { it !in x.values.flatten() }.toMutableList()
+  queries += x.entries.map {
+    termsQuery(it.key, it.value.map { q -> q.value().toString() })
+  }
+  return queries
 }
 
 private fun BoolQueryBuilder.fromActivityRequest(request: ActivitySearchRequest): BoolQueryBuilder {
-  filter(matchQuery("crn", request.crn))
+  must(matchQuery("crn", request.crn))
   request.dateFrom?.let { filter(rangeQuery("date").gte(it.toString())) }
   request.dateTo?.let { filter(rangeQuery("date").lte(it.toString())) }
-  ActivitySearchService.ActivityFilter.entries.filter { request.filters.contains(it.filterName) }.forEach {
-    it.queries.forEach { q -> filter(q) }
+
+  val f =
+    santitizeQueries(
+      ActivitySearchService.ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
+        .flatMap { it.queries },
+    )
+  f.forEach { q ->
+    filter(q)
   }
+
   if (request.keywords?.isNotEmpty() == true) {
     must(
       simpleQueryStringQuery(request.keywords)
         .analyzeWildcard(true)
-        .defaultOperator(org.opensearch.index.query.Operator.OR)
+        .defaultOperator(Operator.OR)
         .field("notes")
         .field("type")
         .field("outcome")
         .field("description")
+        .field("complied")
         .flags(
-          SimpleQueryStringFlag.AND,
+          SimpleQueryStringFlag.AND,q
           SimpleQueryStringFlag.OR,
           SimpleQueryStringFlag.PREFIX,
           SimpleQueryStringFlag.PHRASE,
@@ -159,4 +196,37 @@ private fun BoolQueryBuilder.fromActivityRequest(request: ActivitySearchRequest)
     )
   }
   return this
+}
+
+private fun Sort.Direction.toSortOrder() = when (this) {
+  Sort.Direction.ASC -> SortOrder.ASC
+  Sort.Direction.DESC -> SortOrder.DESC
+}
+
+private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
+  type.aliases.mapNotNull { alias ->
+    getOrderFor(alias)?.let {
+      SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder())
+    }
+  }
+}
+
+private fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): NativeSearchQuery {
+  sorted(sorts) { this.withSorts(it) }
+  return this.build()
+}
+
+private fun sorted(sorts: List<FieldSortBuilder>, sortFn: (List<FieldSortBuilder>) -> Unit) {
+  when (sorts.size) {
+    0 -> {
+      sortFn(
+        listOf(
+          SortBuilders.fieldSort(ActivitySearchService.SortType.DATE.searchField).order(SortOrder.DESC),
+          SortBuilders.fieldSort(ActivitySearchService.SortType.START_TIME.searchField).order(SortOrder.DESC),
+        ),
+      )
+    }
+
+    else -> sortFn(sorts)
+  }
 }

@@ -178,6 +178,80 @@ class ActivitySearchIntegrationTest {
   }
 
   @Test
+  fun `can filter based on not complied and compiled`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          filters = listOf(
+            ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
+            ActivitySearchService.ActivityFilter.COMPLIED.filterName,
+          ),
+        ),
+        mapOf("page" to 0, "size" to 3),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.results[0].notes).isEqualTo("I complied")
+    assertThat(results.results[1].notes).isEqualTo("I failed to comply")
+  }
+
+  @Test
+  fun `can filter based on not complied, compiled, no outcome with keywords`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          filters = listOf(
+            ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
+            ActivitySearchService.ActivityFilter.COMPLIED.filterName,
+            ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
+          ),
+          keywords = "special failed complied",
+        ),
+        mapOf("page" to 0, "size" to 3),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(0)
+    assertThat(results.totalResults).isEqualTo(0)
+  }
+
+  @Test
+  fun `can filter based on not complied and not compiled with keywords`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          filters = listOf(
+            ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
+            ActivitySearchService.ActivityFilter.COMPLIED.filterName,
+          ),
+          keywords = "special failed complied",
+        ),
+        mapOf("page" to 0, "size" to 3),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.results[0].notes).isEqualTo("I complied")
+    assertThat(results.results[1].notes).isEqualTo("I failed to comply")
+  }
+
+
+  @Test
   fun `can filter based on date range where days are the same and only returns records for that day`() {
     val crn = "T654321"
     val results = RestAssured.given()
