@@ -19,13 +19,14 @@ import org.opensearch.client.indices.CreateIndexRequest
 import org.opensearch.client.indices.GetIndexRequest
 import org.opensearch.client.indices.PutIndexTemplateRequest
 import org.opensearch.common.xcontent.XContentType
+import org.opensearch.core.xcontent.MediaType
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.ResourceUtils
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator.contacts
@@ -56,7 +57,10 @@ class ContactSearchIntegrationTest {
     val aliasName = "contact-search-primary"
     openSearchRestTemplate.execute {
       it.indices().putTemplate(
-        PutIndexTemplateRequest("contact-search-template").source(TEMPLATE_JSON, XContentType.JSON),
+        PutIndexTemplateRequest("contact-search-template").source(
+          TEMPLATE_JSON,
+          MediaType.fromMediaType(XContentType.JSON.mediaType()),
+        ),
         RequestOptions.DEFAULT,
       )
     }
@@ -217,7 +221,7 @@ class ContactSearchIntegrationTest {
   private fun RequestSpecification.authorised(): RequestSpecification =
     this.auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION_CONTACT_SEARCH"))
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .contentType(APPLICATION_JSON_VALUE)
 
   private fun RequestSpecification.search(csr: ContactSearchRequest, queryParams: Map<String, Any> = mapOf()) =
     this.authorised().body(csr).queryParams(queryParams).post("/search/contacts")
