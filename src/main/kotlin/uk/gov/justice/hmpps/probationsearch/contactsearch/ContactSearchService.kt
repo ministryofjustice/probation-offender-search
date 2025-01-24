@@ -9,8 +9,8 @@ import kotlinx.coroutines.launch
 import org.opensearch.client.opensearch.OpenSearchClient
 import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery
+import org.opensearch.client.opensearch._types.query_dsl.MultiMatchQuery
 import org.opensearch.client.opensearch._types.query_dsl.NestedQuery
-import org.opensearch.client.opensearch._types.query_dsl.SimpleQueryStringQuery
 import org.opensearch.client.opensearch.core.SearchRequest
 import org.opensearch.client.opensearch.core.search.HighlighterEncoder
 import org.opensearch.client.opensearch.core.search.TrackHits
@@ -159,12 +159,11 @@ class ContactSearchService(
     ).sorted(pageable.sort.fieldSorts())
 
   private fun keywordQueryForJavaClient(request: ContactSearchRequest) = if (request.query.isNotEmpty()) {
-    SimpleQueryStringQuery.of { simpleQueryString ->
-      simpleQueryString.query(request.query)
-        .analyzeWildcard(true)
-        .defaultOperator(if (request.matchAllTerms) JavaClientOperator.And else JavaClientOperator.Or)
+    MultiMatchQuery.of { multiMatchQuery ->
+      multiMatchQuery.query(request.query)
+        .operator(if (request.matchAllTerms) JavaClientOperator.And else JavaClientOperator.Or)
         .fields("notes", "type", "outcome", "description")
-        .flags { it.multiple("AND|OR|PREFIX|PHRASE|PRECEDENCE|ESCAPE|FUZZY|SLOP") }
+        .fuzziness("AUTO")
     }
   } else {
     MatchQuery.of { match -> match.field("crn").query { it.stringValue(request.crn) } }
