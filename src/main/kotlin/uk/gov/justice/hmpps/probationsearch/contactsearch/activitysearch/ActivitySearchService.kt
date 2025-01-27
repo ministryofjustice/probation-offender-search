@@ -8,17 +8,8 @@ import kotlinx.coroutines.launch
 import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
-import org.opensearch.index.query.BoolQueryBuilder
-import org.opensearch.index.query.MatchQueryBuilder
-import org.opensearch.index.query.Operator
-import org.opensearch.index.query.QueryBuilder
-import org.opensearch.index.query.QueryBuilders
-import org.opensearch.index.query.QueryBuilders.boolQuery
-import org.opensearch.index.query.QueryBuilders.matchQuery
-import org.opensearch.index.query.QueryBuilders.rangeQuery
-import org.opensearch.index.query.QueryBuilders.simpleQueryStringQuery
-import org.opensearch.index.query.QueryBuilders.termsQuery
-import org.opensearch.index.query.SimpleQueryStringFlag
+import org.opensearch.index.query.*
+import org.opensearch.index.query.QueryBuilders.*
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
 import org.opensearch.search.sort.FieldSortBuilder
 import org.opensearch.search.sort.SortBuilders
@@ -30,9 +21,8 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchResponse
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchResult
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
+import uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch.ActivitySearchService.SortType.entries
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
@@ -48,13 +38,13 @@ class ActivitySearchService(
 
   private val scope = CoroutineScope(Dispatchers.IO)
 
-  fun activitySearch(request: ActivitySearchRequest, pageable: Pageable): ContactSearchResponse {
+  fun activitySearch(request: ActivitySearchRequest, pageable: Pageable): ActivitySearchResponse {
     audit(request, pageable)
 
     val indexName = "contact-search-primary"
     val activityQuery = activitySearchQueryForRestClient(pageable, request)
     val searchResponse =
-      restTemplate.search(activityQuery, ContactSearchResult::class.java, IndexCoordinates.of(indexName))
+      restTemplate.search(activityQuery, ActivitySearchResult::class.java, IndexCoordinates.of(indexName))
     val results = searchResponse.searchHits.mapNotNull {
       it.content.copy(
         highlights = it.highlightFields,
@@ -63,7 +53,7 @@ class ActivitySearchService(
 
     val response = PageImpl(results, pageable, searchResponse.totalHits)
 
-    return ContactSearchResponse(
+    return ActivitySearchResponse(
       response.numberOfElements,
       response.pageable.pageNumber,
       response.totalElements,

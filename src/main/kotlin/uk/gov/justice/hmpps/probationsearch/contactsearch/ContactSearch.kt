@@ -23,13 +23,13 @@ data class ContactSearchAuditRequest(
   val search: ContactSearchRequest,
   val username: String,
   val pagination: PageRequest,
-  val dateTime: ZonedDateTime = ZonedDateTime.now()
+  val dateTime: ZonedDateTime = ZonedDateTime.now(),
 ) {
   data class PageRequest(
     val page: Int,
     val pageSize: Int,
     val sort: String?,
-    val direction: String?
+    val direction: String?,
   )
 }
 
@@ -61,5 +61,4 @@ data class ContactSearchResult(
   val highlights: Map<String, List<String>> = mapOf(),
   @field:JsonInclude(JsonInclude.Include.NON_NULL)
   val score: Double?,
-  val complied: String? = null
 )

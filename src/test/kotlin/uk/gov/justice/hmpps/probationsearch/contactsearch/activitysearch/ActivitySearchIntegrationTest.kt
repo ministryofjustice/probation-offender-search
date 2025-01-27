@@ -27,8 +27,6 @@ import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.ResourceUtils
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchResponse
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchResult
 import uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch.ActivityGenerator.contacts
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
@@ -94,7 +92,7 @@ class ActivitySearchIntegrationTest {
     assertThat(results.results.map { it.id }).isEqualTo(
       contacts
         .filter { it.crn == crn }
-        .sortedWith(compareByDescending<ContactSearchResult> { it.date }.thenByDescending { it.startTime })
+        .sortedWith(compareByDescending<ActivitySearchResult> { it.date }.thenByDescending { it.startTime })
         .map { it.id }
         .take(3),
     )
@@ -115,7 +113,7 @@ class ActivitySearchIntegrationTest {
       contacts
         .asSequence()
         .filter { it.crn == crn }
-        .sortedWith(compareByDescending<ContactSearchResult> { it.date }.thenByDescending { it.startTime })
+        .sortedWith(compareByDescending<ActivitySearchResult> { it.date }.thenByDescending { it.startTime })
         .map { it.id }
         .drop(3)
         .take(3)
@@ -378,5 +376,5 @@ class ActivitySearchIntegrationTest {
   private fun ValidatableResponse.results() =
     this.statusCode(200)
       .extract().body()
-      .`as`(ContactSearchResponse::class.java)
+      .`as`(ActivitySearchResponse::class.java)
 }
