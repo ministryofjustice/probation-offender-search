@@ -53,9 +53,6 @@ jobs:
           paths:
             - build/libs
             - build.gradle.kts
-      - run:
-          command: cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes
-          when: always
   jib-build:
     executor:
       name: hmpps/java
