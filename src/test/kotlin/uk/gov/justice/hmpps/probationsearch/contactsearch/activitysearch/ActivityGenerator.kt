@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch
 
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchResult
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -28,7 +27,7 @@ object ActivityGenerator {
     crn: String = "T654321",
     id: Long = ActivityIdGenerator.getAndIncrement(),
     complied: String? = null,
-  ) = ContactSearchResult(
+  ) = ActivitySearchResult(
     crn,
     id,
     typeCode,
