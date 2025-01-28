@@ -98,20 +98,18 @@ class ActivitySearchService(
     }
 
     val fieldSorts = pageable.sort.fieldSorts()
-    scope.launch {
-      deliusService.auditActivitySearch(
-        ActivitySearchAuditRequest(
-          request,
-          name,
-          ActivitySearchAuditRequest.PageRequest(
-            pageable.pageNumber,
-            pageable.pageSize,
-            fieldSorts.mapNotNull { SortType.from(it.fieldName)?.aliases?.first() }.joinToString(),
-            fieldSorts.joinToString { it.order().toString() },
-          ),
+    deliusService.auditActivitySearch(
+      ActivitySearchAuditRequest(
+        request,
+        name,
+        ActivitySearchAuditRequest.PageRequest(
+          pageable.pageNumber,
+          pageable.pageSize,
+          fieldSorts.mapNotNull { SortType.from(it.fieldName)?.aliases?.first() }.joinToString(),
+          fieldSorts.joinToString { it.order().toString() },
         ),
-      )
-    }
+      ),
+    )
   }
 
   enum class ActivityFilter(val filterName: String, val queries: List<QueryBuilder>) {

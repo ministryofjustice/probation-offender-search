@@ -6,7 +6,6 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.reactive.function.client.awaitExchange
 import reactor.core.publisher.Mono
 import reactor.util.retry.Retry
 import uk.gov.justice.hmpps.probationsearch.NotFoundException
@@ -17,24 +16,22 @@ import java.time.Duration
 
 @Service
 class DeliusService(@Qualifier("searchAndDeliusApiWebClient") private val webClient: WebClient) {
-  suspend fun auditContactSearch(contactSearchAuditRequest: ContactSearchAuditRequest) {
+  fun auditContactSearch(contactSearchAuditRequest: ContactSearchAuditRequest) {
     webClient.post()
       .uri("/probation-search/audit/contact-search")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(contactSearchAuditRequest)
-      .awaitExchange {
-        it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))).block()
-      }
+      .exchangeToMono { it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))) }
+      .block()
   }
 
-  suspend fun auditActivitySearch(activitySearchAuditRequest: ActivitySearchAuditRequest) {
+  fun auditActivitySearch(activitySearchAuditRequest: ActivitySearchAuditRequest) {
     webClient.post()
       .uri("/probation-search/audit/contact-search")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(activitySearchAuditRequest)
-      .awaitExchange {
-        it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))).block()
-      }
+      .exchangeToMono { it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))) }
+      .block()
   }
 
   fun getContacts(crn: String): List<ContactJson> = webClient.get()
