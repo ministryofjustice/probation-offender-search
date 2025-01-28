@@ -2,9 +2,10 @@ package uk.gov.justice.hmpps.probationsearch.contactsearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.opentelemetry.api.trace.Span
+import io.opentelemetry.context.Context
+import io.opentelemetry.extension.kotlin.asContextElement
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.opensearch.client.opensearch.OpenSearchClient
 import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
@@ -51,7 +52,7 @@ class ContactSearchService(
   private val openSearchClient: OpenSearchClient,
 ) {
 
-  private val scope = CoroutineScope(Dispatchers.IO)
+  private val scope = CoroutineScope(Context.current().asContextElement())
 
   fun keywordSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
     audit(request, pageable)
