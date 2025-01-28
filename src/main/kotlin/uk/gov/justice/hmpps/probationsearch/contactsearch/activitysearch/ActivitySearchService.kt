@@ -2,8 +2,9 @@ package uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.opentelemetry.api.trace.Span
+import io.opentelemetry.context.Context
+import io.opentelemetry.extension.kotlin.asContextElement
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
@@ -36,7 +37,7 @@ class ActivitySearchService(
   private val deliusService: DeliusService,
 ) {
 
-  private val scope = CoroutineScope(Dispatchers.IO)
+  private val scope = CoroutineScope(Context.current().asContextElement())
 
   fun activitySearch(request: ActivitySearchRequest, pageable: Pageable): ActivitySearchResponse {
     audit(request, pageable)
