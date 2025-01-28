@@ -200,20 +200,18 @@ class ContactSearchService(
     }
 
     val fieldSorts = pageable.sort.fieldSorts()
-    scope.launch {
-      deliusService.auditContactSearch(
-        ContactSearchAuditRequest(
-          request,
-          name,
-          ContactSearchAuditRequest.PageRequest(
-            pageable.pageNumber,
-            pageable.pageSize,
-            fieldSorts.mapNotNull { SortType.from(it.fieldName)?.aliases?.first() }.joinToString(),
-            fieldSorts.joinToString { it.order().toString() },
-          ),
+    deliusService.auditContactSearch(
+      ContactSearchAuditRequest(
+        request,
+        name,
+        ContactSearchAuditRequest.PageRequest(
+          pageable.pageNumber,
+          pageable.pageSize,
+          fieldSorts.mapNotNull { SortType.from(it.fieldName)?.aliases?.first() }.joinToString(),
+          fieldSorts.joinToString { it.order().toString() },
         ),
-      )
-    }
+      ),
+    )
   }
 
   enum class SortType(val aliases: List<String>, val searchField: String) {
