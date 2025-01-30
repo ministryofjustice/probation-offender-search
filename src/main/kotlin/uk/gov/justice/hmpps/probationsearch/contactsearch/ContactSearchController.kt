@@ -25,16 +25,19 @@ class ContactSearchController(
     @RequestBody request: ContactSearchRequest,
     @ParameterObject @PageableDefault pageable: Pageable,
     @RequestParam(defaultValue = "false") semantic: Boolean = false,
-  ): ContactSearchResponse = if (semantic) {
-    contactSearchService.semanticSearch(request, pageable)
-  } else {
-    runAsync({ semanticSearch(request, pageable) }, virtualThreadExecutor)
-      .orTimeout(30, TimeUnit.SECONDS)
-      .exceptionally {
-        telemetryClient.trackException(RuntimeException(it))
-        null
-      }
-    contactSearchService.keywordSearch(request, pageable)
+  ): ContactSearchResponse {
+    contactSearchService.audit(request, pageable)
+    return if (semantic) {
+      contactSearchService.semanticSearch(request, pageable)
+    } else {
+      runAsync({ semanticSearch(request, pageable) }, virtualThreadExecutor)
+        .orTimeout(30, TimeUnit.SECONDS)
+        .exceptionally {
+          telemetryClient.trackException(RuntimeException(it))
+          null
+        }
+      contactSearchService.keywordSearch(request, pageable)
+    }
   }
 
   private fun semanticSearch(request: ContactSearchRequest, pageable: Pageable) {

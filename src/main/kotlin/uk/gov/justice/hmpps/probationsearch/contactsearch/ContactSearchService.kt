@@ -55,8 +55,6 @@ class ContactSearchService(
   private val scope = CoroutineScope(Context.current().asContextElement())
 
   fun keywordSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    audit(request, pageable)
-
     val indexName = "contact-search-primary"
     val keywordQuery = keywordQueryForRestClient(pageable, request)
     val searchResponse =
@@ -80,8 +78,6 @@ class ContactSearchService(
   }
 
   fun semanticSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    audit(request, pageable)
-
     val indexName = "contact-semantic-search-${request.crn.lowercase()}"
     restTemplate.indexOps(IndexCoordinates.of(indexName)).apply {
       if (!exists()) {
@@ -182,7 +178,7 @@ class ContactSearchService(
     restTemplate.bulkIndex(documents, indexCoordinates)
   }
 
-  private fun audit(request: ContactSearchRequest, pageable: Pageable) {
+  fun audit(request: ContactSearchRequest, pageable: Pageable) {
     val name = SecurityContextHolder.getContext().authentication.name
     auditService?.run {
       scope.launch {
