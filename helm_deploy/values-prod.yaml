@@ -2,8 +2,6 @@
 # Environment specific values, override helm_deploy/probation-offender-search/values.yaml
 
 generic-service:
-  replicaCount: 8 # Temporarily increased while dual-running semantic contact search - see ContactSearchController.kt
-
   ingress:
     host: probation-offender-search.hmpps.service.justice.gov.uk
     contextColour: green

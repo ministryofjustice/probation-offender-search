@@ -8,16 +8,12 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.concurrent.CompletableFuture.runAsync
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/search/contacts")
 class ContactSearchController(
   val contactSearchService: ContactSearchService,
-  val telemetryClient: TelemetryClient,
-  val virtualThreadExecutor: ExecutorService,
+  val telemetryClient: TelemetryClient
 ) {
   @PreAuthorize("hasAnyRole('ROLE_PROBATION_CONTACT_SEARCH', 'ROLE_PROBATION_INTEGRATION_ADMIN')")
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
@@ -25,22 +21,7 @@ class ContactSearchController(
     @RequestBody request: ContactSearchRequest,
     @ParameterObject @PageableDefault pageable: Pageable,
     @RequestParam(defaultValue = "false") semantic: Boolean = false,
-  ): ContactSearchResponse {
-    contactSearchService.audit(request, pageable)
-    return if (semantic) {
-      contactSearchService.semanticSearch(request, pageable)
-    } else {
-      runAsync({ semanticSearch(request, pageable) }, virtualThreadExecutor)
-        .orTimeout(30, TimeUnit.SECONDS)
-        .exceptionally {
-          telemetryClient.trackException(RuntimeException(it))
-          null
-        }
-      contactSearchService.keywordSearch(request, pageable)
-    }
-  }
-
-  private fun semanticSearch(request: ContactSearchRequest, pageable: Pageable) {
+  ) = if (semantic) {
     val started = Instant.now()
     val response = contactSearchService.semanticSearch(request, pageable)
     telemetryClient.trackEvent(
@@ -54,5 +35,7 @@ class ContactSearchController(
         "duration" to started.until(Instant.now(), ChronoUnit.MILLIS).toDouble(),
       ),
     )
+  } else {
+    contactSearchService.keywordSearch(request, pageable)
   }
 }
