@@ -8,10 +8,7 @@ import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.opensearch.client.opensearch.OpenSearchClient
-import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
-import org.opensearch.client.opensearch._types.query_dsl.MatchQuery
-import org.opensearch.client.opensearch._types.query_dsl.MultiMatchQuery
-import org.opensearch.client.opensearch._types.query_dsl.NestedQuery
+import org.opensearch.client.opensearch._types.query_dsl.*
 import org.opensearch.client.opensearch.core.SearchRequest
 import org.opensearch.client.opensearch.core.search.HighlighterEncoder
 import org.opensearch.client.opensearch.core.search.TrackHits
@@ -94,7 +91,7 @@ class ContactSearchService(
 
     // Must use the newer Java client here, the old rest client doesn't support hybrid queries
     val keywordQuery = keywordQueryForJavaClient(request)
-    val semanticQuery = NestedQuery.of { nested ->
+    val semanticQuery = if (request.query.isNotEmpty()) NestedQuery.of { nested ->
       nested
         .scoreMode(ChildScoreMode.Max)
         .path("textEmbedding")
@@ -105,7 +102,7 @@ class ContactSearchService(
               .minScore(0.01F)
           }
         }
-    }.toQuery()
+    }.toQuery() else MatchAllQuery.Builder().build().toQuery()
     val searchRequest = SearchRequest.of { searchRequest ->
       searchRequest
         .index(indexName)
