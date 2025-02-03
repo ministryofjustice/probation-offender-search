@@ -21,7 +21,7 @@ class ContactSearchController(
     @RequestBody request: ContactSearchRequest,
     @ParameterObject @PageableDefault pageable: Pageable,
     @RequestParam(defaultValue = "false") semantic: Boolean = false,
-  ) = if (semantic) {
+  ): ContactSearchResponse = if (semantic) {
     val started = Instant.now()
     val response = contactSearchService.semanticSearch(request, pageable)
     telemetryClient.trackEvent(
@@ -35,6 +35,7 @@ class ContactSearchController(
         "duration" to started.until(Instant.now(), ChronoUnit.MILLIS).toDouble(),
       ),
     )
+    response
   } else {
     contactSearchService.keywordSearch(request, pageable)
   }
