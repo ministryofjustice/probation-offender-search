@@ -21,8 +21,8 @@ class DeliusService(@Qualifier("searchAndDeliusApiWebClient") private val webCli
       .uri("/probation-search/audit/contact-search")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(contactSearchAuditRequest)
-      .exchangeToMono { it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))) }
-      .block()
+      .exchangeToMono { Mono.empty<Void>() }
+      .subscribe()
   }
 
   fun auditActivitySearch(activitySearchAuditRequest: ActivitySearchAuditRequest) {
@@ -30,8 +30,8 @@ class DeliusService(@Qualifier("searchAndDeliusApiWebClient") private val webCli
       .uri("/probation-search/audit/contact-search")
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(activitySearchAuditRequest)
-      .exchangeToMono { it.toBodilessEntity().retryWhen(Retry.backoff(3, Duration.ofMillis(200))) }
-      .block()
+      .exchangeToMono { Mono.empty<Void>() }
+      .subscribe()
   }
 
   fun getContacts(crn: String): List<ContactJson> = webClient.get()
