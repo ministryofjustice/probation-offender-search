@@ -98,6 +98,83 @@ class ActivitySearchIntegrationTest {
     )
   }
 
+
+  @Test
+  fun `can retrieve all results with only crn`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"))
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(7)
+    assertThat(results.totalResults).isEqualTo(7)
+  }
+
+
+  @Test
+  fun `can retrieve only those that have no outcome with only crn`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+          ActivitySearchRequest(crn, filters = listOf(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName)),
+          mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.totalResults).isEqualTo(1)
+  }
+
+  @Test
+  fun `can retrieve only those that have no outcome or complied with only crn`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+          ActivitySearchRequest(
+              crn,
+              filters = listOf(
+                  ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
+                  ActivitySearchService.ActivityFilter.COMPLIED.filterName,
+              ),
+          ),
+          mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
+  }
+
+  @Test
+  fun `can retrieve only those that have no outcome, complied or ftc with only crn`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+          ActivitySearchRequest(
+              crn,
+              filters = listOf(
+                  ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
+                  ActivitySearchService.ActivityFilter.COMPLIED.filterName,
+                  ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
+              ),
+          ),
+          mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(3)
+    assertThat(results.totalResults).isEqualTo(3)
+  }
+
+
   @Test
   fun `can retrieve second page of paginated results with only crn`() {
     val crn = "T654321"
@@ -219,8 +296,8 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(0)
-    assertThat(results.totalResults).isEqualTo(0)
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
   }
 
   @Test
