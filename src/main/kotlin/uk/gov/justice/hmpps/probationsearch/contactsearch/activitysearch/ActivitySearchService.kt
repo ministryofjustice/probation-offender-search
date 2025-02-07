@@ -9,8 +9,17 @@ import kotlinx.coroutines.launch
 import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
-import org.opensearch.index.query.*
-import org.opensearch.index.query.QueryBuilders.*
+import org.opensearch.index.query.BoolQueryBuilder
+import org.opensearch.index.query.MatchQueryBuilder
+import org.opensearch.index.query.Operator
+import org.opensearch.index.query.QueryBuilder
+import org.opensearch.index.query.QueryBuilders
+import org.opensearch.index.query.QueryBuilders.boolQuery
+import org.opensearch.index.query.QueryBuilders.matchQuery
+import org.opensearch.index.query.QueryBuilders.rangeQuery
+import org.opensearch.index.query.QueryBuilders.simpleQueryStringQuery
+import org.opensearch.index.query.QueryBuilders.termsQuery
+import org.opensearch.index.query.SimpleQueryStringFlag
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
 import org.opensearch.search.sort.FieldSortBuilder
 import org.opensearch.search.sort.SortBuilders
@@ -23,11 +32,10 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
-import uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch.ActivitySearchService.SortType.entries
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
+import uk.gov.justice.hmpps.probationsearch.services.shouldAll
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
-import java.time.LocalDate
 
 @Service
 class ActivitySearchService(
@@ -118,8 +126,7 @@ class ActivitySearchService(
     NO_OUTCOME(
       "noOutcome",
       listOf(
-        boolQuery().mustNot(QueryBuilders.existsQuery("outcome")),
-        rangeQuery("date").lte(LocalDate.now().toString()),
+        boolQuery().must(boolQuery().mustNot(QueryBuilders.existsQuery("outcome"))),
       ),
     )
   }
@@ -150,16 +157,17 @@ private fun santitizeQueries(inQueries: List<QueryBuilder>): List<QueryBuilder> 
 
 private fun BoolQueryBuilder.fromActivityRequest(request: ActivitySearchRequest): BoolQueryBuilder {
   must(matchQuery("crn", request.crn))
-  request.dateFrom?.let { filter(rangeQuery("date").gte(it.toString())) }
-  request.dateTo?.let { filter(rangeQuery("date").lte(it.toString())) }
+  request.dateFrom?.let {
+    filter(rangeQuery("date").gte(it.toString()))
+  }
+  request.dateTo?.let {
+    filter(rangeQuery("date").lte(it.toString()))
+  }
 
-  val f =
-    santitizeQueries(
-      ActivitySearchService.ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
-        .flatMap { it.queries },
-    )
-  f.forEach { q ->
-    filter(q)
+  val filters = ActivitySearchService.ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
+    .flatMap { it.queries }
+  if (filters.isNotEmpty()) {
+    shouldAll(filters).minimumShouldMatch(1)
   }
 
   if (request.keywords?.isNotEmpty() == true) {
