@@ -119,8 +119,8 @@ class ActivitySearchIntegrationTest {
     val results = RestAssured.given()
       .`when`()
       .search(
-          ActivitySearchRequest(crn, filters = listOf(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName)),
-          mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+        ActivitySearchRequest(crn, filters = listOf(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName)),
+        mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
       )
       .then()
       .results()
@@ -135,14 +135,14 @@ class ActivitySearchIntegrationTest {
     val results = RestAssured.given()
       .`when`()
       .search(
-          ActivitySearchRequest(
-              crn,
-              filters = listOf(
-                  ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
-                  ActivitySearchService.ActivityFilter.COMPLIED.filterName,
-              ),
+        ActivitySearchRequest(
+          crn,
+          filters = listOf(
+            ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
+            ActivitySearchService.ActivityFilter.COMPLIED.filterName,
           ),
-          mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+        ),
+        mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
       )
       .then()
       .results()
@@ -157,15 +157,15 @@ class ActivitySearchIntegrationTest {
     val results = RestAssured.given()
       .`when`()
       .search(
-          ActivitySearchRequest(
-              crn,
-              filters = listOf(
-                  ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
-                  ActivitySearchService.ActivityFilter.COMPLIED.filterName,
-                  ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
-              ),
+        ActivitySearchRequest(
+          crn,
+          filters = listOf(
+            ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
+            ActivitySearchService.ActivityFilter.COMPLIED.filterName,
+            ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
           ),
-          mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+        ),
+        mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
       )
       .then()
       .results()
