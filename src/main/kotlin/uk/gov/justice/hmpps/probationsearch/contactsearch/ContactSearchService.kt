@@ -161,7 +161,7 @@ class ContactSearchService(
       multiMatchQuery.query(request.query)
         .operator(if (request.matchAllTerms) JavaClientOperator.And else JavaClientOperator.Or)
         .fields("notes", "type", "outcome", "description")
-        .fuzziness("AUTO")
+        .fuzziness("1")
     }
   } else {
     MatchQuery.of { match -> match.field("crn").query { it.stringValue(request.crn) } }
