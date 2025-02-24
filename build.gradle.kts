@@ -25,7 +25,7 @@ dependencies {
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.2.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.3.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.13.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.13.1")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
