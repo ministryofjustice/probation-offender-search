@@ -33,7 +33,8 @@ import org.springframework.data.elasticsearch.core.query.IndexQuery
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.*
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
@@ -99,7 +100,7 @@ class ContactSearchService(
           query.neural {
             it.field("textEmbedding.knn")
               .queryText(request.query)
-              .minScore(0.01F)
+              .minScore(0.8F)
           }
         }
     }.toQuery() else MatchAllQuery.Builder().build().toQuery()
@@ -110,7 +111,14 @@ class ContactSearchService(
         .trackTotalHits(TrackHits.of { it.count(5000) })
         .size(pageable.pageSize)
         .from(pageable.offset.toInt())
-        .sorted(pageable.sort.fieldSorts())
+        .sort { sort ->
+          // Note: Hybrid query does not allow sorting by multiple fields including score
+          val order = pageable.sort.singleOrNull() ?: Sort.Order.desc(SCORE.searchField)
+          sort.field {
+            it.field(order.property)
+              .order(if (order.isDescending) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
+          }
+        }
         .highlight { highlight ->
           highlight
             .encoder(HighlighterEncoder.Html)
@@ -157,11 +165,11 @@ class ContactSearchService(
     ).sorted(pageable.sort.fieldSorts())
 
   private fun keywordQueryForJavaClient(request: ContactSearchRequest) = if (request.query.isNotEmpty()) {
-    MultiMatchQuery.of { multiMatchQuery ->
-      multiMatchQuery.query(request.query)
-        .operator(if (request.matchAllTerms) JavaClientOperator.And else JavaClientOperator.Or)
+    SimpleQueryStringQuery.of { simpleQueryString ->
+      simpleQueryString.query(request.query)
+        .analyzeWildcard(true)
+        .defaultOperator(if (request.matchAllTerms) JavaClientOperator.And else JavaClientOperator.Or)
         .fields("notes", "type", "outcome", "description")
-        .fuzziness("1")
     }
   } else {
     MatchQuery.of { match -> match.field("crn").query { it.stringValue(request.crn) } }
@@ -261,22 +269,6 @@ private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
     }
   }
 }.ifEmpty { listOf(SortBuilders.fieldSort(SCORE.searchField).order(SortOrder.DESC)) }
-
-private fun SearchRequest.Builder.sorted(sorts: List<FieldSortBuilder>): SearchRequest.Builder {
-  sorted(sorts) { fieldSorts ->
-    this.sort {
-      fieldSorts.forEach { fieldSort ->
-        it.field { field ->
-          field
-            .field(fieldSort.fieldName)
-            .order(if (fieldSort.order() == SortOrder.DESC) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
-        }
-      }
-      it
-    }
-  }
-  return this
-}
 
 private fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): NativeSearchQuery {
   sorted(sorts) { this.withSorts(it) }
