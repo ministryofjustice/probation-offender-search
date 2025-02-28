@@ -50,7 +50,7 @@ jobs:
     secrets: inherit
     with:
       environment: 'dev'
-      app_version: '${{ needs.build.outputs.app_version }}'
+      app_version: '${{ needs.docker_build.outputs.app_version }}'
   deploy_preprod:
     name: Deploy to the preprod environment
     needs:
@@ -60,7 +60,7 @@ jobs:
     secrets: inherit
     with:
       environment: 'preprod'
-      app_version: '${{ needs.build.outputs.app_version }}'
+      app_version: '${{ needs.docker_build.outputs.app_version }}'
   deploy_prod:
     name: Deploy to the prod environment
     needs:
@@ -72,4 +72,4 @@ jobs:
     secrets: inherit
     with:
       environment: 'prod'
-      app_version: '${{ needs.build.outputs.app_version }}'
+      app_version: '${{ needs.docker_build.outputs.app_version }}'
