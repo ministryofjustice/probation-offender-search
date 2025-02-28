@@ -1,7 +1,7 @@
 # probation-offender-search
 
 [![CircleCI](https://circleci.com/gh/ministryofjustice/probation-offender-search/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/probation-offender-search)
-[![Docker](https://quay.io/repository/hmpps/probation-offender-search/status)](https://quay.io/repository/hmpps/probation-offender-search/status)
+[![Docker](https://github.com/orgs/ministryofjustice/packages?repo_name=probation-offender-search)](https://github.com/orgs/ministryofjustice/packages?repo_name=probation-offender-search)
 [![API docs](https://img.shields.io/badge/API_docs_(needs_VPN)-view-85EA2D.svg?logo=swagger)](https://probation-offender-search-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html)
 
 API to provides searching of offender records in Delius via Elastic search

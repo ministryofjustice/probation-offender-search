@@ -9,7 +9,7 @@ generic-service:
       memory: 512Mi
 
   image:
-    repository: quay.io/hmpps/probation-offender-search
+    repository: ghcr.io/ministryofjustice/probation-offender-search
     tag: app_version # override at deployment time
     port: 8080
 
