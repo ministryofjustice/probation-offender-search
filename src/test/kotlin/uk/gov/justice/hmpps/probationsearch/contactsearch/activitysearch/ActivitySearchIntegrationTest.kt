@@ -91,7 +91,6 @@ class ActivitySearchIntegrationTest {
     assertThat(results.totalResults).isEqualTo(9)
     assertThat(results.results.map { it.id }).isEqualTo(
       contacts
-        .asSequence()
         .filter { it.crn == crn }
         .sortedWith(compareByDescending<ActivitySearchResult> { it.date }.thenByDescending { it.startTime })
         .map { it.id }
