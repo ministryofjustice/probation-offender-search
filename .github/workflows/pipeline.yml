@@ -36,7 +36,7 @@ jobs:
     uses: ./.github/workflows/kotlin_integration_tests.yml
     secrets: inherit
   docker_build:
-    if: ${{ inputs.push || true }}
+    if: ${{ github.ref == 'refs/heads/main' || inputs.push }}
     name: Push image
     uses: ./.github/workflows/jib-build.yml
     needs: kotlin_validate

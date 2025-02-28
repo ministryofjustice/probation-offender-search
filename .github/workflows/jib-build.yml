@@ -43,7 +43,7 @@ jobs:
           cache-dependency-path: |
             *.gradle*
             **/gradle-wrapper.properties
-      - run: ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${GITHUB_USERNAME} -Djib.to.auth.password=${GITHUB_PASSWORD} -Djib.to.tags=latest -Djib.container.environment=BUILD_NUMBER="${BUILD_NUMBER}"
+      - run: ./gradlew jib --image="${IMAGE_NAME}:${BUILD_NUMBER}" -Djib.to.auth.username=${GITHUB_USERNAME} -Djib.to.auth.password=${GITHUB_PASSWORD} -Djib.to.tags=latest -Djib.container.environment=BUILD_NUMBER="${BUILD_NUMBER}"
         env:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_PASSWORD: ${{ github.token }}
