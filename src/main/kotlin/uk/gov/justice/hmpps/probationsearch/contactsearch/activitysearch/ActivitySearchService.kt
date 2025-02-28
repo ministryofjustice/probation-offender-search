@@ -36,6 +36,7 @@ import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.probationsearch.services.shouldAll
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
+import java.time.LocalDate
 
 @Service
 class ActivitySearchService(
@@ -162,6 +163,10 @@ private fun BoolQueryBuilder.fromActivityRequest(request: ActivitySearchRequest)
   }
   request.dateTo?.let {
     filter(rangeQuery("date").lte(it.toString()))
+  }
+
+  if (request.filters.contains(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName)) {
+    filter(rangeQuery("date").lte(LocalDate.now()))
   }
 
   val filters = ActivitySearchService.ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
