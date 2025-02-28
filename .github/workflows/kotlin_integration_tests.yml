@@ -1,0 +1,62 @@
+name: integration test template for kotlin
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  integration_tests:
+    runs-on: ubuntu-latest
+    services:
+      opensearch:
+        image: opensearchproject/opensearch:2.5.0
+        env:
+          node.name: opensearch
+          cluster.name: probation-search-cluster
+          discovery.type: single-node
+          bootstrap.memory_lock: true
+          plugins.security.disabled: true
+          OPENSEARCH_JAVA_OPTS: -Xms1g -Xmx1g
+
+        options: >-
+          --health-cmd "curl http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 30s
+          --health-retries 20
+        ports:
+          - 9200:9200
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: refresh cache
+        id: initial-cache
+        uses: actions/cache@v4
+        env:
+          cache-name: kotlin-cache
+        with:
+          path: |
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+          key: ${{ runner.os }}-gradle-${{ env.cache-name }}-${{ hashFiles('build.gradle.kts') }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+          cache-dependency-path: |
+            *.gradle*
+            **/gradle-wrapper.properties
+      - run: ./gradlew check
+        env:
+          JAVA_TOOL_OPTIONS: "-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process"
+          TESTCONTAINERS_ELASTICSEARCH_ENABLED: 'false'
+      - name: upload the artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload kotlin valdation results
+          path: |
+            build/test-results
+            build/reports/tests

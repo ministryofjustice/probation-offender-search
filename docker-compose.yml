@@ -1,7 +1,7 @@
 version: "3"
 services:
   offender-search:
-    image: quay.io/hmpps/probation-offender-search:latest
+    image: ghcr.io/ministryofjustice/probation-offender-search:latest
     networks:
       - hmpps
     container_name: probation-offender-search
