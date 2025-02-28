@@ -37,6 +37,8 @@ import uk.gov.justice.hmpps.probationsearch.services.shouldAll
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class ActivitySearchService(
@@ -167,6 +169,7 @@ private fun BoolQueryBuilder.fromActivityRequest(request: ActivitySearchRequest)
 
   if (request.filters.contains(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName)) {
     filter(rangeQuery("date").lte(LocalDate.now()))
+    filter(rangeQuery("startTime").lte(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))))
   }
 
   val filters = ActivitySearchService.ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
