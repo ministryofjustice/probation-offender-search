@@ -85,6 +85,18 @@ object ActivityGenerator {
       notes = "I have no outcome",
     ),
     generate(
+      startTime = LocalTime.now().plusMinutes(10),
+      date = LocalDate.now().plusDays(0),
+      lastUpdatedDateTime = LocalDateTime.now().plusHours(1),
+      notes = "I have no outcome date in the future",
+    ),
+    generate(
+      startTime = LocalTime.of(10, 30),
+      date = LocalDate.now().plusDays(1),
+      lastUpdatedDateTime = LocalDateTime.now().minusSeconds(40),
+      notes = "I have no outcome date in the future",
+    ),
+    generate(
       startTime = LocalTime.of(10, 0),
       date = LocalDate.now().plusDays(0),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(30),
