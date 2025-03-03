@@ -170,6 +170,7 @@ class ContactSearchService(
         .analyzeWildcard(true)
         .defaultOperator(if (request.matchAllTerms) JavaClientOperator.And else JavaClientOperator.Or)
         .fields("notes", "type", "outcome", "description")
+        .flags { it.multiple("AND|OR|PREFIX|PHRASE|PRECEDENCE|ESCAPE|FUZZY|SLOP") }
     }
   } else {
     MatchQuery.of { match -> match.field("crn").query { it.stringValue(request.crn) } }
