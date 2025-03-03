@@ -47,7 +47,7 @@ object ActivityGenerator {
 
   val contacts = listOf(
     generate(
-      startTime = LocalTime.of(9, 0),
+      startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(2),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(10),
       outcomeDescription = "outcome1",
@@ -55,14 +55,14 @@ object ActivityGenerator {
 
     generate(
       crn = "X123456",
-      startTime = LocalTime.of(9, 0),
+      startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(2),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(10),
       outcomeDescription = "outcome1",
     ),
 
     generate(
-      startTime = LocalTime.of(9, 30),
+      startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(1),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(20),
       complied = "complied",
@@ -71,15 +71,15 @@ object ActivityGenerator {
 
     generate(
       crn = "X123456",
-      startTime = LocalTime.of(9, 30),
-      date = LocalDate.now().plusDays(1),
+      startTime = LocalTime.now(),
+      date = LocalDate.now(),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(20),
       complied = "complied",
       notes = "I complied",
     ),
 
     generate(
-      startTime = LocalTime.of(10, 30),
+      startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(0),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(40),
       notes = "I have no outcome",
@@ -91,13 +91,13 @@ object ActivityGenerator {
       notes = "I have no outcome date in the future",
     ),
     generate(
-      startTime = LocalTime.of(10, 30),
+      startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(1),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(40),
       notes = "I have no outcome date in the future",
     ),
     generate(
-      startTime = LocalTime.of(10, 0),
+      startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(0),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(30),
       outcomeDescription = "outcome2",
@@ -106,7 +106,18 @@ object ActivityGenerator {
       typeCode = "TYPE_CODE1",
       typeDescription = "Special Description to be found",
       date = LocalDate.now().plusDays(-1),
-      startTime = LocalTime.of(11, 0),
+      startTime = LocalTime.now(),
+      outcomeDescription = "outcome3",
+      complied = "ftc",
+      notes = "I failed to comply",
+    ),
+
+    generate(
+      crn = "X123456",
+      typeCode = "TYPE_CODE1",
+      typeDescription = "Special Description to be found",
+      date = LocalDate.now().plusDays(-1),
+      startTime = LocalTime.now(),
       outcomeDescription = "outcome3",
       complied = "ftc",
       notes = "I failed to comply",
@@ -116,7 +127,7 @@ object ActivityGenerator {
       typeCode = "TYPE_CODE2",
       typeDescription = "Another Special Description to be found",
       date = LocalDate.now().plusDays(-2),
-      startTime = LocalTime.of(11, 0),
+      startTime = LocalTime.now(),
       outcomeDescription = "outcome4",
       notes = "I failed to comply",
     ),
@@ -126,7 +137,7 @@ object ActivityGenerator {
       typeCode = "TYPE_CODE2ANOTHER",
       typeDescription = "Another Special Description to be found",
       date = LocalDate.now().plusDays(-2),
-      startTime = LocalTime.of(11, 0),
+      startTime = LocalTime.now(),
       outcomeDescription = "outcome4",
       notes = "I failed to comply",
     ),
@@ -135,7 +146,7 @@ object ActivityGenerator {
       typeCode = "TYPE_CODE3",
       typeDescription = "3 days ago",
       date = LocalDate.now().plusDays(-3),
-      startTime = LocalTime.of(11, 0),
+      startTime = LocalTime.now(),
       outcomeDescription = "outcome5",
       notes = "I failed to comply",
     ),
