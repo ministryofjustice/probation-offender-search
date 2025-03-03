@@ -1,7 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.microsoft.applicationinsights.TelemetryClient
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
@@ -39,7 +38,6 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.S
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import org.opensearch.client.opensearch._types.SortOrder as JavaClientSortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Operator as JavaClientOperator
 
@@ -50,7 +48,6 @@ class ContactSearchService(
   private val objectMapper: ObjectMapper,
   private val deliusService: DeliusService,
   private val openSearchClient: OpenSearchClient,
-  private val telemetryClient: TelemetryClient
 ) {
 
   private val scope = CoroutineScope(Context.current().asContextElement())
@@ -81,7 +78,6 @@ class ContactSearchService(
   }
 
   fun semanticSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    val started = Instant.now()
     audit(request, pageable)
 
     val indexName = "contact-semantic-search-${request.crn.lowercase()}"
@@ -111,7 +107,6 @@ class ContactSearchService(
     val searchRequest = SearchRequest.of { searchRequest ->
       searchRequest
         .index(indexName)
-        .source { source -> source.filter { it.excludes("textEmbedding", "textChunks") } }
         .query { query -> query.hybrid { hybrid -> hybrid.queries(keywordQuery, semanticQuery) } }
         .trackTotalHits(TrackHits.of { it.count(5000) })
         .size(pageable.pageSize)
@@ -142,19 +137,6 @@ class ContactSearchService(
       )
     }
     val response = PageImpl(results, pageable, searchResponse.hits().total().value())
-
-    telemetryClient.trackEvent(
-      "SemanticSearchCompleted",
-      mapOf(
-        "crn" to request.crn,
-        "query" to request.query.length.toString(),
-        "jsonQuery" to searchRequest.toJsonString(),
-        "resultCount" to response.totalElements.toString(),
-      ),
-      mapOf(
-        "duration" to started.until(Instant.now(), ChronoUnit.MILLIS).toDouble(),
-      ),
-    )
 
     return ContactSearchResponse(
       response.numberOfElements,
