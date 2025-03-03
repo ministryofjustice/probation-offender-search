@@ -1,7 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.microsoft.applicationinsights.TelemetryClient
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
@@ -34,12 +33,10 @@ import org.springframework.data.elasticsearch.core.query.IndexQuery
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.*
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import org.opensearch.client.opensearch._types.SortOrder as JavaClientSortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Operator as JavaClientOperator
 
@@ -50,7 +47,6 @@ class ContactSearchService(
   private val objectMapper: ObjectMapper,
   private val deliusService: DeliusService,
   private val openSearchClient: OpenSearchClient,
-  private val telemetryClient: TelemetryClient
 ) {
 
   private val scope = CoroutineScope(Context.current().asContextElement())
@@ -81,7 +77,6 @@ class ContactSearchService(
   }
 
   fun semanticSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    val started = Instant.now()
     audit(request, pageable)
 
     val indexName = "contact-semantic-search-${request.crn.lowercase()}"
@@ -111,19 +106,13 @@ class ContactSearchService(
     val searchRequest = SearchRequest.of { searchRequest ->
       searchRequest
         .index(indexName)
-        .source { source -> source.filter { it.excludes("textEmbedding", "textChunks") } }
         .query { query -> query.hybrid { hybrid -> hybrid.queries(keywordQuery, semanticQuery) } }
         .trackTotalHits(TrackHits.of { it.count(5000) })
         .size(pageable.pageSize)
         .from(pageable.offset.toInt())
-        .sort { sort ->
-          // Note: Hybrid query does not allow sorting by multiple fields including score
-          val order = pageable.sort.singleOrNull() ?: Sort.Order.desc(SCORE.searchField)
-          sort.field {
-            it.field(order.property)
-              .order(if (order.isDescending) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
-          }
-        }
+        // Note: We're currently unable to reliably sort hybrid results until OpenSearch 2.19, so we re-sort the results later
+        // See https://github.com/opensearch-project/neural-search/issues/1067
+        .sort { sort -> sort.field { it.field(SCORE.searchField).order(JavaClientSortOrder.Desc) } }
         .highlight { highlight ->
           highlight
             .encoder(HighlighterEncoder.Html)
@@ -143,25 +132,22 @@ class ContactSearchService(
     }
     val response = PageImpl(results, pageable, searchResponse.hits().total().value())
 
-    telemetryClient.trackEvent(
-      "SemanticSearchCompleted",
-      mapOf(
-        "crn" to request.crn,
-        "query" to request.query.length.toString(),
-        "jsonQuery" to searchRequest.toJsonString(),
-        "resultCount" to response.totalElements.toString(),
-      ),
-      mapOf(
-        "duration" to started.until(Instant.now(), ChronoUnit.MILLIS).toDouble(),
-      ),
-    )
-
     return ContactSearchResponse(
       response.numberOfElements,
       response.pageable.pageNumber,
       response.totalElements,
       response.totalPages,
-      results,
+      results.sortedWith(
+        SortType.entries
+          .flatMap { type -> type.aliases.mapNotNull { alias -> pageable.sort.getOrderFor(alias)?.let { type to it } } }
+          .fold(Comparator { _, _ -> 0 }) { comparator, (type, order) ->
+            val selector = when (type) {
+              DATE -> { contact: ContactSearchResult -> contact.date }
+              else -> { contact: ContactSearchResult -> contact.score }
+            }
+            if (order.isDescending) comparator.thenByDescending(selector) else comparator.thenBy(selector)
+          },
+      ),
     )
   }
 
