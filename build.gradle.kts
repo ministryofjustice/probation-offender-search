@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.3"
   kotlin("plugin.spring") version "2.1.10"
   id("com.google.cloud.tools.jib") version "3.4.4"
 }
@@ -19,13 +19,13 @@ dependencies {
   implementation("org.springframework.data:spring-data-jpa")
   implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
-  implementation("org.opensearch.client:spring-data-opensearch-starter:1.6.1")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:1.6.2")
   implementation("org.opensearch.client:opensearch-java:2.21.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.2.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.3.1")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.3.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.3.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.13.1")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.13.3")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
