@@ -71,8 +71,8 @@ object ActivityGenerator {
 
     generate(
       crn = "X123456",
-      startTime = LocalTime.now(),
-      date = LocalDate.now(),
+      startTime = LocalTime.now().plusMinutes(10),
+      date = LocalDate.now().minusDays(1),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(20),
       complied = "complied",
       notes = "I complied",
