@@ -88,13 +88,13 @@ class ActivitySearchIntegrationTest {
       .results()
 
     assertThat(results.size).isEqualTo(3)
-    assertThat(results.totalResults).isEqualTo(5)
+    assertThat(results.totalResults).isEqualTo(6)
     assertThat(results.results.map { it.id }).isEqualTo(
       contacts
         .filter { it.crn == crn }
         .sortedWith(compareByDescending<ActivitySearchResult> { it.date }.thenByDescending { it.startTime })
         .map { it.id }
-        .drop(4)
+        .drop(3)
         .take(3)
         .sorted(),
     )
@@ -110,8 +110,8 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(5)
-    assertThat(results.totalResults).isEqualTo(5)
+    assertThat(results.size).isEqualTo(6)
+    assertThat(results.totalResults).isEqualTo(6)
   }
 
 
@@ -127,8 +127,8 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
-    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
   }
 
   @Test
@@ -149,8 +149,8 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
-    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
   }
 
   @Test
@@ -172,8 +172,8 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(2)
-    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.size).isEqualTo(3)
+    assertThat(results.totalResults).isEqualTo(3)
   }
 
 
@@ -186,8 +186,8 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(2)
-    assertThat(results.totalResults).isEqualTo(5)
+    assertThat(results.size).isEqualTo(3)
+    assertThat(results.totalResults).isEqualTo(6)
     assertThat(results.results.map { it.id }).isEqualTo(
       contacts
         .asSequence()
@@ -195,7 +195,7 @@ class ActivitySearchIntegrationTest {
         .sortedWith(compareByDescending<ActivitySearchResult> { it.date }.thenByDescending { it.startTime })
         .map { it.id }
         .toList()
-        .takeLast(2)
+        .takeLast(3)
         .sorted(),
     )
   }
@@ -212,9 +212,9 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
-    assertThat(results.totalResults).isEqualTo(1)
-    assertThat(results.results[0].notes).isEqualTo("I have no outcome")
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.results[1].notes).isEqualTo("I have no outcome")
   }
 
   @Test
@@ -340,10 +340,10 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(2)
-    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.size).isEqualTo(3)
+    assertThat(results.totalResults).isEqualTo(3)
     assertThat(results.results[0].notes).isEqualTo("I have no outcome")
-    assertThat(results.results[1].outcomeDescription).isEqualTo("outcome2")
+    assertThat(results.results[2].outcomeDescription).isEqualTo("outcome2")
   }
 
   @Test
@@ -358,10 +358,10 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(2)
-    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.size).isEqualTo(3)
+    assertThat(results.totalResults).isEqualTo(3)
     assertThat(results.results[0].notes).isEqualTo("I have no outcome")
-    assertThat(results.results[1].outcomeDescription).isEqualTo("outcome2")
+    assertThat(results.results[2].outcomeDescription).isEqualTo("outcome2")
   }
 
   @Test
@@ -377,9 +377,9 @@ class ActivitySearchIntegrationTest {
       .results()
 
     assertThat(results.size).isEqualTo(4)
-    assertThat(results.totalResults).isEqualTo(5)
+    assertThat(results.totalResults).isEqualTo(6)
     assertThat(results.results[0].notes).isEqualTo("I have no outcome")
-    assertThat(results.results[2].outcomeDescription).isEqualTo("outcome3")
+    assertThat(results.results[2].outcomeDescription).isEqualTo("outcome2")
     assertThat(results.results[3].notes).isEqualTo("I failed to comply")
 
   }
