@@ -99,7 +99,7 @@ class ContactSearchService(
           query.neural {
             it.field("textEmbedding.knn")
               .queryText(request.query)
-              .minScore(0.78F)
+              .minScore(0.793F)
           }
         }
     }.toQuery() else MatchAllQuery.Builder().build().toQuery()
