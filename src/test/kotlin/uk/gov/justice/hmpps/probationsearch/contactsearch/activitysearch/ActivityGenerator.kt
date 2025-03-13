@@ -11,7 +11,6 @@ object ActivityIdGenerator {
 }
 
 object ActivityGenerator {
-
   private fun generate(
     typeCode: String = "CODE",
     typeDescription: String = "Description of Type",
@@ -27,7 +26,13 @@ object ActivityGenerator {
     crn: String = "T654321",
     id: Long = ActivityIdGenerator.getAndIncrement(),
     complied: String? = null,
-  ) = ActivitySearchResult(
+    startDateTime: LocalDateTime? = null,
+    endDateTime: LocalDateTime? = null,
+    requiresOutcome: String? = "N",
+    nationalStandard: String? = "N",
+    systemGenerated: String? = "N",
+
+    ) = ActivitySearchResult(
     crn,
     id,
     typeCode,
@@ -43,6 +48,11 @@ object ActivityGenerator {
     highlights,
     0.5,
     complied,
+    startDateTime,
+    endDateTime,
+    requiresOutcome,
+    nationalStandard,
+    systemGenerated,
   )
 
   val contacts = listOf(
@@ -51,24 +61,36 @@ object ActivityGenerator {
       date = LocalDate.now().plusDays(2),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(10),
       outcomeDescription = "outcome1",
+      requiresOutcome = "N",
+      startDateTime = LocalDateTime.now().plusDays(2),
     ),
-
     generate(
       crn = "X123456",
       startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(2),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(10),
       outcomeDescription = "outcome1",
+      requiresOutcome = "N",
+      startDateTime = LocalDateTime.now().plusDays(2),
     ),
-
     generate(
       startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(1),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(20),
       complied = "complied",
       notes = "I complied",
+      requiresOutcome = "Y",
+      startDateTime = LocalDateTime.now().plusDays(1),
     ),
-
+    generate(
+      startTime = LocalTime.now(),
+      date = LocalDate.now(),
+      lastUpdatedDateTime = LocalDateTime.now().minusSeconds(20),
+      complied = "complied",
+      notes = "I complied",
+      requiresOutcome = "N",
+      startDateTime = LocalDateTime.now().minusHours(1),
+    ),
     generate(
       crn = "X123456",
       startTime = LocalTime.now().plusMinutes(10),
@@ -76,31 +98,39 @@ object ActivityGenerator {
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(20),
       complied = "complied",
       notes = "I complied",
+      requiresOutcome = "Y",
+      startDateTime = LocalDate.now().minusDays(1).atTime(LocalTime.now().plusMinutes(10)),
     ),
-
     generate(
       startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(0),
-      lastUpdatedDateTime = LocalDateTime.now().minusSeconds(40),
+      lastUpdatedDateTime = LocalDateTime.now().minusSeconds(39),
       notes = "I have no outcome",
+      requiresOutcome = "Y",
+      startDateTime = LocalDateTime.now().minusSeconds(1),
     ),
     generate(
       startTime = LocalTime.now().plusMinutes(10),
       date = LocalDate.now().plusDays(0),
       lastUpdatedDateTime = LocalDateTime.now().plusHours(1),
       notes = "I have no outcome date in the future",
+      requiresOutcome = "Y",
+      startDateTime = LocalDate.now().atTime(LocalTime.now().plusMinutes(10)),
     ),
     generate(
       startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(1),
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(40),
       notes = "I have no outcome date in the future",
+      requiresOutcome = "Y",
+      startDateTime = LocalDateTime.now().plusDays(1),
     ),
     generate(
       startTime = LocalTime.now(),
       date = LocalDate.now().plusDays(0),
-      lastUpdatedDateTime = LocalDateTime.now().minusSeconds(30),
+      lastUpdatedDateTime = LocalDateTime.now().minusSeconds(29),
       outcomeDescription = "outcome2",
+      startDateTime = LocalDateTime.now().minusSeconds(2),
     ),
     generate(
       typeCode = "TYPE_CODE1",
@@ -110,8 +140,8 @@ object ActivityGenerator {
       outcomeDescription = "outcome3",
       complied = "ftc",
       notes = "I failed to comply",
+      startDateTime = LocalDateTime.now().plusDays(-1).minusSeconds(1),
     ),
-
     generate(
       crn = "X123456",
       typeCode = "TYPE_CODE1",
@@ -121,8 +151,8 @@ object ActivityGenerator {
       outcomeDescription = "outcome3",
       complied = "ftc",
       notes = "I failed to comply",
+      startDateTime = LocalDateTime.now().plusDays(-1).minusSeconds(2),
     ),
-
     generate(
       typeCode = "TYPE_CODE2",
       typeDescription = "Another Special Description to be found",
@@ -130,8 +160,8 @@ object ActivityGenerator {
       startTime = LocalTime.now(),
       outcomeDescription = "outcome4",
       notes = "I failed to comply",
+      startDateTime = LocalDateTime.now().plusDays(-2).minusSeconds(3),
     ),
-
     generate(
       crn = "X123456",
       typeCode = "TYPE_CODE2ANOTHER",
@@ -140,8 +170,8 @@ object ActivityGenerator {
       startTime = LocalTime.now(),
       outcomeDescription = "outcome4",
       notes = "I failed to comply",
+      startDateTime = LocalDateTime.now().plusDays(-2),
     ),
-
     generate(
       typeCode = "TYPE_CODE3",
       typeDescription = "3 days ago",
@@ -149,7 +179,7 @@ object ActivityGenerator {
       startTime = LocalTime.now(),
       outcomeDescription = "outcome5",
       notes = "I failed to comply",
+      startDateTime = LocalDateTime.now().plusDays(-3),
     ),
-
-    )
+  )
 }

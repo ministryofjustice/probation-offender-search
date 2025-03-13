@@ -60,4 +60,11 @@ data class ActivitySearchResult(
   @field:JsonInclude(JsonInclude.Include.NON_NULL)
   val score: Double?,
   val complied: String? = null,
+  @field:Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second])
+  val startDateTime: LocalDateTime?,
+  @field:Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second])
+  val endDateTime: LocalDateTime?,
+  val requiresOutcome: String?,
+  val nationalStandard: String?,
+  val systemGenerated: String?,
 )

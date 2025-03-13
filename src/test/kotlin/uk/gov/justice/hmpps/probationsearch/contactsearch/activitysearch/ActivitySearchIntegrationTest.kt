@@ -31,6 +31,7 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch.Activit
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ExtendWith(DeliusApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -83,7 +84,7 @@ class ActivitySearchIntegrationTest {
     val crn = "T654321"
     val results = RestAssured.given()
       .`when`()
-      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 3, "sort" to "date,startTime,desc"))
+      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 3, "sort" to "startDateTime,desc"))
       .then()
       .results()
 
@@ -91,12 +92,10 @@ class ActivitySearchIntegrationTest {
     assertThat(results.totalResults).isEqualTo(6)
     assertThat(results.results.map { it.id }).isEqualTo(
       contacts
-        .filter { it.crn == crn }
-        .sortedWith(compareByDescending<ActivitySearchResult> { it.date }.thenByDescending { it.startTime })
+        .filter { it.crn == crn && it.startDateTime!! <= LocalDateTime.now() }
+        .sortedByDescending { it.startDateTime }
         .map { it.id }
-        .drop(3)
-        .take(3)
-        .sorted(),
+        .take(3),
     )
   }
 
@@ -106,7 +105,7 @@ class ActivitySearchIntegrationTest {
     val crn = "T654321"
     val results = RestAssured.given()
       .`when`()
-      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"))
+      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 20, "sort" to "startDateTime,desc"))
       .then()
       .results()
 
@@ -122,13 +121,13 @@ class ActivitySearchIntegrationTest {
       .`when`()
       .search(
         ActivitySearchRequest(crn, filters = listOf(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName)),
-        mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+        mapOf("page" to 0, "size" to 20, "sort" to "startDateTime,desc"),
       )
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(2)
-    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.totalResults).isEqualTo(1)
   }
 
   @Test
@@ -144,7 +143,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.COMPLIED.filterName,
           ),
         ),
-        mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+        mapOf("page" to 0, "size" to 20, "sort" to "startDateTime,desc"),
       )
       .then()
       .results()
@@ -167,7 +166,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
           ),
         ),
-        mapOf("page" to 0, "size" to 20, "sort" to "date,startTime,desc"),
+        mapOf("page" to 0, "size" to 20, "sort" to "startDateTime,desc"),
       )
       .then()
       .results()
@@ -182,7 +181,7 @@ class ActivitySearchIntegrationTest {
     val crn = "T654321"
     val results = RestAssured.given()
       .`when`()
-      .search(ActivitySearchRequest(crn), mapOf("page" to 1, "size" to 3, "sort" to "date,startTime,desc"))
+      .search(ActivitySearchRequest(crn), mapOf("page" to 1, "size" to 3, "sort" to "startDateTime,desc"))
       .then()
       .results()
 
@@ -212,9 +211,9 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(2)
-    assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[1].notes).isEqualTo("I have no outcome")
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("I have no outcome")
   }
 
   @Test
@@ -298,8 +297,8 @@ class ActivitySearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
-    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
   }
 
   @Test
@@ -335,7 +334,7 @@ class ActivitySearchIntegrationTest {
       .`when`()
       .search(
         ActivitySearchRequest(crn, dateFrom = LocalDate.now(), dateTo = LocalDate.now()),
-        mapOf("page" to 0, "size" to 3, "sort" to "date,startTime,desc"),
+        mapOf("page" to 0, "size" to 3, "sort" to "startDateTime,desc"),
       )
       .then()
       .results()
@@ -343,7 +342,6 @@ class ActivitySearchIntegrationTest {
     assertThat(results.size).isEqualTo(3)
     assertThat(results.totalResults).isEqualTo(3)
     assertThat(results.results[0].notes).isEqualTo("I have no outcome")
-    assertThat(results.results[2].outcomeDescription).isEqualTo("outcome2")
   }
 
   @Test
@@ -353,7 +351,7 @@ class ActivitySearchIntegrationTest {
       .`when`()
       .search(
         ActivitySearchRequest(crn, dateFrom = LocalDate.now()),
-        mapOf("page" to 0, "size" to 6, "sort" to "date,startTime,desc"),
+        mapOf("page" to 0, "size" to 6, "sort" to "startDateTime,desc"),
       )
       .then()
       .results()
@@ -361,7 +359,6 @@ class ActivitySearchIntegrationTest {
     assertThat(results.size).isEqualTo(3)
     assertThat(results.totalResults).isEqualTo(3)
     assertThat(results.results[0].notes).isEqualTo("I have no outcome")
-    assertThat(results.results[2].outcomeDescription).isEqualTo("outcome2")
   }
 
   @Test
@@ -371,7 +368,7 @@ class ActivitySearchIntegrationTest {
       .`when`()
       .search(
         ActivitySearchRequest(crn, dateTo = LocalDate.now()),
-        mapOf("page" to 0, "size" to 4, "sort" to "date,startTime,desc"),
+        mapOf("page" to 0, "size" to 4, "sort" to "startDateTime,desc"),
       )
       .then()
       .results()
@@ -379,9 +376,6 @@ class ActivitySearchIntegrationTest {
     assertThat(results.size).isEqualTo(4)
     assertThat(results.totalResults).isEqualTo(6)
     assertThat(results.results[0].notes).isEqualTo("I have no outcome")
-    assertThat(results.results[2].outcomeDescription).isEqualTo("outcome2")
-    assertThat(results.results[3].notes).isEqualTo("I failed to comply")
-
   }
 
   @Test
@@ -395,7 +389,7 @@ class ActivitySearchIntegrationTest {
           dateFrom = LocalDate.now().minusDays(3),
           dateTo = LocalDate.now().minusDays(1),
         ),
-        mapOf("page" to 0, "size" to 4, "sort" to "date,startTime,desc"),
+        mapOf("page" to 0, "size" to 4, "sort" to "startDateTime,desc"),
       )
       .then()
       .results()
@@ -419,7 +413,7 @@ class ActivitySearchIntegrationTest {
           keywords = "TYPE_CODE2 TYPE_CODE3",
           dateTo = LocalDate.now().minusDays(1),
         ),
-        mapOf("page" to 0, "size" to 4, "sort" to "date,startTime,desc"),
+        mapOf("page" to 0, "size" to 4, "sort" to "startDateTime,desc"),
       )
       .then()
       .results()

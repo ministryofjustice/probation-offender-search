@@ -13,7 +13,6 @@ import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.MatchQueryBuilder
 import org.opensearch.index.query.Operator
 import org.opensearch.index.query.QueryBuilder
-import org.opensearch.index.query.QueryBuilders
 import org.opensearch.index.query.QueryBuilders.boolQuery
 import org.opensearch.index.query.QueryBuilders.matchQuery
 import org.opensearch.index.query.QueryBuilders.rangeQuery
@@ -31,12 +30,12 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.probationsearch.services.shouldAll
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class ActivitySearchService(
@@ -126,14 +125,13 @@ class ActivitySearchService(
     NOT_COMPLIED("notComplied", listOf(matchQuery("complied", "ftc"))),
     NO_OUTCOME(
       "noOutcome",
-      listOf(
-        boolQuery().must(boolQuery().mustNot(QueryBuilders.existsQuery("outcome"))),
-      ),
+      listOf(matchQuery("requiresOutcome", "Y")),
     )
   }
 
   enum class SortType(val aliases: List<String>, val searchField: String) {
     DATE(listOf("date", "CONTACT_DATE"), "date.date"),
+    START_DATE_TIME(listOf("startDateTime"), "startDateTime"),
     START_TIME(listOf("startTime"), "startTime"),
     SCORE(listOf("relevance", "RELEVANCE"), "_score"),
     ;
@@ -162,11 +160,15 @@ private fun BoolQueryBuilder.fromActivityRequest(request: ActivitySearchRequest)
     filter(rangeQuery("date").gte(it.toString()))
   }
   request.dateTo?.let {
-    filter(rangeQuery("date").lte(it.toString()))
+    if (it == LocalDate.now()) {
+      filter(rangeQuery("startDateTime").lte(LocalDateTime.now()))
+    } else {
+      filter(rangeQuery("date").lte(it.toString()))
+    }
   }
 
   if (request.dateTo == null) {
-    filter(rangeQuery("date").lte(LocalDate.now()))
+    filter(rangeQuery("startDateTime").lte(LocalDateTime.now()))
   }
 
   val filters = ActivitySearchService.ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
@@ -205,7 +207,7 @@ private fun Sort.Direction.toSortOrder() = when (this) {
   Sort.Direction.DESC -> SortOrder.DESC
 }
 
-private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
+private fun Sort.fieldSorts() = ActivitySearchService.SortType.entries.flatMap { type ->
   type.aliases.mapNotNull { alias ->
     getOrderFor(alias)?.let {
       SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder())
@@ -223,8 +225,7 @@ private fun sorted(sorts: List<FieldSortBuilder>, sortFn: (List<FieldSortBuilder
     0 -> {
       sortFn(
         listOf(
-          SortBuilders.fieldSort(ActivitySearchService.SortType.DATE.searchField).order(SortOrder.DESC),
-          SortBuilders.fieldSort(ActivitySearchService.SortType.START_TIME.searchField).order(SortOrder.DESC),
+          SortBuilders.fieldSort(ActivitySearchService.SortType.START_DATE_TIME.searchField).order(SortOrder.DESC),
         ),
       )
     }
