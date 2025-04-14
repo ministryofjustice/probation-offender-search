@@ -28,6 +28,7 @@ dependencies {
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.14.0")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
   testImplementation("org.springframework.security:spring-security-test")
+  testImplementation("org.junit.vintage:junit-vintage-engine")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.0")
   testImplementation("org.awaitility:awaitility-kotlin")
