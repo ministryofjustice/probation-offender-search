@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
+import uk.gov.justice.hmpps.probationsearch.utils.TermSplitter
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -30,6 +31,7 @@ class ContactSearchController(
         "crn" to request.crn,
         "query" to request.query.length.toString(),
         "resultCount" to response.totalResults.toString(),
+        "queryTermCount" to TermSplitter.split(request.query).size.toString()
       ),
       mapOf(
         "duration" to started.until(Instant.now(), ChronoUnit.MILLIS).toDouble(),
