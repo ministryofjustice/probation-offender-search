@@ -98,7 +98,7 @@ class ContactSearchService(
         .query { query ->
           query.neural {
             it.field("textEmbedding.knn")
-              .queryText("Represent this sentence for searching relevant passages: ${request.query}")
+              .queryText(request.query)
               .minScore(0.793F)
           }
         }
