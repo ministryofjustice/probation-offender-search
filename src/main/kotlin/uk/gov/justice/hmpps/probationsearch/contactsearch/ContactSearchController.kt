@@ -23,7 +23,8 @@ class ContactSearchController(
   fun searchContact(
     @RequestBody request: ContactSearchRequest,
     @ParameterObject @PageableDefault pageable: Pageable,
-  ): ContactSearchResponse = if (featureFlags.enabled(FeatureFlags.SEMANTIC_CONTACT_SEARCH)) {
+    @RequestParam(defaultValue = "false") semantic: Boolean = false,
+  ): ContactSearchResponse = if (semantic || featureFlags.enabled(FeatureFlags.SEMANTIC_CONTACT_SEARCH)) {
     val started = Instant.now()
     val response = contactSearchService.semanticSearch(request, pageable)
     telemetryClient.trackEvent(
