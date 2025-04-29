@@ -7,12 +7,15 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
+import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.wiremock.CommunityApiExtension
 import uk.gov.justice.hmpps.probationsearch.wiremock.OpenSearchExtension
 
 @ExtendWith(CommunityApiExtension::class, OpenSearchExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
 @DirtiesContext(classMode = BEFORE_CLASS)
 class HealthCheckTest {

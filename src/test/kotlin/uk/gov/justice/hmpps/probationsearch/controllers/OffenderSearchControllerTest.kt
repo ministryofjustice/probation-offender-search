@@ -23,7 +23,9 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.util.PersonSearchHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.OpenSearchExtension
@@ -33,6 +35,7 @@ import java.nio.file.Paths
 
 @ExtendWith(OpenSearchExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test", "wiremock"])
 class OffenderSearchControllerTest {
   @LocalServerPort

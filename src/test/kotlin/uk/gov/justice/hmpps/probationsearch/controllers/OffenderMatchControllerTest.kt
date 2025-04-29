@@ -16,13 +16,16 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderMatches
+import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.services.MatchService
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import java.lang.reflect.Type
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
 internal class OffenderMatchControllerTest {
