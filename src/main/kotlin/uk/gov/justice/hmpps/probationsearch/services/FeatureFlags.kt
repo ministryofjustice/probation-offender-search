@@ -2,12 +2,10 @@ package uk.gov.justice.hmpps.probationsearch.services
 
 import io.flipt.api.FliptClient
 import io.flipt.api.evaluation.models.EvaluationRequest
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.config.FliptConfig
 
 @Service
-@ConditionalOnMissingBean(FeatureFlags::class)
 class FeatureFlags(private val client: FliptClient) {
   fun enabled(key: String) = try {
     client.evaluation().evaluateBoolean(
