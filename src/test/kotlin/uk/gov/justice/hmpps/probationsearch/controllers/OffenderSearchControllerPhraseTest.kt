@@ -29,11 +29,13 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.gov.justice.hmpps.probationsearch.dto.IDs
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.dto.ProbationAreaAggregation
 import uk.gov.justice.hmpps.probationsearch.dto.SearchPhraseResults
+import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.services.SearchService
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper.ClientUser
@@ -41,6 +43,7 @@ import java.lang.reflect.Type
 import java.time.LocalDate
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
 class OffenderSearchControllerPhraseTest {

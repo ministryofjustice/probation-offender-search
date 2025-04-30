@@ -10,13 +10,16 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.util.PersonSearchHelper
 import java.time.LocalDate
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
 @DirtiesContext
 abstract class OffenderMatchAPIIntegrationBase {

@@ -18,16 +18,19 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListeners
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.support.AbstractTestExecutionListener
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.util.PersonSearchHelper
 import java.lang.reflect.Type
 import java.util.Objects
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
 @RunWith(SpringJUnit4ClassRunner::class)
 @TestExecutionListeners(listeners = [DependencyInjectionTestExecutionListener::class, OffenderSearchAPIIntegrationTest::class])
