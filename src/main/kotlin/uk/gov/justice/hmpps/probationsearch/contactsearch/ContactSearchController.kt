@@ -23,24 +23,27 @@ class ContactSearchController(
   fun searchContact(
     @RequestBody request: ContactSearchRequest,
     @ParameterObject @PageableDefault pageable: Pageable,
-    @RequestParam(defaultValue = "false") semantic: Boolean = false,
-  ): ContactSearchResponse = if (semantic || featureFlags.enabled(FeatureFlags.SEMANTIC_CONTACT_SEARCH)) {
-    val started = Instant.now()
-    val response = contactSearchService.semanticSearch(request, pageable)
-    telemetryClient.trackEvent(
-      "SemanticSearchCompleted",
-      mapOf(
-        "crn" to request.crn,
-        "query" to request.query.length.toString(),
-        "resultCount" to response.totalResults.toString(),
-        "queryTermCount" to TermSplitter.split(request.query).size.toString()
-      ),
-      mapOf(
-        "duration" to started.until(Instant.now(), ChronoUnit.MILLIS).toDouble(),
-      ),
-    )
-    response
-  } else {
-    contactSearchService.keywordSearch(request, pageable)
+    @RequestParam(required = false) semantic: Boolean? = null,
+  ): ContactSearchResponse {
+    val useSemanticSearch = semantic ?: featureFlags.enabled(FeatureFlags.SEMANTIC_CONTACT_SEARCH)
+    return if (useSemanticSearch) {
+      val started = Instant.now()
+      val response = contactSearchService.semanticSearch(request, pageable)
+      telemetryClient.trackEvent(
+        "SemanticSearchCompleted",
+        mapOf(
+          "crn" to request.crn,
+          "query" to request.query.length.toString(),
+          "resultCount" to response.totalResults.toString(),
+          "queryTermCount" to TermSplitter.split(request.query).size.toString()
+        ),
+        mapOf(
+          "duration" to started.until(Instant.now(), ChronoUnit.MILLIS).toDouble(),
+        ),
+      )
+      response
+    } else {
+      contactSearchService.keywordSearch(request, pageable)
+    }
   }
 }
