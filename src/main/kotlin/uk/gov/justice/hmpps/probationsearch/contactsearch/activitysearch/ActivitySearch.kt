@@ -65,6 +65,7 @@ data class ActivitySearchResult(
   @field:Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second])
   val endDateTime: LocalDateTime?,
   val requiresOutcome: String?,
+  val outcomeRequiredFlag: String?,
   val nationalStandard: String?,
   val systemGenerated: String?,
 )

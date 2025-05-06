@@ -29,6 +29,7 @@ object ActivityGenerator {
     startDateTime: LocalDateTime? = null,
     endDateTime: LocalDateTime? = null,
     requiresOutcome: String? = "N",
+    outcomeRequiredFlag: String? = "N",
     nationalStandard: String? = "N",
     systemGenerated: String? = "N",
 
@@ -51,6 +52,7 @@ object ActivityGenerator {
     startDateTime,
     endDateTime,
     requiresOutcome,
+    outcomeRequiredFlag,
     nationalStandard,
     systemGenerated,
   )
@@ -62,6 +64,7 @@ object ActivityGenerator {
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(10),
       outcomeDescription = "outcome1",
       requiresOutcome = "N",
+      outcomeRequiredFlag = "N",
       startDateTime = LocalDateTime.now().plusDays(2),
     ),
     generate(
@@ -71,6 +74,7 @@ object ActivityGenerator {
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(10),
       outcomeDescription = "outcome1",
       requiresOutcome = "N",
+      outcomeRequiredFlag = "N",
       startDateTime = LocalDateTime.now().plusDays(2),
     ),
     generate(
@@ -80,6 +84,7 @@ object ActivityGenerator {
       complied = "complied",
       notes = "I complied",
       requiresOutcome = "Y",
+      outcomeRequiredFlag = "Y",
       startDateTime = LocalDateTime.now().plusDays(1),
     ),
     generate(
@@ -89,6 +94,7 @@ object ActivityGenerator {
       complied = "complied",
       notes = "I complied",
       requiresOutcome = "N",
+      outcomeRequiredFlag = "N",
       startDateTime = LocalDateTime.now().minusHours(1),
     ),
     generate(
@@ -99,6 +105,7 @@ object ActivityGenerator {
       complied = "complied",
       notes = "I complied",
       requiresOutcome = "Y",
+      outcomeRequiredFlag = "Y",
       startDateTime = LocalDate.now().minusDays(1).atTime(LocalTime.now().plusMinutes(10)),
     ),
     generate(
@@ -107,6 +114,7 @@ object ActivityGenerator {
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(39),
       notes = "I have no outcome",
       requiresOutcome = "Y",
+      outcomeRequiredFlag = "Y",
       startDateTime = LocalDateTime.now().minusSeconds(1),
     ),
     generate(
@@ -115,6 +123,7 @@ object ActivityGenerator {
       lastUpdatedDateTime = LocalDateTime.now().plusHours(1),
       notes = "I have no outcome date in the future",
       requiresOutcome = "Y",
+      outcomeRequiredFlag = "Y",
       startDateTime = LocalDate.now().atTime(LocalTime.now().plusMinutes(10)),
     ),
     generate(
@@ -123,6 +132,7 @@ object ActivityGenerator {
       lastUpdatedDateTime = LocalDateTime.now().minusSeconds(40),
       notes = "I have no outcome date in the future",
       requiresOutcome = "Y",
+      outcomeRequiredFlag = "Y",
       startDateTime = LocalDateTime.now().plusDays(1),
     ),
     generate(
