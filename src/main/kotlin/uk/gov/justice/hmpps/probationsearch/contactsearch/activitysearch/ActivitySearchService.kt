@@ -10,14 +10,12 @@ import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.opensearch.index.query.BoolQueryBuilder
-import org.opensearch.index.query.MatchQueryBuilder
 import org.opensearch.index.query.Operator
 import org.opensearch.index.query.QueryBuilder
 import org.opensearch.index.query.QueryBuilders.boolQuery
 import org.opensearch.index.query.QueryBuilders.matchQuery
 import org.opensearch.index.query.QueryBuilders.rangeQuery
 import org.opensearch.index.query.QueryBuilders.simpleQueryStringQuery
-import org.opensearch.index.query.QueryBuilders.termsQuery
 import org.opensearch.index.query.SimpleQueryStringFlag
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
 import org.opensearch.search.sort.FieldSortBuilder
@@ -125,7 +123,7 @@ class ActivitySearchService(
     NOT_COMPLIED("notComplied", listOf(matchQuery("complied", "ftc"))),
     NO_OUTCOME(
       "noOutcome",
-      listOf(matchQuery("requiresOutcome", "Y")),
+      listOf(matchQuery("requiresOutcome", "Y"), matchQuery("outcomeRequiredFlag", "Y")),
     )
   }
 
@@ -140,18 +138,6 @@ class ActivitySearchService(
       fun from(searchField: String): SortType? = entries.firstOrNull { it.searchField == searchField }
     }
   }
-}
-
-
-private fun santitizeQueries(inQueries: List<QueryBuilder>): List<QueryBuilder> {
-  //Combine multiple match queries on the same field into a termsQuery
-  val x = inQueries.filterIsInstance<MatchQueryBuilder>().groupBy { q -> q.fieldName() }
-    .filter { it.value.size > 1 }
-  val queries = inQueries.filter { it !in x.values.flatten() }.toMutableList()
-  queries += x.entries.map {
-    termsQuery(it.key, it.value.map { q -> q.value().toString() })
-  }
-  return queries
 }
 
 private fun BoolQueryBuilder.fromActivityRequest(request: ActivitySearchRequest): BoolQueryBuilder {
