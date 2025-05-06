@@ -1,15 +1,26 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.microsoft.applicationinsights.TelemetryClient
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.withTimeoutOrNull
+import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
-import org.opensearch.client.opensearch._types.query_dsl.*
+import org.opensearch.client.opensearch._types.FieldValue
+import org.opensearch.client.opensearch._types.Refresh
+import org.opensearch.client.opensearch._types.query_dsl.BoolQuery
+import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
+import org.opensearch.client.opensearch._types.query_dsl.HybridQuery
+import org.opensearch.client.opensearch._types.query_dsl.NestedQuery
+import org.opensearch.client.opensearch._types.query_dsl.Query.Builder
+import org.opensearch.client.opensearch.core.BulkRequest
 import org.opensearch.client.opensearch.core.SearchRequest
+import org.opensearch.client.opensearch.core.bulk.BulkOperation
 import org.opensearch.client.opensearch.core.search.HighlighterEncoder
 import org.opensearch.client.opensearch.core.search.TrackHits
 import org.opensearch.data.client.orhlc.NativeSearchQuery
@@ -17,7 +28,9 @@ import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.Operator
-import org.opensearch.index.query.QueryBuilders.*
+import org.opensearch.index.query.QueryBuilders.boolQuery
+import org.opensearch.index.query.QueryBuilders.matchQuery
+import org.opensearch.index.query.QueryBuilders.simpleQueryStringQuery
 import org.opensearch.index.query.SimpleQueryStringFlag
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
 import org.opensearch.search.sort.FieldSortBuilder
@@ -27,15 +40,18 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.elasticsearch.core.IndexOperations
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
-import org.springframework.data.elasticsearch.core.query.IndexQuery
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.*
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.DATE
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
+import java.io.StringReader
+import java.time.Duration
 import java.time.Instant
 import org.opensearch.client.opensearch._types.SortOrder as JavaClientSortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Operator as JavaClientOperator
@@ -47,6 +63,7 @@ class ContactSearchService(
   private val objectMapper: ObjectMapper,
   private val deliusService: DeliusService,
   private val openSearchClient: OpenSearchClient,
+  private val telemetryClient: TelemetryClient,
 ) {
 
   private val scope = CoroutineScope(Context.current().asContextElement())
@@ -76,37 +93,81 @@ class ContactSearchService(
     )
   }
 
-  fun semanticSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
+  suspend fun semanticSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
     audit(request, pageable)
 
-    val indexName = "contact-semantic-search-${request.crn.lowercase()}"
-    restTemplate.indexOps(IndexCoordinates.of(indexName)).apply {
-      if (!exists()) {
-        delete()
-        create()
-        loadData(request.crn)
-        refresh()
-      }
+    val crnExists = openSearchClient.search(
+      { searchRequest ->
+        searchRequest.index("contact-semantic-search-primary")
+          .routing(request.crn)
+          .query { q -> q.term { term -> term.field("crn").value(FieldValue.of(request.crn)) } }
+          .trackTotalHits(TrackHits.of { it.enabled(false) })
+          .terminateAfter(1)
+          .size(0)
+      },
+      Any::class.java,
+    ).terminatedEarly() ?: error("Failed to check existence of case with CRN=${request.crn} in semantic index")
+    if (!crnExists) {
+      val loadDataJob = scope.launch { loadData(request.crn) }
+      withTimeoutOrNull(Duration.ofSeconds(30)) { loadDataJob.join() }
+        ?: throw IndexNotReadyException("Timed out waiting for contacts with CRN=${request.crn} to be indexed for semantic search. The indexing process has not been interrupted.")
     }
 
-    // Must use the newer Java client here, the old rest client doesn't support hybrid queries
-    val keywordQuery = keywordQueryForJavaClient(request)
-    val semanticQuery = if (request.query.isNotEmpty()) NestedQuery.of { nested ->
-      nested
-        .scoreMode(ChildScoreMode.Max)
-        .path("textEmbedding")
-        .query { query ->
-          query.neural {
-            it.field("textEmbedding.knn")
-              .queryText(request.query)
-              .minScore(0.793F)
+    val query = if (request.query.isNotEmpty()) {
+      val keywordQuery = BoolQuery.of { bool ->
+        bool
+          .filter { it.matchesCrn(request.crn) }
+          .must { must ->
+            must.simpleQueryString { simpleQueryString ->
+              simpleQueryString.query(request.query)
+                .analyzeWildcard(true)
+                .defaultOperator(if (request.matchAllTerms) JavaClientOperator.And else JavaClientOperator.Or)
+                .fields("notes", "type", "outcome", "description")
+                .flags { it.multiple("AND|OR|PREFIX|PHRASE|PRECEDENCE|ESCAPE|FUZZY|SLOP") }
+            }
           }
-        }
-    }.toQuery() else MatchAllQuery.Builder().build().toQuery()
+      }.toQuery()
+      val semanticQuery = NestedQuery.of { nested ->
+        nested
+          .scoreMode(ChildScoreMode.Max)
+          .path("textEmbedding")
+          .query { query ->
+            query.neural {
+              it.field("textEmbedding.knn")
+                .queryText(request.query)
+                .minScore(0.793F)
+                .filter(Builder().matchesCrn(request.crn).build())
+            }
+          }
+      }.toQuery()
+      HybridQuery.of { hybrid -> hybrid.queries(keywordQuery, semanticQuery) }
+    } else {
+      BoolQuery.of { bool -> bool.filter { it.matchesCrn(request.crn) } }
+    }.toQuery()
     val searchRequest = SearchRequest.of { searchRequest ->
       searchRequest
-        .index(indexName)
-        .query { query -> query.hybrid { hybrid -> hybrid.queries(keywordQuery, semanticQuery) } }
+        .index("contact-semantic-search-primary")
+        .routing(request.crn)
+        .timeout("15s")
+        .source { source ->
+          source.filter {
+            it.includes(
+              "crn",
+              "id",
+              "typeCode",
+              "typeDescription",
+              "outcomeCode",
+              "outcomeDescription",
+              "description",
+              "notes",
+              "date",
+              "startTime",
+              "endTime",
+              "lastUpdatedDateTime",
+            )
+          }
+        }
+        .query(query)
         .trackTotalHits(TrackHits.of { it.count(5000) })
         .size(pageable.pageSize)
         .from(pageable.offset.toInt())
@@ -168,28 +229,34 @@ class ContactSearchService(
         .fragmentSize(200),
     ).sorted(pageable.sort.fieldSorts())
 
-  private fun keywordQueryForJavaClient(request: ContactSearchRequest) = if (request.query.isNotEmpty()) {
-    SimpleQueryStringQuery.of { simpleQueryString ->
-      simpleQueryString.query(request.query)
-        .analyzeWildcard(true)
-        .defaultOperator(if (request.matchAllTerms) JavaClientOperator.And else JavaClientOperator.Or)
-        .fields("notes", "type", "outcome", "description")
-        .flags { it.multiple("AND|OR|PREFIX|PHRASE|PRECEDENCE|ESCAPE|FUZZY|SLOP") }
-    }
-  } else {
-    MatchQuery.of { match -> match.field("crn").query { it.stringValue(request.crn) } }
-  }.toQuery()
-
   @WithSpan
-  private fun IndexOperations.loadData(crn: String) {
-    val documents = deliusService.getContacts(crn).map {
-      IndexQuery().apply {
-        id = it.contactId.toString()
-        source = it.json
+  private fun loadData(crn: String) {
+    val startTime = System.currentTimeMillis()
+    val mapper = openSearchClient._transport().jsonpMapper()
+    val operations = deliusService.getContacts(crn).map { contact ->
+      BulkOperation.of { bulk ->
+        bulk.index {
+          it.id(contact.contactId.toString())
+            .document(JsonData.from(mapper.jsonProvider().createParser(StringReader(contact.json)), mapper))
+        }
       }
     }
-
-    restTemplate.bulkIndex(documents, indexCoordinates)
+    val request = BulkRequest.Builder()
+      .index("contact-semantic-search-primary")
+      .routing(crn)
+      .refresh(Refresh.True)
+      .timeout { it.time("5m") }
+      .operations(operations)
+      .build()
+    openSearchClient.bulk(request)
+    telemetryClient.trackEvent(
+      "OnDemandDataLoad",
+      mapOf("crn" to crn),
+      mapOf(
+        "duration" to (System.currentTimeMillis() - startTime).toDouble(),
+        "count" to request.operations().size.toDouble(),
+      ),
+    )
   }
 
   private fun audit(request: ContactSearchRequest, pageable: Pageable) {
@@ -235,6 +302,9 @@ class ContactSearchService(
     }
   }
 }
+
+private fun Builder.matchesCrn(crn: String) =
+  this.term { term -> term.field("crn").value { it.stringValue(crn) } }
 
 private fun BoolQueryBuilder.fromRequest(request: ContactSearchRequest): BoolQueryBuilder {
   filter(matchQuery("crn", request.crn))

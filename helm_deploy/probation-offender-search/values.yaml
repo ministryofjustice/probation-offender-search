@@ -33,6 +33,7 @@ generic-service:
     JDK_JAVA_OPTIONS: "-javaagent:/agent/agent.jar -XX:MaxRAMPercentage=75.0"
     AWS_REGION: "eu-west-2"
     SEARCH_SUPPORTED_MAPPING_VERSION: "2"
+    OPENSEARCH_SOCKET-TIMEOUT: "10m"
 
   namespace_secrets:
     probation-offender-search:

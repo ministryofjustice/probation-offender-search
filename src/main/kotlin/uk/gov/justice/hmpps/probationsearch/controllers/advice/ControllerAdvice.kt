@@ -5,6 +5,7 @@ import io.sentry.Sentry
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
+import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
 import uk.gov.justice.hmpps.probationsearch.InvalidRequestException
 import uk.gov.justice.hmpps.probationsearch.NotFoundException
 import uk.gov.justice.hmpps.probationsearch.UnauthorisedException
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchController
 import uk.gov.justice.hmpps.probationsearch.controllers.OffenderSearchController
 
-@RestControllerAdvice(basePackageClasses = [OffenderSearchController::class])
+@RestControllerAdvice(basePackageClasses = [OffenderSearchController::class, ContactSearchController::class])
 class ControllerAdvice {
 
   companion object {
@@ -95,6 +98,20 @@ class ControllerAdvice {
   @ExceptionHandler(ConstraintViolationException::class)
   fun onValidationError(ex: Exception): ResponseEntity<String> {
     return ResponseEntity<String>(HttpStatus.BAD_REQUEST)
+  }
+
+  @ExceptionHandler(IndexNotReadyException::class)
+  fun handleException(e: IndexNotReadyException): ResponseEntity<ErrorResponse> {
+    return ResponseEntity
+      .status(HttpStatus.SERVICE_UNAVAILABLE)
+      .header(HttpHeaders.RETRY_AFTER, "30")
+      .body(
+        ErrorResponse(
+          status = HttpStatus.SERVICE_UNAVAILABLE.value(),
+          developerMessage = e.message,
+          userMessage = "Indexing in progress. Please try again later.",
+        ),
+      )
   }
 }
 
