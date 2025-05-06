@@ -29,6 +29,7 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
+import uk.gov.justice.hmpps.probationsearch.services.mustAll
 import uk.gov.justice.hmpps.probationsearch.services.shouldAll
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.time.Instant
@@ -123,7 +124,7 @@ class ActivitySearchService(
     NOT_COMPLIED("notComplied", listOf(matchQuery("complied", "ftc"))),
     NO_OUTCOME(
       "noOutcome",
-      listOf(matchQuery("requiresOutcome", "Y"), matchQuery("outcomeRequiredFlag", "Y")),
+      listOf(boolQuery().mustAll(listOf(matchQuery("requiresOutcome", "Y"), matchQuery("outcomeRequiredFlag", "Y")))),
     )
   }
 
