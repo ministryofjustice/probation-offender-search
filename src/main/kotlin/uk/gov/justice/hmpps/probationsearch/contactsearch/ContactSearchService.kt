@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.withTimeoutOrNull
 import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
-import org.opensearch.client.opensearch._types.FieldValue
 import org.opensearch.client.opensearch._types.Refresh
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery
 import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
@@ -97,14 +96,13 @@ class ContactSearchService(
     audit(request, pageable)
 
     val crnExists = openSearchClient.search(
-      { searchRequest ->
-        searchRequest.index("contact-semantic-search-primary")
-          .routing(request.crn)
-          .query { q -> q.term { term -> term.field("crn").value(FieldValue.of(request.crn)) } }
-          .trackTotalHits(TrackHits.of { it.enabled(false) })
-          .terminateAfter(1)
-          .size(0)
-      },
+      SearchRequest.Builder().index("contact-semantic-search-primary")
+        .routing(request.crn)
+        .query { q -> q.matchesCrn(request.crn) }
+        .trackTotalHits(TrackHits.of { it.enabled(false) })
+        .terminateAfter(1)
+        .size(0)
+        .build().also { telemetryClient.trackEvent("FindByCRN", mapOf("query" to it.toJsonString()), null) },
       Any::class.java,
     ).terminatedEarly() ?: error("Failed to check existence of case with CRN=${request.crn} in semantic index")
     if (!crnExists) {
