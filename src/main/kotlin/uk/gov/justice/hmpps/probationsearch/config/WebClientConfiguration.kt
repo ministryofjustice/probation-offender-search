@@ -54,11 +54,6 @@ class WebClientConfiguration(
   }
 
   @Bean
-  fun communityApiHealthWebClient(): WebClient {
-    return WebClient.builder().baseUrl(communityRootUri).build()
-  }
-
-  @Bean
   fun authorizedClientManager(
     clientRegistrationRepository: ClientRegistrationRepository?,
     oAuth2AuthorizedClientService: OAuth2AuthorizedClientService?,
