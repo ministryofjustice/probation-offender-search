@@ -45,7 +45,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.DATE
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
@@ -171,9 +170,7 @@ class ContactSearchService(
         .trackTotalHits(TrackHits.of { it.count(5000) })
         .size(pageable.pageSize)
         .from(pageable.offset.toInt())
-        // Note: We're currently unable to reliably sort hybrid results until OpenSearch 2.19, so we re-sort the results later
-        // See https://github.com/opensearch-project/neural-search/issues/1067
-        .sort { sort -> sort.field { it.field(SCORE.searchField).order(JavaClientSortOrder.Desc) } }
+        .sorted(pageable.sort.fieldSorts())
         .highlight { highlight ->
           highlight
             .encoder(HighlighterEncoder.Html)
@@ -198,17 +195,7 @@ class ContactSearchService(
       response.pageable.pageNumber,
       response.totalElements,
       response.totalPages,
-      results.sortedWith(
-        SortType.entries
-          .flatMap { type -> type.aliases.mapNotNull { alias -> pageable.sort.getOrderFor(alias)?.let { type to it } } }
-          .fold(Comparator { _, _ -> 0 }) { comparator, (type, order) ->
-            val selector = when (type) {
-              DATE -> { contact: ContactSearchResult -> contact.date }
-              else -> { contact: ContactSearchResult -> contact.score }
-            }
-            if (order.isDescending) comparator.thenByDescending(selector) else comparator.thenBy(selector)
-          },
-      ),
+      results,
     )
   }
 
@@ -289,6 +276,22 @@ class ContactSearchService(
         ),
       ),
     )
+  }
+
+  private fun SearchRequest.Builder.sorted(sorts: List<FieldSortBuilder>): SearchRequest.Builder {
+    sorted(sorts) { fieldSorts ->
+      this.sort {
+        fieldSorts.forEach { fieldSort ->
+          it.field { field ->
+            field
+              .field(fieldSort.fieldName)
+              .order(if (fieldSort.order() == SortOrder.DESC) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
+          }
+        }
+        it
+      }
+    }
+    return this
   }
 
   enum class SortType(val aliases: List<String>, val searchField: String) {
