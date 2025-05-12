@@ -34,12 +34,12 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.junit.vintage:junit-vintage-engine")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.26")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.27")
 }
 
 java {
