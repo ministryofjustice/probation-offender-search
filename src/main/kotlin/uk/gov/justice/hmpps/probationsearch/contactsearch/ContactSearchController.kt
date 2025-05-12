@@ -39,7 +39,10 @@ class ContactSearchController(
           "crn" to request.crn,
           "query" to request.query.length.toString(),
           "resultCount" to response.totalResults.toString(),
-          "queryTermCount" to TermSplitter.split(request.query).size.toString()
+          "queryTermCount" to TermSplitter.split(request.query).size.toString(),
+          "page" to pageable.pageNumber.toString(),
+          "resultCountForPage" to response.results.size.toString(),
+          "semanticOnlyResultCountForPage" to response.results.count { it.highlights.isEmpty() }.toString()
         ),
         mapOf(
           "duration" to started.until(Instant.now(), ChronoUnit.MILLIS).toDouble(),
