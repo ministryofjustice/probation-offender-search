@@ -13,6 +13,7 @@ import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
 import org.opensearch.client.opensearch._types.FieldValue
 import org.opensearch.client.opensearch._types.Refresh
+import org.opensearch.client.opensearch._types.VersionType
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery
 import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
 import org.opensearch.client.opensearch._types.query_dsl.HybridQuery
@@ -224,6 +225,8 @@ class ContactSearchService(
       BulkOperation.of { bulk ->
         bulk.index {
           it.id(contact.contactId.toString())
+            .version(contact.version)
+            .versionType(VersionType.External)
             .document(JsonData.from(mapper.jsonProvider().createParser(StringReader(contact.json)), mapper))
         }
       }
