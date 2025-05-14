@@ -189,7 +189,6 @@ class ContactSearchService(
     }
 
 
-
     val searchResponse = openSearchClient.search(searchRequest, ContactSearchResult::class.java)
     val results = searchResponse.hits().hits().mapNotNull {
       it.source()?.copy(
@@ -290,22 +289,31 @@ class ContactSearchService(
   }
 
   private fun buildSortOptions(fieldSorts: List<FieldSortBuilder>): List<SortOptions> {
-   return when (fieldSorts.size) {
+    return when (fieldSorts.size) {
       0 -> {
-         listOf(
-          SortOptions.Builder().field(Function
-          { f -> f.field(SCORE.searchField).order(JavaClientSortOrder.Desc)
-          }).build(),
-          SortOptions.Builder().field(Function
-          { f -> f.field(LAST_UPDATED_DATETIME.searchField).order(JavaClientSortOrder.Desc)
-          }).build()
+        listOf(
+          SortOptions.Builder().field(
+            Function
+            { f ->
+              f.field(SCORE.searchField).order(JavaClientSortOrder.Desc)
+            }
+          ).build(),
+          SortOptions.Builder().field(
+            Function
+            { f ->
+              f.field(LAST_UPDATED_DATETIME.searchField).order(JavaClientSortOrder.Desc)
+            }
+          ).build()
         )
       }
-      else ->  fieldSorts.map {
-        SortOptions.Builder().field(Function
-        { f ->
-          f.field(it.fieldName).order(if (it.order() == DESC) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
-        }).build()
+
+      else -> fieldSorts.map {
+        SortOptions.Builder().field(
+          Function
+          { f ->
+            f.field(it.fieldName).order(if (it.order() == DESC) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
+          }
+        ).build()
       }
     }
   }
