@@ -101,7 +101,7 @@ class ContactSearchService(
 
     val crnExists = openSearchClient.search(
       { searchRequest ->
-        searchRequest.index("contact-search-primary")
+        searchRequest.index("contact-semantic-search-primary")
           .routing(request.crn)
           .query { q -> q.term { term -> term.field("crn").value(FieldValue.of(request.crn)) } }
           .trackTotalHits(TrackHits.of { it.enabled(false) })
