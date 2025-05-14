@@ -13,6 +13,7 @@ import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
 import org.opensearch.client.opensearch._types.FieldValue
 import org.opensearch.client.opensearch._types.Refresh
+import org.opensearch.client.opensearch._types.SortOptions
 import org.opensearch.client.opensearch._types.VersionType
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery
 import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
@@ -36,7 +37,8 @@ import org.opensearch.index.query.SimpleQueryStringFlag
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
 import org.opensearch.search.sort.FieldSortBuilder
 import org.opensearch.search.sort.SortBuilders
-import org.opensearch.search.sort.SortOrder
+import org.opensearch.search.sort.SortOrder.ASC
+import org.opensearch.search.sort.SortOrder.DESC
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -53,6 +55,7 @@ import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.io.StringReader
 import java.time.Duration
 import java.time.Instant
+import java.util.function.Function
 import org.opensearch.client.opensearch._types.SortOrder as JavaClientSortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Operator as JavaClientOperator
 
@@ -144,6 +147,8 @@ class ContactSearchService(
     } else {
       BoolQuery.of { bool -> bool.filter { it.matchesCrn(request.crn) } }
     }.toQuery()
+
+
     val searchRequest = SearchRequest.of { searchRequest ->
       searchRequest
         .index("contact-semantic-search-primary")
@@ -171,7 +176,7 @@ class ContactSearchService(
         .trackTotalHits(TrackHits.of { it.count(5000) })
         .size(pageable.pageSize)
         .from(pageable.offset.toInt())
-        .sorted(pageable.sort.fieldSorts())
+        .sort(buildSortOptions(pageable.sort.fieldSorts()))
         .highlight { highlight ->
           highlight
             .encoder(HighlighterEncoder.Html)
@@ -182,6 +187,8 @@ class ContactSearchService(
             .fragmentSize(200)
         }
     }
+
+
     val searchResponse = openSearchClient.search(searchRequest, ContactSearchResult::class.java)
     val results = searchResponse.hits().hits().mapNotNull {
       it.source()?.copy(
@@ -281,20 +288,34 @@ class ContactSearchService(
     )
   }
 
-  private fun SearchRequest.Builder.sorted(sorts: List<FieldSortBuilder>): SearchRequest.Builder {
-    sorted(sorts) { fieldSorts ->
-      this.sort {
-        fieldSorts.forEach { fieldSort ->
-          it.field { field ->
-            field
-              .field(fieldSort.fieldName)
-              .order(if (fieldSort.order() == SortOrder.DESC) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
+  private fun buildSortOptions(fieldSorts: List<FieldSortBuilder>): List<SortOptions> {
+    return when (fieldSorts.size) {
+      0 -> {
+        listOf(
+          SortOptions.Builder().field(
+            Function
+            { f ->
+              f.field(SCORE.searchField).order(JavaClientSortOrder.Desc)
+            }
+          ).build(),
+          SortOptions.Builder().field(
+            Function
+            { f ->
+              f.field(LAST_UPDATED_DATETIME.searchField).order(JavaClientSortOrder.Desc)
+            }
+          ).build()
+        )
+      }
+
+      else -> fieldSorts.map {
+        SortOptions.Builder().field(
+          Function
+          { f ->
+            f.field(it.fieldName).order(if (it.order() == DESC) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
           }
-        }
-        it
+        ).build()
       }
     }
-    return this
   }
 
   enum class SortType(val aliases: List<String>, val searchField: String) {
@@ -339,8 +360,8 @@ private fun BoolQueryBuilder.fromRequest(request: ContactSearchRequest): BoolQue
 }
 
 private fun Sort.Direction.toSortOrder() = when (this) {
-  Sort.Direction.ASC -> SortOrder.ASC
-  Sort.Direction.DESC -> SortOrder.DESC
+  Sort.Direction.ASC -> ASC
+  Sort.Direction.DESC -> DESC
 }
 
 private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
@@ -349,7 +370,7 @@ private fun Sort.fieldSorts() = SortType.entries.flatMap { type ->
       SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder())
     }
   }
-}.ifEmpty { listOf(SortBuilders.fieldSort(SCORE.searchField).order(SortOrder.DESC)) }
+}.ifEmpty { listOf(SortBuilders.fieldSort(SCORE.searchField).order(DESC)) }
 
 private fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): NativeSearchQuery {
   sorted(sorts) { this.withSorts(it) }
@@ -361,8 +382,8 @@ private fun sorted(sorts: List<FieldSortBuilder>, sortFn: (List<FieldSortBuilder
     0 -> {
       sortFn(
         listOf(
-          SortBuilders.fieldSort(SCORE.searchField).order(SortOrder.DESC),
-          SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(SortOrder.DESC),
+          SortBuilders.fieldSort(SCORE.searchField).order(DESC),
+          SortBuilders.fieldSort(LAST_UPDATED_DATETIME.searchField).order(DESC),
         ),
       )
     }
