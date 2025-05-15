@@ -1,20 +1,4 @@
-version: "3"
 services:
-  offender-search:
-    image: ghcr.io/ministryofjustice/probation-offender-search:latest
-    networks:
-      - hmpps
-    container_name: probation-offender-search
-    depends_on:
-      - opensearch
-    ports:
-      - "8084:8080"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=opensearch,dev
-
   oauth:
     image: quay.io/hmpps/hmpps-auth:latest
     networks:
@@ -43,18 +27,39 @@ services:
 
   opensearch:
     container_name: opensearch
-    image: opensearchproject/opensearch:2.5.0
     networks:
       - hmpps
+    ports:
+      - 9200:9200
+      - 9600:9600
     environment:
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Random!Password1
       - node.name=opensearch
       - cluster.name=probation-search-cluster
       - discovery.type=single-node
-      - bootstrap.memory_lock=true
       - plugins.security.disabled=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - plugins.ml_commons.controller_enabled=false
+      - plugins.ml_commons.only_run_on_ml_node=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    image: opensearchproject/opensearch:2.19.2
+
+  opensearch-dashboards:
+    container_name: opensearch-dashboards
+    networks:
+      - hmpps
     ports:
-        - "9200:9200"
+      - 5601:5601
+    environment:
+      - OPENSEARCH_HOSTS=http://opensearch:9200
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    image: opensearchproject/opensearch-dashboards:2.19.2
+    depends_on:
+      - opensearch
 
 networks:
   hmpps:
