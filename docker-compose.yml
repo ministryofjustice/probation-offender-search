@@ -1,4 +1,3 @@
-version: "3"
 services:
   offender-search:
     image: ghcr.io/ministryofjustice/probation-offender-search:latest
@@ -43,18 +42,24 @@ services:
 
   opensearch:
     container_name: opensearch
-    image: opensearchproject/opensearch:2.5.0
     networks:
       - hmpps
-    environment:
-      - node.name=opensearch
-      - cluster.name=probation-search-cluster
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - plugins.security.disabled=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
-        - "9200:9200"
+      - 9200:9200
+      - 9600:9600
+    environment:
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Random!Password1
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+      - bootstrap.memory_lock=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - plugins.ml_commons.controller_enabled=false
+      - plugins.ml_commons.only_run_on_ml_node=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    image: opensearchproject/opensearch:2.19.2
 
 networks:
   hmpps:
