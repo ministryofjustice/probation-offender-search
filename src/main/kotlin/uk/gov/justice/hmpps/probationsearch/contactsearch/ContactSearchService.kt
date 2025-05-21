@@ -58,6 +58,7 @@ import java.time.Instant
 import java.util.function.Function
 import org.opensearch.client.opensearch._types.SortOrder as JavaClientSortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Operator as JavaClientOperator
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.Companion.AI_SEARCH_HIGHLIGHT
 
 @Service
 class ContactSearchService(
@@ -192,7 +193,7 @@ class ContactSearchService(
     val searchResponse = openSearchClient.search(searchRequest, ContactSearchResult::class.java)
     val results = searchResponse.hits().hits().mapNotNull {
       it.source()?.copy(
-        highlights = it.highlight(),
+        highlights = it.highlight().ifEmpty { mapOf("notes" to listOf(AI_SEARCH_HIGHLIGHT)) },
         score = it.score().takeIf { request.includeScores },
       )
     }
@@ -325,6 +326,9 @@ class ContactSearchService(
     ;
 
     companion object {
+      const val AI_SEARCH_HIGHLIGHT =
+        "<div class='badge bg-secondary' title='This result was found using AI-powered search. Use the view link to see the full notes.' style='font-size: 12px'>✨ AI Text Match</div>"
+
       fun from(searchField: String): SortType? = entries.firstOrNull { it.searchField == searchField }
     }
   }
