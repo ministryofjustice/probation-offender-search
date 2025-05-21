@@ -326,7 +326,9 @@ class ContactSearchService(
     ;
 
     companion object {
-      const val AI_SEARCH_HIGHLIGHT = "<div class='badge bg-secondary' title='This result was found using AI-powered search. Use the view link to see the full notes.' style='font-size: 12px'>✨ AI Text Match</div>"
+      const val AI_SEARCH_HIGHLIGHT =
+        "<div class='badge bg-secondary' title='This result was found using AI-powered search. Use the view link to see the full notes.' style='font-size: 12px'>✨ AI Text Match</div>"
+
       fun from(searchField: String): SortType? = entries.firstOrNull { it.searchField == searchField }
     }
   }
