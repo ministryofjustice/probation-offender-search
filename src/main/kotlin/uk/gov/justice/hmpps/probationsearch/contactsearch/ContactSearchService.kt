@@ -100,7 +100,7 @@ class ContactSearchService(
     )
   }
 
-  fun checkIndexIsNotFound(indexName: String, maxRetries: Int = 1, timeout: Duration = Duration.ofSeconds(5))  {
+  fun checkIndexIsNotFound(indexName: String, maxRetries: Int = 1, timeout: Duration = Duration.ofSeconds(5)) {
     (0..maxRetries).forEach { count ->
       if (!openSearchClient.indices().exists { it.index(indexName) }.value()) {
         return
@@ -240,7 +240,7 @@ class ContactSearchService(
         .fragmentSize(200),
     ).sorted(pageable.sort.fieldSorts())
 
-  private fun loadDataRetry(crn: String, maxRetries: Int = 2 ) {
+  private fun loadDataRetry(crn: String, maxRetries: Int = 2) {
     (0..maxRetries).forEach { count ->
       try {
         loadData(crn)
@@ -267,11 +267,13 @@ class ContactSearchService(
 
     openSearchClient.indices().create {
       it.index("block-${crn.lowercase()}")
-        .settings{settings ->
-          settings.index{index ->
+        .settings { settings ->
+          settings.index { index ->
             index
               .numberOfShards("1")
-              .numberOfReplicas("0")}}
+              .numberOfReplicas("0")
+          }
+        }
     }
 
     val mapper = openSearchClient._transport().jsonpMapper()
@@ -293,7 +295,7 @@ class ContactSearchService(
       .operations(operations)
       .build()
     openSearchClient.bulk(request)
-    openSearchClient.indices().delete{it.index("block-${crn.lowercase()}")}
+    openSearchClient.indices().delete { it.index("block-${crn.lowercase()}") }
     telemetryClient.trackEvent(
       "OnDemandDataLoad",
       mapOf("crn" to crn),
