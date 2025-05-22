@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.withTimeoutOrNull
 import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
-import org.opensearch.client.opensearch._types.FieldValue
 import org.opensearch.client.opensearch._types.Refresh
 import org.opensearch.client.opensearch._types.SortOptions
 import org.opensearch.client.opensearch._types.VersionType
@@ -48,6 +47,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.Companion.AI_SEARCH_HIGHLIGHT
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
@@ -55,10 +55,8 @@ import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.io.StringReader
 import java.time.Duration
 import java.time.Instant
-import java.util.function.Function
 import org.opensearch.client.opensearch._types.SortOrder as JavaClientSortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Operator as JavaClientOperator
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.Companion.AI_SEARCH_HIGHLIGHT
 
 @Service
 class ContactSearchService(
@@ -104,13 +102,12 @@ class ContactSearchService(
       { searchRequest ->
         searchRequest.index("contact-semantic-search-primary")
           .routing(request.crn)
-          .query { q -> q.term { term -> term.field("crn").value(FieldValue.of(request.crn)) } }
-          .trackTotalHits(TrackHits.of { it.enabled(false) })
-          .terminateAfter(1)
+          .query { q -> q.matchesCrn(request.crn) }
+          .trackTotalHits(TrackHits.of { it.count(1) })
           .size(0)
       },
       Any::class.java,
-    ).terminatedEarly() ?: error("Failed to check existence of case with CRN=${request.crn} in semantic index")
+    ).hits().total().value() > 0
     if (!crnExists) {
       val loadDataJob = scope.launch { loadData(request.crn) }
       withTimeoutOrNull(Duration.ofSeconds(30)) { loadDataJob.join() }
@@ -293,28 +290,16 @@ class ContactSearchService(
     return when (fieldSorts.size) {
       0 -> {
         listOf(
-          SortOptions.Builder().field(
-            Function
-            { f ->
-              f.field(SCORE.searchField).order(JavaClientSortOrder.Desc)
-            }
-          ).build(),
-          SortOptions.Builder().field(
-            Function
-            { f ->
-              f.field(LAST_UPDATED_DATETIME.searchField).order(JavaClientSortOrder.Desc)
-            }
-          ).build()
+          SortOptions.Builder().field { f -> f.field(SCORE.searchField).order(JavaClientSortOrder.Desc) }.build(),
+          SortOptions.Builder()
+            .field { f -> f.field(LAST_UPDATED_DATETIME.searchField).order(JavaClientSortOrder.Desc) }.build(),
         )
       }
 
       else -> fieldSorts.map {
-        SortOptions.Builder().field(
-          Function
-          { f ->
-            f.field(it.fieldName).order(if (it.order() == DESC) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
-          }
-        ).build()
+        SortOptions.Builder().field { f ->
+          f.field(it.fieldName).order(if (it.order() == DESC) JavaClientSortOrder.Desc else JavaClientSortOrder.Asc)
+        }.build()
       }
     }
   }
