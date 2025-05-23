@@ -52,6 +52,7 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.S
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.LAST_UPDATED_DATETIME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactSearchService.SortType.SCORE
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
+import uk.gov.justice.hmpps.probationsearch.utils.DurationHelper
 import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.io.StringReader
 import java.time.Duration
@@ -100,13 +101,28 @@ class ContactSearchService(
     )
   }
 
-  fun checkIndexIsNotFound(indexName: String, maxRetries: Int = 1, timeout: Duration = Duration.ofSeconds(5)) {
+  fun checkIndexIsNotFound(crn: String, maxRetries: Int = 1, timeout: Duration = Duration.ofSeconds(5)) {
     (0..maxRetries).forEach { count ->
-      if (!openSearchClient.indices().exists { it.index(indexName) }.value()) {
+      if (!openSearchClient.indices().exists { it.index("block-${crn.lowercase()}") }.value()) {
         return
       } else {
+        //If the index is present but was created more than 5 minutes ago, then delete the block and continue processing
+        openSearchClient.indices()[{ it.index("block-${crn.lowercase()}") }][("block-${crn.lowercase()}")]
+          ?.settings()
+          ?.index()
+          ?.creationDate()?.let { date ->
+            if (DurationHelper.longerThanAgo(date, Duration.ofMinutes(5))) {
+              openSearchClient.deleteByQuery {
+                it.index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
+                  .query { q -> q.matchesCrn(crn) }
+                  .routing(crn)
+              }
+              openSearchClient.indices().delete { it.index("block-${crn.lowercase()}") }
+              return
+            }
+          }
         if (count == maxRetries) {
-          throw IndexNotReadyException("Index is still blocked by $indexName")
+          throw IndexNotReadyException("Index is still blocked by block-${crn.lowercase()}")
         }
         TimeUnit.MILLISECONDS.sleep(timeout.toMillis())
       }
@@ -163,7 +179,6 @@ class ContactSearchService(
     } else {
       BoolQuery.of { bool -> bool.filter { it.matchesCrn(request.crn) } }
     }.toQuery()
-
 
     val searchRequest = SearchRequest.of { searchRequest ->
       searchRequest
@@ -241,30 +256,6 @@ class ContactSearchService(
     ).sorted(pageable.sort.fieldSorts())
 
   private fun loadDataRetry(crn: String, maxRetries: Int = 2) {
-    (0..maxRetries).forEach { count ->
-      try {
-        loadData(crn)
-        return
-      } catch (ex: Exception) {
-        if (count == maxRetries) {
-          openSearchClient.deleteByQuery {
-            it.index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
-              .query { q -> q.matchesCrn(crn) }
-              .routing(crn)
-          }
-          val exception: Exception = RuntimeException("Failed to load data")
-          Sentry.captureException(exception)
-          telemetryClient.trackException(exception)
-          throw exception
-        }
-      }
-    }
-  }
-
-  @WithSpan
-  private fun loadData(crn: String) {
-    val startTime = System.currentTimeMillis()
-
     openSearchClient.indices().create {
       it.index("block-${crn.lowercase()}")
         .settings { settings ->
@@ -275,7 +266,30 @@ class ContactSearchService(
           }
         }
     }
+    (0..maxRetries).forEach { count ->
+      try {
+        loadData(crn)
+        openSearchClient.indices().delete { it.index("block-${crn.lowercase()}") }
+        return
+      } catch (ex: Exception) {
+        if (count == maxRetries) {
+          openSearchClient.deleteByQuery {
+            it.index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
+              .query { q -> q.matchesCrn(crn) }
+              .routing(crn)
+          }
+          openSearchClient.indices().delete { it.index("block-${crn.lowercase()}") }
+          Sentry.captureException(ex)
+          telemetryClient.trackException(ex)
+          throw ex
+        }
+      }
+    }
+  }
 
+  @WithSpan
+  private fun loadData(crn: String) {
+    val startTime = System.currentTimeMillis()
     val mapper = openSearchClient._transport().jsonpMapper()
     val operations = deliusService.getContacts(crn).map { contact ->
       BulkOperation.of { bulk ->
@@ -294,8 +308,10 @@ class ContactSearchService(
       .timeout { it.time("5m") }
       .operations(operations)
       .build()
-    openSearchClient.bulk(request)
-    openSearchClient.indices().delete { it.index("block-${crn.lowercase()}") }
+    val response = openSearchClient.bulk(request)
+    if (response.errors()) {
+      throw RuntimeException("Bulk load did not complete successfully")
+    }
     telemetryClient.trackEvent(
       "OnDemandDataLoad",
       mapOf("crn" to crn),
