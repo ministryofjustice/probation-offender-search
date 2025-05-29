@@ -208,7 +208,8 @@ class ContactSearchService(
     val searchResponse = openSearchClient.search(searchRequest, ContactSearchResult::class.java)
     val results = searchResponse.hits().hits().mapNotNull {
       it.source()?.copy(
-        highlights = it.highlight().ifEmpty { mapOf("notes" to listOf(AI_SEARCH_HIGHLIGHT)) },
+        highlights = it.highlight()
+          .ifEmpty { if (request.query.isNotEmpty()) mapOf("notes" to listOf(AI_SEARCH_HIGHLIGHT)) else emptyMap() },
         score = it.score().takeIf { request.includeScores },
       )
     }
