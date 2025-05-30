@@ -159,7 +159,7 @@ class ContactSearchService(
             }
           }
       }.toQuery()
-      HybridQuery.of { hybrid -> hybrid.queries(keywordQuery, semanticQuery).paginationDepth(1000) }
+      HybridQuery.of { hybrid -> hybrid.queries(keywordQuery, semanticQuery).paginationDepth(15000) }
     } else {
       BoolQuery.of { bool -> bool.filter { it.matchesCrn(request.crn) } }
     }.toQuery()
