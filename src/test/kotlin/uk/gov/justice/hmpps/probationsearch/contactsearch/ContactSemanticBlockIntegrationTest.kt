@@ -59,11 +59,14 @@ class ContactSemanticBlockIntegrationTest {
 
     openSearchRestTemplate.execute {
       it.ingest().putPipeline(
-        PutPipelineRequest("add-timestamp",
-      "/searchdata/add-timestamp-pipeline.json".resourceAsByteReference(),
-      JSON
-    ),
-      RequestOptions.DEFAULT) }
+        PutPipelineRequest(
+          "add-timestamp",
+          "/searchdata/add-timestamp-pipeline.json".resourceAsByteReference(),
+          JSON
+        ),
+        RequestOptions.DEFAULT
+      )
+    }
 
     openSearchRestTemplate.execute {
       it.indices().putTemplate(
@@ -101,7 +104,8 @@ class ContactSemanticBlockIntegrationTest {
       contactBlockService.retryWithBlockAndRollback(
         crn,
         2,
-        { throw RuntimeException("Some exception") }) { rollbackActioned = true }
+        { throw RuntimeException("Some exception") }
+      ) { rollbackActioned = true }
     }
     assertThat(ex.message).isEqualTo("Some exception")
     assertThat(rollbackActioned).isTrue()
@@ -111,10 +115,14 @@ class ContactSemanticBlockIntegrationTest {
   fun `stale block exists that is longer ago than 5 minutes - rollback is called and block is removed`() {
     val crn = "X654321"
     var rollbackActioned = false
-    createBlock(crn, DateTimeFormatter.ofPattern(ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP).format(
-      LocalDateTime.now(ZoneId.of("UTC")).minusMinutes(6)))
+    createBlock(
+      crn,
+      DateTimeFormatter.ofPattern(ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP).format(
+        LocalDateTime.now(ZoneId.of("UTC")).minusMinutes(6)
+      )
+    )
     assertDoesNotThrow {
-      contactBlockService.checkIfBlockedOrRollbackIfStale(crn){ rollbackActioned = true}
+      contactBlockService.checkIfBlockedOrRollbackIfStale(crn) { rollbackActioned = true }
     }
     assertThat(rollbackActioned).isTrue()
     assertThat(blockExists(crn)).isFalse()
@@ -124,10 +132,14 @@ class ContactSemanticBlockIntegrationTest {
   fun `block exists that is not longer ago than 5 minutes - rollback is not called and block is not removed - Index not ready exception is thrown`() {
     val crn = "X000001"
     var rollbackActioned = false
-    createBlock(crn, DateTimeFormatter.ofPattern(ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP).format(
-      LocalDateTime.now(ZoneId.of("UTC")).minusMinutes(4)))
+    createBlock(
+      crn,
+      DateTimeFormatter.ofPattern(ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP).format(
+        LocalDateTime.now(ZoneId.of("UTC")).minusMinutes(4)
+      )
+    )
     val ex = assertThrows<IndexNotReadyException> {
-      contactBlockService.checkIfBlockedOrRollbackIfStale(crn){ rollbackActioned = true}
+      contactBlockService.checkIfBlockedOrRollbackIfStale(crn) { rollbackActioned = true }
     }
     assertThat(ex.message).isEqualTo("Index for $crn is still blocked")
     assertThat(rollbackActioned).isFalse()
@@ -135,8 +147,10 @@ class ContactSemanticBlockIntegrationTest {
   }
 
   companion object {
-    private val TEMPLATE_JSON = ResourceUtils.getFile("classpath:searchdata/contact-semantic-block-template.json").readText()
+    private val TEMPLATE_JSON =
+      ResourceUtils.getFile("classpath:searchdata/contact-semantic-block-template.json").readText()
   }
 }
+
 private fun String.resourceAsByteReference() =
   BytesArray(ContactSemanticBlockIntegrationTest::class.java.getResource(this)!!.readBytes())

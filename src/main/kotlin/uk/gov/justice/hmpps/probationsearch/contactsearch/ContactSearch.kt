@@ -68,9 +68,9 @@ data class ContactBlockResult(
   val crn: String,
   @field:Field(type = FieldType.Date, format = [], pattern = [ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP])
   @field:JsonFormat(
-      shape = JsonFormat.Shape.STRING,
-      pattern = ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP,
-      timezone = "UTC",
+    shape = JsonFormat.Shape.STRING,
+    pattern = ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP,
+    timezone = "UTC",
   )
   val timestamp: LocalDateTime,
 )
