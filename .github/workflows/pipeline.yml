@@ -36,13 +36,13 @@ jobs:
     uses: ./.github/workflows/kotlin_integration_tests.yml
     secrets: inherit
   docker_build:
-    if: ${{ github.ref == 'refs/heads/main' || inputs.push }}
+#    if: ${{ github.ref == 'refs/heads/main' || inputs.push }}
     name: Push image
     uses: ./.github/workflows/jib-build.yml
     needs: kotlin_validate
   deploy_dev:
     name: Deploy to the dev environment
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint

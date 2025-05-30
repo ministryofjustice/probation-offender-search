@@ -1,0 +1,12 @@
+{
+  "processors": [
+    {
+      "set": {
+        "field": "timestamp",
+        "value": "{{_ingest.timestamp}}",
+        "if": "ctx.timestamp == null",
+        "ignore_failure": false
+      }
+    }
+  ]
+}
