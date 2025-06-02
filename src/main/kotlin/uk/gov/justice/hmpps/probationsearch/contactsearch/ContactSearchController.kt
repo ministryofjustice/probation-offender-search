@@ -3,6 +3,7 @@ package uk.gov.justice.hmpps.probationsearch.contactsearch
 import com.microsoft.applicationinsights.TelemetryClient
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
+import io.sentry.Sentry
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -11,7 +12,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver.principal
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -55,6 +55,8 @@ class ContactSearchController(
             mapOf("crn" to request.crn, "query" to request.query.length.toString(), "reason" to e.message),
             null,
           )
+          telemetryClient.trackException(e)
+          Sentry.captureException(e)
         }
       }
       contactSearchService.keywordSearch(request, pageable)
