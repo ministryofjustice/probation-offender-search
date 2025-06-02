@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import jakarta.validation.constraints.Size
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
@@ -15,6 +16,7 @@ class ContactSearchRequest(
   val matchAllTerms: Boolean = true,
   includeScores: Boolean? = false,
 ) {
+  @Size(max = 1000, message = "query length must not exceed 1000 characters")
   val query = query ?: ""
   val includeScores: Boolean = includeScores ?: false
 }
