@@ -124,7 +124,7 @@ class ActivitySearchService(
     NOT_COMPLIED("notComplied", listOf(matchQuery("complied", "ftc"))),
     NO_OUTCOME(
       "noOutcome",
-      listOf(boolQuery().mustAll(listOf(matchQuery("requiresOutcome", "Y")))),
+      listOf(boolQuery().mustAll(listOf(matchQuery("requiresOutcome", "Y"), matchQuery("outcomeRequiredFlag", "Y")))),
     )
   }
 
