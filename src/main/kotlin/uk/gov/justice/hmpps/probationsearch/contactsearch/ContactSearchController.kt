@@ -4,19 +4,20 @@ import com.microsoft.applicationinsights.TelemetryClient
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
 import io.sentry.Sentry
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import org.springdoc.core.annotations.ParameterObject
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.hmpps.probationsearch.config.SecurityCoroutineContext
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.utils.TermSplitter
 import kotlin.time.Duration
@@ -43,11 +44,11 @@ class ContactSearchController(
       trackSemanticSearch(request, response, pageable, duration)
       response
     } else {
-      val auth = SecurityContextHolder.getContext().authentication
-      GlobalScope.launch(Job() + Context.current().asContextElement()) {
-        SecurityContextHolder.getContext().authentication = auth
+      CoroutineScope(Dispatchers.IO).launch(Context.current().asContextElement() + SecurityCoroutineContext()) {
         try {
-          val (response, duration) = measureTimedValue { contactSearchService.semanticSearch(request, pageable) }
+          val (response, duration) = measureTimedValue {
+            withTimeout(30000) { contactSearchService.semanticSearch(request, pageable) }
+          }
           trackSemanticSearch(request, response, pageable, duration)
         } catch (e: Exception) {
           telemetryClient.trackEvent(
