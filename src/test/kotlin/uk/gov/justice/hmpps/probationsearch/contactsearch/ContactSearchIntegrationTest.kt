@@ -122,13 +122,13 @@ class ContactSearchIntegrationTest {
     assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(mapOf("type" to listOf("<em>FIND_ME</em>")))
 
     verify(telemetry).trackEvent(
-        "SemanticSearchFailed",
-        mapOf(
-            "crn" to crn,
-            "query" to "7",
-            "reason" to "Request failed: [index_not_found_exception] no such index [contact-semantic-search-primary]",
-        ),
-        null,
+      "SemanticSearchFailed",
+      mapOf(
+        "crn" to crn,
+        "query" to "7",
+        "reason" to "Request failed: [index_not_found_exception] no such index [contact-semantic-search-primary]",
+      ),
+      null,
     )
   }
 
