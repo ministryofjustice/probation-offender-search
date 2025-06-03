@@ -271,13 +271,9 @@ class ContactSearchService(
         .build()
 
       val response = openSearchClient.bulk(request)
-      if (response.errors()) {
-        val numberOfErrors = response.items()
-          .filter { it.error() != null && it.error()!!.type() != "version_conflict_engine_exception" }.size
-        response.items()
-          .firstOrNull { it.error() != null && it.error()!!.type() != "version_conflict_engine_exception" }
-          ?.error()
-          ?.let { throw RuntimeException("$numberOfErrors found. First with reason: ${it.reason()}") }
+      val errors = response.items().map { it.error() }.filter { it != null && it.type() != "version_conflict_engine_exception" }
+      if (errors.isNotEmpty()) {
+        throw RuntimeException("${errors.size} indexing errors found. First with reason: ${errors.first()?.reason()}")
       }
     }
 
