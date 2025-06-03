@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonInclude
 import jakarta.validation.constraints.Size
 import org.springframework.data.elasticsearch.annotations.DateFormat
@@ -63,4 +64,15 @@ data class ContactSearchResult(
   val highlights: Map<String, List<String>> = mapOf(),
   @field:JsonInclude(JsonInclude.Include.NON_NULL)
   val score: Double?,
+)
+
+data class ContactBlockResult(
+  val crn: String,
+  @field:Field(type = FieldType.Date, format = [], pattern = [ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP])
+  @field:JsonFormat(
+    shape = JsonFormat.Shape.STRING,
+    pattern = ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP,
+    timezone = "UTC",
+  )
+  val timestamp: LocalDateTime,
 )
