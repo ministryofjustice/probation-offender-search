@@ -1,6 +1,6 @@
 {
   "index_patterns": [
-    "contact-semantic-block"
+    "contact-semantic-block-*"
   ],
   "mappings": {
     "_routing": {
@@ -14,7 +14,7 @@
     }
   },
   "settings": {
-    "index.default_pipeline": "add-timestamp",
+    "index.default_pipeline": "contact-semantic-block-pipeline",
     "number_of_shards": 1,
     "number_of_replicas": 0
   }

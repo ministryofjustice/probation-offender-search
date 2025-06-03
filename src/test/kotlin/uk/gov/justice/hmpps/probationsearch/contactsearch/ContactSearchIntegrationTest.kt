@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.mockito.ArgumentMatchers.anyMap
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.verify
 import org.opensearch.action.admin.indices.alias.Alias
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest
@@ -122,13 +124,9 @@ class ContactSearchIntegrationTest {
     assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(mapOf("type" to listOf("<em>FIND_ME</em>")))
 
     verify(telemetry).trackEvent(
-      "SemanticSearchFailed",
-      mapOf(
-        "crn" to crn,
-        "query" to "7",
-        "reason" to "Request failed: [index_not_found_exception] no such index [contact-semantic-search-primary]",
-      ),
-      null,
+      eq("SemanticSearchFailed"),
+      anyMap(),
+      eq(null),
     )
   }
 

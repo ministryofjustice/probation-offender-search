@@ -60,8 +60,8 @@ class ContactSemanticBlockIntegrationTest {
     openSearchRestTemplate.execute {
       it.ingest().putPipeline(
         PutPipelineRequest(
-          "add-timestamp",
-          "/searchdata/add-timestamp-pipeline.json".resourceAsByteReference(),
+          "contact-semantic-block-pipeline",
+          "/searchdata/contact-semantic-block-pipeline.json".resourceAsByteReference(),
           JSON
         ),
         RequestOptions.DEFAULT

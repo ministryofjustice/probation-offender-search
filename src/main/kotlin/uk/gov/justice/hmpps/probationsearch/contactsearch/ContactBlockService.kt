@@ -19,7 +19,7 @@ class ContactBlockService(
   private val telemetryClient: TelemetryClient
 ) {
   companion object {
-    const val CONTACT_SEMANTIC_BLOCK = "contact-semantic-block"
+    const val CONTACT_SEMANTIC_BLOCK = "contact-semantic-block-primary"
     const val CONTACT_SEMANTIC_BLOCK_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'"
   }
 
