@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
 import com.microsoft.applicationinsights.TelemetryClient
+import jakarta.validation.Valid
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
 import io.sentry.Sentry
@@ -34,7 +35,7 @@ class ContactSearchController(
   @PreAuthorize("hasAnyRole('ROLE_PROBATION_CONTACT_SEARCH', 'ROLE_PROBATION_INTEGRATION_ADMIN')")
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   suspend fun searchContact(
-    @RequestBody request: ContactSearchRequest,
+    @Valid @RequestBody request: ContactSearchRequest,
     @ParameterObject @PageableDefault pageable: Pageable,
     @RequestParam(required = false) semantic: Boolean? = null,
   ): ContactSearchResponse {

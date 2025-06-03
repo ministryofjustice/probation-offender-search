@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
+import org.hamcrest.CoreMatchers.containsString
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -54,8 +55,15 @@ class ContactSearchIntegrationTest {
 
   internal val deliusApiMock = DeliusApiExtension.deliusApi
 
+  internal val oneThousandCharacters =
+    "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. N"
+
+  internal val oneThousandAndOneCharacters =
+    "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Ns"
+
   @MockitoBean
   internal lateinit var telemetry: TelemetryClient
+
 
   @BeforeEach
   internal fun before() {
@@ -85,6 +93,29 @@ class ContactSearchIntegrationTest {
         IndexCoordinates.of(aliasName),
       )
     } matches { it == contacts.size.toLong() }
+  }
+
+  @Test
+  fun `error when query is greater than maximum length`() {
+    val crn = "N123456"
+    RestAssured.given()
+      .`when`()
+      .search(ContactSearchRequest(crn, oneThousandAndOneCharacters), mapOf("size" to 5, "sort" to "date,desc"))
+      .then()
+      .statusCode(400)
+      .body("developerMessage", containsString("query length must not exceed 1000 characters"))
+  }
+
+  @Test
+  fun `success when query is equal than maximum length`() {
+    val crn = "N123456"
+    val results = RestAssured.given()
+      .`when`()
+      .search(ContactSearchRequest(crn, oneThousandCharacters), mapOf("size" to 5, "sort" to "date,desc"))
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(0)
   }
 
   @Test
