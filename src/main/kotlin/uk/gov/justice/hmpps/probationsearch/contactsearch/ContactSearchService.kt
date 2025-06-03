@@ -6,7 +6,6 @@ import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
 import io.opentelemetry.instrumentation.annotations.WithSpan
-import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.withTimeoutOrNull
@@ -39,6 +38,7 @@ import org.opensearch.search.sort.FieldSortBuilder
 import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder.ASC
 import org.opensearch.search.sort.SortOrder.DESC
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -56,7 +56,6 @@ import uk.gov.justice.hmpps.sqs.audit.HmppsAuditService
 import java.io.StringReader
 import java.time.Duration
 import java.time.Instant
-import java.util.concurrent.TimeUnit
 import org.opensearch.client.opensearch._types.SortOrder as JavaClientSortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Operator as JavaClientOperator
 
@@ -68,6 +67,9 @@ class ContactSearchService(
   private val deliusService: DeliusService,
   private val openSearchClient: OpenSearchClient,
   private val telemetryClient: TelemetryClient,
+  private val blockService: ContactBlockService,
+  @Value("\${dataload.ondemand.batch.size}")
+  private val onDemandDataloadBatchSize: Int
 ) {
   companion object {
     const val CONTACT_SEMANTIC_SEARCH_PRIMARY = "contact-semantic-search-primary"
@@ -77,7 +79,6 @@ class ContactSearchService(
 
   fun keywordSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
     audit(request, pageable)
-
     val indexName = "contact-search-primary"
     val keywordQuery = keywordQueryForRestClient(pageable, request)
     val searchResponse =
@@ -100,21 +101,12 @@ class ContactSearchService(
     )
   }
 
-  fun checkIndexIsNotFound(indexName: String, maxRetries: Int = 1, timeout: Duration = Duration.ofSeconds(5)) {
-    (0..maxRetries).forEach { count ->
-      if (!openSearchClient.indices().exists { it.index(indexName) }.value()) {
-        return
-      } else {
-        if (count == maxRetries) {
-          throw IndexNotReadyException("Index is still blocked by $indexName")
-        }
-        TimeUnit.MILLISECONDS.sleep(timeout.toMillis())
+  suspend fun semanticSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
+    blockService.checkIfBlockedOrRollbackIfStale(request.crn) {
+      rollback {
+        rollbackPartialLoad(request.crn)
       }
     }
-  }
-
-  suspend fun semanticSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    checkIndexIsNotFound("block-${request.crn.lowercase()}")
     audit(request, pageable)
     val crnExists = openSearchClient.search(
       { searchRequest ->
@@ -127,7 +119,13 @@ class ContactSearchService(
       Any::class.java,
     ).hits().total().value() > 0
     if (!crnExists) {
-      val loadDataJob = scope.launch { loadDataRetry(request.crn) }
+      val loadDataJobScope = CoroutineScope(Context.current().asContextElement())
+      val loadDataJob = loadDataJobScope.launch {
+        blockService.doWithBlock(request.crn, 2) {
+          action { loadData(request.crn) }
+          rollback { rollbackPartialLoad(request.crn) }
+        }
+      }
       withTimeoutOrNull(Duration.ofSeconds(30)) { loadDataJob.join() }
         ?: throw IndexNotReadyException("Timed out waiting for contacts with CRN=${request.crn} to be indexed for semantic search. The indexing process has not been interrupted.")
     }
@@ -163,7 +161,6 @@ class ContactSearchService(
     } else {
       BoolQuery.of { bool -> bool.filter { it.matchesCrn(request.crn) } }
     }.toQuery()
-
 
     val searchRequest = SearchRequest.of { searchRequest ->
       searchRequest
@@ -204,7 +201,6 @@ class ContactSearchService(
         }
     }
 
-
     val searchResponse = openSearchClient.search(searchRequest, ContactSearchResult::class.java)
     val results = searchResponse.hits().hits().mapNotNull {
       it.source()?.copy(
@@ -241,42 +237,17 @@ class ContactSearchService(
         .fragmentSize(200),
     ).sorted(pageable.sort.fieldSorts())
 
-  private fun loadDataRetry(crn: String, maxRetries: Int = 2) {
-    (0..maxRetries).forEach { count ->
-      try {
-        loadData(crn)
-        return
-      } catch (ex: Exception) {
-        if (count == maxRetries) {
-          openSearchClient.deleteByQuery {
-            it.index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
-              .query { q -> q.matchesCrn(crn) }
-              .routing(crn)
-          }
-          val exception: Exception = RuntimeException("Failed to load data")
-          Sentry.captureException(exception)
-          telemetryClient.trackException(exception)
-          throw exception
-        }
-      }
+  private fun rollbackPartialLoad(crn: String) {
+    openSearchClient.deleteByQuery {
+      it.index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
+        .query { q -> q.matchesCrn(crn) }
+        .routing(crn)
     }
   }
 
   @WithSpan
   private fun loadData(crn: String) {
     val startTime = System.currentTimeMillis()
-
-    openSearchClient.indices().create {
-      it.index("block-${crn.lowercase()}")
-        .settings { settings ->
-          settings.index { index ->
-            index
-              .numberOfShards("1")
-              .numberOfReplicas("0")
-          }
-        }
-    }
-
     val mapper = openSearchClient._transport().jsonpMapper()
     val operations = deliusService.getContacts(crn).map { contact ->
       BulkOperation.of { bulk ->
@@ -288,21 +259,34 @@ class ContactSearchService(
         }
       }
     }
-    val request = BulkRequest.Builder()
-      .index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
-      .routing(crn)
-      .refresh(Refresh.True)
-      .timeout { it.time("5m") }
-      .operations(operations)
-      .build()
-    openSearchClient.bulk(request)
-    openSearchClient.indices().delete { it.index("block-${crn.lowercase()}") }
+    //Split request into batches of 50
+    val ops = operations.chunked(onDemandDataloadBatchSize)
+    ops.map { operationsChunk ->
+      val request = BulkRequest.Builder()
+        .index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
+        .routing(crn)
+        .refresh(Refresh.True)
+        .timeout { it.time("5m") }
+        .operations(operationsChunk)
+        .build()
+
+      val response = openSearchClient.bulk(request)
+      if (response.errors()) {
+        val numberOfErrors = response.items()
+          .filter { it.error() != null && it.error()!!.type() != "version_conflict_engine_exception" }.size
+        response.items()
+          .firstOrNull { it.error() != null && it.error()!!.type() != "version_conflict_engine_exception" }
+          ?.error()
+          ?.let { throw RuntimeException("$numberOfErrors found. First with reason: ${it.reason()}") }
+      }
+    }
+
     telemetryClient.trackEvent(
       "OnDemandDataLoad",
       mapOf("crn" to crn),
       mapOf(
         "duration" to (System.currentTimeMillis() - startTime).toDouble(),
-        "count" to request.operations().size.toDouble(),
+        "count" to operations.size.toDouble(),
       ),
     )
   }
