@@ -209,7 +209,7 @@ class ContactSearchService(
         score = it.score().takeIf { request.includeScores },
       )
     }
-    val response = PageImpl(results, pageable, searchResponse.hits().total()?.value()?: 0)
+    val response = PageImpl(results, pageable, searchResponse.hits().total()?.value() ?: 0)
 
     return ContactSearchResponse(
       response.numberOfElements,
