@@ -116,7 +116,7 @@ class ContactSearchService(
   suspend fun semanticSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
     checkIndexIsNotFound("block-${request.crn.lowercase()}")
     audit(request, pageable)
-    val crnExists = openSearchClient.search(
+    val crnExists = (openSearchClient.search(
       { searchRequest ->
         searchRequest.index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
           .routing(request.crn)
@@ -125,7 +125,7 @@ class ContactSearchService(
           .size(0)
       },
       Any::class.java,
-    ).hits().total().value() > 0
+    ).hits().total()?.value() ?: 0) > 0
     if (!crnExists) {
       val loadDataJob = scope.launch { loadDataRetry(request.crn) }
       withTimeoutOrNull(Duration.ofSeconds(30)) { loadDataJob.join() }
@@ -213,7 +213,7 @@ class ContactSearchService(
         score = it.score().takeIf { request.includeScores },
       )
     }
-    val response = PageImpl(results, pageable, searchResponse.hits().total().value())
+    val response = PageImpl(results, pageable, searchResponse.hits().total()?.value()?: 0)
 
     return ContactSearchResponse(
       response.numberOfElements,
@@ -271,8 +271,8 @@ class ContactSearchService(
         .settings { settings ->
           settings.index { index ->
             index
-              .numberOfShards("1")
-              .numberOfReplicas("0")
+              .numberOfShards(1)
+              .numberOfReplicas(0)
           }
         }
     }
