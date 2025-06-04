@@ -108,7 +108,7 @@ class ContactSearchService(
       }
     }
     audit(request, pageable)
-    val crnExists = openSearchClient.search(
+    val crnExists = (openSearchClient.search(
       { searchRequest ->
         searchRequest.index(CONTACT_SEMANTIC_SEARCH_PRIMARY)
           .routing(request.crn)
@@ -117,7 +117,7 @@ class ContactSearchService(
           .size(0)
       },
       Any::class.java,
-    ).hits().total().value() > 0
+    ).hits().total()?.value() ?: 0) > 0
     if (!crnExists) {
       val loadDataJobScope = CoroutineScope(Context.current().asContextElement())
       val loadDataJob = loadDataJobScope.launch {
@@ -209,7 +209,7 @@ class ContactSearchService(
         score = it.score().takeIf { request.includeScores },
       )
     }
-    val response = PageImpl(results, pageable, searchResponse.hits().total().value())
+    val response = PageImpl(results, pageable, searchResponse.hits().total()?.value() ?: 0)
 
     return ContactSearchResponse(
       response.numberOfElements,
