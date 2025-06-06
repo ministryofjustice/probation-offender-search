@@ -163,7 +163,9 @@ class ContactSemanticSearchService(
           // If no highlight from OpenSearch, check if we have inner hits for the document by id
           hit.source()?.notes?.let { notes ->
             semanticInnerHits.firstOrNull { it.id() != null && it.id() == hit.id() }
-              ?.let { hit.innerHits()["textEmbedding"]?.hits()?.hits()?.mapNotNull { it.nested()?.offset() } }
+              ?.let {
+                it.innerHits()["textEmbedding"]?.hits()?.hits()?.mapNotNull { inner -> inner.nested()?.offset() }
+              }
               ?.let { semanticChunkOffsets ->
                 // Use the inner hit offsets to construct highlighted text fragments
                 val chunks = notes.asTextChunks()
