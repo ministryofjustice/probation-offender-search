@@ -5,8 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
+import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.asHighlightedFragmentOf
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.asTextChunks
-import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.highlightedFragment
 import java.util.stream.Stream
 
 internal class TextExtensionsTest {
@@ -92,7 +92,7 @@ internal class TextExtensionsTest {
     fragmentSize: Int,
     expected: String,
   ) {
-    val result = input.highlightedFragment(chunk, fragmentSize)
+    val result = chunk.asHighlightedFragmentOf(input, fragmentSize)
     assertThat(result).isEqualTo(expected)
   }
 }

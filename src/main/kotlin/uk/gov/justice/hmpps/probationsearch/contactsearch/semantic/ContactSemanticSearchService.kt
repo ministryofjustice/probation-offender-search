@@ -30,10 +30,12 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
+import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.buildSortOptions
+import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.hits
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.matchesCrn
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.withPageable
+import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.asHighlightedFragmentOf
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.asTextChunks
-import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.highlightedFragment
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchRequest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResult
@@ -148,7 +150,10 @@ class ContactSemanticSearchService(
           RequestItem.of { item ->
             item.header { it.index(INDEX_NAME).routing(request.crn) }
               .body { body ->
-                body.query(semanticQuery).source { source -> source.fetch(false) }.withPageable(pageable)
+                body.query(semanticQuery)
+                  .source { source -> source.fetch(false) }
+                  .size(pageable.pageSize)
+                  .sort(buildSortOptions(pageable.sort))
               }
           },
         )
@@ -156,21 +161,19 @@ class ContactSemanticSearchService(
       ContactSearchResult::class.java,
     )
 
-    val semanticInnerHits = response.responses()[1].result().hits().hits()
-    val results = response.responses()[0].result().hits().hits().mapNotNull { hit ->
+    val semanticInnerHits = response.responses()[1].hits()
+    val results = response.responses()[0].hits().mapNotNull { hit ->
       hit.source()?.copy(
         highlights = hit.highlight().ifEmpty {
           // If no highlight from OpenSearch, check if we have inner hits for the document by id
           hit.source()?.notes?.let { notes ->
             semanticInnerHits.firstOrNull { it.id() != null && it.id() == hit.id() }
-              ?.let {
-                it.innerHits()["textEmbedding"]?.hits()?.hits()?.mapNotNull { inner -> inner.nested()?.offset() }
-              }
+              ?.let { hit -> hit.innerHits()["textEmbedding"]?.hits()?.hits()?.mapNotNull { it.nested()?.offset() } }
               ?.let { semanticChunkOffsets ->
                 // Use the inner hit offsets to construct highlighted text fragments
                 val chunks = notes.asTextChunks()
                 val highlightedFragments = semanticChunkOffsets
-                  .mapNotNull { offset -> chunks.elementAtOrNull(offset)?.highlightedFragment(notes) }
+                  .mapNotNull { offset -> chunks.elementAtOrNull(offset)?.asHighlightedFragmentOf(notes) }
                   .ifEmpty { return@let null }
                 mapOf("notes" to highlightedFragments)
               }

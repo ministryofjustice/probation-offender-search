@@ -29,18 +29,19 @@ object TextExtensions {
     }
   }
 
-  fun String.highlightedFragment(
-    chunk: String,
+  fun String.asHighlightedFragmentOf(
+    fullText: String,
     maxFragmentSize: Int = 400,
     preTag: String = "<em>",
     postTag: String = "</em>",
   ): String {
-    val chunkStart = indexOf(chunk).takeIf { it >= 0 } ?: return "$preTag$chunk$postTag"
+    val chunk = this
+    val chunkStart = fullText.indexOf(chunk).takeIf { it >= 0 } ?: return "$preTag$chunk$postTag"
     val chunkEnd = chunkStart + chunk.length
-    val breakIterator = BreakIterator.getSentenceInstance().apply { setText(this@highlightedFragment) }
+    val breakIterator = BreakIterator.getSentenceInstance().apply { setText(fullText) }
     val sentenceStart = breakIterator.preceding(chunkStart + 1).takeIf { it != BreakIterator.DONE } ?: 0
-    val sentenceEnd = breakIterator.following(chunkEnd - 1).takeIf { it != BreakIterator.DONE } ?: length
-    val sentence = substring(sentenceStart, sentenceEnd).trim()
+    val sentenceEnd = breakIterator.following(chunkEnd - 1).takeIf { it != BreakIterator.DONE } ?: fullText.length
+    val sentence = fullText.substring(sentenceStart, sentenceEnd).trim()
     val fragment = if (sentence.length <= maxFragmentSize) sentence else "...$chunk..."
     return fragment.replace(chunk, "$preTag$chunk$postTag")
   }

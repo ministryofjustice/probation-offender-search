@@ -1,10 +1,13 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch.extensions
 
+import org.opensearch.client.opensearch._types.OpenSearchException
 import org.opensearch.client.opensearch._types.SortOptions
 import org.opensearch.client.opensearch._types.SortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Query.Builder
 import org.opensearch.client.opensearch.core.SearchRequest
+import org.opensearch.client.opensearch.core.msearch.MultiSearchResponseItem
 import org.opensearch.client.opensearch.core.msearch.MultisearchBody
+import org.opensearch.client.opensearch.core.search.Hit
 import org.opensearch.search.sort.SortBuilders
 import org.opensearch.search.sort.SortOrder.DESC
 import org.springframework.data.domain.Pageable
@@ -25,6 +28,9 @@ object OpenSearchJavaClientExtensions {
     .size(pageable.pageSize)
     .from(pageable.offset.toInt())
     .sort(buildSortOptions(pageable.sort))
+
+  fun <T> MultiSearchResponseItem<T>.hits(): List<Hit<T>> =
+    if (isFailure) throw OpenSearchException(failure()) else result().hits().hits()
 
   fun buildSortOptions(sort: Sort): List<SortOptions> {
     val fieldSorts = SortType.entries.flatMap { type ->
