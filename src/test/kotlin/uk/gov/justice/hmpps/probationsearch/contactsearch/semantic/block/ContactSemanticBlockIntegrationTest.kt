@@ -1,4 +1,4 @@
-package uk.gov.justice.hmpps.probationsearch.contactsearch
+package uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block
 
 import io.restassured.RestAssured
 import org.assertj.core.api.Assertions.assertThat
@@ -26,7 +26,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.util.ResourceUtils
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactBlockService.Companion.CONTACT_SEMANTIC_BLOCK
+import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block.ContactBlockService.Companion.CONTACT_SEMANTIC_BLOCK
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
@@ -61,10 +61,10 @@ class ContactSemanticBlockIntegrationTest {
       it.ingest().putPipeline(
         PutPipelineRequest(
           "contact-semantic-block-pipeline",
-          "/searchdata/contact-semantic-block-pipeline.json".resourceAsByteReference(),
-          JSON
+          "/search-setup/contact-semantic-block-pipeline.json".resourceAsByteReference(),
+          JSON,
         ),
-        RequestOptions.DEFAULT
+        RequestOptions.DEFAULT,
       )
     }
 
@@ -169,7 +169,7 @@ class ContactSemanticBlockIntegrationTest {
 
   companion object {
     private val TEMPLATE_JSON =
-      ResourceUtils.getFile("classpath:searchdata/contact-semantic-block-template.json").readText()
+      ResourceUtils.getFile("classpath:search-setup/contact-semantic-block-template.json").readText()
   }
 }
 

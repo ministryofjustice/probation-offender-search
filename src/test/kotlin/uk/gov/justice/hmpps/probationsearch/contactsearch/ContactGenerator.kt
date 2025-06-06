@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
+import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResult
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

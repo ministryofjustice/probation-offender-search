@@ -1,21 +1,20 @@
-package uk.gov.justice.hmpps.probationsearch.contactsearch
+package uk.gov.justice.hmpps.probationsearch.contactsearch.keyword
 
 import com.microsoft.applicationinsights.TelemetryClient
 import io.restassured.RestAssured
 import io.restassured.response.ValidatableResponse
 import io.restassured.specification.RequestSpecification
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
-import org.hamcrest.CoreMatchers.containsString
+import org.hamcrest.CoreMatchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.ArgumentMatchers.anyMap
-import org.mockito.ArgumentMatchers.eq
+import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.verify
 import org.opensearch.action.admin.indices.alias.Alias
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest
@@ -31,11 +30,12 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
-import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.util.ResourceUtils
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator.contacts
+import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator
+import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchRequest
+import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
@@ -44,7 +44,7 @@ import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
-class ContactSearchIntegrationTest {
+class ContactKeywordSearchIntegrationTest {
 
   @Autowired
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
@@ -55,7 +55,7 @@ class ContactSearchIntegrationTest {
   @Value("\${local.server.port}")
   internal val port: Int = 0
 
-  internal val deliusApiMock = DeliusApiExtension.deliusApi
+  internal val deliusApiMock = DeliusApiExtension.Companion.deliusApi
 
   internal val oneThousandCharacters =
     "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. N"
@@ -88,13 +88,13 @@ class ContactSearchIntegrationTest {
       }
       it.indices().create(CreateIndexRequest(indexName).alias(Alias(aliasName)), RequestOptions.DEFAULT)
     }
-    openSearchRestTemplate.save(contacts, IndexCoordinates.of(aliasName))
+    openSearchRestTemplate.save(ContactGenerator.contacts, IndexCoordinates.of(aliasName))
     await untilCallTo {
       openSearchRestTemplate.count(
         Query.findAll(),
         IndexCoordinates.of(aliasName),
       )
-    } matches { it == contacts.size.toLong() }
+    } matches { it == ContactGenerator.contacts.size.toLong() }
   }
 
   @Test
@@ -105,7 +105,7 @@ class ContactSearchIntegrationTest {
       .search(ContactSearchRequest(crn, oneThousandAndOneCharacters), mapOf("size" to 5, "sort" to "date,desc"))
       .then()
       .statusCode(400)
-      .body("developerMessage", containsString("query length must not exceed 1000 characters"))
+      .body("developerMessage", CoreMatchers.containsString("query length must not exceed 1000 characters"))
   }
 
   @Test
@@ -117,7 +117,7 @@ class ContactSearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(0)
+    Assertions.assertThat(results.size).isEqualTo(0)
   }
 
   @Test
@@ -129,10 +129,10 @@ class ContactSearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(3)
-    assertThat(results.totalResults).isEqualTo(4)
-    assertThat(results.results.map { it.id }).isEqualTo(
-      contacts
+    Assertions.assertThat(results.size).isEqualTo(3)
+    Assertions.assertThat(results.totalResults).isEqualTo(4)
+    Assertions.assertThat(results.results.map { it.id }).isEqualTo(
+      ContactGenerator.contacts
         .filter { it.crn == crn && it.typeCode == "CODE" }
         .sortedByDescending { it.lastUpdatedDateTime }
         .map { it.id }
@@ -149,15 +149,16 @@ class ContactSearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
+    Assertions.assertThat(results.size).isEqualTo(1)
     val found = results.results.first()
-    assertThat(found.crn).isEqualTo(crn)
-    assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(mapOf("type" to listOf("<em>FIND_ME</em>")))
+    Assertions.assertThat(found.crn).isEqualTo(crn)
+    Assertions.assertThat(found.highlights)
+      .containsExactlyInAnyOrderEntriesOf(mapOf("type" to listOf("<em>FIND_ME</em>")))
 
     verify(telemetry).trackEvent(
-      eq("SemanticSearchFailed"),
-      anyMap(),
-      eq(null),
+      ArgumentMatchers.eq("SemanticSearchFailed"),
+      ArgumentMatchers.anyMap(),
+      ArgumentMatchers.eq(null),
     )
   }
 
@@ -170,10 +171,10 @@ class ContactSearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(4)
-    assertThat(results.totalResults).isEqualTo(4)
-    assertThat(results.results.map { it.id }).isEqualTo(
-      contacts
+    Assertions.assertThat(results.size).isEqualTo(4)
+    Assertions.assertThat(results.totalResults).isEqualTo(4)
+    Assertions.assertThat(results.results.map { it.id }).isEqualTo(
+      ContactGenerator.contacts
         .filter { it.crn == crn && it.typeCode == "CODE" }
         .sortedByDescending { it.date }
         .map { it.id }
@@ -190,10 +191,10 @@ class ContactSearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(4)
-    assertThat(results.totalResults).isEqualTo(4)
-    assertThat(results.results.map { it.id }).isEqualTo(
-      contacts
+    Assertions.assertThat(results.size).isEqualTo(4)
+    Assertions.assertThat(results.totalResults).isEqualTo(4)
+    Assertions.assertThat(results.results.map { it.id }).isEqualTo(
+      ContactGenerator.contacts
         .filter { it.crn == crn && it.typeCode == "CODE" }
         .sortedByDescending { it.date }
         .map { it.id }
@@ -210,10 +211,10 @@ class ContactSearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(4)
-    assertThat(results.totalResults).isEqualTo(4)
-    assertThat(results.results.map { it.id }).isEqualTo(
-      contacts
+    Assertions.assertThat(results.size).isEqualTo(4)
+    Assertions.assertThat(results.totalResults).isEqualTo(4)
+    Assertions.assertThat(results.results.map { it.id }).containsAll(
+      ContactGenerator.contacts
         .filter { it.crn == crn && it.typeCode == "CODE" }
         .sortedBy { it.lastUpdatedDateTime }
         .map { it.id }
@@ -231,8 +232,8 @@ class ContactSearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
-    assertThat(results.results.first().crn).isEqualTo(crn)
+    Assertions.assertThat(results.size).isEqualTo(1)
+    Assertions.assertThat(results.results.first().crn).isEqualTo(crn)
   }
 
   @Test
@@ -244,10 +245,10 @@ class ContactSearchIntegrationTest {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
+    Assertions.assertThat(results.size).isEqualTo(1)
     val found = results.results.first()
-    assertThat(found.crn).isEqualTo(crn)
-    assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(
+    Assertions.assertThat(found.crn).isEqualTo(crn)
+    Assertions.assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(
       mapOf(
         "type" to listOf("Matches should be <em>highlighted</em>"),
         "outcome" to listOf("Matches were <em>highlighted</em>"),
@@ -262,13 +263,14 @@ class ContactSearchIntegrationTest {
     @JvmStatic
     fun datesForFind() = listOf("2023-01-01", "01-01-2023", "1/1/23", "01/01/2023", "1st Jan 2023")
 
-    private val TEMPLATE_JSON = ResourceUtils.getFile("classpath:searchdata/contact-template.json").readText()
+    private val TEMPLATE_JSON =
+      ResourceUtils.getFile("classpath:search-setup/contact-keyword-index-template.json").readText()
   }
 
   private fun RequestSpecification.authorised(): RequestSpecification =
     this.auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION_CONTACT_SEARCH"))
-      .contentType(APPLICATION_JSON_VALUE)
+      .contentType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
 
   private fun RequestSpecification.search(csr: ContactSearchRequest, queryParams: Map<String, Any> = mapOf()) =
     this.authorised().body(csr).queryParams(queryParams).post("/search/contacts")

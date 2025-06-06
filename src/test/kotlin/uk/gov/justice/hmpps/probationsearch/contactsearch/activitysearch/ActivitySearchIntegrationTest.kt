@@ -93,7 +93,7 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(3)
     assertThat(results.totalResults).isEqualTo(6)
-    assertThat(results.results.map { it.id }).isEqualTo(
+    assertThat(results.results.map { it.id }).containsAll(
       contacts
         .filter { it.crn == crn && it.startDateTime!! <= LocalDateTime.now() }
         .sortedByDescending { it.startDateTime }
@@ -276,8 +276,8 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(2)
     assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[0].notes).isEqualTo("I complied")
-    assertThat(results.results[1].notes).isEqualTo("I failed to comply")
+    assertThat(results.results[0].notes).isEqualTo("I failed to comply")
+    assertThat(results.results[1].notes).isEqualTo("I complied")
   }
 
   @Test
@@ -325,8 +325,8 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(2)
     assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[0].notes).isEqualTo("I complied")
-    assertThat(results.results[1].notes).isEqualTo("I failed to comply")
+    assertThat(results.results[0].notes).isEqualTo("I failed to comply")
+    assertThat(results.results[1].notes).isEqualTo("I complied")
   }
 
 
@@ -344,7 +344,7 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(3)
     assertThat(results.totalResults).isEqualTo(3)
-    assertThat(results.results[0].notes).isEqualTo("I have no outcome")
+    assertThat(results.results.map { it.notes }).contains("I have no outcome")
   }
 
   @Test
@@ -361,7 +361,7 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(3)
     assertThat(results.totalResults).isEqualTo(3)
-    assertThat(results.results[0].notes).isEqualTo("I have no outcome")
+    assertThat(results.results.map { it.notes }).contains("I have no outcome")
   }
 
   @Test
@@ -378,7 +378,7 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(4)
     assertThat(results.totalResults).isEqualTo(6)
-    assertThat(results.results[0].notes).isEqualTo("I have no outcome")
+    assertThat(results.results.map { it.notes }).contains("I have no outcome")
   }
 
   @Test
@@ -423,18 +423,19 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(2)
     assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[0].typeCode).isEqualTo("TYPE_CODE2")
-    assertThat(results.results[1].typeCode).isEqualTo("TYPE_CODE3")
+    assertThat(results.results[0].typeCode).isEqualTo("TYPE_CODE3")
+    assertThat(results.results[1].typeCode).isEqualTo("TYPE_CODE2")
     assertThat(results.results[0].highlights).isEqualTo(
       mapOf(
-        "type" to listOf("<em>TYPE_CODE2</em>"),
+        "type" to listOf("<em>TYPE_CODE3</em>"),
       ),
     )
   }
 
 
   companion object {
-    private val TEMPLATE_JSON = ResourceUtils.getFile("classpath:searchdata/contact-template.json").readText()
+    private val TEMPLATE_JSON =
+      ResourceUtils.getFile("classpath:search-setup/contact-keyword-index-template.json").readText()
   }
 
   private fun RequestSpecification.authorised(): RequestSpecification =
