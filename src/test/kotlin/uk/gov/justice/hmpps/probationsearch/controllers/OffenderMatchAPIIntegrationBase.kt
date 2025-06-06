@@ -42,7 +42,7 @@ abstract class OffenderMatchAPIIntegrationBase {
   }
 
   fun loadOffenders(vararg offenders: OffenderIdentification) {
-    val template = "/searchdata/offender-template.json".readResourceAsText()
+    val template = "/search-data/offender-template.json".readResourceAsText()
     val templateOffender = objectMapper.readValue(template, OffenderDetail::class.java)
 
     val offendersToLoad = offenders.map {
