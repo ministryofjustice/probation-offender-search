@@ -152,7 +152,7 @@ class ContactSearchService(
             query.neural {
               it.field("textEmbedding.knn")
                 .queryText(request.query)
-                .minScore(0.793F)
+                .minScore(0.798F)
                 .filter(Builder().matchesCrn(request.crn).build())
             }
           }
