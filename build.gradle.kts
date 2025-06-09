@@ -19,7 +19,7 @@ dependencies {
   implementation("org.springframework.data:spring-data-jpa")
   implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
-  implementation("org.opensearch.client:spring-data-opensearch-starter:1.6.4")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:1.7.0")
   implementation("org.opensearch.client:opensearch-java:2.23.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.13.2")
