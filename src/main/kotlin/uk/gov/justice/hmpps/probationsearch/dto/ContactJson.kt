@@ -1,4 +1,4 @@
-package uk.gov.justice.hmpps.probationsearch.contactsearch
+package uk.gov.justice.hmpps.probationsearch.dto
 
 class ContactJson(
   val contactId: Long,

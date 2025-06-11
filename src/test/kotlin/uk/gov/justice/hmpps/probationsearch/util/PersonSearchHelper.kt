@@ -16,7 +16,7 @@ import org.opensearch.common.xcontent.XContentType.JSON
 import org.opensearch.core.common.bytes.BytesArray
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.UUID
+import java.util.*
 
 class PersonSearchHelper(private val openSearchClient: RestHighLevelClient) {
   companion object {
@@ -27,16 +27,16 @@ class PersonSearchHelper(private val openSearchClient: RestHighLevelClient) {
 
   fun loadData() {
     rebuildIndex()
-    loadOffender("1", "/searchdata/john-smith.json".resourceAsString())
-    loadOffender("2", "/searchdata/jane-smith.json".resourceAsString())
-    loadOffender("3", "/searchdata/sam-jones-deleted.json".resourceAsString())
-    loadOffender("4", "/searchdata/antonio-gramsci-n01.json".resourceAsString())
-    loadOffender("5", "/searchdata/antonio-gramsci-n02.json".resourceAsString())
-    loadOffender("6", "/searchdata/antonio-gramsci-n03.json".resourceAsString())
-    loadOffender("7", "/searchdata/anne-gramsci-n02.json".resourceAsString())
-    loadOffender("8", "/searchdata/antonio-gramsci-c20.json".resourceAsString())
-    loadOffender("9", "/searchdata/tom-bloggs.json".resourceAsString())
-    loadOffender("10", "/searchdata/james-brown.json".resourceAsString())
+    loadOffender("1", "/search-data/john-smith.json".resourceAsString())
+    loadOffender("2", "/search-data/jane-smith.json".resourceAsString())
+    loadOffender("3", "/search-data/sam-jones-deleted.json".resourceAsString())
+    loadOffender("4", "/search-data/antonio-gramsci-n01.json".resourceAsString())
+    loadOffender("5", "/search-data/antonio-gramsci-n02.json".resourceAsString())
+    loadOffender("6", "/search-data/antonio-gramsci-n03.json".resourceAsString())
+    loadOffender("7", "/search-data/anne-gramsci-n02.json".resourceAsString())
+    loadOffender("8", "/search-data/antonio-gramsci-c20.json".resourceAsString())
+    loadOffender("9", "/search-data/tom-bloggs.json".resourceAsString())
+    loadOffender("10", "/search-data/james-brown.json".resourceAsString())
     waitForOffenderLoading(10)
   }
 
@@ -81,7 +81,7 @@ class PersonSearchHelper(private val openSearchClient: RestHighLevelClient) {
   private fun buildIndex() {
     openSearchClient.indices().putTemplate(
       PutIndexTemplateRequest(templateName)
-        .source("/searchdata/create-template.json".resourceAsString(), JSON),
+        .source("/search-setup/person-search-index-template.json".resourceAsString(), JSON),
       RequestOptions.DEFAULT,
     )
     openSearchClient.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)
@@ -92,10 +92,10 @@ class PersonSearchHelper(private val openSearchClient: RestHighLevelClient) {
       .putPipeline(
         PutPipelineRequest(
           "person-search-pipeline",
-          "/searchdata/create-pipeline.json".resourceAsByteReference(),
-          JSON
+          "/search-setup/person-search-pipeline.json".resourceAsByteReference(),
+          JSON,
         ),
-        RequestOptions.DEFAULT
+        RequestOptions.DEFAULT,
       )
   }
 }

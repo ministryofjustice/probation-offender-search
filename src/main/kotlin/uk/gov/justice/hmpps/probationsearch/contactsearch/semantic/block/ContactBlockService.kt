@@ -1,4 +1,4 @@
-package uk.gov.justice.hmpps.probationsearch.contactsearch
+package uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block
 
 import com.microsoft.applicationinsights.TelemetryClient
 import io.sentry.Sentry
@@ -80,8 +80,8 @@ class ContactBlockService(
     restTemplate.delete(crn, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK))
   }
 
-  private fun getBlock(crn: String): ContactBlockResult? =
-    restTemplate[crn, ContactBlockResult::class.java, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK)]
+  private fun getBlock(crn: String): BlockDocument? =
+    restTemplate[crn, BlockDocument::class.java, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK)]
 
   fun LocalDateTime.isLongerAgoThan(durationInPast: Duration): Boolean {
     return Duration.between(

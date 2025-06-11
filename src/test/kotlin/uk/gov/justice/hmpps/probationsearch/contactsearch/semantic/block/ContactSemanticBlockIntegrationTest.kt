@@ -1,4 +1,4 @@
-package uk.gov.justice.hmpps.probationsearch.contactsearch
+package uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block
 
 import io.restassured.RestAssured
 import org.assertj.core.api.Assertions.assertThat
@@ -7,15 +7,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.opensearch.action.admin.indices.delete.DeleteIndexRequest
-import org.opensearch.action.ingest.PutPipelineRequest
-import org.opensearch.client.RequestOptions
-import org.opensearch.client.indices.CreateIndexRequest
-import org.opensearch.client.indices.GetIndexRequest
-import org.opensearch.client.indices.PutIndexTemplateRequest
-import org.opensearch.common.xcontent.XContentType.JSON
-import org.opensearch.core.common.bytes.BytesArray
-import org.opensearch.core.xcontent.MediaType
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -24,9 +15,9 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.IndexQuery
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.util.ResourceUtils
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
-import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactBlockService.Companion.CONTACT_SEMANTIC_BLOCK
+import uk.gov.justice.hmpps.probationsearch.contactsearch.OpenSearchSetup
+import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block.ContactBlockService.Companion.CONTACT_SEMANTIC_BLOCK
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
@@ -39,6 +30,9 @@ import java.time.format.DateTimeFormatter
 @MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
 class ContactSemanticBlockIntegrationTest {
+
+  @Autowired
+  private lateinit var openSearchSetup: OpenSearchSetup
 
   @Autowired
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
@@ -55,34 +49,7 @@ class ContactSemanticBlockIntegrationTest {
   @BeforeEach
   internal fun before() {
     RestAssured.port = port
-    val indexName = CONTACT_SEMANTIC_BLOCK
-
-    openSearchRestTemplate.execute {
-      it.ingest().putPipeline(
-        PutPipelineRequest(
-          "contact-semantic-block-pipeline",
-          "/searchdata/contact-semantic-block-pipeline.json".resourceAsByteReference(),
-          JSON
-        ),
-        RequestOptions.DEFAULT
-      )
-    }
-
-    openSearchRestTemplate.execute {
-      it.indices().putTemplate(
-        PutIndexTemplateRequest("contact-semantic-block-template").source(
-          TEMPLATE_JSON,
-          MediaType.fromMediaType(JSON.mediaType()),
-        ),
-        RequestOptions.DEFAULT,
-      )
-    }
-    openSearchRestTemplate.execute {
-      if (it.indices().exists(GetIndexRequest(indexName), RequestOptions.DEFAULT)) {
-        it.indices().delete(DeleteIndexRequest(indexName), RequestOptions.DEFAULT)
-      }
-      it.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)
-    }
+    openSearchSetup.setup()
   }
 
   private fun createBlock(crn: String, timestamp: String? = null) {
@@ -166,12 +133,4 @@ class ContactSemanticBlockIntegrationTest {
     assertThat(rollbackActioned).isFalse()
     assertThat(blockExists(crn)).isTrue()
   }
-
-  companion object {
-    private val TEMPLATE_JSON =
-      ResourceUtils.getFile("classpath:searchdata/contact-semantic-block-template.json").readText()
-  }
 }
-
-private fun String.resourceAsByteReference() =
-  BytesArray(ContactSemanticBlockIntegrationTest::class.java.getResource(this)!!.readBytes())

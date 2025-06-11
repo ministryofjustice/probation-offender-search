@@ -1,40 +1,13 @@
-package uk.gov.justice.hmpps.probationsearch.contactsearch
+package uk.gov.justice.hmpps.probationsearch.contactsearch.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
-import jakarta.validation.constraints.Size
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.ZonedDateTime
-
-class ContactSearchRequest(
-  val crn: String,
-  query: String? = "",
-  val matchAllTerms: Boolean = true,
-  includeScores: Boolean? = false,
-) {
-  @Size(max = 1000, message = "query length must not exceed 1000 characters")
-  val query = query ?: ""
-  val includeScores: Boolean = includeScores ?: false
-}
-
-data class ContactSearchAuditRequest(
-  val search: ContactSearchRequest,
-  val username: String,
-  val pagination: PageRequest,
-  val dateTime: ZonedDateTime = ZonedDateTime.now(),
-) {
-  data class PageRequest(
-    val page: Int,
-    val pageSize: Int,
-    val sort: String?,
-    val direction: String?,
-  )
-}
 
 data class ContactSearchResponse(
   val size: Int,
@@ -64,15 +37,6 @@ data class ContactSearchResult(
   val highlights: Map<String, List<String>> = mapOf(),
   @field:JsonInclude(JsonInclude.Include.NON_NULL)
   val score: Double?,
-)
-
-data class ContactBlockResult(
-  val crn: String,
-  @field:Field(type = FieldType.Date, format = [], pattern = [ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP])
-  @field:JsonFormat(
-    shape = JsonFormat.Shape.STRING,
-    pattern = ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP,
-    timezone = "UTC",
-  )
-  val timestamp: LocalDateTime,
+  @field:JsonIgnore
+  val semanticMatch: Boolean = false,
 )

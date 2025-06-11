@@ -26,7 +26,6 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
 
   opensearch:
-    container_name: opensearch
     networks:
       - hmpps
     ports:
@@ -39,9 +38,10 @@ services:
       - discovery.type=single-node
       - plugins.security.disabled=true
       - bootstrap.memory_lock=true
-      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
-      - plugins.ml_commons.controller_enabled=true
+      - OPENSEARCH_JAVA_OPTS=-Xms2g -Xmx2g
       - plugins.ml_commons.only_run_on_ml_node=false
+      - plugins.ml_commons.model_access_control_enabled=true
+      - plugins.ml_commons.native_memory_threshold=99
     ulimits:
       memlock:
         soft: -1

@@ -65,7 +65,7 @@ class OffenderSearchControllerTest {
 
   @Test
   fun offenderSearch() {
-    OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
+    OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/search-data/singleMatch.json"))
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
@@ -83,7 +83,7 @@ class OffenderSearchControllerTest {
 
   @Test
   fun offenderSearchWithAliases() {
-    OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
+    OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/search-data/singleMatch.json"))
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
@@ -136,7 +136,7 @@ class OffenderSearchControllerTest {
 
     @Test
     fun `endpoint is unsecured`() {
-      OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
+      OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/search-data/singleMatch.json"))
       RestAssured.given()
         .get("/synthetic-monitor")
         .then()
@@ -145,7 +145,7 @@ class OffenderSearchControllerTest {
 
     @Test
     fun `telemetry is recorded`() {
-      OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/searchdata/singleMatch.json"))
+      OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/search-data/singleMatch.json"))
       RestAssured.given()
         .get("/synthetic-monitor")
         .then()

@@ -46,7 +46,7 @@ abstract class ElasticIntegrationBase {
   private lateinit var objectMapper: ObjectMapper
 
   fun loadOffenders(vararg offenders: OffenderReplacement) {
-    val template = "/searchdata/offender-template.json".readResourceAsText()
+    val template = "/search-data/offender-template.json".readResourceAsText()
     val templateOffender = objectMapper.readValue(template, OffenderDetail::class.java)
 
     val offendersToLoad = offenders.map { it ->
