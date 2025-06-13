@@ -1,7 +1,9 @@
 package uk.gov.justice.hmpps.probationsearch.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -35,8 +37,8 @@ class DeliusApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubDeliusAuditSuccess() {
     stubFor(
-      WireMock.post(urlPathEqualTo("/hmpps-auth/auth/oauth/token")).willReturn(
-        WireMock.aResponse()
+      post(urlPathEqualTo("/hmpps-auth/auth/oauth/token")).willReturn(
+        aResponse()
           .withHeader("Content-Type", "application/json")
           .withStatus(HttpURLConnection.HTTP_OK)
           .withBody(
@@ -50,16 +52,27 @@ class DeliusApiMockServer : WireMockServer(WIREMOCK_PORT) {
                 "auth_source": "none"
             }
           """.trimIndent()
-          )
+          ),
       ),
     )
 
     stubFor(
-      WireMock.post(urlPathEqualTo("/probation-search/audit/contact-search")).willReturn(
-        WireMock.aResponse()
+      post(urlPathEqualTo("/probation-search/audit/contact-search")).willReturn(
+        aResponse()
           .withHeader("Content-Type", "application/json")
           .withHeader("Authorization", "token")
-          .withStatus(HttpURLConnection.HTTP_CREATED)
+          .withStatus(HttpURLConnection.HTTP_CREATED),
+      ),
+    )
+  }
+
+  fun stubGetContacts(crn: String, responseBody: String) {
+    stubFor(
+      get(urlPathEqualTo("/probation-search/case/$crn/contacts")).willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withStatus(HttpURLConnection.HTTP_OK)
+          .withBody(responseBody),
       ),
     )
   }

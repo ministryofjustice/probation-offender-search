@@ -93,7 +93,7 @@ object ContactGenerator {
       startTime = LocalTime.of(11, 0),
     ),
     generate(
-      crn = "Z123456",
+      crn = "D123456",
       typeCode = "UNIQUE",
       typeDescription = "Unique Description",
       date = LocalDate.of(2023, 1, 1),
@@ -102,12 +102,12 @@ object ContactGenerator {
     generate(
       crn = "H123456",
       typeCode = "HIGH",
-      typeDescription = "Matches should be highlighted",
+      typeDescription = "Matches should be highlighted in type",
       outcomeCode = "HIGH",
-      outcomeDescription = "Matches were highlighted",
+      outcomeDescription = "Matches were highlighted in outcome",
     ),
     generate(
-      crn = "Z123456",
+      crn = "S123456",
       notes = """
         To Sherlock Holmes she is always _the_ woman. I have seldom heard him
         mention her under any other name. In his eyes she eclipses and

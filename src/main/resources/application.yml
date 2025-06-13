@@ -5,6 +5,8 @@ spring:
   config:
     use-legacy-processing: true
 
+  threads.virtual.enabled: true
+
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false

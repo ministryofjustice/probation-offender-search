@@ -131,11 +131,12 @@ class OpenSearchSetup {
   }
 
   private fun <T> retry(maxAttempts: Int = 3, function: () -> T): T {
-    (1..maxAttempts).forEach {
+    repeat(maxAttempts) {
       try {
         return function.invoke()
       } catch (e: Exception) {
-        if (it == maxAttempts) throw e
+        log.warn("Attempt #$it failed with exception: ${e.message}")
+        if (it == maxAttempts - 1) throw e
       }
     }
     error("Max attempts reached")

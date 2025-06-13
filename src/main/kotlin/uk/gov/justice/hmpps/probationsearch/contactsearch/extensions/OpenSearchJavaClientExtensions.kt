@@ -1,11 +1,15 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch.extensions
 
+import org.opensearch.client.opensearch.OpenSearchClient
 import org.opensearch.client.opensearch._types.OpenSearchException
 import org.opensearch.client.opensearch._types.SortOptions
 import org.opensearch.client.opensearch._types.SortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Query
 import org.opensearch.client.opensearch._types.query_dsl.Query.Builder
+import org.opensearch.client.opensearch.core.MsearchRequest
+import org.opensearch.client.opensearch.core.MsearchResponse
 import org.opensearch.client.opensearch.core.SearchRequest
+import org.opensearch.client.opensearch.core.SearchResponse
 import org.opensearch.client.opensearch.core.msearch.MultiSearchResponseItem
 import org.opensearch.client.opensearch.core.msearch.MultisearchBody
 import org.opensearch.client.opensearch.core.search.Hit
@@ -14,8 +18,15 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.SortType
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.SortType.SCORE
+import java.util.function.Function
 
 object OpenSearchJavaClientExtensions {
+  inline fun <reified TDocument> OpenSearchClient.search(fn: Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>>): SearchResponse<TDocument> =
+    search<TDocument>(fn, TDocument::class.java)
+
+  inline fun <reified TDocument> OpenSearchClient.msearch(fn: Function<MsearchRequest.Builder, ObjectBuilder<MsearchRequest>>): MsearchResponse<TDocument> =
+    msearch<TDocument>(fn, TDocument::class.java)
+
   fun Sort.Direction.toSortOrder() = when (this) {
     Sort.Direction.ASC -> SortOrder.Asc
     Sort.Direction.DESC -> SortOrder.Desc

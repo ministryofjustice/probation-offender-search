@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
+import uk.gov.justice.hmpps.probationsearch.DataLoadFailureException
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
 import uk.gov.justice.hmpps.probationsearch.InvalidRequestException
 import uk.gov.justice.hmpps.probationsearch.NotFoundException
@@ -102,6 +103,8 @@ class ControllerAdvice {
 
   @ExceptionHandler(IndexNotReadyException::class)
   fun handleException(e: IndexNotReadyException): ResponseEntity<ErrorResponse> {
+    log.error("Unexpected exception", e)
+    Sentry.captureException(e)
     return ResponseEntity
       .status(HttpStatus.SERVICE_UNAVAILABLE)
       .header(HttpHeaders.RETRY_AFTER, "30")
@@ -112,6 +115,15 @@ class ControllerAdvice {
           userMessage = "Indexing in progress. Please try again later.",
         ),
       )
+  }
+
+  @ExceptionHandler(DataLoadFailureException::class)
+  fun handleException(e: DataLoadFailureException): ResponseEntity<ErrorResponse> {
+    log.error("Unexpected exception", e)
+    Sentry.captureException(e)
+    return ResponseEntity
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR.value(), developerMessage = e.message))
   }
 }
 
