@@ -67,17 +67,14 @@ class ContactSemanticBlockIntegrationTest {
   fun `can block a crn, rollback and unblock after exception has occurred `() {
     val crn = "X123456"
     var rollbackActioned = false
-    var numberOfTries = 0
     val ex = assertThrows<RuntimeException> {
-      contactBlockService.doWithBlock(crn, 2) {
+      contactBlockService.doWithBlock(crn) {
         action {
-          numberOfTries++
           throw RuntimeException("Some exception")
         }
         rollback { rollbackActioned = true }
       }
     }
-    assertThat(numberOfTries).isEqualTo(3)
     assertThat(ex.message).isEqualTo("Some exception")
     assertThat(rollbackActioned).isTrue()
   }
@@ -86,14 +83,14 @@ class ContactSemanticBlockIntegrationTest {
   fun `can block a crn and unblock after first successful run `() {
     val crn = "X123456"
     var rollbackActioned = false
-    var actionsPerformed = 0
+    var actionsPerformed = false
     assertDoesNotThrow {
-      contactBlockService.doWithBlock(crn, 2) {
-        action { actionsPerformed++ }
+      contactBlockService.doWithBlock(crn) {
+        action { actionsPerformed = true }
         rollback { rollbackActioned = true }
       }
     }
-    assertThat(actionsPerformed).isEqualTo(1)
+    assertThat(actionsPerformed).isTrue()
     assertThat(rollbackActioned).isFalse()
   }
 

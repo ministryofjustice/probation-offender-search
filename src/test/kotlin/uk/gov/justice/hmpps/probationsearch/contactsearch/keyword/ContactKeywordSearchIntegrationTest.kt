@@ -213,7 +213,7 @@ class ContactKeywordSearchIntegrationTest {
   @ParameterizedTest
   @MethodSource("datesForFind")
   fun `can search for date in different formats`(date: String) {
-    val crn = "Z123456"
+    val crn = "D123456"
     val results = RestAssured.given()
       .`when`()
       .search(ContactSearchRequest(crn, date))
@@ -238,8 +238,8 @@ class ContactKeywordSearchIntegrationTest {
     assertThat(found.crn).isEqualTo(crn)
     assertThat(found.highlights).containsExactlyInAnyOrderEntriesOf(
       mapOf(
-        "type" to listOf("Matches should be <em>highlighted</em>"),
-        "outcome" to listOf("Matches were <em>highlighted</em>"),
+        "type" to listOf("Matches should be <em>highlighted</em> in type"),
+        "outcome" to listOf("Matches were <em>highlighted</em> in outcome"),
       ),
     )
   }

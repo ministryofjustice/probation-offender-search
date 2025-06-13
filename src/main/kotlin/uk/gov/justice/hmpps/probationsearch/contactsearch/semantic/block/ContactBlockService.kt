@@ -42,30 +42,21 @@ class ContactBlockService(
     }
   }
 
-  fun doWithBlock(crn: String, maxRetries: Int = 2, block: BlockContext.() -> Unit) {
+  fun doWithBlock(crn: String, block: BlockContext.() -> Unit) {
     val ctx = BlockContext().apply(block)
     // Apply the block before the load action
     block(crn)
-    (0..maxRetries).forEach { count ->
-      try {
-        // Run the load and when complete, delete the block
-        ctx.action()
-        unblock(crn)
-        // Return from the function
-        return
-      } catch (ex: Exception) {
-        // If there is an exception, try the action again
-        if (count == maxRetries) {
-          // If there is still a failure then rollback any partial loads and remove the block
-          ctx.rollback()
-          unblock(crn)
-          // Log to Sentry and App insights
-          Sentry.captureException(ex)
-          telemetryClient.trackException(ex)
-          throw ex
-        }
-        TimeUnit.MILLISECONDS.sleep(2000)
-      }
+    try {
+      // Run the load and when complete, delete the block
+      ctx.action()
+      unblock(crn)
+    } catch (ex: Exception) {
+      ctx.rollback()
+      unblock(crn)
+      // Log to Sentry and App insights
+      Sentry.captureException(ex)
+      telemetryClient.trackException(ex)
+      throw ex
     }
   }
 
@@ -91,7 +82,7 @@ class ContactBlockService(
   }
 
   private fun retry(maxRetries: Int, timeout: Duration = Duration.ofSeconds(5), block: () -> Boolean): Boolean {
-    (0..maxRetries).forEach { _ ->
+    repeat(maxRetries) { _ ->
       val res = block()
       if (!res) return false
       TimeUnit.MILLISECONDS.sleep(timeout.toMillis())
