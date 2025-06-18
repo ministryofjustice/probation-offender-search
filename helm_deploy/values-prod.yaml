@@ -26,3 +26,8 @@ cron:
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
   alertSeverity: probation-integration-notifications
+
+  openSearchAlertsDomainNames:
+    cloud-platform-1cc47140: OpenSearch
+  openSearchAlertsFreeStorageSpaceThresholdGB: 468
+  openSearchAlertsClusterStatusYellowMinutes: 180 # cluster status can be yellow during replication following data re-indexing - this is expected
