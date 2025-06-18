@@ -28,3 +28,8 @@ generic-prometheus-alerts:
 
   # Alert for business hours only - 7am to 6pm UTC (8am to 7pm BST) on week days (Monday to Friday)
   businessHoursOnly: true
+
+  openSearchAlertsDomainNames:
+    cloud-platform-15f6e3af: OpenSearch
+  openSearchAlertsFreeStorageSpaceThresholdGB: 468
+  openSearchAlertsClusterStatusYellowMinutes: 180 # cluster status can be yellow during replication following data re-indexing - this is expected
