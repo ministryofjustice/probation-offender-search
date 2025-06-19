@@ -5,8 +5,11 @@ generic-service:
 
   resources:
     requests:
-      cpu: 1
-      memory: 512Mi
+      cpu: 128m
+      memory: 1024Mi
+    limits:
+      cpu: "1"
+      memory: 1280Mi
 
   image:
     repository: ghcr.io/ministryofjustice/probation-offender-search
@@ -30,7 +33,7 @@ generic-service:
     SPRING_PROFILES_ACTIVE: "opensearch"
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
-    JDK_JAVA_OPTIONS: "-javaagent:/agent/agent.jar -XX:MaxRAMPercentage=75.0"
+    JDK_JAVA_OPTIONS: "-javaagent:/agent/agent.jar -Xmx512m"
     AWS_REGION: "eu-west-2"
     SEARCH_SUPPORTED_MAPPING_VERSION: "2"
     OPENSEARCH_SOCKET-TIMEOUT: "10m"
