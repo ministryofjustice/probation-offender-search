@@ -21,10 +21,8 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block.Contact
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
-import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 @ExtendWith(DeliusApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -116,7 +114,7 @@ class ContactSemanticBlockIntegrationTest {
     var rollbackActioned = false
     createBlock(
       crn,
-      ZonedDateTime.now().minusMinutes(4).format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+      ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(4).toString()
     )
     val ex = assertThrows<IndexNotReadyException> {
       contactBlockService.checkIfBlockedOrRollbackIfStale(crn, retries = 1) {
