@@ -23,6 +23,7 @@ import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @ExtendWith(DeliusApiExtension::class)
@@ -115,9 +116,7 @@ class ContactSemanticBlockIntegrationTest {
     var rollbackActioned = false
     createBlock(
       crn,
-      DateTimeFormatter.ofPattern(ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP).format(
-        LocalDateTime.now(ZoneId.of("UTC")).minusMinutes(4)
-      )
+      ZonedDateTime.now().minusMinutes(4).format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
     )
     val ex = assertThrows<IndexNotReadyException> {
       contactBlockService.checkIfBlockedOrRollbackIfStale(crn, retries = 1) {

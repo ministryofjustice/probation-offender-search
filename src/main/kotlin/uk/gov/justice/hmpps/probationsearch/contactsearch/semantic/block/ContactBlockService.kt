@@ -8,20 +8,17 @@ import org.springframework.data.elasticsearch.core.query.IndexQuery
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
 import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 
 @Service
 class ContactBlockService(
   private val restTemplate: OpenSearchRestTemplate,
-  private val telemetryClient: TelemetryClient
+  private val telemetryClient: TelemetryClient,
 ) {
   companion object {
     const val CONTACT_SEMANTIC_BLOCK = "contact-semantic-block-primary"
-    const val CONTACT_SEMANTIC_BLOCK_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss'Z'"
   }
 
   fun checkIfBlockedOrRollbackIfStale(crn: String, retries: Int = 1, blockContext: BlockContext.() -> Unit) {
@@ -75,10 +72,11 @@ class ContactBlockService(
   private fun getBlock(crn: String): BlockDocument? =
     restTemplate[crn, BlockDocument::class.java, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK)]
 
-  fun LocalDateTime.isLongerAgoThan(durationInPast: Duration): Boolean {
+  fun String.isLongerAgoThan(durationInPast: Duration): Boolean {
+
     return Duration.between(
-      this,
-      LocalDateTime.now(ZoneId.of("UTC")).atOffset(ZoneOffset.UTC),
+      ZonedDateTime.parse(this),
+      ZonedDateTime.now(),
     ).seconds > durationInPast.seconds
   }
 
