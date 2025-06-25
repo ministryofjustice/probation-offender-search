@@ -21,9 +21,8 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block.Contact
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 @ExtendWith(DeliusApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -98,11 +97,9 @@ class ContactSemanticBlockIntegrationTest {
   fun `stale block exists that is longer ago than 5 minutes - rollback is called and block is removed`() {
     val crn = "X654321"
     var rollbackActioned = false
+    val dateString = "2025-06-25T09:28:23.539764Z"
     createBlock(
-      crn,
-      DateTimeFormatter.ofPattern(ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP).format(
-        LocalDateTime.now(ZoneId.of("UTC")).minusMinutes(6)
-      )
+      crn, dateString
     )
     assertDoesNotThrow {
       contactBlockService.checkIfBlockedOrRollbackIfStale(crn) { rollbackActioned = true }
@@ -117,9 +114,7 @@ class ContactSemanticBlockIntegrationTest {
     var rollbackActioned = false
     createBlock(
       crn,
-      DateTimeFormatter.ofPattern(ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP).format(
-        LocalDateTime.now(ZoneId.of("UTC")).minusMinutes(4)
-      )
+      ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(4).toString()
     )
     val ex = assertThrows<IndexNotReadyException> {
       contactBlockService.checkIfBlockedOrRollbackIfStale(crn, retries = 1) {
