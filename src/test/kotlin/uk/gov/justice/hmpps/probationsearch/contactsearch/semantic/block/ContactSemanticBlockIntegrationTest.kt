@@ -98,11 +98,9 @@ class ContactSemanticBlockIntegrationTest {
   fun `stale block exists that is longer ago than 5 minutes - rollback is called and block is removed`() {
     val crn = "X654321"
     var rollbackActioned = false
+    val dateString = "2025-06-25T09:28:23.539764Z"
     createBlock(
-      crn,
-      DateTimeFormatter.ofPattern(ContactBlockService.CONTACT_SEMANTIC_BLOCK_TIMESTAMP).format(
-        LocalDateTime.now(ZoneId.of("UTC")).minusMinutes(6)
-      )
+      crn, dateString
     )
     assertDoesNotThrow {
       contactBlockService.checkIfBlockedOrRollbackIfStale(crn) { rollbackActioned = true }

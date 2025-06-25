@@ -13,6 +13,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
+
 @Service
 class ContactBlockService(
   private val restTemplate: OpenSearchRestTemplate,
@@ -20,7 +21,7 @@ class ContactBlockService(
 ) {
   companion object {
     const val CONTACT_SEMANTIC_BLOCK = "contact-semantic-block-primary"
-    const val CONTACT_SEMANTIC_BLOCK_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'"
+    const val CONTACT_SEMANTIC_BLOCK_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss'Z'"
   }
 
   fun checkIfBlockedOrRollbackIfStale(crn: String, retries: Int = 1, blockContext: BlockContext.() -> Unit) {
