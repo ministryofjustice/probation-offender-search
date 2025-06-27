@@ -22,7 +22,6 @@ import org.opensearch.search.suggest.Suggest
 import org.opensearch.search.suggest.term.TermSuggestion
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -56,7 +55,7 @@ class OffenderSearchControllerPhraseTest {
   @Autowired
   private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 
-  @MockBean
+  @MockitoBean
   private lateinit var searchService: SearchService
 
   @BeforeEach

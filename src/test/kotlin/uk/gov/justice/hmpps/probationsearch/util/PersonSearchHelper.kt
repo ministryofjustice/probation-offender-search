@@ -14,6 +14,7 @@ import org.opensearch.client.indices.GetIndexRequest
 import org.opensearch.client.indices.PutIndexTemplateRequest
 import org.opensearch.common.xcontent.XContentType.JSON
 import org.opensearch.core.common.bytes.BytesArray
+import org.opensearch.core.xcontent.MediaTypeRegistry
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -81,7 +82,7 @@ class PersonSearchHelper(private val openSearchClient: RestHighLevelClient) {
   private fun buildIndex() {
     openSearchClient.indices().putTemplate(
       PutIndexTemplateRequest(templateName)
-        .source("/search-setup/person-search-index-template.json".resourceAsString(), JSON),
+        .source("/search-setup/person-search-index-template.json".resourceAsString(), MediaTypeRegistry.JSON),
       RequestOptions.DEFAULT,
     )
     openSearchClient.indices().create(CreateIndexRequest(indexName), RequestOptions.DEFAULT)

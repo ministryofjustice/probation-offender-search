@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -26,8 +25,7 @@ import uk.gov.justice.hmpps.probationsearch.wiremock.CommunityApiExtension
 import java.security.KeyPair
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.Date
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(CommunityApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -127,10 +125,10 @@ internal class CommunityServiceTest {
     )
     val expiresAt = LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC)
     val token = Jwts.builder()
-      .setId(UUID.randomUUID().toString())
-      .addClaims(claims)
-      .setExpiration(Date(expiresAt.toEpochMilli()))
-      .signWith(keyPair.private, SignatureAlgorithm.RS256)
+      .id(UUID.randomUUID().toString())
+      .claims(claims)
+      .expiration(Date(expiresAt.toEpochMilli()))
+      .signWith(keyPair.private, Jwts.SIG.RS256)
       .compact()
 
     return Jwt(
