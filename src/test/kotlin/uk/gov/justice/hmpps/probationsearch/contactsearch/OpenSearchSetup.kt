@@ -20,8 +20,8 @@ import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.stereotype.Component
 import org.springframework.util.ResourceUtils
 import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.ContactSemanticSearchService.Companion.INDEX_NAME
+import java.time.Duration.ofSeconds
 import java.util.*
-import kotlin.time.Duration.Companion.seconds
 
 @Component
 class OpenSearchSetup {
@@ -82,11 +82,16 @@ class OpenSearchSetup {
             .modelGroupId(modelGroupId)
         }.taskId()
 
-        await atMost 30.seconds withPollInterval 1.seconds untilCallTo { getTask { it.taskId(registerTaskId) }.state() } matches { it == "COMPLETED" }
+        await atMost ofSeconds(30) withPollInterval ofSeconds(1) untilCallTo {
+          getTask { it.taskId(registerTaskId) }.state()
+        } matches { it == "COMPLETED" }
 
         val modelId = getTask { it.taskId(registerTaskId) }.modelId()!!
         val deployTaskId = deployModel { it.modelId(modelId) }.taskId()
-        await atMost 30.seconds untilCallTo { getTask { it.taskId(deployTaskId) }.state() } matches { it == "COMPLETED" }
+
+        await atMost ofSeconds(30) untilCallTo {
+          getTask { it.taskId(deployTaskId) }.state()
+        } matches { it == "COMPLETED" }
         modelId
       }
     }

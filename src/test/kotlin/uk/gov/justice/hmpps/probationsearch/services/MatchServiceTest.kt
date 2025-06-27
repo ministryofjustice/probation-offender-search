@@ -24,7 +24,7 @@ import org.opensearch.search.SearchHit
 import org.opensearch.search.SearchHits
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.hmpps.probationsearch.dto.IDs
 import uk.gov.justice.hmpps.probationsearch.dto.MatchRequest
 import uk.gov.justice.hmpps.probationsearch.dto.MatchedBy.ALL_SUPPLIED
@@ -41,7 +41,7 @@ internal class MatchServiceTest {
   @Autowired
   lateinit var objectMapper: ObjectMapper
 
-  @MockBean
+  @MockitoBean
   lateinit var searchClient: SearchClient
 
   @BeforeEach

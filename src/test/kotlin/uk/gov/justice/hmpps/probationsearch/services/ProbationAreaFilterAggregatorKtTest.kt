@@ -287,7 +287,7 @@ internal class BuildProbationAreaFilter {
   }
 
   @Test
-  internal fun `will return a query with a "should" for each probation area supplied`() {
+  internal fun `will return a query with a 'should' for each probation area supplied`() {
     assertThat(buildProbationAreaFilter(listOf("N01", "N02"))?.should()).hasSize(2)
   }
 

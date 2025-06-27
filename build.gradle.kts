@@ -1,14 +1,11 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.2.0"
-  kotlin("plugin.spring") version "2.1.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.0"
+  kotlin("plugin.spring") version "2.2.0"
   id("com.google.cloud.tools.jib") version "3.4.5"
 }
 
-configurations {
-  implementation { exclude(group = "tomcat-jdbc") }
-}
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -19,7 +16,7 @@ dependencies {
   implementation("org.springframework.data:spring-data-jpa")
   implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
-  implementation("org.opensearch.client:spring-data-opensearch-starter:1.7.0")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:1.8.0")
   implementation("org.opensearch.client:opensearch-java:2.23.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.14.0")
@@ -39,21 +36,26 @@ dependencies {
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.29")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.30")
 }
 
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
+kotlin {
+  compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+}
+
 tasks {
   val copyAgentJar by registering(Copy::class) {
-    from("${project.buildDir}/libs")
+    from("${project.layout.buildDirectory}/libs")
     include("applicationinsights-agent*.jar")
-    into("${project.buildDir}/agent")
+    into("${project.layout.buildDirectory}/agent")
     rename("applicationinsights-agent(.+).jar", "agent.jar")
     dependsOn("assemble")
   }
+
 
   val jib by getting {
     dependsOn += copyAgentJar
@@ -65,16 +67,6 @@ tasks {
 
   val jibDockerBuild by getting {
     dependsOn += copyAgentJar
-  }
-
-  withType<KotlinCompile> {
-    kotlinOptions {
-      jvmTarget = "21"
-    }
-  }
-
-  test {
-    maxHeapSize = "256m"
   }
 }
 
@@ -91,7 +83,7 @@ jib {
   extraDirectories {
     paths {
       path {
-        setFrom("${project.buildDir}")
+        setFrom("${project.layout.buildDirectory}")
         includes.add("agent/agent.jar")
       }
       path {
