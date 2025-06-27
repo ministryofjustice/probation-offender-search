@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.0"
@@ -6,9 +6,6 @@ plugins {
   id("com.google.cloud.tools.jib") version "3.4.5"
 }
 
-configurations {
-  implementation { exclude(group = "tomcat-jdbc") }
-}
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -46,14 +43,19 @@ java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
+kotlin {
+  compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+}
+
 tasks {
   val copyAgentJar by registering(Copy::class) {
-    from("${project.buildDir}/libs")
+    from("${project.layout.buildDirectory}/libs")
     include("applicationinsights-agent*.jar")
-    into("${project.buildDir}/agent")
+    into("${project.layout.buildDirectory}/agent")
     rename("applicationinsights-agent(.+).jar", "agent.jar")
     dependsOn("assemble")
   }
+
 
   val jib by getting {
     dependsOn += copyAgentJar
@@ -65,16 +67,6 @@ tasks {
 
   val jibDockerBuild by getting {
     dependsOn += copyAgentJar
-  }
-
-  withType<KotlinCompile> {
-    kotlinOptions {
-      jvmTarget = "21"
-    }
-  }
-
-  test {
-    maxHeapSize = "256m"
   }
 }
 
@@ -91,7 +83,7 @@ jib {
   extraDirectories {
     paths {
       path {
-        setFrom("${project.buildDir}")
+        setFrom("${project.layout.buildDirectory}")
         includes.add("agent/agent.jar")
       }
       path {
