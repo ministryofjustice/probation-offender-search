@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConditionalOnProperty("flipt.url")
 class FliptConfig(
-  @Value("\${flipt.url}") private val url: String,
-  @Value("\${flipt.token}") private val token: String
+  @param:Value($$"${flipt.url}") private val url: String,
+  @param:Value($$"${flipt.token}") private val token: String,
 ) {
   @Bean
   fun fliptApiClient(): FliptClient =

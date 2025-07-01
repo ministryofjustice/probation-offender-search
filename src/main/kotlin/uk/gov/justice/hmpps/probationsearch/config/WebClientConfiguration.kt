@@ -19,8 +19,8 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class WebClientConfiguration(
-  @Value("\${community.endpoint.url}") private val communityRootUri: String,
-  @Value("\${delius.endpoint.url}") private val deliusRootUri: String,
+  @param:Value($$"${community.endpoint.url}") private val communityRootUri: String,
+  @param:Value($$"${delius.endpoint.url}") private val deliusRootUri: String,
   private val objectMapper: ObjectMapper,
   private val securityUserContext: SecurityUserContext,
 ) {

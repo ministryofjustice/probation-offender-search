@@ -79,7 +79,7 @@ class ActivitySearchService(
       filter(rangeQuery("date").gte(it.toString()))
     }
     request.dateTo?.let {
-      if (it == LocalDate.now()) {
+      if (it.isEqual(LocalDate.now())) {
         filter(rangeQuery("startDateTime").lte(LocalDateTime.now()))
       } else {
         filter(rangeQuery("date").lte(it.toString()))

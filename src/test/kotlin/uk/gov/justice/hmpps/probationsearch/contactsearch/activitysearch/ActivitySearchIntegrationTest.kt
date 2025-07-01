@@ -47,7 +47,7 @@ class ActivitySearchIntegrationTest {
   @Autowired
   internal lateinit var openSearchRestTemplate: OpenSearchRestTemplate
 
-  @Value("\${local.server.port}")
+  @Value($$"${local.server.port}")
   internal val port: Int = 0
 
   internal val deliusApiMock = DeliusApiExtension.deliusApi

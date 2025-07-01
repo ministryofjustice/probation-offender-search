@@ -30,7 +30,7 @@ dependencies {
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.junit.vintage:junit-vintage-engine")
-  testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
+  testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path")
@@ -49,25 +49,15 @@ kotlin {
 
 tasks {
   val copyAgentJar by registering(Copy::class) {
-    from("${project.layout.buildDirectory}/libs")
+    from("${project.layout.buildDirectory.get().asFile}/libs")
     include("applicationinsights-agent*.jar")
-    into("${project.layout.buildDirectory}/agent")
+    into("${project.layout.buildDirectory.get().asFile}/agent")
     rename("applicationinsights-agent(.+).jar", "agent.jar")
     dependsOn("assemble")
   }
-
-
-  val jib by getting {
-    dependsOn += copyAgentJar
-  }
-
-  val jibBuildTar by getting {
-    dependsOn += copyAgentJar
-  }
-
-  val jibDockerBuild by getting {
-    dependsOn += copyAgentJar
-  }
+  getByName("jib") { dependsOn += copyAgentJar }
+  getByName("jibBuildTar") { dependsOn += copyAgentJar }
+  getByName("jibDockerBuild") { dependsOn += copyAgentJar }
 }
 
 jib {
@@ -83,7 +73,7 @@ jib {
   extraDirectories {
     paths {
       path {
-        setFrom("${project.layout.buildDirectory}")
+        setFrom("${project.layout.buildDirectory.get().asFile}")
         includes.add("agent/agent.jar")
       }
       path {

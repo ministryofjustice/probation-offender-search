@@ -99,13 +99,13 @@ class OpenSearchSetup {
     log.info("Creating pipelines...")
     restClient.performRequest(
       Request("PUT", "/_ingest/pipeline/contact-semantic-search-pipeline").apply {
-        setJsonEntity(INGEST_PIPELINE_JSON.replace("\${model_id}", modelId))
-      }
+        setJsonEntity(INGEST_PIPELINE_JSON.replace($$"${model_id}", modelId))
+      },
     )
     restClient.performRequest(
       Request("PUT", "/_search/pipeline/contact-semantic-search-search-pipeline").apply {
-        setJsonEntity(SEARCH_PIPELINE_JSON.replace("\${model_id}", modelId))
-      }
+        setJsonEntity(SEARCH_PIPELINE_JSON.replace($$"${model_id}", modelId))
+      },
     )
     restClient.performRequest(
       Request("PUT", "/_ingest/pipeline/contact-semantic-block-pipeline").apply {

@@ -42,7 +42,7 @@ class ContactSemanticSearchIntegrationTest {
   @Autowired
   internal lateinit var objectMapper: ObjectMapper
 
-  @Value("\${local.server.port}")
+  @Value($$"${local.server.port}")
   internal val port: Int = 0
 
   internal val deliusApiMock = DeliusApiExtension.deliusApi
