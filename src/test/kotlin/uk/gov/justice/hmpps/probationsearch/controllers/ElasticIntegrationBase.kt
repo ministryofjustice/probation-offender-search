@@ -30,7 +30,7 @@ abstract class ElasticIntegrationBase {
   @Autowired
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 
-  @Value("\${local.server.port}")
+  @Value($$"${local.server.port}")
   private var port: Int = 0
 
   @BeforeEach
@@ -75,7 +75,7 @@ abstract class ElasticIntegrationBase {
           )
         },
         contactDetails = templateOffender.contactDetails?.copy(
-          addresses = templateOffender.contactDetails?.addresses?.map { address ->
+          addresses = templateOffender.contactDetails.addresses?.map { address ->
             if (address.status?.code == "M") {
               address.copy(
                 streetName = it.streetName,

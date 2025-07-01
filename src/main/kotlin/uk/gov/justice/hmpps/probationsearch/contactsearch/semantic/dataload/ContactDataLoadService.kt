@@ -33,9 +33,9 @@ class ContactDataLoadService(
   private val openSearchClient: OpenSearchClient,
   private val telemetryClient: TelemetryClient,
   private val blockService: ContactBlockService,
-  @Value("\${dataload.ondemand.batch.size}")
+  @param:Value($$"${dataload.ondemand.batch.size}")
   private val onDemandDataloadBatchSize: Int,
-  @Qualifier("applicationTaskExecutor")
+  @param:Qualifier("applicationTaskExecutor")
   private val executor: SimpleAsyncTaskExecutor,
 ) {
   fun loadDataOnDemand(crn: String) {

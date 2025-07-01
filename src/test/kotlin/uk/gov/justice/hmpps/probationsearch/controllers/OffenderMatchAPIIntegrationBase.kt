@@ -33,7 +33,7 @@ abstract class OffenderMatchAPIIntegrationBase {
   @Autowired
   private lateinit var objectMapper: ObjectMapper
 
-  @Value("\${local.server.port}")
+  @Value($$"${local.server.port}")
   private var port: Int = 0
 
   @BeforeEach
@@ -73,7 +73,7 @@ abstract class OffenderMatchAPIIntegrationBase {
 }
 
 private fun String.readResourceAsText(): String {
-  return OffenderMatchAPIIntegrationBase::class.java.getResource(this).readText()
+  return OffenderMatchAPIIntegrationBase::class.java.getResource(this)!!.readText()
 }
 
 data class OffenderIdentification(

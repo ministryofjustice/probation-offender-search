@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Primary
 
 @Configuration
 class OpenSearchConfiguration {
-  @Value("\${opensearch.uris}")
+  @Value($$"${opensearch.uris}")
   private val url: String? = null
 
   @Bean

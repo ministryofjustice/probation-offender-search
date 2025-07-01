@@ -27,9 +27,9 @@ data class OffenderDetail(
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean? = null,
   val exclusionMessage: String? = null,
-  @Schema(
+  @param:Schema(
     description = "map of fields which matched a search term (Only return for phrase searching)",
-    example = "{\"surname\": [\"Smith\"], \"offenderAliases.surname\": [\"SMITH\"]}"
+    example = "{\"surname\": [\"Smith\"], \"offenderAliases.surname\": [\"SMITH\"]}",
   )
   val highlight: Map<String, List<String>>? = null,
   val accessDenied: Boolean? = null,
