@@ -24,7 +24,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.17.0")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
-  implementation("io.flipt:flipt-java:1.1.2") {
+  implementation("io.flipt:flipt-client-java:1.0.0") {
     exclude("org.apache.httpcomponents", "httpclient")
   }
 
