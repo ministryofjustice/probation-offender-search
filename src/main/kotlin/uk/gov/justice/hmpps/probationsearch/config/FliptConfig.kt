@@ -1,8 +1,7 @@
 package uk.gov.justice.hmpps.probationsearch.config
 
-import io.flipt.api.FliptClient
-import io.flipt.api.FliptClient.builder
-import io.flipt.api.authentication.ClientTokenAuthenticationStrategy
+import io.flipt.client.FliptClient
+import io.flipt.client.models.ClientTokenAuthentication
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -16,7 +15,8 @@ class FliptConfig(
 ) {
   @Bean
   fun fliptApiClient(): FliptClient =
-    builder().url(url).authentication(ClientTokenAuthenticationStrategy(token)).build()
+    FliptClient.builder().namespace(NAMESPACE).url(url)
+      .authentication(ClientTokenAuthentication(token)).build()
 
   companion object {
     const val NAMESPACE = "probation-integration"

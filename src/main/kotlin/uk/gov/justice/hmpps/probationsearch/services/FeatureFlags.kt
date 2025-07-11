@@ -1,19 +1,14 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
-import io.flipt.api.FliptClient
-import io.flipt.api.evaluation.models.EvaluationRequest
+import io.flipt.client.FliptClient
 import org.springframework.stereotype.Service
-import uk.gov.justice.hmpps.probationsearch.config.FliptConfig
 
 @Service
 class FeatureFlags(private val client: FliptClient) {
   fun enabled(key: String) = try {
-    client.evaluation().evaluateBoolean(
-      EvaluationRequest.builder()
-        .namespaceKey(FliptConfig.NAMESPACE)
-        .flagKey(key)
-        .build(),
-    ).isEnabled
+    client
+      .evaluateBoolean(key, key, emptyMap<String, String>())
+      .isEnabled
   } catch (e: Exception) {
     throw FeatureFlagException(key, e)
   }
