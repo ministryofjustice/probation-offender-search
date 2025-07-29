@@ -17,7 +17,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
   implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
   implementation("org.opensearch.client:spring-data-opensearch-starter:2.0.0")
-  implementation("org.opensearch.client:opensearch-java:2.23.0")
+  implementation("org.opensearch.client:opensearch-java:3.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.17.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.9")

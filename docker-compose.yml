@@ -46,7 +46,7 @@ services:
       memlock:
         soft: -1
         hard: -1
-    image: opensearchproject/opensearch:2.19.2
+    image: opensearchproject/opensearch:2.19.3
 
   opensearch-dashboards:
     container_name: opensearch-dashboards
