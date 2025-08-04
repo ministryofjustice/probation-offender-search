@@ -276,8 +276,8 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(2)
     assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[0].notes).isEqualTo("I failed to comply")
-    assertThat(results.results[1].notes).isEqualTo("I complied")
+    assertThat(results.results[0].notes).isEqualTo("I complied")
+    assertThat(results.results[1].notes).isEqualTo("I failed to comply")
   }
 
   @Test
@@ -325,8 +325,8 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(2)
     assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[0].notes).isEqualTo("I failed to comply")
-    assertThat(results.results[1].notes).isEqualTo("I complied")
+    assertThat(results.results[0].notes).isEqualTo("I complied")
+    assertThat(results.results[1].notes).isEqualTo("I failed to comply")
   }
 
 
