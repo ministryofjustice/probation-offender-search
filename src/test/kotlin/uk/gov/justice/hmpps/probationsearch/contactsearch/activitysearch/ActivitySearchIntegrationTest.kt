@@ -87,7 +87,7 @@ class ActivitySearchIntegrationTest {
     val crn = "T654321"
     val results = RestAssured.given()
       .`when`()
-      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 3, "sort" to "startDateTime,desc"))
+      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 3))
       .then()
       .results()
 
@@ -108,7 +108,7 @@ class ActivitySearchIntegrationTest {
     val crn = "T654321"
     val results = RestAssured.given()
       .`when`()
-      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 20, "sort" to "startDateTime,desc"))
+      .search(ActivitySearchRequest(crn), mapOf("page" to 0, "size" to 20))
       .then()
       .results()
 
@@ -124,7 +124,7 @@ class ActivitySearchIntegrationTest {
       .`when`()
       .search(
         ActivitySearchRequest(crn, filters = listOf(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName)),
-        mapOf("page" to 0, "size" to 20, "sort" to "startDateTime,desc"),
+        mapOf("page" to 0, "size" to 20),
       )
       .then()
       .results()
@@ -146,7 +146,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.COMPLIED.filterName,
           ),
         ),
-        mapOf("page" to 0, "size" to 20, "sort" to "startDateTime,desc"),
+        mapOf("page" to 0, "size" to 20),
       )
       .then()
       .results()
@@ -169,7 +169,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
           ),
         ),
-        mapOf("page" to 0, "size" to 20, "sort" to "startDateTime,desc"),
+        mapOf("page" to 0, "size" to 20),
       )
       .then()
       .results()
@@ -184,7 +184,7 @@ class ActivitySearchIntegrationTest {
     val crn = "T654321"
     val results = RestAssured.given()
       .`when`()
-      .search(ActivitySearchRequest(crn), mapOf("page" to 1, "size" to 3, "sort" to "startDateTime,desc"))
+      .search(ActivitySearchRequest(crn), mapOf("page" to 1, "size" to 3))
       .then()
       .results()
 
@@ -276,8 +276,8 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(2)
     assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[0].notes).isEqualTo("I failed to comply")
-    assertThat(results.results[1].notes).isEqualTo("I complied")
+    assertThat(results.results[0].notes).isEqualTo("I complied")
+    assertThat(results.results[1].notes).isEqualTo("I failed to comply")
   }
 
   @Test
@@ -325,8 +325,8 @@ class ActivitySearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(2)
     assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[0].notes).isEqualTo("I failed to comply")
-    assertThat(results.results[1].notes).isEqualTo("I complied")
+    assertThat(results.results[0].notes).isEqualTo("I complied")
+    assertThat(results.results[1].notes).isEqualTo("I failed to comply")
   }
 
 
@@ -337,7 +337,7 @@ class ActivitySearchIntegrationTest {
       .`when`()
       .search(
         ActivitySearchRequest(crn, dateFrom = LocalDate.now(), dateTo = LocalDate.now()),
-        mapOf("page" to 0, "size" to 3, "sort" to "startDateTime,desc"),
+        mapOf("page" to 0, "size" to 3),
       )
       .then()
       .results()
@@ -354,7 +354,7 @@ class ActivitySearchIntegrationTest {
       .`when`()
       .search(
         ActivitySearchRequest(crn, dateFrom = LocalDate.now()),
-        mapOf("page" to 0, "size" to 6, "sort" to "startDateTime,desc"),
+        mapOf("page" to 0, "size" to 6),
       )
       .then()
       .results()
@@ -371,7 +371,7 @@ class ActivitySearchIntegrationTest {
       .`when`()
       .search(
         ActivitySearchRequest(crn, dateTo = LocalDate.now()),
-        mapOf("page" to 0, "size" to 4, "sort" to "startDateTime,desc"),
+        mapOf("page" to 0, "size" to 4),
       )
       .then()
       .results()
@@ -392,7 +392,7 @@ class ActivitySearchIntegrationTest {
           dateFrom = LocalDate.now().minusDays(3),
           dateTo = LocalDate.now().minusDays(1),
         ),
-        mapOf("page" to 0, "size" to 4, "sort" to "startDateTime,desc"),
+        mapOf("page" to 0, "size" to 4),
       )
       .then()
       .results()
@@ -416,16 +416,16 @@ class ActivitySearchIntegrationTest {
           keywords = "TYPE_CODE2 TYPE_CODE3",
           dateTo = LocalDate.now().minusDays(1),
         ),
-        mapOf("page" to 0, "size" to 4, "sort" to "startDateTime,desc"),
+        mapOf("page" to 0, "size" to 4),
       )
       .then()
       .results()
 
     assertThat(results.size).isEqualTo(2)
     assertThat(results.totalResults).isEqualTo(2)
-    assertThat(results.results[0].typeCode).isEqualTo("TYPE_CODE3")
-    assertThat(results.results[1].typeCode).isEqualTo("TYPE_CODE2")
-    assertThat(results.results[0].highlights).isEqualTo(
+    assertThat(results.results[0].typeCode).isEqualTo("TYPE_CODE2")
+    assertThat(results.results[1].typeCode).isEqualTo("TYPE_CODE3")
+    assertThat(results.results[1].highlights).isEqualTo(
       mapOf(
         "type" to listOf("<em>TYPE_CODE3</em>"),
       ),

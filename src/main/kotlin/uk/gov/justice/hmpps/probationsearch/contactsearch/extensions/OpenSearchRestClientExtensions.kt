@@ -23,7 +23,7 @@ object OpenSearchRestClientExtensions {
         SortBuilders.fieldSort(type.searchField).order(it.direction.toSortOrder())
       }
     }
-  }.ifEmpty { listOf(SortBuilders.fieldSort(SCORE.searchField).order(DESC)) }
+  }
 
   fun NativeSearchQueryBuilder.sorted(sorts: List<FieldSortBuilder>): NativeSearchQuery {
     sorted(sorts) { this.withSorts(it) }
