@@ -23,7 +23,7 @@ jobs:
         name: Application version creators
         uses: ministryofjustice/hmpps-github-actions/.github/actions/build-test-and-deploy/create_app_version@v2 # WORKFLOW_VERSION
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: refresh cache
         id: initial-cache
         uses: actions/cache@v4
