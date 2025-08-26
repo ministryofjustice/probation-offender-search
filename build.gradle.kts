@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.4"
-  kotlin("plugin.spring") version "2.2.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
+  kotlin("plugin.spring") version "2.2.10"
   id("com.google.cloud.tools.jib") version "3.4.5"
 }
 
@@ -14,15 +14,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.data:spring-data-jpa")
-  implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
-  implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
+  implementation("io.jsonwebtoken:jjwt-impl:0.13.0")
+  implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.opensearch.client:spring-data-opensearch-starter:2.0.0")
   implementation("org.opensearch.client:opensearch-java:3.2.0")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.19.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.20.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.10")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.18.1")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.19.0")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
   implementation("io.flipt:flipt-client-java:1.1.1") {
     exclude("org.apache.httpcomponents", "httpclient")
@@ -36,7 +36,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.31")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.32")
 }
 
 java {
