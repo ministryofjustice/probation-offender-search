@@ -13,7 +13,7 @@ generic-service:
     DELIUS_ENDPOINT_URL: "https://probation-search-and-delius.hmpps.service.justice.gov.uk"
     SENTRY_ENVIRONMENT: prod
     FLIPT_URL: https://feature-flags.hmpps.service.justice.gov.uk
-    DATALOAD_ONDEMAND_BATCH_SIZE: 500
+    DATALOAD_ONDEMAND_BATCH_SIZE: 100
 
   allowlist:
     delius-prod-1: 52.56.115.146/32

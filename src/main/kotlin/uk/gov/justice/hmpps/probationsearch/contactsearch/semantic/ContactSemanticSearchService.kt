@@ -8,16 +8,12 @@ import org.opensearch.client.opensearch._types.query_dsl.HybridQuery
 import org.opensearch.client.opensearch._types.query_dsl.NestedQuery
 import org.opensearch.client.opensearch._types.query_dsl.Operator
 import org.opensearch.client.opensearch._types.query_dsl.Query.Builder
-import org.opensearch.client.opensearch.core.msearch.RequestItem
 import org.opensearch.client.opensearch.core.search.HighlightField
 import org.opensearch.client.opensearch.core.search.HighlighterEncoder
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.buildSortOptions
-import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.hits
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.matchesCrn
-import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.msearch
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.search
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.withPageable
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.asHighlightedFragmentOf
@@ -115,48 +111,26 @@ class ContactSemanticSearchService(
     val hybridQuery =
       HybridQuery.of { hybrid -> hybrid.queries(keywordQuery, semanticQuery).paginationDepth(10000) }.toQuery()
 
-    // Using "msearch" to execute two requests in parallel - hybrid + semantic-only (for highlighting)
-    val response = openSearchClient.msearch<ContactSearchResult> { msearch ->
-      msearch.searches(
-        // Hybrid query:
-        RequestItem.of { item ->
-          item.header { it.index(INDEX_NAME).routing(request.crn) }
-            .body { body ->
-              body
-                .query(hybridQuery)
-                .source { source -> source.filter { it.includes(RETURN_FIELDS) } }
-                .withPageable(pageable)
-                .highlight { highlight ->
-                  highlight
-                    .encoder(HighlighterEncoder.Html)
-                    .fields(KEYWORD_SEARCH_FIELDS.associateWith { HighlightField.of { it } })
-                    .fragmentSize(200)
-                }
-            }
-        },
-        // Additional semantic query, to get the relevant chunks (inner hits) for highlighting:
-        // TODO remove this after upgrading to OpenSearch 3.0, which adds support for inner_hits on hybrid queries + semantic highlighting
-        RequestItem.of { item ->
-          item.header { it.index(INDEX_NAME).routing(request.crn) }
-            .body { body ->
-              body.query(semanticQuery)
-                .source { source -> source.fetch(false) }
-                .size(pageable.pageSize)
-                .sort(buildSortOptions(pageable.sort))
-            }
-        },
-      )
+    val response = openSearchClient.search<ContactSearchResult> { search ->
+      search.index(INDEX_NAME).routing(request.crn)
+        .query(hybridQuery)
+        .source { source -> source.filter { it.includes(RETURN_FIELDS) } }
+        .withPageable(pageable)
+        .highlight { highlight ->
+          highlight
+            .encoder(HighlighterEncoder.Html)
+            .fields(KEYWORD_SEARCH_FIELDS.associateWith { HighlightField.of { it } })
+            .fragmentSize(200)
+        }
     }
 
-    val semanticInnerHits = response.responses()[1].hits()
-    val results = response.responses()[0].hits().mapNotNull { hit ->
+    val results = response.hits().hits().mapNotNull { hit ->
       hit.source()?.copy(
         semanticMatch = hit.highlight().isEmpty(),
         highlights = hit.highlight().ifEmpty {
-          // If no highlight from OpenSearch, check if we have inner hits for the document by id
+          // If no highlight from OpenSearch, check if we have inner hits for the document
           hit.source()?.notes?.let { notes ->
-            semanticInnerHits.firstOrNull { it.id() != null && it.id() == hit.id() }
-              ?.let { hit -> hit.innerHits()["textEmbedding"]?.hits()?.hits()?.mapNotNull { it.nested()?.offset() } }
+            hit.innerHits()["textEmbedding"]?.hits()?.hits()?.mapNotNull { it.nested()?.offset() }
               ?.let { semanticChunkOffsets ->
                 // Use the inner hit offsets to construct highlighted text fragments
                 val chunks = notes.asTextChunks()
@@ -170,7 +144,7 @@ class ContactSemanticSearchService(
         score = hit.score().takeIf { request.includeScores },
       )
     }
-    val page = PageImpl(results, pageable, response.responses().first().result().hits().total()?.value() ?: 0)
+    val page = PageImpl(results, pageable, response.hits().total()?.value() ?: 0)
     return ContactSearchResponse(
       page.numberOfElements,
       page.pageable.pageNumber,
