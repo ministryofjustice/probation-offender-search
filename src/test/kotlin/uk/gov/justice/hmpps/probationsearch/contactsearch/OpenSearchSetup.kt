@@ -59,12 +59,12 @@ class OpenSearchSetup {
     restClient.performRequest(
       Request("PUT", "/_index_template/contact-semantic-index-template").apply {
         setJsonEntity(INDEX_TEMPLATE_JSON)
-      }
+      },
     )
     restClient.performRequest(
       Request("PUT", "/_index_template/contact-semantic-block-template").apply {
         setJsonEntity(BLOCK_TEMPLATE_JSON)
-      }
+      },
     )
 
     log.info("Creating indices...")
@@ -72,10 +72,11 @@ class OpenSearchSetup {
     createIndex("contact-semantic-block-a", "contact-semantic-block-primary")
 
     log.info("Creating model...")
-    val modelId = retry {
-      with(openSearchClient.ml()) {
-        val modelGroupId = registerModelGroup { it.name(UUID.randomUUID().toString()) }.modelGroupId()
+    val modelId = with(openSearchClient.ml()) {
+      val modelGroupId = registerModelGroup { it.name(UUID.randomUUID().toString()) }.modelGroupId()
+      val modelId = retry {
         val registerTaskId = registerModel {
+          // see https://docs.opensearch.org/latest/ml-commons-plugin/pretrained-models/
           it.name("huggingface/sentence-transformers/msmarco-distilbert-base-tas-b")
             .version("1.0.3")
             .modelFormat(ModelFormat.Onnx)
@@ -86,14 +87,17 @@ class OpenSearchSetup {
           getTask { it.taskId(registerTaskId) }.state()
         } matches { it == "COMPLETED" }
 
-        val modelId = getTask { it.taskId(registerTaskId) }.modelId()!!
+        getTask { it.taskId(registerTaskId) }.modelId()!!
+      }
+
+      retry {
         val deployTaskId = deployModel { it.modelId(modelId) }.taskId()
 
         await atMost ofSeconds(60) untilCallTo {
           getTask { it.taskId(deployTaskId) }.state()
         } matches { it == "COMPLETED" }
-        modelId
       }
+      modelId
     }
 
     log.info("Creating pipelines...")
@@ -110,7 +114,7 @@ class OpenSearchSetup {
     restClient.performRequest(
       Request("PUT", "/_ingest/pipeline/contact-semantic-block-pipeline").apply {
         setJsonEntity(BLOCK_PIPELINE_JSON)
-      }
+      },
     )
 
     log.info("Loading data...")
