@@ -46,7 +46,7 @@ services:
       memlock:
         soft: -1
         hard: -1
-    image: opensearchproject/opensearch:2.19.3
+    image: opensearchproject/opensearch:3.1.0
 
   opensearch-dashboards:
     container_name: opensearch-dashboards
@@ -57,7 +57,7 @@ services:
     environment:
       - OPENSEARCH_HOSTS=http://opensearch:9200
       - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
-    image: opensearchproject/opensearch-dashboards:2.19.2
+    image: opensearchproject/opensearch-dashboards:3.1.0
     depends_on:
       - opensearch
 

@@ -6,12 +6,9 @@ import org.opensearch.client.opensearch._types.SortOptions
 import org.opensearch.client.opensearch._types.SortOrder
 import org.opensearch.client.opensearch._types.query_dsl.Query
 import org.opensearch.client.opensearch._types.query_dsl.Query.Builder
-import org.opensearch.client.opensearch.core.MsearchRequest
-import org.opensearch.client.opensearch.core.MsearchResponse
 import org.opensearch.client.opensearch.core.SearchRequest
 import org.opensearch.client.opensearch.core.SearchResponse
 import org.opensearch.client.opensearch.core.msearch.MultiSearchResponseItem
-import org.opensearch.client.opensearch.core.msearch.MultisearchBody
 import org.opensearch.client.opensearch.core.search.Hit
 import org.opensearch.client.util.ObjectBuilder
 import org.springframework.data.domain.Pageable
@@ -24,18 +21,10 @@ object OpenSearchJavaClientExtensions {
   inline fun <reified TDocument> OpenSearchClient.search(fn: Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>>): SearchResponse<TDocument> =
     search<TDocument>(fn, TDocument::class.java)
 
-  inline fun <reified TDocument> OpenSearchClient.msearch(fn: Function<MsearchRequest.Builder, ObjectBuilder<MsearchRequest>>): MsearchResponse<TDocument> =
-    msearch<TDocument>(fn, TDocument::class.java)
-
   fun Sort.Direction.toSortOrder() = when (this) {
     Sort.Direction.ASC -> SortOrder.Asc
     Sort.Direction.DESC -> SortOrder.Desc
   }
-
-  fun MultisearchBody.Builder.withPageable(pageable: Pageable): MultisearchBody.Builder = this
-    .size(pageable.pageSize)
-    .from(pageable.offset.toInt())
-    .sort(buildSortOptions(pageable.sort))
 
   fun SearchRequest.Builder.withPageable(pageable: Pageable): SearchRequest.Builder = this
     .size(pageable.pageSize)
