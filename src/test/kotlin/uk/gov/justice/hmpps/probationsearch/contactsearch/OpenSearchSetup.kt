@@ -82,14 +82,14 @@ class OpenSearchSetup {
             .modelGroupId(modelGroupId)
         }.taskId()
 
-        await atMost ofSeconds(30) withPollInterval ofSeconds(1) untilCallTo {
+        await atMost ofSeconds(60) withPollInterval ofSeconds(1) untilCallTo {
           getTask { it.taskId(registerTaskId) }.state()
         } matches { it == "COMPLETED" }
 
         val modelId = getTask { it.taskId(registerTaskId) }.modelId()!!
         val deployTaskId = deployModel { it.modelId(modelId) }.taskId()
 
-        await atMost ofSeconds(30) untilCallTo {
+        await atMost ofSeconds(60) untilCallTo {
           getTask { it.taskId(deployTaskId) }.state()
         } matches { it == "COMPLETED" }
         modelId
