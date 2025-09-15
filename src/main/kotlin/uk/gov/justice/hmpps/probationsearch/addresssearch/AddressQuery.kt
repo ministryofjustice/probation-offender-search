@@ -70,7 +70,7 @@ fun BoolQueryBuilder.shouldMatchNonNull(
   queryName: String? = null,
 ): BoolQueryBuilder {
   if (!value.isNullOrBlank()) {
-    val qb = QueryBuilders.matchQuery(name, value).boost(boost)
+    val qb = QueryBuilders.matchQuery(name, value).boost(boost * 2.2F) // multiply by 2.2 to match Lucene <10 behaviour
     if (queryName != null) qb.queryName(queryName)
     should(qb)
   }

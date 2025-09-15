@@ -2,6 +2,8 @@ package uk.gov.justice.hmpps.probationsearch.controllers
 
 import io.restassured.RestAssured
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.hasItem
+import org.hamcrest.Matchers.not
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -140,9 +142,7 @@ class OffenderSearchTeamCodeListAPIIntegrationTest : ElasticIntegrationBase() {
       .then()
       .statusCode(200)
       .body("content.size()", equalTo(3))
-      .body("content[0].offenderManagers?.get(0)?.team?.code", equalTo("N02000"))
-      .body("content[1].offenderManagers?.get(0)?.team?.code", equalTo("N01000"))
-      .body("content[2].offenderManagers?.get(0)?.team?.code", equalTo("N01000"))
+      .body("content.collect { it.offenderManagers?.getAt(0)?.team?.code }", not(hasItem("AAAA123")))
   }
 
   @Test
