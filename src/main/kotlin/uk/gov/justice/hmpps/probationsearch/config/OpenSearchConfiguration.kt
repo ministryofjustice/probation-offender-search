@@ -1,7 +1,9 @@
 package uk.gov.justice.hmpps.probationsearch.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder
 import org.apache.hc.core5.http.HttpHost
+import org.apache.hc.core5.pool.PoolConcurrencyPolicy
 import org.opensearch.client.RestClient
 import org.opensearch.client.RestHighLevelClient
 import org.opensearch.client.json.jackson.JacksonJsonpMapper
@@ -18,7 +20,17 @@ class OpenSearchConfiguration {
   private val url: String? = null
 
   @Bean
-  fun openSearchClient() = RestHighLevelClient(RestClient.builder(HttpHost.create(url)))
+  fun openSearchClient() = RestHighLevelClient(
+    RestClient.builder(HttpHost.create(url))
+      .setHttpClientConfigCallback {
+        it.setConnectionManager(
+          PoolingAsyncClientConnectionManagerBuilder.create()
+            .setPoolConcurrencyPolicy(PoolConcurrencyPolicy.LAX)
+            .setMaxConnPerRoute(25) // Increase pool size to handle parallel on-demand data load (see ContactDataLoadService.kt)
+            .build(),
+        )
+      },
+  )
 
   @Bean(name = ["elasticsearchTemplate", "elasticsearchOperations"])
   @ConditionalOnMissingBean(OpenSearchRestTemplate::class)
