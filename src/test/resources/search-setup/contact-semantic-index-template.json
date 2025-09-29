@@ -1260,7 +1260,6 @@
         "date": {
           "type": "text",
           "analyzer": "probation_text_analyzer",
-          "copy_to": "notes",
           "fields": {
             "date": {
               "type": "date",
@@ -1300,10 +1299,46 @@
           "analyzer": "probation_text_analyzer",
           "boost": 4
         },
-        "outcome": {
+        "typeCode": {
           "type": "text",
           "analyzer": "probation_text_analyzer",
-          "store": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "typeDescription": {
+          "type": "text",
+          "analyzer": "probation_text_analyzer",
+          "boost": 3,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "typeShortDescription": {
+          "type": "text",
+          "analyzer": "probation_text_analyzer",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "outcomeCode": {
+          "type": "text",
+          "analyzer": "probation_text_analyzer",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "outcomeDescription": {
+          "type": "text",
+          "analyzer": "probation_text_analyzer",
           "boost": 2,
           "fields": {
             "keyword": {
@@ -1311,43 +1346,23 @@
             }
           }
         },
-        "type": {
+        "attended": {
           "type": "text",
           "analyzer": "probation_text_analyzer",
-          "store": true,
           "fields": {
             "keyword": {
               "type": "keyword"
             }
           }
         },
-        "typeCode": {
-          "type": "keyword",
-          "copy_to": "type"
-        },
-        "typeDescription": {
-          "type": "keyword",
-          "copy_to": "type"
-        },
-        "typeShortDescription": {
-          "type": "keyword",
-          "copy_to": "type"
-        },
-        "outcomeCode": {
-          "type": "keyword",
-          "copy_to": "outcome"
-        },
-        "outcomeDescription": {
-          "type": "keyword",
-          "copy_to": "outcome"
-        },
-        "attended": {
-          "type": "keyword",
-          "copy_to": "outcome"
-        },
         "complied": {
-          "type": "keyword",
-          "copy_to": "outcome"
+          "type": "text",
+          "analyzer": "probation_text_analyzer",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
         },
         "lastUpdatedDateTime": {
           "type": "date"

@@ -37,16 +37,35 @@ class ContactSemanticSearchService(
     const val INDEX_NAME = "contact-semantic-search-primary"
     const val MIN_SCORE = 0.798F
 
-    val KEYWORD_SEARCH_FIELDS = listOf("notes", "type", "outcome", "description")
-    val RETURN_FIELDS = listOf(
-      "crn",
-      "id",
+    val KEYWORD_SEARCH_FIELDS = listOf(
+      "notes",
+      "description",
       "typeCode",
       "typeDescription",
       "outcomeCode",
       "outcomeDescription",
-      "description",
+      "attended",
+      "complied",
+      "date",
+    )
+    val HIGHLIGHT_FIELDS = listOf(
       "notes",
+      "description",
+      "typeCode",
+      "typeDescription",
+      "outcomeCode",
+      "outcomeDescription",
+      "date",
+    )
+    val RETURN_FIELDS = listOf(
+      "crn",
+      "id",
+      "notes",
+      "description",
+      "typeCode",
+      "typeDescription",
+      "outcomeCode",
+      "outcomeDescription",
       "date",
       "startTime",
       "endTime",
@@ -119,7 +138,7 @@ class ContactSemanticSearchService(
         .highlight { highlight ->
           highlight
             .encoder(HighlighterEncoder.Html)
-            .fields(KEYWORD_SEARCH_FIELDS.associateWith { HighlightField.of { it } })
+            .fields(HIGHLIGHT_FIELDS.associateWith { HighlightField.of { it } })
             .fragmentSize(200)
         }
     }

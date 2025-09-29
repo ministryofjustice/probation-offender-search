@@ -24,7 +24,6 @@ object ContactGenerator {
     startTime: LocalTime? = null,
     endTime: LocalTime? = null,
     lastUpdatedDateTime: LocalDateTime = LocalDateTime.now(),
-    highlights: Map<String, List<String>> = mapOf(),
     crn: String = "T123456",
     id: Long = IdGenerator.getAndIncrement(),
   ) = ContactSearchResult(
@@ -40,8 +39,8 @@ object ContactGenerator {
     startTime,
     endTime,
     lastUpdatedDateTime,
-    highlights,
-    0.5,
+    mapOf(),
+    0.0,
   )
 
   val contacts = listOf(
