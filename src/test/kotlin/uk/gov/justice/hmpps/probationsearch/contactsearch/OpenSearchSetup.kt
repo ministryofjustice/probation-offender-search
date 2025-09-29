@@ -122,7 +122,6 @@ class OpenSearchSetup {
       BulkOperation.of { bulk ->
         bulk.index {
           it.id(contact.id.toString())
-            .routing(contact.crn)
             .version(1).versionType(VersionType.External)
             .document(contact)
         }

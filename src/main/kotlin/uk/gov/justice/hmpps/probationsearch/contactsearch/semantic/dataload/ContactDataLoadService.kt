@@ -95,7 +95,6 @@ class ContactDataLoadService(
     val count = openSearchClient.search(
       { searchRequest ->
         searchRequest.index(INDEX_NAME)
-          .routing(crn)
           .query { q -> q.matchesCrn(crn) }
           .trackTotalHits(TrackHits.of { it.count(1) })
           .size(0)
@@ -114,7 +113,6 @@ class ContactDataLoadService(
   ) {
     val response = openSearchClient.bulk {
       it.index(INDEX_NAME)
-        .routing(crn)
         .refresh(Refresh.True)
         .timeout { t -> t.time("5m") } // Increased timeout, in case a bulk request takes longer than the default 30 seconds
         .operations(operations)
@@ -140,10 +138,6 @@ class ContactDataLoadService(
   }
 
   private fun rollbackPartialLoad(crn: String) {
-    openSearchClient.deleteByQuery {
-      it.index(INDEX_NAME)
-        .query { q -> q.matchesCrn(crn) }
-        .routing(crn)
-    }
+    openSearchClient.deleteByQuery { it.index(INDEX_NAME).query { q -> q.matchesCrn(crn) } }
   }
 }
