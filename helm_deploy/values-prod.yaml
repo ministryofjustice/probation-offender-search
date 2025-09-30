@@ -12,7 +12,7 @@ generic-service:
     COMMUNITY_ENDPOINT_URL: "https://community-api-secure.probation.service.justice.gov.uk"
     DELIUS_ENDPOINT_URL: "https://probation-search-and-delius.hmpps.service.justice.gov.uk"
     SENTRY_ENVIRONMENT: prod
-    FLIPT_URL: https://feature-flags.hmpps.service.justice.gov.uk
+    FLIPT_URL: https://feature-toggles.hmpps.service.justice.gov.uk
     DATALOAD_ONDEMAND_BATCH_SIZE: 100
 
   allowlist:
