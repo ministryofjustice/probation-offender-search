@@ -18,9 +18,6 @@ on:
 permissions:
   contents: read
   packages: write
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   helm_lint:
     strategy:
@@ -42,6 +39,8 @@ jobs:
     needs: kotlin_validate
   deploy_dev:
     name: Deploy to the dev environment
+    concurrency:
+      group: deploy-dev
     if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
@@ -53,6 +52,8 @@ jobs:
       app_version: '${{ needs.docker_build.outputs.app_version }}'
   deploy_preprod:
     name: Deploy to the preprod environment
+    concurrency:
+      group: deploy-preprod
     needs:
     - docker_build
     - helm_lint
@@ -63,6 +64,8 @@ jobs:
       app_version: '${{ needs.docker_build.outputs.app_version }}'
   deploy_prod:
     name: Deploy to the prod environment
+    concurrency:
+      group: deploy-prod
     needs:
     - docker_build
     - helm_lint
