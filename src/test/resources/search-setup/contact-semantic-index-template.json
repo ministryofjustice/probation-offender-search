@@ -1286,6 +1286,9 @@
                 "name": "hnsw",
                 "engine": "lucene"
               }
+            },
+            "crn": {
+              "type": "keyword"
             }
           }
         },
