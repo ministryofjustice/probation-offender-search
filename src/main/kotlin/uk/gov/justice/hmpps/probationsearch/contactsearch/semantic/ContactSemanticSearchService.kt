@@ -7,7 +7,6 @@ import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
 import org.opensearch.client.opensearch._types.query_dsl.HybridQuery
 import org.opensearch.client.opensearch._types.query_dsl.NestedQuery
 import org.opensearch.client.opensearch._types.query_dsl.Operator
-import org.opensearch.client.opensearch._types.query_dsl.Query.Builder
 import org.opensearch.client.opensearch.core.search.HighlightField
 import org.opensearch.client.opensearch.core.search.HighlighterEncoder
 import org.springframework.data.domain.PageImpl
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.matchesCrn
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.search
+import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.term
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.withPageable
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.asHighlightedFragmentOf
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.TextExtensions.asTextChunks
@@ -119,11 +119,12 @@ class ContactSemanticSearchService(
         .path("textEmbedding")
         .innerHits { innerHits -> innerHits.source { it.fetch(false) }.size(1) }
         .query { query ->
-          query.neural {
-            it.field("textEmbedding.knn")
+          query.neural { neural ->
+            neural
+              .field("textEmbedding.knn")
               .queryText(request.query)
               .minScore(MIN_SCORE)
-              .filter(Builder().matchesCrn(request.crn).build())
+              .filter { it.term("textEmbedding.crn" to request.crn) }
           }
         }
     }.toQuery()
