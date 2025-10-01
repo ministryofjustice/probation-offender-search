@@ -187,6 +187,7 @@ class ContactSemanticSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(1)
     assertThat(results.results[0].typeDescription).isEqualTo("Matches should be highlighted in type")
+    assertThat(results.results[0].highlights["typeDescription"]?.first()).isEqualTo("Matches should be highlighted in <em>type</em>")
   }
 
   @Test
@@ -197,6 +198,7 @@ class ContactSemanticSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(1)
     assertThat(results.results[0].outcomeDescription).isEqualTo("Matches were highlighted in outcome")
+    assertThat(results.results[0].highlights["outcomeDescription"]?.first()).isEqualTo("Matches were highlighted in <em>outcome</em>")
   }
 
   @Test
