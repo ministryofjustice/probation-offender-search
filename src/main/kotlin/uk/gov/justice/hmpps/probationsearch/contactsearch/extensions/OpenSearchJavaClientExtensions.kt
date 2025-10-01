@@ -48,6 +48,8 @@ object OpenSearchJavaClientExtensions {
     }
   }
 
-  fun Builder.matchesCrn(crn: String): ObjectBuilder<Query> =
-    this.term { term -> term.field("crn").value { it.stringValue(crn) } }
+  fun Builder.matchesCrn(crn: String) = term("crn" to crn)
+
+  fun Builder.term(fieldToValue: Pair<String, String>): ObjectBuilder<Query> =
+    this.term { term -> term.field(fieldToValue.first).value { it.stringValue(fieldToValue.second) } }
 }
