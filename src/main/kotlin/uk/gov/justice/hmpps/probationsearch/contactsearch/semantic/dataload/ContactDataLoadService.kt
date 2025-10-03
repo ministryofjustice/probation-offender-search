@@ -20,6 +20,7 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJ
 import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.ContactSemanticSearchService.Companion.INDEX_NAME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block.ContactBlockService
 import uk.gov.justice.hmpps.probationsearch.services.DeliusService
+import uk.gov.justice.hmpps.probationsearch.utils.Retry.retry
 import java.io.StringReader
 import java.util.concurrent.CompletableFuture.allOf
 import java.util.concurrent.TimeUnit.SECONDS
@@ -92,15 +93,17 @@ class ContactDataLoadService(
   }
 
   fun crnExistsInIndex(crn: String): Boolean {
-    val count = openSearchClient.search(
-      { searchRequest ->
-        searchRequest.index(INDEX_NAME)
-          .query { q -> q.matchesCrn(crn) }
-          .trackTotalHits(TrackHits.of { it.count(1) })
-          .size(0)
-      },
-      Any::class.java,
-    ).hits().total()?.value() ?: 0
+    val count = retry {
+      openSearchClient.search(
+        { searchRequest ->
+          searchRequest.index(INDEX_NAME)
+            .query { q -> q.matchesCrn(crn) }
+            .trackTotalHits(TrackHits.of { it.count(1) })
+            .size(0)
+        },
+        Any::class.java,
+      ).hits().total()?.value() ?: 0
+    }
     return count > 0
   }
 
@@ -108,7 +111,7 @@ class ContactDataLoadService(
     crn: String,
     operations: List<BulkOperation>,
     maxAttempts: Int = 3,
-    delay: LongArray = longArrayOf(2, 4, 8),
+    delay: LongArray = longArrayOf(0, 1, 4),
     attempt: Int = 1,
   ) {
     val response = openSearchClient.bulk {
@@ -137,7 +140,7 @@ class ContactDataLoadService(
     return error != null && error.type() != "version_conflict_engine_exception"
   }
 
-  private fun rollbackPartialLoad(crn: String) {
+  private fun rollbackPartialLoad(crn: String) = retry {
     openSearchClient.deleteByQuery { it.index(INDEX_NAME).query { q -> q.matchesCrn(crn) } }
   }
 }
