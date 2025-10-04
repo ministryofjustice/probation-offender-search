@@ -2,12 +2,13 @@ package uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.dataload
 
 import com.microsoft.applicationinsights.TelemetryClient
 import io.opentelemetry.instrumentation.annotations.WithSpan
+import io.sentry.Sentry
 import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
+import org.opensearch.client.opensearch._types.ErrorCause
 import org.opensearch.client.opensearch._types.Refresh
 import org.opensearch.client.opensearch._types.VersionType
 import org.opensearch.client.opensearch.core.bulk.BulkOperation
-import org.opensearch.client.opensearch.core.bulk.BulkResponseItem
 import org.opensearch.client.opensearch.core.search.TrackHits
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -77,7 +78,16 @@ class ContactDataLoadService(
         allOf(
           *operations
             .chunked(onDemandDataloadBatchSize)
-            .map { executor.runAsync { sendBulkRequestWithRetry(crn, it) } }
+            .map {
+              executor.runAsync {
+                try {
+                  sendBulkRequestWithRetry(crn, it)
+                } catch (e: Exception) {
+                  Sentry.captureException(e)
+                  telemetryClient.trackException(e)
+                }
+              }
+            }
             .toTypedArray(),
         ).join()
       }
@@ -114,19 +124,36 @@ class ContactDataLoadService(
     delay: LongArray = longArrayOf(0, 1, 4),
     attempt: Int = 1,
   ) {
-    val response = openSearchClient.bulk {
-      it.index(INDEX_NAME)
-        .refresh(Refresh.True)
-        .timeout { t -> t.time("5m") } // Increased timeout, in case a bulk request takes longer than the default 30 seconds
-        .operations(operations)
+    val (response, duration) = measureTimedValue {
+      openSearchClient.bulk {
+        it.index(INDEX_NAME)
+          .refresh(Refresh.True)
+          .timeout { t -> t.time("5m") } // Increased timeout, in case a bulk request takes longer than the default 30 seconds
+          .operations(operations)
+      }
     }
 
-    val failedOperations = operations.filterIndexed { index, op -> shouldRetry(response.items()[index]) }
+    val failedOperations = operations.filterIndexed { index, _ -> shouldRetry(response.items()[index].error()) }
     if (failedOperations.isNotEmpty()) {
+      val errors = response.items().mapNotNull { it.error() }
+        .filter { it.type() != null } // type is annotated @Nonnull, but in practice can be null
+      telemetryClient.trackEvent(
+        "OnDemandDataLoadBatchAttemptFailure",
+        mapOf(
+          "crn" to crn,
+          "attempt" to attempt.toString(),
+          "errors" to errors.joinToString(", ", "[", "]") { it.toJsonString() },
+        ),
+        mapOf(
+          "duration" to duration.toDouble(MILLISECONDS),
+          "attemptedOperations" to operations.size.toDouble(),
+          "failedOperations" to failedOperations.size.toDouble(),
+        ),
+      )
       if (attempt >= maxAttempts) {
-        val errors = response.items().filter { shouldRetry(it) }.mapNotNull { it.error()?.reason() }
+        val errorReasonCounts = errors.filter { shouldRetry(it) }.mapNotNull { it.reason() }
           .groupBy { it }.mapValues { it.value.size }
-        throw DataLoadFailureException("Data load for $crn failed with ${errors.size} errors ($errors)")
+        throw DataLoadFailureException("Data load for $crn failed with ${errorReasonCounts.size} errors ($errorReasonCounts)")
       }
 
       // Retry after delay
@@ -135,9 +162,9 @@ class ContactDataLoadService(
     }
   }
 
-  private fun shouldRetry(item: BulkResponseItem): Boolean {
-    val error = item.error()
-    return error != null && error.type() != "version_conflict_engine_exception"
+  private fun shouldRetry(error: ErrorCause?): Boolean {
+    return error != null && error.type() != null // type is annotated @Nonnull, but in practice can be null
+      && error.type() != "version_conflict_engine_exception"
   }
 
   private fun rollbackPartialLoad(crn: String) = retry {
