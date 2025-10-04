@@ -7,6 +7,7 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.IndexQuery
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
+import uk.gov.justice.hmpps.probationsearch.utils.Retry.retry
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
@@ -23,7 +24,7 @@ class ContactBlockService(
 
   fun checkIfBlockedOrRollbackIfStale(crn: String, retries: Int = 1, blockContext: BlockContext.() -> Unit) {
     val ctx = BlockContext().apply(blockContext)
-    val isBlocked = retry(retries, Duration.ofSeconds(5)) {
+    val isBlocked = retryUntilBlockIsCleared(retries, Duration.ofSeconds(5)) {
       // if block exists and was created more than 5 minutes ago, then rollback the partial load and delete the block
       getBlock(crn)?.timestamp?.let {
         if (it.isLongerAgoThan(Duration.ofMinutes(5))) {
@@ -62,15 +63,16 @@ class ContactBlockService(
     val indexQuery = IndexQuery()
     indexQuery.id = crn
     indexQuery.`object` = BlockJson(crn)
-    restTemplate.index(indexQuery, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK))
+    retry { restTemplate.index(indexQuery, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK)) }
   }
 
-  private fun unblock(crn: String) {
+  private fun unblock(crn: String) = retry {
     restTemplate.delete(crn, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK))
   }
 
-  private fun getBlock(crn: String): BlockDocument? =
+  private fun getBlock(crn: String): BlockDocument? = retry {
     restTemplate[crn, BlockDocument::class.java, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK)]
+  }
 
   fun String.isLongerAgoThan(durationInPast: Duration): Boolean {
 
@@ -80,7 +82,11 @@ class ContactBlockService(
     ).seconds > durationInPast.seconds
   }
 
-  private fun retry(maxRetries: Int, timeout: Duration = Duration.ofSeconds(5), block: () -> Boolean): Boolean {
+  private fun retryUntilBlockIsCleared(
+    maxRetries: Int,
+    timeout: Duration = Duration.ofSeconds(5),
+    block: () -> Boolean,
+  ): Boolean {
     repeat(maxRetries) { _ ->
       val res = block()
       if (!res) return false

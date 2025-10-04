@@ -22,6 +22,7 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchReq
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResult
 import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.dataload.ContactDataLoadService
+import uk.gov.justice.hmpps.probationsearch.utils.Retry.retry
 import uk.gov.justice.hmpps.probationsearch.utils.TermSplitter
 import kotlin.time.DurationUnit.MILLISECONDS
 import kotlin.time.measureTime
@@ -131,17 +132,19 @@ class ContactSemanticSearchService(
     val hybridQuery =
       HybridQuery.of { hybrid -> hybrid.queries(keywordQuery, semanticQuery).paginationDepth(10000) }.toQuery()
 
-    val response = openSearchClient.search<ContactSearchResult> { search ->
-      search.index(INDEX_NAME)
-        .query(hybridQuery)
-        .source { source -> source.filter { it.includes(RETURN_FIELDS) } }
-        .withPageable(pageable)
-        .highlight { highlight ->
-          highlight
-            .encoder(HighlighterEncoder.Html)
-            .fields(HIGHLIGHT_FIELDS.associateWith { HighlightField.of { it } })
-            .fragmentSize(200)
-        }
+    val response = retry {
+      openSearchClient.search<ContactSearchResult> { search ->
+        search.index(INDEX_NAME)
+          .query(hybridQuery)
+          .source { source -> source.filter { it.includes(RETURN_FIELDS) } }
+          .withPageable(pageable)
+          .highlight { highlight ->
+            highlight
+              .encoder(HighlighterEncoder.Html)
+              .fields(HIGHLIGHT_FIELDS.associateWith { HighlightField.of { it } })
+              .fragmentSize(200)
+          }
+      }
     }
 
     val results = response.hits().hits().mapNotNull { hit ->
@@ -178,11 +181,13 @@ class ContactSemanticSearchService(
     request: ContactSearchRequest,
     pageable: Pageable,
   ): ContactSearchResponse {
-    val response = openSearchClient.search<ContactSearchResult> { searchRequest ->
-      searchRequest
-        .index(INDEX_NAME)
-        .query(BoolQuery.of { bool -> bool.filter { it.matchesCrn(request.crn) } }.toQuery())
-        .withPageable(pageable)
+    val response = retry {
+      openSearchClient.search<ContactSearchResult> { searchRequest ->
+        searchRequest
+          .index(INDEX_NAME)
+          .query(BoolQuery.of { bool -> bool.filter { it.matchesCrn(request.crn) } }.toQuery())
+          .withPageable(pageable)
+      }
     }
     val results = response.hits().hits().mapNotNull { hit ->
       hit.source()?.copy(score = hit.score().takeIf { request.includeScores })
