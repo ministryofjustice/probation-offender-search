@@ -98,7 +98,7 @@ class ContactSemanticSearchService(
 
   private fun doSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
     // Simplified query to return all contacts for the CRN when no query is passed
-    if (request.query.isEmpty()) return emptyQuery(request, pageable)
+    if (request.query.isBlank()) return emptyQuery(request, pageable)
 
     // Construct full hybrid semantic query
     val keywordQuery = BoolQuery.of { bool ->
