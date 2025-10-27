@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.3"
-  kotlin("plugin.spring") version "2.2.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.4"
+  kotlin("plugin.spring") version "2.2.21"
   id("com.google.cloud.tools.jib") version "3.4.5"
 }
 
@@ -19,8 +19,8 @@ dependencies {
   implementation("org.opensearch.client:spring-data-opensearch-starter:2.0.2")
   implementation("org.opensearch.client:opensearch-java:3.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.23.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.5.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.24.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.21.0")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
