@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.DataLoadFailureException
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.AsyncExtensions.runAsync
+import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.AsyncExtensions.supplyAsync
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.matchesCrn
 import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.ContactSemanticSearchService.Companion.INDEX_NAME
 import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block.ContactBlockService
@@ -40,28 +41,29 @@ class ContactDataLoadService(
   @param:Qualifier("applicationTaskExecutor")
   private val executor: SimpleAsyncTaskExecutor,
 ) {
-  fun loadDataOnDemand(crn: String) {
+  fun loadDataOnDemand(crn: String): Int? {
     // Do not proceed if the CRN is "blocked" (i.e. there is an ongoing data load job). If the block is stale, rollback any partially loaded data and proceed.
-    blockService.checkIfBlockedOrRollbackIfStale(crn) { rollback { rollbackPartialLoad(crn) } }
+    blockService.checkIfBlockedOrRollbackIfStale(crn) { rollbackPartialLoad(crn) }
 
     // If the CRN has not been indexed before, load all contacts on-demand before first search
-    if (!crnExistsInIndex(crn)) {
-      try {
-        // Load the data asynchronously, so that it can be left to complete if the API call times out
-        executor.runAsync {
-          blockService.doWithBlock(crn) {
-            action { loadData(crn) }
-            rollback { rollbackPartialLoad(crn) }
-          }
-        }.get(30, SECONDS)
-      } catch (_: TimeoutException) {
-        throw IndexNotReadyException("Timed out waiting for contacts with CRN=$crn to be indexed for semantic search. The indexing process has not been interrupted.")
-      }
+    if (crnExistsInIndex(crn)) return null
+
+    try {
+      // Load the data asynchronously, so that it can be left to complete if the API call times out
+      return executor.supplyAsync {
+        blockService.doWithBlock(
+          crn,
+          action = { loadData(crn) },
+          rollback = { rollbackPartialLoad(crn) },
+        )
+      }.get(30, SECONDS)
+    } catch (_: TimeoutException) {
+      throw IndexNotReadyException("Timed out waiting for contacts with CRN=$crn to be indexed for semantic search. The indexing process has not been interrupted.")
     }
   }
 
   @WithSpan
-  fun loadData(crn: String) {
+  fun loadData(crn: String): Int {
     val (operations, duration) = measureTimedValue {
       val mapper = openSearchClient._transport().jsonpMapper()
       deliusService.getContacts(crn).map { contact ->
@@ -100,6 +102,7 @@ class ContactDataLoadService(
         "count" to operations.size.toDouble(),
       ),
     )
+    return operations.size
   }
 
   fun crnExistsInIndex(crn: String): Boolean {

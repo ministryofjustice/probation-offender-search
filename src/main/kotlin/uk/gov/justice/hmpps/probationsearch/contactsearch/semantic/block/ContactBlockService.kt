@@ -22,13 +22,12 @@ class ContactBlockService(
     const val CONTACT_SEMANTIC_BLOCK = "contact-semantic-block-primary"
   }
 
-  fun checkIfBlockedOrRollbackIfStale(crn: String, retries: Int = 1, blockContext: BlockContext.() -> Unit) {
-    val ctx = BlockContext().apply(blockContext)
+  fun checkIfBlockedOrRollbackIfStale(crn: String, retries: Int = 1, rollback: () -> Unit) {
     val isBlocked = retryUntilBlockIsCleared(retries, Duration.ofSeconds(5)) {
       // if block exists and was created more than 5 minutes ago, then rollback the partial load and delete the block
       getBlock(crn)?.timestamp?.let {
         if (it.isLongerAgoThan(Duration.ofMinutes(5))) {
-          ctx.rollback()
+          rollback()
           unblock(crn)
           return@let false
         }
@@ -41,21 +40,20 @@ class ContactBlockService(
     }
   }
 
-  fun doWithBlock(crn: String, block: BlockContext.() -> Unit) {
-    val ctx = BlockContext().apply(block)
+  fun <T> doWithBlock(crn: String, action: () -> T, rollback: () -> Unit): T {
     // Apply the block before the load action
     block(crn)
     try {
       // Run the load and when complete, delete the block
-      ctx.action()
-      unblock(crn)
+      return action()
     } catch (ex: Exception) {
-      ctx.rollback()
-      unblock(crn)
+      rollback()
       // Log to Sentry and App insights
       Sentry.captureException(ex)
       telemetryClient.trackException(ex)
       throw ex
+    } finally {
+      unblock(crn)
     }
   }
 
@@ -75,7 +73,6 @@ class ContactBlockService(
   }
 
   fun String.isLongerAgoThan(durationInPast: Duration): Boolean {
-
     return Duration.between(
       ZonedDateTime.parse(this),
       ZonedDateTime.now(),

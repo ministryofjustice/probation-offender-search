@@ -25,7 +25,6 @@ import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.dataload.Cont
 import uk.gov.justice.hmpps.probationsearch.utils.Retry.retry
 import uk.gov.justice.hmpps.probationsearch.utils.TermSplitter
 import kotlin.time.DurationUnit.MILLISECONDS
-import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
 @Service
@@ -75,7 +74,7 @@ class ContactSemanticSearchService(
   }
 
   fun search(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
-    val dataLoadDuration = measureTime { dataLoadService.loadDataOnDemand(request.crn) }
+    val (dataLoadCount, dataLoadDuration) = measureTimedValue { dataLoadService.loadDataOnDemand(request.crn) }
     val (response, searchDuration) = measureTimedValue { doSearch(request, pageable) }
     telemetryClient.trackEvent(
       "SemanticSearchCompleted",
@@ -83,6 +82,8 @@ class ContactSemanticSearchService(
         "crn" to request.crn,
         "query" to request.query.length.toString(),
         "resultCount" to response.totalResults.toString(),
+        "requiredDataLoad" to (dataLoadCount != null).toString(),
+        "dataLoadCount" to dataLoadCount?.toString(),
         "queryTermCount" to TermSplitter.split(request.query).size.toString(),
         "page" to pageable.pageNumber.toString(),
         "resultCountForPage" to response.results.size.toString(),
