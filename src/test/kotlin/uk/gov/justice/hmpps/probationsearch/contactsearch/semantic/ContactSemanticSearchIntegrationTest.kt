@@ -72,6 +72,8 @@ class ContactSemanticSearchIntegrationTest {
           "query" to "9",
           "resultCount" to "1",
           "queryTermCount" to "2",
+          "requiredDataLoad" to "false",
+          "dataLoadCount" to null,
           "page" to "0",
           "resultCountForPage" to "1",
           "semanticOnlyResultCountForPage" to "1",

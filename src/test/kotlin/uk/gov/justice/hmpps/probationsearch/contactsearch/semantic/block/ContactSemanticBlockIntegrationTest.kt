@@ -67,12 +67,11 @@ class ContactSemanticBlockIntegrationTest {
     val crn = "X123456"
     var rollbackActioned = false
     val ex = assertThrows<RuntimeException> {
-      contactBlockService.doWithBlock(crn) {
-        action {
-          throw RuntimeException("Some exception")
-        }
-        rollback { rollbackActioned = true }
-      }
+      contactBlockService.doWithBlock(
+        crn,
+        action = { throw RuntimeException("Some exception") },
+        rollback = { rollbackActioned = true },
+      )
     }
     assertThat(ex.message).isEqualTo("Some exception")
     assertThat(rollbackActioned).isTrue()
@@ -84,10 +83,11 @@ class ContactSemanticBlockIntegrationTest {
     var rollbackActioned = false
     var actionsPerformed = false
     assertDoesNotThrow {
-      contactBlockService.doWithBlock(crn) {
-        action { actionsPerformed = true }
-        rollback { rollbackActioned = true }
-      }
+      contactBlockService.doWithBlock(
+        crn,
+        action = { actionsPerformed = true },
+        rollback = { rollbackActioned = true },
+      )
     }
     assertThat(actionsPerformed).isTrue()
     assertThat(rollbackActioned).isFalse()
@@ -99,7 +99,7 @@ class ContactSemanticBlockIntegrationTest {
     var rollbackActioned = false
     val dateString = "2025-06-25T09:28:23.539764Z"
     createBlock(
-      crn, dateString
+      crn, dateString,
     )
     assertDoesNotThrow {
       contactBlockService.checkIfBlockedOrRollbackIfStale(crn) { rollbackActioned = true }
@@ -114,12 +114,13 @@ class ContactSemanticBlockIntegrationTest {
     var rollbackActioned = false
     createBlock(
       crn,
-      ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(4).toString()
+      ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(4).toString(),
     )
     val ex = assertThrows<IndexNotReadyException> {
-      contactBlockService.checkIfBlockedOrRollbackIfStale(crn, retries = 1) {
-        rollback { rollbackActioned = true }
-      }
+      contactBlockService.checkIfBlockedOrRollbackIfStale(
+        crn, retries = 1,
+        rollback = { rollbackActioned = true },
+      )
     }
     assertThat(ex.message).isEqualTo("Index for $crn is still blocked")
     assertThat(rollbackActioned).isFalse()
