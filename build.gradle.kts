@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.4"
   kotlin("plugin.spring") version "2.2.21"
-  id("com.google.cloud.tools.jib") version "3.4.5"
+  id("com.google.cloud.tools.jib") version "3.5.0"
 }
 
 dependencies {
@@ -19,7 +19,7 @@ dependencies {
   implementation("org.opensearch.client:spring-data-opensearch-starter:2.0.3")
   implementation("org.opensearch.client:opensearch-java:3.3.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.25.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.26.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.21.0")
@@ -30,8 +30,8 @@ dependencies {
 
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.junit.vintage:junit-vintage-engine")
-  testImplementation("org.wiremock:wiremock-standalone:3.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.0.0")
+  testImplementation("org.wiremock:wiremock-standalone:3.13.2")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.0")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
