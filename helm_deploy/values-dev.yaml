@@ -34,3 +34,4 @@ generic-prometheus-alerts:
   openSearchAlertsDomainNames:
     cloud-platform-7ee2c0ee: OpenSearch
   openSearchAlertsFreeStorageSpaceThresholdGB: 7.5
+  openSearchAlertsClusterStatusYellowMinutes: 30 # cluster status can be yellow during replication following data re-indexing - this is expected
