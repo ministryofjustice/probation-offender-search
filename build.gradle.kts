@@ -19,12 +19,12 @@ dependencies {
   implementation("org.opensearch.client:spring-data-opensearch-starter:2.0.3")
   implementation("org.opensearch.client:opensearch-java:3.3.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.27.1")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.28.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.22.0")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
-  implementation("io.flipt:flipt-client-java:1.2.0") {
+  implementation("io.flipt:flipt-client-java:1.2.1") {
     exclude("org.apache.httpcomponents", "httpclient")
   }
 
