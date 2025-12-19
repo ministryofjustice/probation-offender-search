@@ -13,3 +13,9 @@ CVE-2022-45868
 # Suppression for tomcat vulnerability affecting jsp compilation in the default servlet
 #   can be suppressed as we do not use the default servlet and haven't configured it for write either
 CVE-2024-50379
+
+# libpng: Out-of-bounds read vulnerability in libpng
+# https://github.com/adoptium/containers/issues/858
+# Reason: Vulnerability present due to upstream eclipse-temurin Alpine image rebuild lag
+# Package: libpng
+CVE-2025-66293 exp:2026-08-01
