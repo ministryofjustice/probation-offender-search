@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.2.0"
-  kotlin("plugin.spring") version "2.2.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
+  kotlin("plugin.spring") version "2.3.0"
   id("com.google.cloud.tools.jib") version "3.5.2"
 }
 
@@ -17,9 +17,9 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-impl:0.13.0")
   implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.opensearch.client:spring-data-opensearch-starter:2.0.3")
-  implementation("org.opensearch.client:opensearch-java:3.3.0")
+  implementation("org.opensearch.client:opensearch-java:3.4.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.28.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.29.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.23.0")
@@ -36,7 +36,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path")
   testImplementation("io.rest-assured:xml-path")
   testImplementation("io.rest-assured:spring-mock-mvc")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.36")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.37")
 }
 
 java {
