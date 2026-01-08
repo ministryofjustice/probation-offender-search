@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.hmpps.probationsearch.utils.GlobalPrincipalOAuth2AuthorizedClientService
 
 @Configuration
 class WebClientConfiguration(
@@ -56,11 +57,14 @@ class WebClientConfiguration(
   @Bean
   fun authorizedClientManager(
     clientRegistrationRepository: ClientRegistrationRepository?,
-    oAuth2AuthorizedClientService: OAuth2AuthorizedClientService?,
+    globalPrincipalOAuth2AuthorizedClientService: GlobalPrincipalOAuth2AuthorizedClientService?,
   ): OAuth2AuthorizedClientManager? {
     val authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder().clientCredentials().build()
     val authorizedClientManager =
-      AuthorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository, oAuth2AuthorizedClientService)
+      AuthorizedClientServiceOAuth2AuthorizedClientManager(
+        clientRegistrationRepository,
+        globalPrincipalOAuth2AuthorizedClientService
+      )
     authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
     return authorizedClientManager
   }
