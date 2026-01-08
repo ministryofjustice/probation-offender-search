@@ -61,7 +61,10 @@ class WebClientConfiguration(
   ): OAuth2AuthorizedClientManager? {
     val authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder().clientCredentials().build()
     val authorizedClientManager =
-      AuthorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository, globalPrincipalOAuth2AuthorizedClientService)
+      AuthorizedClientServiceOAuth2AuthorizedClientManager(
+        clientRegistrationRepository,
+        globalPrincipalOAuth2AuthorizedClientService
+      )
     authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
     return authorizedClientManager
   }
