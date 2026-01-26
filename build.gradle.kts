@@ -18,7 +18,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.opensearch.client:spring-data-opensearch-starter:2.0.5")
   implementation("org.opensearch.client:opensearch-java:3.5.0")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.31.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
