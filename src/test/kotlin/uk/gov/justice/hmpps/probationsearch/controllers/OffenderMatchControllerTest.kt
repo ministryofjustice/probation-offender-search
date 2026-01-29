@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.controllers
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
 import io.restassured.config.RestAssuredConfig
@@ -17,6 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderMatches
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.services.MatchService
@@ -44,7 +44,7 @@ internal class OffenderMatchControllerTest {
   fun setUp() {
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
+      ObjectMapperConfig().jackson3ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )
     whenever(matchService.match(any())).thenReturn(OffenderMatches(listOf()))
   }

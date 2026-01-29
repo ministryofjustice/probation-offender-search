@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch.audit
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
@@ -9,6 +8,7 @@ import kotlinx.coroutines.launch
 import org.springframework.data.domain.Pageable
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.config.SecurityCoroutineContext
 import uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch.ActivitySearchAuditRequest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch.ActivitySearchRequest
@@ -31,7 +31,7 @@ class ContactSearchAuditService(
     CoroutineScope(Context.current().asContextElement() + SecurityCoroutineContext()).launch {
       auditService?.publishEvent(
         what = "Search Contacts",
-        who = SecurityContextHolder.getContext().authentication.name,
+        who = SecurityContextHolder.getContext().authentication!!.name,
         `when` = Instant.now(),
         subjectId = request.crn,
         subjectType = "CRN",
@@ -44,7 +44,7 @@ class ContactSearchAuditService(
       deliusService.auditContactSearch(
         ContactSearchAuditRequest(
           request,
-          SecurityContextHolder.getContext().authentication.name,
+          SecurityContextHolder.getContext().authentication!!.name,
           ContactSearchAuditRequest.PageRequest(
             pageable.pageNumber,
             pageable.pageSize,
@@ -60,7 +60,7 @@ class ContactSearchAuditService(
     CoroutineScope(Context.current().asContextElement() + SecurityCoroutineContext()).launch {
       auditService?.publishEvent(
         what = "Search Contacts for Activity Log",
-        who = SecurityContextHolder.getContext().authentication.name,
+        who = SecurityContextHolder.getContext().authentication!!.name,
         `when` = Instant.now(),
         subjectId = request.crn,
         subjectType = "CRN",
@@ -73,7 +73,7 @@ class ContactSearchAuditService(
       deliusService.auditActivitySearch(
         ActivitySearchAuditRequest(
           request,
-          SecurityContextHolder.getContext().authentication.name,
+          SecurityContextHolder.getContext().authentication!!.name,
           ActivitySearchAuditRequest.PageRequest(
             pageable.pageNumber,
             pageable.pageSize,

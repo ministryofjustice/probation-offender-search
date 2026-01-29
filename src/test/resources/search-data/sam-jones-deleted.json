@@ -26,6 +26,7 @@
   "contactDetails": {
     "addresses": [
       {
+        "id": 1,
         "from": "2017-01-16",
         "to": "2017-01-16",
         "addressNumber": "string",

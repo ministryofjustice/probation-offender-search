@@ -26,6 +26,7 @@
             "allowSMS": true,
             "addresses": [
               {
+                "id": 1,
                 "buildingName": "string",
                 "noFixedAbode": true,
                 "streetName": "string",

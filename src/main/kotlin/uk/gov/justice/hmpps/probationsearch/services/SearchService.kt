@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.lucene.search.join.ScoreMode
 import org.opensearch.action.search.SearchRequest
 import org.opensearch.action.search.SearchResponse
@@ -16,7 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import uk.gov.justice.hmpps.probationsearch.dto.*
+import tools.jackson.databind.ObjectMapper
+import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
+import uk.gov.justice.hmpps.probationsearch.dto.OffenderUserAccess
+import uk.gov.justice.hmpps.probationsearch.dto.SearchDto
+import uk.gov.justice.hmpps.probationsearch.dto.SearchPagedResults
+import uk.gov.justice.hmpps.probationsearch.dto.SearchPhraseFilter
+import uk.gov.justice.hmpps.probationsearch.dto.SearchPhraseResults
 import java.time.LocalDate
 import java.util.*
 

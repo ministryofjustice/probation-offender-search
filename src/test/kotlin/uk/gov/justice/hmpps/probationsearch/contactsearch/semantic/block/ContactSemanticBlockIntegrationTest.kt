@@ -53,8 +53,8 @@ class ContactSemanticBlockIntegrationTest {
 
   private fun createBlock(crn: String, timestamp: String? = null) {
     val indexQuery = IndexQuery()
-    indexQuery.id = crn
-    indexQuery.`object` = BlockJson(crn, timestamp)
+    indexQuery.setId(crn)
+    indexQuery.setObject(BlockJson(crn, timestamp))
     openSearchRestTemplate.index(indexQuery, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK))
   }
 

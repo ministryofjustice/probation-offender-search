@@ -1,14 +1,14 @@
 package uk.gov.justice.hmpps.probationsearch.dto
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.SerializerProvider
 import io.swagger.v3.oas.annotations.media.Schema
 import org.opensearch.search.suggest.Suggest
-import org.springframework.boot.jackson.JsonComponent
+import org.springframework.boot.jackson.JacksonComponent
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import tools.jackson.core.JsonGenerator
+import tools.jackson.databind.SerializationContext
+import tools.jackson.databind.ValueSerializer
 
 class SearchPhraseResults(
   pageable: Pageable,
@@ -65,9 +65,9 @@ data class ProbationAreaAggregation(
   @Schema(description = "Count of matching offenders in this area", example = "78") val count: Long,
 )
 
-@JsonComponent
-class SuggestSerializer : JsonSerializer<Suggest>() {
-  override fun serialize(value: Suggest, gen: JsonGenerator, serializers: SerializerProvider?) {
+@JacksonComponent
+class SuggestSerializer : ValueSerializer<Suggest>() {
+  override fun serialize(value: Suggest, gen: JsonGenerator, context: SerializationContext?) {
     gen.writeRawValue(value.toString())
   }
 }

@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.controllers
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
 import org.junit.jupiter.api.BeforeEach
 import org.opensearch.client.RestHighLevelClient
@@ -11,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags

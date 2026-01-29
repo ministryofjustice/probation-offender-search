@@ -32,6 +32,7 @@
   "contactDetails": {
     "addresses": [
       {
+        "id": 1,
         "from": "2023-05-30",
         "addressNumber": "19",
         "buildingName": "string",

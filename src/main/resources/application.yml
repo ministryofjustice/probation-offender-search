@@ -8,8 +8,6 @@ spring:
   threads.virtual.enabled: true
 
   jackson:
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
     default-property-inclusion: non_null
 
   profiles:
