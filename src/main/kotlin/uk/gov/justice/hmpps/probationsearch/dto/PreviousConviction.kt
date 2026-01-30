@@ -4,5 +4,5 @@ import java.time.LocalDate
 
 data class PreviousConviction(
   val convictionDate: LocalDate? = null,
-  val detail: Map<String, String>? = null,
+  val detail: Map<String, String?>? = null,
 )
