@@ -59,8 +59,8 @@ class ContactBlockService(
 
   private fun block(crn: String) {
     val indexQuery = IndexQuery()
-    indexQuery.id = crn
-    indexQuery.`object` = BlockJson(crn)
+    indexQuery.setId(crn)
+    indexQuery.setObject(BlockJson(crn))
     retry { restTemplate.index(indexQuery, IndexCoordinates.of(CONTACT_SEMANTIC_BLOCK)) }
   }
 

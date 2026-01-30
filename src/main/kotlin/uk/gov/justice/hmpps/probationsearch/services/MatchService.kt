@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.lucene.search.join.ScoreMode
 import org.opensearch.action.search.SearchRequest
 import org.opensearch.action.search.SearchResponse
@@ -10,6 +9,7 @@ import org.opensearch.search.builder.SearchSourceBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.dto.MatchRequest
 import uk.gov.justice.hmpps.probationsearch.dto.MatchedBy
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail

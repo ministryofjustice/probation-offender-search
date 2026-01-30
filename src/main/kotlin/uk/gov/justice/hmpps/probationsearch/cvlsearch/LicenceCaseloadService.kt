@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.cvlsearch
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.opensearch.action.search.SearchRequest
 import org.opensearch.client.RequestOptions
 import org.opensearch.client.RestHighLevelClient
@@ -10,6 +9,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.valueOf
 import org.springframework.stereotype.Service
+import tools.jackson.databind.ObjectMapper
 
 @Service
 class LicenceCaseloadService(val openSearchClient: RestHighLevelClient, val objectMapper: ObjectMapper) {

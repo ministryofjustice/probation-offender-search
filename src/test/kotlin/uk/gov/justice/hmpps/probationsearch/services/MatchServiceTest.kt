@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.services
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.lucene.search.TotalHits
 import org.apache.lucene.search.TotalHits.Relation.EQUAL_TO
 import org.assertj.core.api.Assertions.assertThat
@@ -25,6 +24,7 @@ import org.opensearch.search.SearchHits
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.dto.IDs
 import uk.gov.justice.hmpps.probationsearch.dto.MatchRequest
 import uk.gov.justice.hmpps.probationsearch.dto.MatchedBy.ALL_SUPPLIED

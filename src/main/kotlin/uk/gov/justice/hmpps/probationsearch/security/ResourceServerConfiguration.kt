@@ -15,9 +15,8 @@ class ResourceServerConfiguration {
   @Bean
   fun filterChain(http: HttpSecurity): SecurityFilterChain {
     http
-      .sessionManagement()
-      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      .and().csrf().disable()
+      .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+      .csrf { it.disable() }
       .authorizeHttpRequests {
         it
           .requestMatchers(
@@ -28,7 +27,9 @@ class ResourceServerConfiguration {
             "/synthetic-monitor", // This endpoint is secured in the ingress rather than the app so that it can be called from within the namespace without requiring authentication
           ).permitAll()
           .anyRequest().authenticated()
-      }.oauth2ResourceServer().jwt().jwtAuthenticationConverter(AuthAwareTokenConverter())
+      }.oauth2ResourceServer { oauth2ResourceServer ->
+        oauth2ResourceServer.jwt { it.jwtAuthenticationConverter(AuthAwareTokenConverter()) }
+      }
     return http.build()
   }
 }

@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.controllers
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.config.ObjectMapperConfig
@@ -22,12 +21,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.support.AbstractTestExecutionListener
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
+import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.util.PersonSearchHelper
 import java.lang.reflect.Type
-import java.util.Objects
+import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @MockitoBean(types = [FeatureFlags::class])
@@ -46,7 +46,7 @@ internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener(
     RestAssured.port =
       Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port"))!!.toInt()
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
+      ObjectMapperConfig().jackson3ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )
   }
 

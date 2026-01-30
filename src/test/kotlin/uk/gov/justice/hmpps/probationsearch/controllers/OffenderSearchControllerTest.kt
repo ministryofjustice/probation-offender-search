@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.controllers
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import io.restassured.RestAssured
 import io.restassured.config.ObjectMapperConfig
@@ -24,6 +23,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
@@ -59,7 +59,7 @@ class OffenderSearchControllerTest {
     PersonSearchHelper(openSearchClient).loadData()
     RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-      ObjectMapperConfig().jackson2ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
+      ObjectMapperConfig().jackson3ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )
   }
 

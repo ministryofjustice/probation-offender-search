@@ -1,6 +1,5 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch.semantic
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import io.restassured.RestAssured
 import io.restassured.response.ValidatableResponse
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.contactsearch.OpenSearchSetup
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchRequest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse

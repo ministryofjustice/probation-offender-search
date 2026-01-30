@@ -6,6 +6,7 @@
   "contactDetails": {
     "addresses": [
       {
+        "id": 1,
         "noFixedAbode": false,
         "streetName": "23 BLOOD ROAD",
         "telephoneNumber": "0777 555 5555",
@@ -20,6 +21,7 @@
         }
       },
       {
+        "id": 2,
         "noFixedAbode": true,
         "notes": "NFA on release",
         "postcode": "NF1 1NF",
@@ -31,6 +33,7 @@
         }
       },
       {
+        "id": 3,
         "noFixedAbode": false,
         "streetName": "8 Ripon Lane",
         "telephoneNumber": "07393555555",

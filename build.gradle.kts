@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.1"
   kotlin("plugin.spring") version "2.3.0"
   id("com.google.cloud.tools.jib") version "3.5.2"
 }
@@ -9,18 +9,18 @@ plugins {
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  implementation("org.springframework.boot:spring-boot-starter-security")
-  implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-  implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+  implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
+  implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
   implementation("org.springframework.data:spring-data-jpa")
   implementation("io.jsonwebtoken:jjwt-impl:0.13.0")
   implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
-  implementation("org.opensearch.client:spring-data-opensearch-starter:2.0.5")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:3.0.0")
   implementation("org.opensearch.client:opensearch-java:3.5.0")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.31.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
+  implementation("io.sentry:sentry-spring-boot-4:8.31.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:6.0.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.24.0")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
@@ -33,9 +33,9 @@ dependencies {
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.0")
   testImplementation("org.awaitility:awaitility-kotlin")
-  testImplementation("io.rest-assured:json-path")
-  testImplementation("io.rest-assured:xml-path")
-  testImplementation("io.rest-assured:spring-mock-mvc")
+  testImplementation("io.rest-assured:json-path:6.0.0")
+  testImplementation("io.rest-assured:xml-path:6.0.0")
+  testImplementation("io.rest-assured:spring-mock-mvc:6.0.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.37")
 }
 
@@ -44,10 +44,16 @@ java {
 }
 
 kotlin {
-  compilerOptions.jvmTarget.set(JvmTarget.JVM_25)
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_25)
+    freeCompilerArgs.set(listOf("-Xannotation-default-target=param-property"))
+  }
 }
 
 tasks {
+  withType<Test>().configureEach {
+    jvmArgs("-Dspring.test.context.cache.pause=never")
+  }
   val copyAgentJar by registering(Copy::class) {
     from("${project.layout.buildDirectory.get().asFile}/libs")
     include("applicationinsights-agent*.jar")
