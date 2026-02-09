@@ -139,7 +139,10 @@ class ContactDataLoadService(
     val failedOperations = operations.filterIndexed { index, _ -> shouldRetry(response.items()[index].error()) }
     if (failedOperations.isNotEmpty()) {
       val errors = response.items().mapNotNull { it.error() }
-        .filter { it.type() != null } // type is annotated @Nonnull, but in practice can be null
+        .filter {
+          @Suppress("SENSELESS_COMPARISON") // type is annotated @Nonnull, but in practice can be null
+          it.type() != null
+        }
       telemetryClient.trackEvent(
         "OnDemandDataLoadBatchAttemptFailure",
         mapOf(
@@ -166,7 +169,8 @@ class ContactDataLoadService(
   }
 
   private fun shouldRetry(error: ErrorCause?): Boolean {
-    return error != null && error.type() != null // type is annotated @Nonnull, but in practice can be null
+    @Suppress("SENSELESS_COMPARISON") // type is annotated @Nonnull, but in practice can be null
+    return error != null && error.type() != null
       && error.type() != "version_conflict_engine_exception"
   }
 
