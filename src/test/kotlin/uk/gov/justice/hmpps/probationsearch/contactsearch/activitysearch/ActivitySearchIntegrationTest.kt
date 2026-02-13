@@ -440,7 +440,7 @@ class ActivitySearchIntegrationTest {
       .search(
         ActivitySearchRequest(
           crn,
-          isSystemGenerated = true,
+          showSystemGeneratedContacts = true,
         ),
         mapOf("page" to 0, "size" to 2),
       )
