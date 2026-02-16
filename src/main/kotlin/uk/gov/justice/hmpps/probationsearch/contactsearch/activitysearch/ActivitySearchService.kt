@@ -90,6 +90,8 @@ class ActivitySearchService(
       filter(rangeQuery("startDateTime").lte(LocalDateTime.now()))
     }
 
+    if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
+
     val filters = ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
       .flatMap { it.queries }
     if (filters.isNotEmpty()) {

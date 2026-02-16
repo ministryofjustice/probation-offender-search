@@ -191,5 +191,12 @@ object ActivityGenerator {
       notes = "I failed to comply",
       startDateTime = LocalDateTime.now().plusDays(-3),
     ),
+    generate(
+      startTime = LocalTime.now(),
+      date = LocalDate.now().minusDays(1),
+      notes = "I am system generated",
+      systemGenerated = "Y",
+      startDateTime = LocalDateTime.now().minusDays(1),
+    ),
   )
 }

@@ -14,6 +14,7 @@ data class ActivitySearchRequest(
   val keywords: String? = "",
   val dateFrom: LocalDate? = null,
   val dateTo: LocalDate? = null,
+  val includeSystemGenerated: Boolean = false,
   val filters: List<String> = emptyList(),
 )
 

@@ -432,6 +432,27 @@ class ActivitySearchIntegrationTest {
     )
   }
 
+  @Test
+  fun `can filter on system generated flag`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          includeSystemGenerated = true,
+        ),
+        mapOf("page" to 0, "size" to 20),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(7)
+    assertThat(results.totalResults).isEqualTo(7)
+    assertThat(results.results.map { it.notes }).contains("I am system generated")
+
+  }
+
 
   companion object {
     private val TEMPLATE_JSON =
