@@ -90,7 +90,7 @@ class ActivitySearchService(
       filter(rangeQuery("startDateTime").lte(LocalDateTime.now()))
     }
 
-    filter(matchQuery("systemGenerated", if (request.showSystemGeneratedContacts) "Y" else "N"))
+    if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
 
     val filters = ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
       .flatMap { it.queries }

@@ -440,16 +440,17 @@ class ActivitySearchIntegrationTest {
       .search(
         ActivitySearchRequest(
           crn,
-          showSystemGeneratedContacts = true,
+          includeSystemGenerated = true,
         ),
-        mapOf("page" to 0, "size" to 2),
+        mapOf("page" to 0, "size" to 20),
       )
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
-    assertThat(results.totalResults).isEqualTo(1)
-    assertThat(results.results[0].notes).isEqualTo("I am system generated")
+    assertThat(results.size).isEqualTo(7)
+    assertThat(results.totalResults).isEqualTo(7)
+    assertThat(results.results.map { it.notes }).contains("I am system generated")
+
   }
 
 
