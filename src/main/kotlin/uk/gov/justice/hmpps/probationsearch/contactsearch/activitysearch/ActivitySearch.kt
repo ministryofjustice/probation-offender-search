@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
@@ -14,7 +15,10 @@ data class ActivitySearchRequest(
   val keywords: String? = "",
   val dateFrom: LocalDate? = null,
   val dateTo: LocalDate? = null,
-  val includeSystemGenerated: Boolean = false,
+  @Schema(
+    description = "Whether to include system generated contacts in the search results. Defaults to true.",
+    example = "false"
+  ) val includeSystemGenerated: Boolean = true,
   val filters: List<String> = emptyList(),
 )
 
