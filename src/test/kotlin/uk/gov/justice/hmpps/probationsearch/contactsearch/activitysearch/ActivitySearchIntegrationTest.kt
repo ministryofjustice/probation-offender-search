@@ -126,7 +126,7 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           filters = listOf(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName),
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 20),
       )
@@ -149,7 +149,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
             ActivitySearchService.ActivityFilter.COMPLIED.filterName,
           ),
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 20),
       )
@@ -173,7 +173,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.COMPLIED.filterName,
             ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
           ),
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 20),
       )
@@ -223,8 +223,8 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           filters = listOf(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName),
-          includeSystemGenerated = false
-          ),
+          includeSystemGenerated = false,
+        ),
         mapOf("page" to 0, "size" to 3),
       )
       .then()
@@ -244,8 +244,8 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           filters = listOf(ActivitySearchService.ActivityFilter.COMPLIED.filterName),
-          includeSystemGenerated = false
-          ),
+          includeSystemGenerated = false,
+        ),
         mapOf("page" to 0, "size" to 3),
       )
       .then()
@@ -265,7 +265,7 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           filters = listOf(ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName),
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 3),
       )
@@ -289,7 +289,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.NOT_COMPLIED.filterName,
             ActivitySearchService.ActivityFilter.COMPLIED.filterName,
           ),
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 3),
       )
@@ -316,7 +316,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName,
           ),
           keywords = "special failed complied",
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 3),
       )
@@ -340,7 +340,7 @@ class ActivitySearchIntegrationTest {
             ActivitySearchService.ActivityFilter.COMPLIED.filterName,
           ),
           keywords = "special failed complied",
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 3),
       )
@@ -364,8 +364,8 @@ class ActivitySearchIntegrationTest {
           crn,
           dateFrom = LocalDate.now(),
           dateTo = LocalDate.now(),
-          includeSystemGenerated = false
-          ),
+          includeSystemGenerated = false,
+        ),
         mapOf("page" to 0, "size" to 3),
       )
       .then()
@@ -385,8 +385,8 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           dateFrom = LocalDate.now(),
-          includeSystemGenerated = false
-          ),
+          includeSystemGenerated = false,
+        ),
         mapOf("page" to 0, "size" to 6),
       )
       .then()
@@ -406,8 +406,8 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           dateTo = LocalDate.now(),
-          includeSystemGenerated = false
-          ),
+          includeSystemGenerated = false,
+        ),
         mapOf("page" to 0, "size" to 4),
       )
       .then()
@@ -428,7 +428,7 @@ class ActivitySearchIntegrationTest {
           crn,
           dateFrom = LocalDate.now().minusDays(3),
           dateTo = LocalDate.now().minusDays(1),
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 4),
       )
@@ -453,7 +453,7 @@ class ActivitySearchIntegrationTest {
           crn,
           keywords = "TYPE_CODE2 TYPE_CODE3",
           dateTo = LocalDate.now().minusDays(1),
-          includeSystemGenerated = false
+          includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 4),
       )

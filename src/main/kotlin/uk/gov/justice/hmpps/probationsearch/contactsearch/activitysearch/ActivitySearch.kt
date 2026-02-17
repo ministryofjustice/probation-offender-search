@@ -17,7 +17,7 @@ data class ActivitySearchRequest(
   val dateTo: LocalDate? = null,
   @Schema(
     description = "Whether to include system generated contacts in the search results. Defaults to true.",
-    example = "false"
+    example = "false",
   ) val includeSystemGenerated: Boolean = true,
   val filters: List<String> = emptyList(),
 )
