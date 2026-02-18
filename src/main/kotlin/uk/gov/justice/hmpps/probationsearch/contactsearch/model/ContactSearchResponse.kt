@@ -39,4 +39,8 @@ data class ContactSearchResult(
   val score: Double?,
   @field:JsonIgnore
   val semanticMatch: Boolean = false,
+  val complied: String? = null,
+  val requiresOutcome: String?,
+  val outcomeRequiredFlag: String?,
+  val systemGenerated: String?,
 )

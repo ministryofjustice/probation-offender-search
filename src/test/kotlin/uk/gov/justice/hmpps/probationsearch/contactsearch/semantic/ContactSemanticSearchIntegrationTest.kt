@@ -21,10 +21,12 @@ import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.hmpps.probationsearch.contactsearch.OpenSearchSetup
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchRequest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse
+import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.ContactSemanticSearchService.Companion.ContactFilter
 import uk.gov.justice.hmpps.probationsearch.dto.ContactJson
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
+import java.time.LocalDate
 
 @ExtendWith(DeliusApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -224,6 +226,81 @@ class ContactSemanticSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(1)
     assertThat(results.results[0].highlights["notes"]?.first()).contains("ambition")
+  }
+
+  @Test
+  fun `includes system-generated contacts when includeSystemGenerated is true`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, includeSystemGenerated = true)
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(4)
+    assertThat(results.results.any { it.systemGenerated == "Y" }).isTrue
+  }
+
+  @Test
+  fun `filters contacts by dateFrom`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, dateFrom = LocalDate.now().minusDays(3))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(3)
+
+    assertThat(results.results[0].date).isAfterOrEqualTo(LocalDate.now().minusDays(3))
+  }
+
+  @Test
+  fun `filters contacts by dateTo`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, dateTo = LocalDate.now().minusDays(2))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(2)
+
+    assertThat(results.results[0].date).isBeforeOrEqualTo(LocalDate.now().minusDays(2))
+  }
+
+  @Test
+  fun `filters contacts by date range`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(
+      crn,
+      dateFrom = LocalDate.now().minusDays(4),
+      dateTo = LocalDate.now().minusDays(2),
+    )
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(2)
+  }
+
+  @Test
+  fun `filters contacts by complied filter`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, filters = listOf(ContactFilter.COMPLIED.filterName))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).contains("Filter on complied")
+  }
+
+  @Test
+  fun `filters contacts by notComplied filter`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, filters = listOf(ContactFilter.NOT_COMPLIED.filterName))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).contains("Filter on FTC")
+  }
+
+  @Test
+  fun `filters contacts by noOutcome filter`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, filters = listOf(ContactFilter.NO_OUTCOME.filterName))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("Filter on outcome required")
   }
 
   private fun RequestSpecification.authorised(): RequestSpecification =
