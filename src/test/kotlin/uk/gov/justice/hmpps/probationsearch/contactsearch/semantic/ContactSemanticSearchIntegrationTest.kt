@@ -128,12 +128,12 @@ class ContactSemanticSearchIntegrationTest {
           ContactJson(
             contactId = 9000001,
             version = 1,
-            json = """{"crn": "Z123456", "id": 9000001, "notes": "This is a new contact for Z123456", "typeCode": "test", "typeDescription": "test", "date": "2000-01-01T00:00:00", "lastUpdatedDateTime": "2000-01-01T00:00:00"}""",
+            json = """{"crn": "Z123456", "id": 9000001, "notes": "This is a new contact for Z123456", "typeCode": "test", "typeDescription": "test", "date": "2000-01-01T00:00:00", "lastUpdatedDateTime": "2000-01-01T00:00:00", "systemGenerated": "N"}""",
           ),
           ContactJson(
             contactId = 9000002,
             version = 1,
-            json = """{"crn": "Z123456", "id": 9000002, "notes": "Another new contact for Z123456", "typeCode": "test", "typeDescription": "test", "date": "2000-01-01T00:00:00", "lastUpdatedDateTime": "2000-01-01T00:00:00"}""",
+            json = """{"crn": "Z123456", "id": 9000002, "notes": "Another new contact for Z123456", "typeCode": "test", "typeDescription": "test", "date": "2000-01-01T00:00:00", "lastUpdatedDateTime": "2000-01-01T00:00:00", "systemGenerated": "N"}""",
           ),
         ),
       ),
