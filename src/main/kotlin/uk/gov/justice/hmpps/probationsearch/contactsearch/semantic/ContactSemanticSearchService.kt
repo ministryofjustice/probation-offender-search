@@ -161,16 +161,12 @@ class ContactSemanticSearchService(
       HybridQuery.of { hybrid -> hybrid.queries(keywordQuery, semanticQuery).paginationDepth(10000) }.toQuery()
 
     val filters = buildFilters(request)
-    val query = if (filters.isEmpty()) {
-      hybridQuery
-    } else {
-      BoolQuery.of { bool -> bool.must(hybridQuery).filter(filters) }.toQuery()
-    }
 
     val response = retry {
       openSearchClient.search<ContactSearchResult> { search ->
         search.index(INDEX_NAME)
-          .query(query)
+          .query(hybridQuery)
+          .postFilter(BoolQuery.of { bool -> bool.filter(filters) }.toQuery())
           .source { source -> source.filter { it.includes(RETURN_FIELDS) } }
           .withPageable(pageable)
           .highlight { highlight ->
