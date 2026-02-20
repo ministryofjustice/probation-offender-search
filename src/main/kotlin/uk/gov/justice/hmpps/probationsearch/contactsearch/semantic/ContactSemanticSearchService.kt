@@ -157,16 +157,21 @@ class ContactSemanticSearchService(
           }
         }
     }.toQuery()
-    val hybridQuery =
-      HybridQuery.of { hybrid -> hybrid.queries(keywordQuery, semanticQuery).paginationDepth(10000) }.toQuery()
 
     val filters = buildFilters(request)
+
+    val hybridQuery =
+      HybridQuery.of { hybrid ->
+        hybrid.queries(keywordQuery, semanticQuery)
+          .filter(Query.of { query -> query.bool { bool -> bool.filter(filters) } })
+          .paginationDepth(10000)
+      }.toQuery()
+
 
     val response = retry {
       openSearchClient.search<ContactSearchResult> { search ->
         search.index(INDEX_NAME)
           .query(hybridQuery)
-          .postFilter(BoolQuery.of { bool -> bool.filter(filters) }.toQuery())
           .source { source -> source.filter { it.includes(RETURN_FIELDS) } }
           .withPageable(pageable)
           .highlight { highlight ->
