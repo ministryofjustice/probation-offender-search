@@ -1,12 +1,9 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch.semantic
 
 import com.microsoft.applicationinsights.TelemetryClient
+import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
-import org.opensearch.client.opensearch._types.query_dsl.BoolQuery
-import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
-import org.opensearch.client.opensearch._types.query_dsl.HybridQuery
-import org.opensearch.client.opensearch._types.query_dsl.NestedQuery
-import org.opensearch.client.opensearch._types.query_dsl.Operator
+import org.opensearch.client.opensearch._types.query_dsl.*
 import org.opensearch.client.opensearch.core.search.HighlightField
 import org.opensearch.client.opensearch.core.search.HighlighterEncoder
 import org.springframework.data.domain.PageImpl
@@ -36,6 +33,36 @@ class ContactSemanticSearchService(
   companion object {
     const val INDEX_NAME = "contact-semantic-search-primary"
     const val MIN_SCORE = 0.798F
+
+    enum class ContactFilter(val filterName: String, val queries: List<Query>) {
+      COMPLIED(
+        "complied",
+        listOf(
+          Query.of { query ->
+            query.match { match ->
+              match.field("complied").query { it.stringValue("complied") }
+            }
+          },
+        ),
+      ),
+      NOT_COMPLIED(
+        "notComplied",
+        listOf(Query.of { query -> query.match { match -> match.field("complied").query { it.stringValue("ftc") } } }),
+      ),
+      NO_OUTCOME(
+        "noOutcome",
+        listOf(
+          BoolQuery.of { bool ->
+            bool.must(
+              listOf(
+                Query.of { query -> query.term("requiresOutcome" to "Y") },
+                Query.of { query -> query.term("outcomeRequiredFlag" to "Y") },
+              ),
+            )
+          }.toQuery(),
+        ),
+      ),
+    }
 
     val KEYWORD_SEARCH_FIELDS = listOf(
       "notes",
@@ -130,8 +157,16 @@ class ContactSemanticSearchService(
           }
         }
     }.toQuery()
+
+    val filters = buildFilters(request)
+
     val hybridQuery =
-      HybridQuery.of { hybrid -> hybrid.queries(keywordQuery, semanticQuery).paginationDepth(10000) }.toQuery()
+      HybridQuery.of { hybrid ->
+        hybrid.queries(keywordQuery, semanticQuery)
+          .filter(Query.of { query -> query.bool { bool -> bool.filter(filters) } })
+          .paginationDepth(10000)
+      }.toQuery()
+
 
     val response = retry {
       openSearchClient.search<ContactSearchResult> { search ->
@@ -182,11 +217,15 @@ class ContactSemanticSearchService(
     request: ContactSearchRequest,
     pageable: Pageable,
   ): ContactSearchResponse {
+    val filters = buildFilters(request)
+    val crnAndFilters = listOf(Query.of { it.matchesCrn(request.crn) }) + filters
+
     val response = retry {
       openSearchClient.search<ContactSearchResult> { searchRequest ->
         searchRequest
           .index(INDEX_NAME)
-          .query(BoolQuery.of { bool -> bool.filter { it.matchesCrn(request.crn) } }.toQuery())
+          .pipeline("_none")
+          .query(BoolQuery.of { bool -> bool.filter(crnAndFilters) }.toQuery())
           .withPageable(pageable)
       }
     }
@@ -201,5 +240,41 @@ class ContactSemanticSearchService(
       page.totalPages,
       results,
     )
+  }
+
+  private fun buildFilters(request: ContactSearchRequest): List<Query> {
+    val filters = mutableListOf<Query>()
+
+    request.dateFrom?.let { dateFrom ->
+      filters.add(
+        Query.of { query ->
+          query.range { dateRange ->
+            dateRange.field("date.date").gte(JsonData.of(dateFrom.toString()))
+          }
+        },
+      )
+    }
+
+    request.dateTo?.let { dateTo ->
+      filters.add(
+        Query.of { query ->
+          query.range { dateRange ->
+            dateRange.field("date.date").lte(JsonData.of(dateTo.toString()))
+          }
+        },
+      )
+    }
+
+    if (!request.includeSystemGenerated) {
+      filters.add(Query.of { query -> query.term("systemGenerated" to "N") })
+    }
+
+    val contactFilters = ContactFilter.entries.filter { request.filters.contains(it.filterName) }
+    if (contactFilters.isNotEmpty()) {
+      val shouldQueries = contactFilters.flatMap { it.queries }
+      filters.add(BoolQuery.of { bool -> bool.should(shouldQueries).minimumShouldMatch("1") }.toQuery())
+    }
+
+    return filters
   }
 }
