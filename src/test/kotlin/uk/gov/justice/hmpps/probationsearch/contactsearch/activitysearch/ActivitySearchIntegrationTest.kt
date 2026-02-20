@@ -492,6 +492,50 @@ class ActivitySearchIntegrationTest {
 
   }
 
+  @Test
+  fun `can filter on contact type codes`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          contactTypeCodes = listOf("TYPE_CODE1", "TYPE_CODE2"),
+          includeSystemGenerated = false,
+        ),
+        mapOf("page" to 0, "size" to 20),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.results[0].typeCode).isEqualTo("TYPE_CODE1")
+    assertThat(results.results[1].typeCode).isEqualTo("TYPE_CODE2")
+  }
+
+  @Test
+  fun `can filter on contact type codes with date range`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          contactTypeCodes = listOf("TYPE_CODE1", "TYPE_CODE2"),
+          dateFrom = LocalDate.now().minusDays(2),
+          dateTo = LocalDate.now().minusDays(2),
+          includeSystemGenerated = false,
+        ),
+        mapOf("page" to 0, "size" to 20),
+      )
+      .then()
+      .results()
+
+    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.results[0].typeCode).isEqualTo("TYPE_CODE2")
+  }
+
 
   companion object {
     private val TEMPLATE_JSON =
