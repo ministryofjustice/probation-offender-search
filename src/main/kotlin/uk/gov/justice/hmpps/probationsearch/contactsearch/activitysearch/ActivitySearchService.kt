@@ -6,10 +6,7 @@ import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
 import org.opensearch.index.query.BoolQueryBuilder
 import org.opensearch.index.query.Operator
 import org.opensearch.index.query.QueryBuilder
-import org.opensearch.index.query.QueryBuilders.boolQuery
-import org.opensearch.index.query.QueryBuilders.matchQuery
-import org.opensearch.index.query.QueryBuilders.rangeQuery
-import org.opensearch.index.query.QueryBuilders.simpleQueryStringQuery
+import org.opensearch.index.query.QueryBuilders.*
 import org.opensearch.index.query.SimpleQueryStringFlag
 import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder
 import org.opensearch.search.sort.FieldSortBuilder
@@ -91,6 +88,10 @@ class ActivitySearchService(
     }
 
     if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
+
+    if (request.contactTypeCodes.isNotEmpty()) {
+      filter(termsQuery("typeCode", request.contactTypeCodes))
+    }
 
     val filters = ActivityFilter.entries.filter { request.filters.contains(it.filterName) }
       .flatMap { it.queries }
