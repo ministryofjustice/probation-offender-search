@@ -89,8 +89,8 @@ class ActivitySearchService(
 
     if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
 
-    if (request.contactTypeCodes.isNotEmpty()) {
-      filter(termsQuery("typeCode", request.contactTypeCodes))
+    if (request.typeCodes.isNotEmpty()) {
+      filter(termsQuery("typeCode", request.typeCodes))
     }
 
     val filters = ActivityFilter.entries.filter { request.filters.contains(it.filterName) }

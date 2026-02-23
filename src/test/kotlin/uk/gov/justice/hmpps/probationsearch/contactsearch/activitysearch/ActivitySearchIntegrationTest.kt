@@ -500,7 +500,7 @@ class ActivitySearchIntegrationTest {
       .search(
         ActivitySearchRequest(
           crn,
-          contactTypeCodes = listOf("TYPE_CODE1", "TYPE_CODE2"),
+          typeCodes = listOf("TYPE_CODE1", "TYPE_CODE2"),
           includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 20),
@@ -522,7 +522,7 @@ class ActivitySearchIntegrationTest {
       .search(
         ActivitySearchRequest(
           crn,
-          contactTypeCodes = listOf("TYPE_CODE1", "TYPE_CODE2"),
+          typeCodes = listOf("TYPE_CODE1", "TYPE_CODE2"),
           dateFrom = LocalDate.now().minusDays(2),
           dateTo = LocalDate.now().minusDays(2),
           includeSystemGenerated = false,
