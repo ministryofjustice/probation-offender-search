@@ -20,7 +20,7 @@ data class ActivitySearchRequest(
     example = "false",
   ) val includeSystemGenerated: Boolean = true,
   val filters: List<String> = emptyList(),
-  val contactTypeCodes: List<String> = emptyList(),
+  val typeCodes: List<String> = emptyList(),
 )
 
 data class ActivitySearchAuditRequest(
