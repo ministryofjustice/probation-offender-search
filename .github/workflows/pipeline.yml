@@ -41,7 +41,7 @@ jobs:
     name: Deploy to the dev environment
     concurrency:
       group: deploy-dev
-    if: github.ref == 'refs/heads/main'
+    #if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint
