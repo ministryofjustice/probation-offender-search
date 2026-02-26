@@ -26,6 +26,10 @@ object ContactGenerator {
     lastUpdatedDateTime: LocalDateTime = LocalDateTime.now(),
     crn: String = "T123456",
     id: Long = IdGenerator.getAndIncrement(),
+    systemGenerated: String? = "N",
+    complied: String? = null,
+    requiresOutcome: String? = null,
+    outcomeRequiredFlag: String? = null,
   ) = ContactSearchResult(
     crn,
     id,
@@ -41,6 +45,10 @@ object ContactGenerator {
     lastUpdatedDateTime,
     mapOf(),
     0.0,
+    systemGenerated = systemGenerated,
+    complied = complied,
+    requiresOutcome = requiresOutcome,
+    outcomeRequiredFlag = outcomeRequiredFlag,
   )
 
   val contacts = listOf(
@@ -104,6 +112,35 @@ object ContactGenerator {
       typeDescription = "Matches should be highlighted in type",
       outcomeCode = "HIGH",
       outcomeDescription = "Matches were highlighted in outcome",
+    ),
+    generate(
+      crn = "F123456",
+      notes = "Filter on complied",
+      complied = "complied",
+      requiresOutcome = "N",
+      outcomeRequiredFlag = "N",
+      date = LocalDate.now().minusDays(1),
+    ),
+    generate(
+      crn = "F123456",
+      notes = "Filter on FTC",
+      complied = "ftc",
+      requiresOutcome = "N",
+      outcomeRequiredFlag = "N",
+      date = LocalDate.now().minusDays(2),
+    ),
+    generate(
+      crn = "F123456",
+      notes = "Filter on outcome required",
+      requiresOutcome = "Y",
+      outcomeRequiredFlag = "Y",
+      date = LocalDate.now().minusDays(3),
+    ),
+    generate(
+      crn = "F123456",
+      systemGenerated = "Y",
+      notes = "Filter on SGC",
+      date = LocalDate.now().minusDays(4),
     ),
     generate(
       crn = "S123456",
