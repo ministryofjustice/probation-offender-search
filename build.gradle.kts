@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.4"
-  kotlin("plugin.spring") version "2.3.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.5"
+  kotlin("plugin.spring") version "2.3.20"
   id("com.google.cloud.tools.jib") version "3.5.3"
 }
 
@@ -19,10 +19,10 @@ dependencies {
   implementation("org.opensearch.client:spring-data-opensearch-starter:3.0.0")
   implementation("org.opensearch.client:opensearch-java:3.7.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
-  implementation("io.sentry:sentry-spring-boot-4:8.34.1")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.0.1")
+  implementation("io.sentry:sentry-spring-boot-4:8.35.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.1.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.25.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.26.0")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
   implementation("io.flipt:flipt-client-java:1.2.1") {
     exclude("org.apache.httpcomponents", "httpclient")
@@ -31,12 +31,12 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.junit.vintage:junit-vintage-engine")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.1")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path:6.0.0")
   testImplementation("io.rest-assured:xml-path:6.0.0")
   testImplementation("io.rest-assured:spring-mock-mvc:6.0.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.38")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.39")
 }
 
 java {
