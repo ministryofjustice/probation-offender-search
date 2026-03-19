@@ -7,13 +7,8 @@ import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.check
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.isNull
-import org.mockito.kotlin.verify
 import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -131,34 +126,4 @@ class OffenderSearchControllerTest {
     return Files.readString(Paths.get(file))
   }
 
-  @Nested
-  inner class SyntheticMonitor {
-
-    @Test
-    fun `endpoint is unsecured`() {
-      OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/search-data/singleMatch.json"))
-      RestAssured.given()
-        .get("/synthetic-monitor")
-        .then()
-        .statusCode(200)
-    }
-
-    @Test
-    fun `telemetry is recorded`() {
-      OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/search-data/singleMatch.json"))
-      RestAssured.given()
-        .get("/synthetic-monitor")
-        .then()
-        .statusCode(200)
-
-      verify(telemetryClient).trackEvent(
-        eq("synthetic-monitor"),
-        check<Map<String, String>> {
-          assertThat(it["results"]).containsOnlyDigits()
-          assertThat(it["timeMs"]).containsOnlyDigits()
-        },
-        isNull(),
-      )
-    }
-  }
 }

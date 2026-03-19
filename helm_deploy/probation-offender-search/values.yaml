@@ -20,13 +20,6 @@ generic-service:
     enabled: true
     v1_2_enabled: true
     v0_47_enabled: false
-    annotations:
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-        server_tokens off;
-        location /synthetic-monitor {
-          deny all;
-          return 401;
-        }
     tlsSecretName: probation-offender-search-cert
 
   env:

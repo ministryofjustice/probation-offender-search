@@ -366,16 +366,4 @@ class OffenderSearchController(
     @ParameterObject @PageableDefault
     pageable: Pageable,
   ): SearchPagedResults = searchService.findByTeamCode(teamCode, pageable)
-
-  @GetMapping("/synthetic-monitor")
-  fun syntheticMonitor() {
-    val start = System.currentTimeMillis()
-    val results = searchService.performSearch(SearchDto(surname = "Smith"))
-
-    telemetryClient.trackEvent(
-      "synthetic-monitor",
-      mapOf("results" to "${results.size}", "timeMs" to (System.currentTimeMillis() - start).toString()),
-      null
-    )
-  }
 }
