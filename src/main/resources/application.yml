@@ -76,3 +76,7 @@ sentry.traces-sample-rate: "0.05"
 
 dataload.ondemand.batch.size: 50
 
+springdoc:
+  swagger-ui:
+    enabled: true
+    version: 5.32.1
