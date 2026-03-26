@@ -33,7 +33,7 @@ jobs:
     uses: ./.github/workflows/kotlin_integration_tests.yml
     secrets: inherit
   docker_build:
-    if: ${{ github.ref == 'refs/heads/main' || inputs.push }}
+    #    if: ${{ github.ref == 'refs/heads/main' || inputs.push }}
     name: Push image
     uses: ./.github/workflows/jib-build.yml
     needs: kotlin_validate
@@ -41,7 +41,7 @@ jobs:
     name: Deploy to the dev environment
     concurrency:
       group: deploy-dev
-    if: github.ref == 'refs/heads/main'
+    #    if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint
@@ -54,6 +54,7 @@ jobs:
     name: Deploy to the preprod environment
     concurrency:
       group: deploy-preprod
+    if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint
@@ -66,6 +67,7 @@ jobs:
     name: Deploy to the prod environment
     concurrency:
       group: deploy-prod
+    if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint
