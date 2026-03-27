@@ -9,11 +9,7 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import uk.gov.justice.hmpps.probationsearch.contactsearch.audit.ContactSearchAuditService
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.AsyncExtensions.runAsync
 import uk.gov.justice.hmpps.probationsearch.contactsearch.keyword.ContactKeywordSearchService
@@ -49,6 +45,12 @@ class ContactSearchController(
       callSemanticSearchInBackground(request, pageable)
       keywordSearchService.search(request, pageable)
     }
+  }
+
+  @PreAuthorize("hasAnyRole('ROLE_PROBATION_CONTACT_SEARCH', 'ROLE_PROBATION_INTEGRATION_ADMIN')")
+  @GetMapping("/preload/{crn}")
+  fun preloadContactSearch(@PathVariable crn: String) {
+    semanticSearchService.preloadData(crn)
   }
 
   fun callSemanticSearchInBackground(request: ContactSearchRequest, pageable: Pageable) {

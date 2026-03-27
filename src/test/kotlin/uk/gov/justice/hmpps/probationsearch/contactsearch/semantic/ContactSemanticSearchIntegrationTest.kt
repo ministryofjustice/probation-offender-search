@@ -303,6 +303,36 @@ class ContactSemanticSearchIntegrationTest {
     assertThat(results.results[0].notes).isEqualTo("Filter on outcome required")
   }
 
+  @Test
+  fun `preload loads contacts and sends telemetry event`() {
+    val crn = "X123456"
+    deliusApiMock.stubGetContacts(
+      crn,
+      objectMapper.writeValueAsString(
+        listOf(
+          ContactJson(
+            contactId = 9100001,
+            version = 1,
+            json = """{"crn": "X123456", "id": 9100001, "notes": "Preload contact one", "typeCode": "test", "typeDescription": "test", "date": "2000-01-01T00:00:00", "lastUpdatedDateTime": "2000-01-01T00:00:00", "systemGenerated": "N"}""",
+          ),
+          ContactJson(
+            contactId = 9100001,
+            version = 1,
+            json = """{"crn": "X123456", "id": 9100002, "notes": "Preload contact two", "typeCode": "test", "typeDescription": "test", "date": "2000-01-01T00:00:00", "lastUpdatedDateTime": "2000-01-01T00:00:00", "systemGenerated": "N"}""",
+          ),
+        ),
+      ),
+    )
+
+    RestAssured.given().`when`().preload(crn).then().statusCode(200)
+
+    verify(telemetry).trackEvent(
+      eq("SemanticSearchPreload"),
+      eq(mapOf("crn" to crn, "dataLoadCount" to "2")),
+      anyMap(),
+    )
+  }
+
   private fun RequestSpecification.authorised(): RequestSpecification =
     this.auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION_CONTACT_SEARCH"))
@@ -310,6 +340,9 @@ class ContactSemanticSearchIntegrationTest {
 
   private fun RequestSpecification.search(csr: ContactSearchRequest, queryParams: Map<String, Any> = mapOf()) =
     this.authorised().body(csr).queryParams(queryParams).post("/search/contacts")
+
+  private fun RequestSpecification.preload(crn: String) =
+    this.authorised().get("/search/contacts/preload/$crn")
 
   private fun ValidatableResponse.results() =
     this.statusCode(200)

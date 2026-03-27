@@ -124,6 +124,19 @@ class ContactSemanticSearchService(
     return response
   }
 
+  fun preloadData(crn: String) {
+    val (dataLoadCount, dataLoadDuration) = measureTimedValue { dataLoadService.loadDataOnDemand(crn) }
+
+    telemetryClient.trackEvent(
+      "SemanticSearchPreload",
+      mapOf(
+        "crn" to crn,
+        "dataLoadCount" to dataLoadCount?.toString(),
+      ),
+      mapOf("dataLoadDuration" to dataLoadDuration.toDouble(MILLISECONDS)),
+    )
+  }
+
   private fun doSearch(request: ContactSearchRequest, pageable: Pageable): ContactSearchResponse {
     // Simplified query to return all contacts for the CRN when no query is passed
     if (request.query.isBlank()) return emptyQuery(request, pageable)
