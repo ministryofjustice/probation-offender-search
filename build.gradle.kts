@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.1.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.1.2"
   kotlin("plugin.spring") version "2.3.20"
   id("com.google.cloud.tools.jib") version "3.5.3"
 }
@@ -24,7 +24,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.26.1")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
-  implementation("io.flipt:flipt-client-java:1.3.0") {
+  implementation("io.flipt:flipt-client-java:1.3.1") {
     exclude("org.apache.httpcomponents", "httpclient")
   }
 
