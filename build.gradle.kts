@@ -19,7 +19,7 @@ dependencies {
   implementation("org.opensearch.client:spring-data-opensearch-starter:3.0.0")
   implementation("org.opensearch.client:opensearch-java:3.8.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
-  implementation("io.sentry:sentry-spring-boot-4:8.37.1")
+  implementation("io.sentry:sentry-spring-boot-4:8.38.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.26.1")
