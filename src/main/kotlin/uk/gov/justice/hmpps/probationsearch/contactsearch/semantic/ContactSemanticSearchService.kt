@@ -3,6 +3,7 @@ package uk.gov.justice.hmpps.probationsearch.contactsearch.semantic
 import com.microsoft.applicationinsights.TelemetryClient
 import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
+import org.opensearch.client.opensearch._types.FieldValue
 import org.opensearch.client.opensearch._types.query_dsl.*
 import org.opensearch.client.opensearch.core.search.HighlightField
 import org.opensearch.client.opensearch.core.search.HighlighterEncoder
@@ -286,6 +287,18 @@ class ContactSemanticSearchService(
     if (contactFilters.isNotEmpty()) {
       val shouldQueries = contactFilters.flatMap { it.queries }
       filters.add(BoolQuery.of { bool -> bool.should(shouldQueries).minimumShouldMatch("1") }.toQuery())
+    }
+
+    if (request.typeCodes.isNotEmpty()) {
+      filters.add(
+        Query.of { query ->
+          query.terms { terms ->
+            terms
+              .field("typeCode.keyword")
+              .terms { t -> t.value(request.typeCodes.map { FieldValue.of(it) }) }
+          }
+        },
+      )
     }
 
     return filters

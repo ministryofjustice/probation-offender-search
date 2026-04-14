@@ -12,6 +12,7 @@ class ContactSearchRequest(
   val dateTo: LocalDate? = null,
   val includeSystemGenerated: Boolean = false,
   val filters: List<String> = emptyList(),
+  val typeCodes: List<String> = emptyList(),
 ) {
   @Size(max = 1000, message = "query length must not exceed 1000 characters")
   val query = query ?: ""
