@@ -143,6 +143,21 @@ object ContactGenerator {
       date = LocalDate.now().minusDays(4),
     ),
     generate(
+      crn = "T123456",
+      typeCode = "TYPE1",
+      date = LocalDate.now().minusDays(1),
+    ),
+    generate(
+      crn = "T123456",
+      typeCode = "TYPE2",
+      date = LocalDate.now().minusDays(2),
+    ),
+    generate(
+      crn = "T123456",
+      typeCode = "TYPE3",
+      date = LocalDate.now().minusDays(3),
+    ),
+    generate(
       crn = "S123456",
       notes = """
         To Sherlock Holmes she is always _the_ woman. I have seldom heard him

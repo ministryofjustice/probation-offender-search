@@ -304,6 +304,31 @@ class ContactSemanticSearchIntegrationTest {
   }
 
   @Test
+  fun `filters contacts by typeCodes`() {
+    val crn = "T123456"
+    val request = ContactSearchRequest(crn, typeCodes = listOf("TYPE1", "TYPE2"))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.results.map { it.typeCode }).containsExactlyInAnyOrder("TYPE1", "TYPE2")
+  }
+
+  @Test
+  fun `filters contacts by typeCodes with date range`() {
+    val crn = "T123456"
+    val request = ContactSearchRequest(
+      crn,
+      typeCodes = listOf("TYPE1", "TYPE2"),
+      dateFrom = LocalDate.now().minusDays(2),
+      dateTo = LocalDate.now().minusDays(2),
+    )
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].typeCode).isEqualTo("TYPE2")
+  }
+
+  @Test
   fun `preload loads contacts and sends telemetry event`() {
     val crn = "X123456"
     deliusApiMock.stubGetContacts(
