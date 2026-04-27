@@ -21,7 +21,7 @@ jobs:
     steps:
       - id: app_version
         name: Application version creators
-        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/build-test-and-deploy/create_app_version@fddc5f11d6a8ce9b82a06fe76268835bfd99bcd4 # v1.0.7
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/build-test-and-deploy/create_app_version@c9b92b85a2aa7e313fb377a81fec08dd4f6f15b8 # v1.0.8
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: refresh cache
