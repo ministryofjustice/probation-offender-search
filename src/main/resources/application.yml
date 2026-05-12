@@ -79,4 +79,3 @@ dataload.ondemand.batch.size: 50
 springdoc:
   swagger-ui:
     enabled: true
-    version: 5.32.1
