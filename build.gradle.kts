@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.5"
-  kotlin("plugin.spring") version "2.3.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
+  kotlin("plugin.spring") version "2.3.21"
   id("com.google.cloud.tools.jib") version "3.5.3"
 }
 
@@ -36,7 +36,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path:6.0.0")
   testImplementation("io.rest-assured:xml-path:6.0.0")
   testImplementation("io.rest-assured:spring-mock-mvc:6.0.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.41")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.42")
 }
 
 java {
