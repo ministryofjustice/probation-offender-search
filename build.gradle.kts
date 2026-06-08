@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
-  kotlin("plugin.spring") version "2.3.21"
+  kotlin("plugin.spring") version "2.4.0"
   id("com.google.cloud.tools.jib") version "3.5.3"
 }
 
@@ -19,7 +19,7 @@ dependencies {
   implementation("org.opensearch.client:spring-data-opensearch-starter:3.0.0")
   implementation("org.opensearch.client:opensearch-java:3.8.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
-  implementation("io.sentry:sentry-spring-boot-4:8.42.0")
+  implementation("io.sentry:sentry-spring-boot-4:8.43.1")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.28.1")
@@ -31,12 +31,12 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.junit.vintage:junit-vintage-engine")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path:6.0.0")
   testImplementation("io.rest-assured:xml-path:6.0.0")
   testImplementation("io.rest-assured:spring-mock-mvc:6.0.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.42")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.43")
 }
 
 java {
