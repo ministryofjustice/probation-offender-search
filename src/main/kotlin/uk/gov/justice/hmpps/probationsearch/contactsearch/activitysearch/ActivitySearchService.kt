@@ -1,5 +1,6 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch
 
+import org.opensearch.client.opensearch._types.query_dsl.Query
 import org.opensearch.data.client.orhlc.NativeSearchQuery
 import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
 import org.opensearch.data.client.orhlc.OpenSearchRestTemplate
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.stereotype.Service
 import uk.gov.justice.hmpps.probationsearch.contactsearch.audit.ContactSearchAuditService
+import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchJavaClientExtensions.term
 import uk.gov.justice.hmpps.probationsearch.contactsearch.extensions.OpenSearchRestClientExtensions.fieldSorts
 import uk.gov.justice.hmpps.probationsearch.services.mustAll
 import uk.gov.justice.hmpps.probationsearch.services.shouldAll
@@ -88,6 +90,8 @@ class ActivitySearchService(
     }
 
     if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
+
+    if (!request.includeSupervisionPackage) filter(matchQuery( "supervisionPackage", "N"))
 
     if (request.typeCodes.isNotEmpty()) {
       filter(termsQuery("typeCode", request.typeCodes))

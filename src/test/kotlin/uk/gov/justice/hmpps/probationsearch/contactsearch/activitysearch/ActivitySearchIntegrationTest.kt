@@ -493,6 +493,46 @@ class ActivitySearchIntegrationTest {
   }
 
   @Test
+  fun `can include supervision package contacts by default`() {
+    val crn = "Y654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          includeSystemGenerated = false,
+        ),
+        mapOf("page" to 0, "size" to 20),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.results.map { it.notes }).contains("I am a supervision package contact")
+  }
+
+  @Test
+  fun `can filter out supervision package contacts`() {
+    val crn = "Y654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          includeSystemGenerated = false,
+          includeSupervisionPackage = false,
+        ),
+        mapOf("page" to 0, "size" to 20),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(0)
+    assertThat(results.totalResults).isEqualTo(0)
+  }
+
+  @Test
   fun `can filter on contact type codes`() {
     val crn = "T654321"
     val results = RestAssured.given()

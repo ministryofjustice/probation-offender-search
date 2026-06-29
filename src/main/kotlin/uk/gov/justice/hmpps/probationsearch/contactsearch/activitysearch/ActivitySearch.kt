@@ -19,6 +19,7 @@ data class ActivitySearchRequest(
     description = "Whether to include system generated contacts in the search results. Defaults to true.",
     example = "false",
   ) val includeSystemGenerated: Boolean = true,
+  val includeSupervisionPackage: Boolean = true,
   val filters: List<String> = emptyList(),
   val typeCodes: List<String> = emptyList(),
 )
@@ -74,4 +75,5 @@ data class ActivitySearchResult(
   val outcomeRequiredFlag: String?,
   val nationalStandard: String?,
   val systemGenerated: String?,
+  val supervisionPackage: String?,
 )

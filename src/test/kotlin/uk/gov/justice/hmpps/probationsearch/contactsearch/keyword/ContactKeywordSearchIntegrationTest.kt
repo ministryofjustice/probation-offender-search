@@ -244,6 +244,26 @@ class ContactKeywordSearchIntegrationTest {
     )
   }
 
+  @Test
+  fun `includes supervision package contacts when includeSupervisionPackage is true`() {
+    val crn = "P123456"
+    val request = ContactSearchRequest(crn, includeSupervisionPackage = true)
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.results.any { it.notes == "Filter on supervision package" }).isTrue
+  }
+
+  @Test
+  fun `filters out supervision package contacts when includeSupervisionPackage is false`() {
+    val crn = "P123456"
+    val request = ContactSearchRequest(crn, includeSupervisionPackage = false)
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("Regular contact")
+  }
+
   companion object {
     @JvmStatic
     fun crnsForFind() = listOf("T123456", "N123456")

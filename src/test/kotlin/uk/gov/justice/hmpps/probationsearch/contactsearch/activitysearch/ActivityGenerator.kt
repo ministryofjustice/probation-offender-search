@@ -32,6 +32,7 @@ object ActivityGenerator {
     outcomeRequiredFlag: String? = "N",
     nationalStandard: String? = "N",
     systemGenerated: String? = "N",
+    supervisionPackage: String? = "N",
 
     ) = ActivitySearchResult(
     crn,
@@ -55,6 +56,7 @@ object ActivityGenerator {
     outcomeRequiredFlag,
     nationalStandard,
     systemGenerated,
+    supervisionPackage,
   )
 
   val contacts = listOf(
@@ -196,6 +198,14 @@ object ActivityGenerator {
       date = LocalDate.now().minusDays(1),
       notes = "I am system generated",
       systemGenerated = "Y",
+      startDateTime = LocalDateTime.now().minusDays(1),
+    ),
+    generate(
+      crn = "Y654321",
+      startTime = LocalTime.now(),
+      date = LocalDate.now().minusDays(1),
+      notes = "I am a supervision package contact",
+      supervisionPackage = "Y",
       startDateTime = LocalDateTime.now().minusDays(1),
     ),
   )

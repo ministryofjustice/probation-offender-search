@@ -92,6 +92,8 @@ class ContactKeywordSearchService(private val restTemplate: OpenSearchRestTempla
 
     if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
 
+    if (!request.includeSupervisionPackage) filter(matchQuery("supervisionPackage", "N"))
+
     val contactFilters = ContactFilter.entries.filter { request.filters.contains(it.filterName) }
       .flatMap { it.queries }
     if (contactFilters.isNotEmpty()) {

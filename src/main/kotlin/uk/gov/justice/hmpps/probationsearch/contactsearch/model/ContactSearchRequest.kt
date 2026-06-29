@@ -16,6 +16,7 @@ class ContactSearchRequest(
     example = "false",
   )
   val includeSystemGenerated: Boolean = true,
+  val includeSupervisionPackage: Boolean = true,
   val filters: List<String> = emptyList(),
   val typeCodes: List<String> = emptyList(),
 ) {

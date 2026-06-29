@@ -117,6 +117,7 @@ class ContactSemanticSearchService(
         "filters" to request.filters.toString(),
         "typeCodes" to request.typeCodes.toString(),
         "includeSystemGenerated" to request.includeSystemGenerated.toString(),
+        "includeSupervisionPackage" to request.includeSupervisionPackage.toString(),
         "resultCount" to response.totalResults.toString(),
         "requiredDataLoad" to (dataLoadCount != null).toString(),
         "dataLoadCount" to dataLoadCount?.toString(),
@@ -287,6 +288,10 @@ class ContactSemanticSearchService(
 
     if (!request.includeSystemGenerated) {
       filters.add(Query.of { query -> query.term("systemGenerated" to "N") })
+    }
+
+    if (!request.includeSupervisionPackage) {
+      filters.add(Query.of { query -> query.term("supervisionPackage" to "N") })
     }
 
     val contactFilters = ContactFilter.entries.filter { request.filters.contains(it.filterName) }
