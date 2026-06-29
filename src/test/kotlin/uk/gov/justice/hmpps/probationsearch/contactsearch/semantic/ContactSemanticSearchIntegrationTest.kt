@@ -72,6 +72,9 @@ class ContactSemanticSearchIntegrationTest {
         mapOf(
           "crn" to crn,
           "query" to "9",
+          "filters" to "[]",
+          "typeCodes" to "[]",
+          "includeSystemGenerated" to "true",
           "resultCount" to "1",
           "queryTermCount" to "2",
           "requiredDataLoad" to "false",
@@ -255,9 +258,9 @@ class ContactSemanticSearchIntegrationTest {
     val request = ContactSearchRequest(crn, dateTo = LocalDate.now().minusDays(2))
     val results = RestAssured.given().`when`().search(request).then().results()
 
-    assertThat(results.size).isEqualTo(2)
+    assertThat(results.size).isEqualTo(3)
 
-    assertThat(results.results[0].date).isBeforeOrEqualTo(LocalDate.now().minusDays(2))
+    results.results.forEach { assertThat(it.date).isBeforeOrEqualTo(LocalDate.now().minusDays(2)) }
   }
 
   @Test
@@ -270,7 +273,10 @@ class ContactSemanticSearchIntegrationTest {
     )
     val results = RestAssured.given().`when`().search(request).then().results()
 
-    assertThat(results.size).isEqualTo(2)
+    assertThat(results.size).isEqualTo(3)
+    results.results.forEach {
+      assertThat(it.date).isBetween(LocalDate.now().minusDays(4), LocalDate.now().minusDays(2))
+    }
   }
 
   @Test

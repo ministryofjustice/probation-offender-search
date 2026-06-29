@@ -4,7 +4,12 @@ import com.microsoft.applicationinsights.TelemetryClient
 import org.opensearch.client.json.JsonData
 import org.opensearch.client.opensearch.OpenSearchClient
 import org.opensearch.client.opensearch._types.FieldValue
-import org.opensearch.client.opensearch._types.query_dsl.*
+import org.opensearch.client.opensearch._types.query_dsl.BoolQuery
+import org.opensearch.client.opensearch._types.query_dsl.ChildScoreMode
+import org.opensearch.client.opensearch._types.query_dsl.HybridQuery
+import org.opensearch.client.opensearch._types.query_dsl.NestedQuery
+import org.opensearch.client.opensearch._types.query_dsl.Operator
+import org.opensearch.client.opensearch._types.query_dsl.Query
 import org.opensearch.client.opensearch.core.search.HighlightField
 import org.opensearch.client.opensearch.core.search.HighlighterEncoder
 import org.springframework.data.domain.PageImpl
@@ -109,6 +114,9 @@ class ContactSemanticSearchService(
       mapOf(
         "crn" to request.crn,
         "query" to request.query.length.toString(),
+        "filters" to request.filters.toString(),
+        "typeCodes" to request.typeCodes.toString(),
+        "includeSystemGenerated" to request.includeSystemGenerated.toString(),
         "resultCount" to response.totalResults.toString(),
         "requiredDataLoad" to (dataLoadCount != null).toString(),
         "dataLoadCount" to dataLoadCount?.toString(),
@@ -172,12 +180,10 @@ class ContactSemanticSearchService(
         }
     }.toQuery()
 
-    val filters = buildFilters(request)
-
     val hybridQuery =
       HybridQuery.of { hybrid ->
         hybrid.queries(keywordQuery, semanticQuery)
-          .filter(Query.of { query -> query.bool { bool -> bool.filter(filters) } })
+          .filter(Query.of { query -> query.bool { bool -> bool.filter(buildFilters(request)) } })
           .paginationDepth(10000)
       }.toQuery()
 
