@@ -513,7 +513,7 @@ class ActivitySearchIntegrationTest {
   }
 
   @Test
-  fun `can filter out supervision package contacts`() {
+  fun `can filter for supervision package contacts`() {
     val crn = "Y654321"
     val results = RestAssured.given()
       .`when`()
@@ -521,7 +521,28 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           includeSystemGenerated = false,
-          includeSupervisionPackage = false,
+          filters = listOf(ActivitySearchService.ActivityFilter.SUPERVISION_PACKAGE.filterName),
+        ),
+        mapOf("page" to 0, "size" to 20),
+      )
+      .then()
+      .results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.results.map { it.notes }).contains("I am a supervision package contact")
+  }
+
+  @Test
+  fun `can return no results when filtering for supervision package contacts on a crn with no supervision package contacts`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          includeSystemGenerated = false,
+          filters = listOf(ActivitySearchService.ActivityFilter.SUPERVISION_PACKAGE.filterName),
         ),
         mapOf("page" to 0, "size" to 20),
       )

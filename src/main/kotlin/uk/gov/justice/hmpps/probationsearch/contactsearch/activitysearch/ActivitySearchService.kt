@@ -91,8 +91,6 @@ class ActivitySearchService(
 
     if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
 
-    if (!request.includeSupervisionPackage) filter(matchQuery("supervisionPackage", "N"))
-
     if (request.typeCodes.isNotEmpty()) {
       filter(termsQuery("typeCode", request.typeCodes))
     }
@@ -134,6 +132,10 @@ class ActivitySearchService(
     NO_OUTCOME(
       "noOutcome",
       listOf(boolQuery().mustAll(listOf(matchQuery("requiresOutcome", "Y"), matchQuery("outcomeRequiredFlag", "Y")))),
+    ),
+    SUPERVISION_PACKAGE(
+      "supervisionPackage",
+      listOf(matchQuery("supervisionPackage", "Y")),
     )
   }
 
