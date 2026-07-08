@@ -84,7 +84,6 @@ class ContactSemanticSearchService(
       "attended",
       "complied",
       "date",
-      "supervisionPackage",
     )
     val HIGHLIGHT_FIELDS = listOf(
       "notes",
@@ -94,7 +93,6 @@ class ContactSemanticSearchService(
       "outcomeCode",
       "outcomeDescription",
       "date",
-      "supervisionPackage",
     )
     val RETURN_FIELDS = listOf(
       "crn",

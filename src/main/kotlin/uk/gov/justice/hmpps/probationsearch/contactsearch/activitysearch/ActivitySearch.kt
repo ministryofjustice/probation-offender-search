@@ -19,10 +19,6 @@ data class ActivitySearchRequest(
     description = "Whether to include system generated contacts in the search results. Defaults to true.",
     example = "false",
   ) val includeSystemGenerated: Boolean = true,
-  @Schema(
-    description = "Whether to include supervision package contacts in the search results. Defaults to true.",
-    example = "false",
-  ) val includeSupervisionPackage: Boolean = true,
   val filters: List<String> = emptyList(),
   val typeCodes: List<String> = emptyList(),
 )
