@@ -32,7 +32,6 @@ object ActivityGenerator {
     outcomeRequiredFlag: String? = "N",
     nationalStandard: String? = "N",
     systemGenerated: String? = "N",
-    sparks: String? = null,
     sparksDescription: String? = null,
 
     ) = ActivitySearchResult(
@@ -57,7 +56,6 @@ object ActivityGenerator {
     outcomeRequiredFlag,
     nationalStandard,
     systemGenerated,
-    sparks,
     sparksDescription,
   )
 
