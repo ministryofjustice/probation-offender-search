@@ -116,6 +116,7 @@ class ContactSemanticSearchService(
       "startTime",
       "endTime",
       "lastUpdatedDateTime",
+      "sparksCode",
       "sparksDescription",
     )
   }

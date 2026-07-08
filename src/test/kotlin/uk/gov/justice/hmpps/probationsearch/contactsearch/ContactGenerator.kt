@@ -30,6 +30,7 @@ object ContactGenerator {
     complied: String? = null,
     requiresOutcome: String? = null,
     outcomeRequiredFlag: String? = null,
+    sparksCode: String? = null,
     sparksDescription: String? = null,
   ) = ContactSearchResult(
     crn,
@@ -50,6 +51,7 @@ object ContactGenerator {
     complied = complied,
     requiresOutcome = requiresOutcome,
     outcomeRequiredFlag = outcomeRequiredFlag,
+    sparksCode = sparksCode,
     sparksDescription = sparksDescription,
   )
 
@@ -147,6 +149,7 @@ object ContactGenerator {
     generate(
       crn = "F123456",
       notes = "Filter on sparks",
+      sparksCode = "ACC",
       sparksDescription = "Accommodation",
       date = LocalDate.now().minusDays(5),
     ),
