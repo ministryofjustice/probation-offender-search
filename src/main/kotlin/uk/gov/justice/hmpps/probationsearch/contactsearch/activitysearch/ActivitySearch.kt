@@ -74,6 +74,5 @@ data class ActivitySearchResult(
   val outcomeRequiredFlag: String?,
   val nationalStandard: String?,
   val systemGenerated: String?,
-  val sparks: String?,
   val sparksDescription: String? = null,
 )
