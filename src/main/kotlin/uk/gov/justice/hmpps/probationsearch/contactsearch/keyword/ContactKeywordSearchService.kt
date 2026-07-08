@@ -34,6 +34,7 @@ class ContactKeywordSearchService(private val restTemplate: OpenSearchRestTempla
         "noOutcome",
         listOf(boolQuery().must(matchQuery("requiresOutcome", "Y")).must(matchQuery("outcomeRequiredFlag", "Y"))),
       ),
+      SPARKS("sparks", listOf(existsQuery("sparksDescription"))),
     }
   }
 
@@ -73,6 +74,7 @@ class ContactKeywordSearchService(private val restTemplate: OpenSearchRestTempla
         .field("type")
         .field("outcome")
         .field("description")
+        .field("sparksDescription")
         .fragmentSize(200),
     ).sorted(pageable.sort.fieldSorts())
 
@@ -107,6 +109,7 @@ class ContactKeywordSearchService(private val restTemplate: OpenSearchRestTempla
           .field("type")
           .field("outcome")
           .field("description")
+          .field("sparksDescription")
           .flags(
             SimpleQueryStringFlag.AND,
             SimpleQueryStringFlag.OR,

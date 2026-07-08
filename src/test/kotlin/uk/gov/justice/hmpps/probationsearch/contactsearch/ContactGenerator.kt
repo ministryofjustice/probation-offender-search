@@ -30,6 +30,7 @@ object ContactGenerator {
     complied: String? = null,
     requiresOutcome: String? = null,
     outcomeRequiredFlag: String? = null,
+    sparksDescription: String? = null,
   ) = ContactSearchResult(
     crn,
     id,
@@ -49,6 +50,7 @@ object ContactGenerator {
     complied = complied,
     requiresOutcome = requiresOutcome,
     outcomeRequiredFlag = outcomeRequiredFlag,
+    sparksDescription = sparksDescription,
   )
 
   val contacts = listOf(
@@ -141,6 +143,17 @@ object ContactGenerator {
       systemGenerated = "Y",
       notes = "Filter on SGC",
       date = LocalDate.now().minusDays(4),
+    ),
+    generate(
+      crn = "F123456",
+      notes = "Filter on sparks",
+      sparksDescription = "Accommodation",
+      date = LocalDate.now().minusDays(5),
+    ),
+    generate(
+      crn = "F123456",
+      notes = "No sparks here",
+      date = LocalDate.now().minusDays(6),
     ),
     generate(
       crn = "T123456",

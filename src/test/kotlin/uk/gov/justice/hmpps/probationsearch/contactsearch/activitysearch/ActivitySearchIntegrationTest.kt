@@ -536,6 +536,49 @@ class ActivitySearchIntegrationTest {
     assertThat(results.results[0].typeCode).isEqualTo("TYPE_CODE2")
   }
 
+  @Test
+  fun `can filter based on sparks`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          filters = listOf(ActivitySearchService.ActivityFilter.SPARKS.filterName),
+          includeSystemGenerated = false,
+        ),
+        mapOf("page" to 0, "size" to 10),
+      )
+      .then()
+      .results()
+
+    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.results.map { it.notes }).containsExactlyInAnyOrder(
+      "I have a sparks description",
+      "Another sparks contact",
+    )
+  }
+
+  @Test
+  fun `can search keywords in sparksDescription`() {
+    val crn = "T654321"
+    val results = RestAssured.given()
+      .`when`()
+      .search(
+        ActivitySearchRequest(
+          crn,
+          keywords = "Accommodation",
+          includeSystemGenerated = false,
+        ),
+        mapOf("page" to 0, "size" to 10),
+      )
+      .then()
+      .results()
+
+    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("I have a sparks description")
+  }
+
 
   companion object {
     private val TEMPLATE_JSON =

@@ -335,6 +335,26 @@ class ContactSemanticSearchIntegrationTest {
   }
 
   @Test
+  fun `filters contacts by sparks filter`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, filters = listOf(ContactFilter.SPARKS.filterName))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("Filter on sparks")
+  }
+
+  @Test
+  fun `can search keywords in sparksDescription`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, "Accommodation")
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("Filter on sparks")
+  }
+
+  @Test
   fun `preload loads contacts and sends telemetry event`() {
     val crn = "X123456"
     deliusApiMock.stubGetContacts(
