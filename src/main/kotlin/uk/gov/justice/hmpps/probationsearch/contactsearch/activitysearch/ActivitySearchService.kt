@@ -67,7 +67,7 @@ class ActivitySearchService(
         .field("type")
         .field("outcome")
         .field("description")
-        .field("sparksDescription")
+        .field("sparks.description")
         .fragmentSize(200),
     ).sorted(pageable.sort.fieldSorts())
 
@@ -110,7 +110,7 @@ class ActivitySearchService(
           .field("outcome")
           .field("description")
           .field("complied")
-          .field("sparksDescription")
+          .field("sparks.description")
           .flags(
             SimpleQueryStringFlag.AND,
             SimpleQueryStringFlag.OR,
@@ -133,7 +133,7 @@ class ActivitySearchService(
       "noOutcome",
       listOf(boolQuery().mustAll(listOf(matchQuery("requiresOutcome", "Y"), matchQuery("outcomeRequiredFlag", "Y")))),
     ),
-    SPARKS("sparks", listOf(existsQuery("sparksDescription")))
+    SPARKS("sparks", listOf(existsQuery("sparks.description")))
   }
 
   enum class SortType(val aliases: List<String>, val searchField: String) {

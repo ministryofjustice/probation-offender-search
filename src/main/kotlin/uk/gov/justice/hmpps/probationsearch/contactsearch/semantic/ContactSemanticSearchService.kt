@@ -73,8 +73,8 @@ class ContactSemanticSearchService(
         listOf(
           Query.of { q ->
             q.bool { b ->
-              b.must { it.exists { e -> e.field("sparksDescription") } }
-                .mustNot { it.term { t -> t.field("sparksDescription.keyword").value(FieldValue.of("")) } }
+              b.must { it.exists { e -> e.field("sparks.description") } }
+                .mustNot { it.term { t -> t.field("sparks.description.keyword").value(FieldValue.of("")) } }
             }
           }
         ),
@@ -91,7 +91,7 @@ class ContactSemanticSearchService(
       "attended",
       "complied",
       "date",
-      "sparksDescription",
+      "sparks.description",
     )
     val HIGHLIGHT_FIELDS = listOf(
       "notes",
@@ -101,7 +101,7 @@ class ContactSemanticSearchService(
       "outcomeCode",
       "outcomeDescription",
       "date",
-      "sparksDescription",
+      "sparks.description",
     )
     val RETURN_FIELDS = listOf(
       "crn",
@@ -116,8 +116,7 @@ class ContactSemanticSearchService(
       "startTime",
       "endTime",
       "lastUpdatedDateTime",
-      "sparksCode",
-      "sparksDescription",
+      "sparks",
     )
   }
 

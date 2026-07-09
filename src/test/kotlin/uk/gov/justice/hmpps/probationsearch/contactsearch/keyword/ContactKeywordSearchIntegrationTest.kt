@@ -253,7 +253,7 @@ class ContactKeywordSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(1)
     assertThat(results.results[0].notes).isEqualTo("Filter on sparks")
-    assertThat(results.results[0].sparksCode).isEqualTo("ACC")
+    assertThat(results.results[0].sparks?.code).isEqualTo("ACC")
   }
 
   @Test
@@ -264,7 +264,7 @@ class ContactKeywordSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(1)
     assertThat(results.results[0].notes).isEqualTo("Filter on sparks")
-    assertThat(results.results[0].sparksCode).isEqualTo("ACC")
+    assertThat(results.results[0].sparks?.code).isEqualTo("ACC")
   }
 
   companion object {

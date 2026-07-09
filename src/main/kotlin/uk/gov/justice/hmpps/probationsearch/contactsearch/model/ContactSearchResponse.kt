@@ -43,6 +43,10 @@ data class ContactSearchResult(
   val requiresOutcome: String?,
   val outcomeRequiredFlag: String?,
   val systemGenerated: String?,
-  val sparksCode: String? = null,
-  val sparksDescription: String? = null,
+  val sparks: Sparks? = null,
+)
+
+data class Sparks(
+  val code: String? = null,
+  val description: String? = null,
 )
