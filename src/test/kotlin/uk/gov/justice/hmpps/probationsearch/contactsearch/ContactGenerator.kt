@@ -31,7 +31,7 @@ object ContactGenerator {
     complied: String? = null,
     requiresOutcome: String? = null,
     outcomeRequiredFlag: String? = null,
-    sparks: Sparks? = null,
+    sparks: List<Sparks>? = null,
   ) = ContactSearchResult(
     crn,
     id,
@@ -148,7 +148,7 @@ object ContactGenerator {
     generate(
       crn = "F123456",
       notes = "Filter on sparks",
-      sparks = Sparks(code = "ACC", description = "Accommodation"),
+      sparks = listOf(Sparks(code = "ACC", description = "Accommodation")),
       date = LocalDate.now().minusDays(5),
     ),
     generate(

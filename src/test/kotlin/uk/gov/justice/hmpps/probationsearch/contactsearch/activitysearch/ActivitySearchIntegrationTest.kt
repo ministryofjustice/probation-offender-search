@@ -547,7 +547,7 @@ class ActivitySearchIntegrationTest {
       "I have a sparks description",
       "Another sparks contact",
     )
-    assertThat(results.results.map { it.sparks?.code }).containsExactlyInAnyOrder("ACC", "ETE")
+    assertThat(results.results.flatMap { it.sparks.orEmpty().map { s -> s.code } }).containsExactlyInAnyOrder("ACC", "ETE")
   }
 
   @Test

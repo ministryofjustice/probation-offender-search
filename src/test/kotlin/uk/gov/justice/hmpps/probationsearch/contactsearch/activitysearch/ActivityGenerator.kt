@@ -32,7 +32,7 @@ object ActivityGenerator {
     outcomeRequiredFlag: String? = "N",
     nationalStandard: String? = "N",
     systemGenerated: String? = "N",
-    sparks: Sparks? = null,
+    sparks: List<Sparks>? = null,
 
     ) = ActivitySearchResult(
     crn,
@@ -205,7 +205,7 @@ object ActivityGenerator {
       startTime = LocalTime.now(),
       date = LocalDate.now(),
       notes = "I have a sparks description",
-      sparks = Sparks(code = "ACC", description = "Accommodation"),
+      sparks = listOf(Sparks(code = "ACC", description = "Accommodation")),
       startDateTime = LocalDateTime.now().minusMinutes(5),
     ),
     generate(
@@ -213,7 +213,7 @@ object ActivityGenerator {
       startTime = LocalTime.now(),
       date = LocalDate.now(),
       notes = "Another sparks contact",
-      sparks = Sparks(code = "ETE", description = "ETE"),
+      sparks = listOf(Sparks(code = "ETE", description = "ETE")),
       startDateTime = LocalDateTime.now().minusMinutes(10),
     ),
   )
