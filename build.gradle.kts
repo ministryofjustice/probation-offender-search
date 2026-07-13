@@ -31,7 +31,7 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.junit.vintage:junit-vintage-engine")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.0.1")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path:6.0.0")
   testImplementation("io.rest-assured:xml-path:6.0.0")
