@@ -1,0 +1,21 @@
+name: Security
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * 1-5' # every weekday at 5 AM
+
+jobs:
+  snyk:
+    name: Snyk
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_snyk_scan.yml@v2
+    with:
+      channel_id: probation-integration-notifications
+    secrets:
+      HMPPS_SNYK_CLIENT_SECRET: ${{ secrets.HMPPS_SNYK_CLIENT_SECRET }}
+      HMPPS_SNYK_CLIENT_ID: ${{ secrets.HMPPS_SNYK_CLIENT_ID }}
+      HMPPS_SRE_SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
