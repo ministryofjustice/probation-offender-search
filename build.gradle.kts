@@ -33,9 +33,9 @@ dependencies {
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.0.1")
   testImplementation("org.awaitility:awaitility-kotlin")
-  testImplementation("io.rest-assured:json-path:6.0.0")
-  testImplementation("io.rest-assured:xml-path:6.0.0")
-  testImplementation("io.rest-assured:spring-mock-mvc:6.0.0")
+  testImplementation("io.rest-assured:json-path:6.0.1")
+  testImplementation("io.rest-assured:xml-path:6.0.1")
+  testImplementation("io.rest-assured:spring-mock-mvc:6.0.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.45")
 }
 
