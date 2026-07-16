@@ -1,6 +1,7 @@
 package uk.gov.justice.hmpps.probationsearch.contactsearch
 
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResult
+import uk.gov.justice.hmpps.probationsearch.contactsearch.model.Sparks
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -30,6 +31,7 @@ object ContactGenerator {
     complied: String? = null,
     requiresOutcome: String? = null,
     outcomeRequiredFlag: String? = null,
+    sparks: List<Sparks>? = null,
   ) = ContactSearchResult(
     crn,
     id,
@@ -49,6 +51,7 @@ object ContactGenerator {
     complied = complied,
     requiresOutcome = requiresOutcome,
     outcomeRequiredFlag = outcomeRequiredFlag,
+    sparks = sparks,
   )
 
   val contacts = listOf(
@@ -141,6 +144,17 @@ object ContactGenerator {
       systemGenerated = "Y",
       notes = "Filter on SGC",
       date = LocalDate.now().minusDays(4),
+    ),
+    generate(
+      crn = "F123456",
+      notes = "Filter on sparks",
+      sparks = listOf(Sparks(code = "ACC", description = "Accommodation")),
+      date = LocalDate.now().minusDays(5),
+    ),
+    generate(
+      crn = "F123456",
+      notes = "No sparks here",
+      date = LocalDate.now().minusDays(6),
     ),
     generate(
       crn = "T123456",

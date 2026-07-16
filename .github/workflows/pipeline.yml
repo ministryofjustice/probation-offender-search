@@ -54,6 +54,7 @@ jobs:
     name: Deploy to the preprod environment
     concurrency:
       group: deploy-preprod
+    if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint
@@ -66,6 +67,7 @@ jobs:
     name: Deploy to the prod environment
     concurrency:
       group: deploy-prod
+    if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint

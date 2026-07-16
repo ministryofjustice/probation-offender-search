@@ -32,6 +32,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.util.ResourceUtils
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator.contacts
+import uk.gov.justice.hmpps.probationsearch.contactsearch.keyword.ContactKeywordSearchService.Companion.ContactFilter
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchRequest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
@@ -242,6 +243,28 @@ class ContactKeywordSearchIntegrationTest {
         "outcome" to listOf("Matches were <em>highlighted</em> in outcome"),
       ),
     )
+  }
+
+  @Test
+  fun `filters contacts by sparks filter`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, filters = listOf(ContactFilter.SPARKS.filterName))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("Filter on sparks")
+    assertThat(results.results[0].sparks?.map { it.code }).containsExactly("ACC")
+  }
+
+  @Test
+  fun `can search keywords in sparksDescription`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, "Accommodation")
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("Filter on sparks")
+    assertThat(results.results[0].sparks?.map { it.code }).containsExactly("ACC")
   }
 
   companion object {

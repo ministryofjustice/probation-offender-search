@@ -237,7 +237,7 @@ class ContactSemanticSearchIntegrationTest {
     val request = ContactSearchRequest(crn, includeSystemGenerated = true)
     val results = RestAssured.given().`when`().search(request).then().results()
 
-    assertThat(results.size).isEqualTo(4)
+    assertThat(results.size).isEqualTo(6)
     assertThat(results.results.any { it.systemGenerated == "Y" }).isTrue
   }
 
@@ -258,7 +258,7 @@ class ContactSemanticSearchIntegrationTest {
     val request = ContactSearchRequest(crn, dateTo = LocalDate.now().minusDays(2))
     val results = RestAssured.given().`when`().search(request).then().results()
 
-    assertThat(results.size).isEqualTo(3)
+    assertThat(results.size).isEqualTo(5)
 
     results.results.forEach { assertThat(it.date).isBeforeOrEqualTo(LocalDate.now().minusDays(2)) }
   }
@@ -332,6 +332,26 @@ class ContactSemanticSearchIntegrationTest {
 
     assertThat(results.size).isEqualTo(1)
     assertThat(results.results[0].typeCode).isEqualTo("TYPE2")
+  }
+
+  @Test
+  fun `filters contacts by sparks filter`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, filters = listOf(ContactFilter.SPARKS.filterName))
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("Filter on sparks")
+  }
+
+  @Test
+  fun `can search keywords in sparksDescription`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(crn, "Accommodation")
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.totalResults).isGreaterThanOrEqualTo(1)
+    assertThat(results.results.map { it.notes }).contains("Filter on sparks")
   }
 
   @Test
