@@ -1380,6 +1380,9 @@
         "systemGenerated": {
           "type": "keyword"
         },
+        "supervisionPackage": {
+          "type": "keyword"
+        },
         "startDateTime": {
           "type": "date"
         },

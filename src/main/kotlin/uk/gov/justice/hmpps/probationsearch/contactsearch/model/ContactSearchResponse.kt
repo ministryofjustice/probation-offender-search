@@ -43,6 +43,7 @@ data class ContactSearchResult(
   val requiresOutcome: String?,
   val outcomeRequiredFlag: String?,
   val systemGenerated: String?,
+  val supervisionPackage: String? = null,
   val sparks: List<Sparks>? = null,
 )
 

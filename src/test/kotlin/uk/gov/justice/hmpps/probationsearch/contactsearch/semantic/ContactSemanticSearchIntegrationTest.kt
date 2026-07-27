@@ -242,6 +242,42 @@ class ContactSemanticSearchIntegrationTest {
   }
 
   @Test
+  fun `includes supervision package contacts by default`() {
+    val crn = "P123456"
+    val request = ContactSearchRequest(crn)
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(2)
+    assertThat(results.results.any { it.notes == "Filter on supervision package" }).isTrue
+  }
+
+  @Test
+  fun `can filter for supervision package contacts`() {
+    val crn = "P123456"
+    val request = ContactSearchRequest(
+      crn,
+      filters = listOf(ContactFilter.SUPERVISION_PACKAGE.filterName),
+    )
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(1)
+    assertThat(results.results[0].notes).isEqualTo("Filter on supervision package")
+  }
+
+  @Test
+  fun `can return no results when filtering for supervision package contacts on a crn with no supervision package contacts`() {
+    val crn = "F123456"
+    val request = ContactSearchRequest(
+      crn,
+      filters = listOf(ContactFilter.SUPERVISION_PACKAGE.filterName),
+    )
+    val results = RestAssured.given().`when`().search(request).then().results()
+
+    assertThat(results.size).isEqualTo(0)
+    assertThat(results.totalResults).isEqualTo(0)
+  }
+
+  @Test
   fun `filters contacts by dateFrom`() {
     val crn = "F123456"
     val request = ContactSearchRequest(crn, dateFrom = LocalDate.now().minusDays(3))
