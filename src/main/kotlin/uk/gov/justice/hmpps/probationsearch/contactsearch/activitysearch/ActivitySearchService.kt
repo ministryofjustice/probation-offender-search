@@ -138,7 +138,7 @@ class ActivitySearchService(
     SUPERVISION_PACKAGE(
       "supervisionPackage",
       listOf(matchQuery("supervisionPackage", "Y")),
-    )
+    ),
     SPARKS("sparks", listOf(existsQuery("sparks.description")))
   }
 

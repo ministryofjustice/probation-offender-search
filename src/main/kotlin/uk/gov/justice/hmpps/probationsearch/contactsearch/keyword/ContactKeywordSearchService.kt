@@ -37,7 +37,7 @@ class ContactKeywordSearchService(private val restTemplate: OpenSearchRestTempla
       SUPERVISION_PACKAGE(
         "supervisionPackage",
         listOf(matchQuery("supervisionPackage", "Y")),
-      )
+      ),
       SPARKS("sparks", listOf(existsQuery("sparks.description"))),
     }
   }

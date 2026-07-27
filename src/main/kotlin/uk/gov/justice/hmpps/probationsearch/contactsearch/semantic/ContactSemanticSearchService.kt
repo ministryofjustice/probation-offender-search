@@ -71,7 +71,7 @@ class ContactSemanticSearchService(
       SUPERVISION_PACKAGE(
         "supervisionPackage",
         listOf(Query.of { query -> query.term("supervisionPackage" to "Y") }),
-      )
+      ),
       SPARKS(
       "sparks",
       listOf(
