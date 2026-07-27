@@ -72,6 +72,17 @@ class ContactSemanticSearchService(
         "supervisionPackage",
         listOf(Query.of { query -> query.term("supervisionPackage" to "Y") }),
       )
+      SPARKS(
+        "sparks",
+        listOf(
+          Query.of { q ->
+            q.bool { b ->
+              b.must { it.exists { e -> e.field("sparks.description") } }
+                .mustNot { it.term { t -> t.field("sparks.description.keyword").value(FieldValue.of("")) } }
+            }
+          }
+        ),
+      ),
     }
 
     val KEYWORD_SEARCH_FIELDS = listOf(
@@ -84,6 +95,7 @@ class ContactSemanticSearchService(
       "attended",
       "complied",
       "date",
+      "sparks.description",
     )
     val HIGHLIGHT_FIELDS = listOf(
       "notes",
@@ -93,6 +105,7 @@ class ContactSemanticSearchService(
       "outcomeCode",
       "outcomeDescription",
       "date",
+      "sparks.description",
     )
     val RETURN_FIELDS = listOf(
       "crn",
@@ -107,6 +120,7 @@ class ContactSemanticSearchService(
       "startTime",
       "endTime",
       "lastUpdatedDateTime",
+      "sparks",
     )
   }
 

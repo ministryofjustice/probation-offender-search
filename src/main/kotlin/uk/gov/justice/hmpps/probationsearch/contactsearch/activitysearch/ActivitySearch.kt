@@ -75,4 +75,10 @@ data class ActivitySearchResult(
   val nationalStandard: String?,
   val systemGenerated: String?,
   val supervisionPackage: String?,
+  val sparks: List<Sparks>? = null,
+)
+
+data class Sparks(
+  val code: String? = null,
+  val description: String? = null,
 )

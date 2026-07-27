@@ -24,7 +24,7 @@ jobs:
       matrix:
         environments: ['dev', 'preprod', 'prod']
     name: helm lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@cf14699d1d0d134d425afeaefd78d320da62e301 # v2.14.12
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@3d0db04bde36486d182b5c7d4a3bb8794bdeb2c6 # v2.18.0
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
@@ -45,7 +45,7 @@ jobs:
     needs:
     - docker_build
     - helm_lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@cf14699d1d0d134d425afeaefd78d320da62e301 # v2.14.12
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@3d0db04bde36486d182b5c7d4a3bb8794bdeb2c6 # v2.18.0
     secrets: inherit
     with:
       environment: 'dev'
@@ -54,10 +54,11 @@ jobs:
     name: Deploy to the preprod environment
     concurrency:
       group: deploy-preprod
+    if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@cf14699d1d0d134d425afeaefd78d320da62e301 # v2.14.12
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@3d0db04bde36486d182b5c7d4a3bb8794bdeb2c6 # v2.18.0
     secrets: inherit
     with:
       environment: 'preprod'
@@ -66,12 +67,13 @@ jobs:
     name: Deploy to the prod environment
     concurrency:
       group: deploy-prod
+    if: github.ref == 'refs/heads/main'
     needs:
     - docker_build
     - helm_lint
     - deploy_dev
     - deploy_preprod
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@cf14699d1d0d134d425afeaefd78d320da62e301 # v2.14.12
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@3d0db04bde36486d182b5c7d4a3bb8794bdeb2c6 # v2.18.0
     secrets: inherit
     with:
       environment: 'prod'

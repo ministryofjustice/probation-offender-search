@@ -69,6 +69,7 @@ class ActivitySearchService(
         .field("type")
         .field("outcome")
         .field("description")
+        .field("sparks.description")
         .fragmentSize(200),
     ).sorted(pageable.sort.fieldSorts())
 
@@ -111,6 +112,7 @@ class ActivitySearchService(
           .field("outcome")
           .field("description")
           .field("complied")
+          .field("sparks.description")
           .flags(
             SimpleQueryStringFlag.AND,
             SimpleQueryStringFlag.OR,
@@ -137,6 +139,7 @@ class ActivitySearchService(
       "supervisionPackage",
       listOf(matchQuery("supervisionPackage", "Y")),
     )
+    SPARKS("sparks", listOf(existsQuery("sparks.description")))
   }
 
   enum class SortType(val aliases: List<String>, val searchField: String) {

@@ -33,6 +33,7 @@ object ActivityGenerator {
     nationalStandard: String? = "N",
     systemGenerated: String? = "N",
     supervisionPackage: String? = "N",
+    sparks: List<Sparks>? = null,
 
     ) = ActivitySearchResult(
     crn,
@@ -57,6 +58,7 @@ object ActivityGenerator {
     nationalStandard,
     systemGenerated,
     supervisionPackage,
+    sparks,
   )
 
   val contacts = listOf(
@@ -207,6 +209,22 @@ object ActivityGenerator {
       notes = "I am a supervision package contact",
       supervisionPackage = "Y",
       startDateTime = LocalDateTime.now().minusDays(1),
+    ),
+    generate(
+      crn = "T654321",
+      startTime = LocalTime.now(),
+      date = LocalDate.now(),
+      notes = "I have a sparks description",
+      sparks = listOf(Sparks(code = "ACC", description = "Accommodation")),
+      startDateTime = LocalDateTime.now().minusMinutes(5),
+    ),
+    generate(
+      crn = "T654321",
+      startTime = LocalTime.now(),
+      date = LocalDate.now(),
+      notes = "Another sparks contact",
+      sparks = listOf(Sparks(code = "ETE", description = "ETE")),
+      startDateTime = LocalDateTime.now().minusMinutes(10),
     ),
   )
 }
