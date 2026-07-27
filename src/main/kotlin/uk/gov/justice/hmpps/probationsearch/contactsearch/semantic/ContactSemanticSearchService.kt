@@ -73,15 +73,17 @@ class ContactSemanticSearchService(
         listOf(Query.of { query -> query.term("supervisionPackage" to "Y") }),
       )
       SPARKS(
-        "sparks",
-        listOf(
-          Query.of { q ->
-            q.bool { b ->
-              b.must { it.exists { e -> e.field("sparks.description") } }
-                .mustNot { it.term { t -> t.field("sparks.description.keyword").value(FieldValue.of("")) } }
-            }
-          }
-        ),
+      "sparks",
+      listOf(
+      Query.of
+      {
+        q ->
+        q.bool { b ->
+          b.must { it.exists { e -> e.field("sparks.description") } }
+            .mustNot { it.term { t -> t.field("sparks.description.keyword").value(FieldValue.of("")) } }
+        }
+      }
+      ),
       ),
     }
 

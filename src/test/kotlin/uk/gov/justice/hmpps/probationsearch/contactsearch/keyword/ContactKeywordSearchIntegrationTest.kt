@@ -280,7 +280,7 @@ class ContactKeywordSearchIntegrationTest {
     assertThat(results.size).isEqualTo(0)
     assertThat(results.totalResults).isEqualTo(0)
   }
-  
+
   @Test
   fun `filters contacts by sparks filter`() {
     val crn = "F123456"
