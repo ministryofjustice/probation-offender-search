@@ -19,6 +19,14 @@ data class ActivitySearchRequest(
     description = "Whether to include system generated contacts in the search results. Defaults to true.",
     example = "false",
   ) val includeSystemGenerated: Boolean = true,
+  @Schema(
+    description = "Whether to filter by sparks contacts in the search results. Defaults to false.",
+    example = "true",
+  ) val filterBySparksContacts: Boolean = false,
+  @Schema(
+    description = "Whether to filter supervisionPackages contacts in the search results. Defaults to false.",
+    example = "true",
+  ) val filterBySupervisionPackageContacts: Boolean = false,
   val filters: List<String> = emptyList(),
   val typeCodes: List<String> = emptyList(),
 )

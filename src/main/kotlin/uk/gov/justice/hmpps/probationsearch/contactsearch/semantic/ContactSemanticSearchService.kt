@@ -68,22 +68,6 @@ class ContactSemanticSearchService(
           }.toQuery(),
         ),
       ),
-      SUPERVISION_PACKAGE(
-        "supervisionPackage",
-        listOf(Query.of { query -> query.term("supervisionPackage" to "Y") }),
-      ),
-      SPARKS(
-        "sparks",
-        listOf(
-          Query.of
-          { q ->
-            q.bool { b ->
-              b.must { it.exists { e -> e.field("sparks.description") } }
-                .mustNot { it.term { t -> t.field("sparks.description.keyword").value(FieldValue.of("")) } }
-            }
-          }
-        ),
-      ),
     }
 
     val KEYWORD_SEARCH_FIELDS = listOf(
@@ -306,6 +290,22 @@ class ContactSemanticSearchService(
 
     if (!request.includeSystemGenerated) {
       filters.add(Query.of { query -> query.term("systemGenerated" to "N") })
+    }
+
+    if (request.filterBySparksContacts) {
+      filters.add(Query.of
+      { q ->
+        q.bool { b ->
+          b.must { it.exists { e -> e.field("sparks.description") } }
+            .mustNot { it.term { t -> t.field("sparks.description.keyword").value(FieldValue.of("")) } }
+        }
+      })
+    }
+
+    if (request.filterBySupervisionPackageContacts) {
+      filters.add(
+        Query.of { query -> query.term("supervisionPackage" to "Y") }
+      )
     }
 
     val contactFilters = ContactFilter.entries.filter { request.filters.contains(it.filterName) }

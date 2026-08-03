@@ -511,7 +511,7 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           includeSystemGenerated = false,
-          filters = listOf(ActivitySearchService.ActivityFilter.SUPERVISION_PACKAGE.filterName),
+          filterBySupervisionPackageContacts = true,
         ),
         mapOf("page" to 0, "size" to 20),
       )
@@ -532,7 +532,7 @@ class ActivitySearchIntegrationTest {
         ActivitySearchRequest(
           crn,
           includeSystemGenerated = false,
-          filters = listOf(ActivitySearchService.ActivityFilter.SUPERVISION_PACKAGE.filterName),
+          filterBySupervisionPackageContacts = true,
         ),
         mapOf("page" to 0, "size" to 20),
       )
@@ -595,7 +595,7 @@ class ActivitySearchIntegrationTest {
       .search(
         ActivitySearchRequest(
           crn,
-          filters = listOf(ActivitySearchService.ActivityFilter.SPARKS.filterName),
+          filterBySparksContacts = true,
           includeSystemGenerated = false,
         ),
         mapOf("page" to 0, "size" to 10),
