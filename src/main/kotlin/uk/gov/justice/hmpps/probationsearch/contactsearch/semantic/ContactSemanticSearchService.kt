@@ -293,13 +293,15 @@ class ContactSemanticSearchService(
     }
 
     if (request.filterBySparksContacts) {
-      filters.add(Query.of
-      { q ->
-        q.bool { b ->
-          b.must { it.exists { e -> e.field("sparks.description") } }
-            .mustNot { it.term { t -> t.field("sparks.description.keyword").value(FieldValue.of("")) } }
+      filters.add(
+        Query.of
+        { q ->
+          q.bool { b ->
+            b.must { it.exists { e -> e.field("sparks.description") } }
+              .mustNot { it.term { t -> t.field("sparks.description.keyword").value(FieldValue.of("")) } }
+          }
         }
-      })
+      )
     }
 
     if (request.filterBySupervisionPackageContacts) {
