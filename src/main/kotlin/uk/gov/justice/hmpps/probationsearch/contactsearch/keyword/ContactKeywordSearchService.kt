@@ -33,12 +33,7 @@ class ContactKeywordSearchService(private val restTemplate: OpenSearchRestTempla
       NO_OUTCOME(
         "noOutcome",
         listOf(boolQuery().must(matchQuery("requiresOutcome", "Y")).must(matchQuery("outcomeRequiredFlag", "Y"))),
-      ),
-      SUPERVISION_PACKAGE(
-        "supervisionPackage",
-        listOf(matchQuery("supervisionPackage", "Y")),
-      ),
-      SPARKS("sparks", listOf(existsQuery("sparks.description"))),
+      )
     }
   }
 
@@ -97,6 +92,11 @@ class ContactKeywordSearchService(private val restTemplate: OpenSearchRestTempla
     }
 
     if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
+
+    if (request.filterBySparksContacts) filter(existsQuery("sparks.description"))
+
+    if (request.filterBySupervisionPackageContacts) filter(matchQuery("supervisionPackage", "Y"))
+
 
     val contactFilters = ContactFilter.entries.filter { request.filters.contains(it.filterName) }
       .flatMap { it.queries }
