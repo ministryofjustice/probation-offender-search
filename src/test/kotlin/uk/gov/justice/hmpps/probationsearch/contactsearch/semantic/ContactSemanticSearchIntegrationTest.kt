@@ -256,7 +256,7 @@ class ContactSemanticSearchIntegrationTest {
     val crn = "P123456"
     val request = ContactSearchRequest(
       crn,
-      filters = listOf(ContactFilter.SUPERVISION_PACKAGE.filterName),
+      filterBySupervisionPackageContacts = true,
     )
     val results = RestAssured.given().`when`().search(request).then().results()
 
@@ -269,7 +269,7 @@ class ContactSemanticSearchIntegrationTest {
     val crn = "F123456"
     val request = ContactSearchRequest(
       crn,
-      filters = listOf(ContactFilter.SUPERVISION_PACKAGE.filterName),
+      filterBySupervisionPackageContacts = true,
     )
     val results = RestAssured.given().`when`().search(request).then().results()
 
@@ -373,7 +373,7 @@ class ContactSemanticSearchIntegrationTest {
   @Test
   fun `filters contacts by sparks filter`() {
     val crn = "F123456"
-    val request = ContactSearchRequest(crn, filters = listOf(ContactFilter.SPARKS.filterName))
+    val request = ContactSearchRequest(crn, filterBySparksContacts = true)
     val results = RestAssured.given().`when`().search(request).then().results()
 
     assertThat(results.size).isEqualTo(1)

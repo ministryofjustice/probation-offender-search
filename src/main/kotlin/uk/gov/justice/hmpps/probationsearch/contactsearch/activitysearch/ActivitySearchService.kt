@@ -92,6 +92,10 @@ class ActivitySearchService(
 
     if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))
 
+    if (request.filterBySparksContacts) filter(existsQuery("sparks.description"))
+
+    if (request.filterBySupervisionPackageContacts) filter(matchQuery("supervisionPackage", "Y"))
+
     if (request.typeCodes.isNotEmpty()) {
       filter(termsQuery("typeCode", request.typeCodes))
     }
@@ -135,11 +139,6 @@ class ActivitySearchService(
       "noOutcome",
       listOf(boolQuery().mustAll(listOf(matchQuery("requiresOutcome", "Y"), matchQuery("outcomeRequiredFlag", "Y")))),
     ),
-    SUPERVISION_PACKAGE(
-      "supervisionPackage",
-      listOf(matchQuery("supervisionPackage", "Y")),
-    ),
-    SPARKS("sparks", listOf(existsQuery("sparks.description")))
   }
 
   enum class SortType(val aliases: List<String>, val searchField: String) {
