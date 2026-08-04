@@ -37,6 +37,6 @@ class AuthAwareAuthenticationToken(
   jwt: Jwt,
   val clientOnly: Boolean,
   val deliusUser: Boolean,
-  val subject: String,
+  val subject: String?,
   authorities: Collection<GrantedAuthority>,
 ) : JwtAuthenticationToken(jwt, authorities)
