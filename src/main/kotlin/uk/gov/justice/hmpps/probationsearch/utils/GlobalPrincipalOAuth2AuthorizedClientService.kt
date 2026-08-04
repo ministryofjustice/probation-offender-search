@@ -34,12 +34,12 @@ class GlobalPrincipalOAuth2AuthorizedClientService(
   private val authorizedClients: MutableMap<OAuth2AuthorizedClientId, OAuth2AuthorizedClient> =
     ConcurrentHashMap()
 
-  override fun <T : OAuth2AuthorizedClient?> loadAuthorizedClient(
+  override fun <T : OAuth2AuthorizedClient> loadAuthorizedClient(
     clientRegistrationId: String,
     principalName: String,
   ): T? = clientRegistrationRepository.findByRegistrationId(clientRegistrationId)?.let {
     @Suppress("UNCHECKED_CAST")
-    authorizedClients[OAuth2AuthorizedClientId(clientRegistrationId, GLOBAL_SYSTEM_PRINCIPAL)] as T
+    authorizedClients[OAuth2AuthorizedClientId(clientRegistrationId, GLOBAL_SYSTEM_PRINCIPAL)] as T?
   }
 
   override fun saveAuthorizedClient(authorizedClient: OAuth2AuthorizedClient, principal: Authentication) {

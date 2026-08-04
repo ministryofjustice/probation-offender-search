@@ -76,6 +76,4 @@ sentry.traces-sample-rate: "0.05"
 
 dataload.ondemand.batch.size: 50
 
-springdoc:
-  swagger-ui:
-    enabled: true
+springdoc.swagger-ui.version: 5.32.11 # See https://github.com/ministryofjustice/hmpps-gradle-spring-boot/blob/main/release-notes/11.x.md#1102
