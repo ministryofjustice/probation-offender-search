@@ -32,7 +32,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.util.ResourceUtils
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator.contacts
-import uk.gov.justice.hmpps.probationsearch.contactsearch.keyword.ContactKeywordSearchService.Companion.ContactFilter
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchRequest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
@@ -260,7 +259,7 @@ class ContactKeywordSearchIntegrationTest {
     val crn = "P123456"
     val request = ContactSearchRequest(
       crn,
-      filters = listOf(ContactKeywordSearchService.Companion.ContactFilter.SUPERVISION_PACKAGE.filterName),
+      filterBySupervisionPackageContacts = true,
     )
     val results = RestAssured.given().`when`().search(request).then().results()
 
@@ -273,7 +272,7 @@ class ContactKeywordSearchIntegrationTest {
     val crn = "F123456"
     val request = ContactSearchRequest(
       crn,
-      filters = listOf(ContactKeywordSearchService.Companion.ContactFilter.SUPERVISION_PACKAGE.filterName),
+      filterBySupervisionPackageContacts = true,
     )
     val results = RestAssured.given().`when`().search(request).then().results()
 
@@ -284,7 +283,7 @@ class ContactKeywordSearchIntegrationTest {
   @Test
   fun `filters contacts by sparks filter`() {
     val crn = "F123456"
-    val request = ContactSearchRequest(crn, filters = listOf(ContactFilter.SPARKS.filterName))
+    val request = ContactSearchRequest(crn, filterBySparksContacts = true)
     val results = RestAssured.given().`when`().search(request).then().results()
 
     assertThat(results.size).isEqualTo(1)
