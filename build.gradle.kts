@@ -7,6 +7,12 @@ plugins {
 }
 
 dependencies {
+  constraints {
+    implementation("org.eclipse.parsson:parsson:1.1.9") {
+      because("Fix CVE-2026-9563 found in 1.1.7")
+    }
+  }
+
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
@@ -74,7 +80,7 @@ jib {
     user = "2000:2000"
   }
   from {
-    image = "eclipse-temurin:25-jre-alpine"
+    image = "eclipse-temurin:25-jre-jammy"
   }
   extraDirectories {
     paths {
