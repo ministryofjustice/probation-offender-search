@@ -80,7 +80,7 @@ jib {
     user = "2000:2000"
   }
   from {
-    image = "eclipse-temurin:25-jre-jammy"
+    image = "eclipse-temurin:25-jre-alpine"
   }
   extraDirectories {
     paths {
