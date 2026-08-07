@@ -18,6 +18,9 @@ generic-service:
     delius-pre-prod-1: 52.56.240.62/32
     delius-pre-prod-2: 18.130.110.168/32
     delius-pre-prod-3: 35.178.44.184/32
+    mod-platform-live-eu-west-2a-nat: "13.41.38.176/32"
+    mod-platform-live-eu-west-2c-nat: "3.11.197.133/32"
+    mod-platform-live-eu-west-2b-nat: "3.8.81.175/32"
 
 cron:
   SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"
