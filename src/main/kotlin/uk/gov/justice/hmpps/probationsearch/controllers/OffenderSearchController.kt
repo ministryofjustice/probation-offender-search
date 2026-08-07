@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod.GET
 import org.springframework.web.bind.annotation.RequestMethod.POST
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.hmpps.probationsearch.config.SecurityUserContext
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.dto.SearchDto
 import uk.gov.justice.hmpps.probationsearch.dto.SearchPagedResults
@@ -44,7 +44,7 @@ import uk.gov.justice.hmpps.probationsearch.services.SearchService
 @Validated
 class OffenderSearchController(
   private val searchService: SearchService,
-  private val securityUserContext: SecurityUserContext,
+  private val authenticationHolder: HmppsAuthenticationHolder,
   private val telemetryClient: TelemetryClient,
 ) {
   companion object {
@@ -145,7 +145,7 @@ class OffenderSearchController(
   ): SearchPhraseResults = searchService.performSearch(
     searchPhraseFilter,
     pageable,
-    getOffenderUserAccessFromScopes(securityUserContext),
+    getOffenderUserAccessFromScopes(authenticationHolder),
   )
 
   @PreAuthorize("hasAnyRole('ROLE_COMMUNITY', 'ROLE_PROBATION__SEARCH_PERSON')")
