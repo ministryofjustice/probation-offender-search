@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
+import uk.gov.justice.hmpps.kotlin.auth.ServletRequestResponseNonNullFilterFunction
 import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
 
 @Configuration
@@ -34,6 +35,7 @@ class WebClientConfiguration(
   fun searchAndDeliusApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient =
     WebClient.builder()
       .codecs { it.defaultCodecs().jacksonJsonEncoder(JacksonJsonEncoder(jsonMapper)) }
+      .filter(ServletRequestResponseNonNullFilterFunction())
       .authorisedWebClient(authorizedClientManager, "probation-search-and-delius", deliusRootUri)
 
   private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction {
