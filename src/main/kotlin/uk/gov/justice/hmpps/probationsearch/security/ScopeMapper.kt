@@ -10,6 +10,6 @@ fun getOffenderUserAccessFromScopes(authenticationHolder: HmppsAuthenticationHol
     username = authenticationHolder.username?.takeIf { authenticationHolder.authSource == AuthSource.DELIUS },
     ignoreExclusionsAlways = authenticationHolder.authentication.hasScope("ignore_delius_exclusions_always"),
     ignoreInclusionsAlways = authenticationHolder.authentication.hasScope("ignore_delius_inclusions_always"),
-)
+  )
 
 private fun Authentication.hasScope(scope: String): Boolean = authorities.any { it.authority == "SCOPE_$scope" }
