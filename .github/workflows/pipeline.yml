@@ -24,7 +24,7 @@ jobs:
       matrix:
         environments: ['dev', 'preprod', 'prod']
     name: helm lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@180ff244a2c1fe09c3a7c669f83583f513c61a65 # v2.19.1
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@b7e29ba10659e877df6b75f95fd3d18ae37212a8 # v2.19.1
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
