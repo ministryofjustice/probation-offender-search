@@ -87,6 +87,7 @@ class ContactDataLoadService(
                 } catch (e: Exception) {
                   Sentry.captureException(e)
                   telemetryClient.trackException(e)
+                  throw e
                 }
               }
             }
@@ -164,7 +165,7 @@ class ContactDataLoadService(
 
       // Retry after delay
       SECONDS.sleep(delay[minOf(attempt, delay.size) - 1])
-      sendBulkRequestWithRetry(crn, failedOperations, attempt + 1)
+      sendBulkRequestWithRetry(crn, failedOperations, maxAttempts, delay, attempt + 1)
     }
   }
 
