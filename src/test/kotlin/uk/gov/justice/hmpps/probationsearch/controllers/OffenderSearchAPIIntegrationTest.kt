@@ -7,44 +7,45 @@ import io.restassured.config.RestAssuredConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.TestContext
-import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
-import org.springframework.test.context.support.AbstractTestExecutionListener
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import tools.jackson.databind.ObjectMapper
+import uk.gov.justice.hmpps.probationsearch.OpenSearchIntegrationTest
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.util.PersonSearchHelper
 import java.lang.reflect.Type
-import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
-@RunWith(SpringJUnit4ClassRunner::class)
-@TestExecutionListeners(listeners = [DependencyInjectionTestExecutionListener::class, OffenderSearchAPIIntegrationTest::class])
-@ContextConfiguration
-internal class OffenderSearchAPIIntegrationTest : AbstractTestExecutionListener() {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+internal class OffenderSearchAPIIntegrationTest : OpenSearchIntegrationTest() {
   @Autowired
   private lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 
-  override fun beforeTestClass(testContext: TestContext) {
-    val objectMapper = testContext.applicationContext.getBean(ObjectMapper::class.java)
-    val esClient = testContext.applicationContext.getBean(RestHighLevelClient::class.java)
+  @Autowired
+  private lateinit var objectMapper: ObjectMapper
+
+  @Autowired
+  private lateinit var esClient: RestHighLevelClient
+
+  @LocalServerPort
+  private var port: Int = 0
+
+  @BeforeAll
+  fun beforeAll() {
     PersonSearchHelper(esClient).loadData()
-    RestAssured.port =
-      Objects.requireNonNull(testContext.applicationContext.environment.getProperty("local.server.port"))!!.toInt()
+    RestAssured.port = port
     RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
       ObjectMapperConfig().jackson3ObjectMapperFactory { _: Type?, _: String? -> objectMapper },
     )

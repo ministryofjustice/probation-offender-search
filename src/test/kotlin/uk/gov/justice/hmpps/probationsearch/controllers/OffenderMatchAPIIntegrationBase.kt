@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import tools.jackson.databind.ObjectMapper
+import uk.gov.justice.hmpps.probationsearch.OpenSearchIntegrationTest
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
@@ -22,7 +23,7 @@ import java.time.LocalDate
 @MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
 @DirtiesContext
-abstract class OffenderMatchAPIIntegrationBase {
+abstract class OffenderMatchAPIIntegrationBase : OpenSearchIntegrationTest() {
   @Autowired
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
 

@@ -16,6 +16,7 @@ import org.springframework.data.elasticsearch.core.query.IndexQuery
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.hmpps.probationsearch.IndexNotReadyException
+import uk.gov.justice.hmpps.probationsearch.OpenSearchIntegrationTest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.OpenSearchSetup
 import uk.gov.justice.hmpps.probationsearch.contactsearch.semantic.block.ContactBlockService.Companion.CONTACT_SEMANTIC_BLOCK
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
@@ -28,7 +29,7 @@ import java.time.ZonedDateTime
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
-class ContactSemanticBlockIntegrationTest {
+class ContactSemanticBlockIntegrationTest : OpenSearchIntegrationTest() {
 
   @Autowired
   private lateinit var openSearchSetup: OpenSearchSetup

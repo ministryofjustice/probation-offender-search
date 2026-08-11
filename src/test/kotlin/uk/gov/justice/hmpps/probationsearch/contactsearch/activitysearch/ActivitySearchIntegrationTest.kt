@@ -28,6 +28,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.util.ResourceUtils
+import uk.gov.justice.hmpps.probationsearch.OpenSearchIntegrationTest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.activitysearch.ActivityGenerator.contacts
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
@@ -39,7 +40,7 @@ import java.time.LocalDateTime
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
-class ActivitySearchIntegrationTest {
+class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
 
   @Autowired
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
