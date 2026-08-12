@@ -23,7 +23,7 @@ generic-service:
 ## Additional service for talking to the old OpenSearch cluster, so that MPOP can continue to use the contact keyword search index
 # TODO remove this service once MPOP has been migrated to the new OpenSearch cluster and the old cluster has been decommissioned
 generic-service-old:
-  nameOverride: probation-offender-search
+  nameOverride: probation-offender-search-old
   serviceAccountName: probation-search
 
   resources:
