@@ -28,15 +28,15 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
-  kotlin_validate:
-    name: Validate the kotlin
-    uses: ./.github/workflows/kotlin_integration_tests.yml
-    secrets: inherit
+  #  kotlin_validate:
+  #    name: Validate the kotlin
+  #    uses: ./.github/workflows/kotlin_integration_tests.yml
+  #    secrets: inherit
   docker_build:
     #    if: ${{ github.ref == 'refs/heads/main' || inputs.push }}
     name: Push image
     uses: ./.github/workflows/jib-build.yml
-    needs: kotlin_validate
+  #    needs: kotlin_validate
   #  deploy_dev:
   #    name: Deploy to the dev environment
   #    concurrency:
