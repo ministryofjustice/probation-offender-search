@@ -20,6 +20,32 @@ generic-service:
     delius-prod-2: 35.178.104.253/32
     delius-prod-3: 35.177.47.45/32
 
+## Additional service for talking to the old OpenSearch cluster, so that MPOP can continue to use the contact keyword search index
+# TODO remove this service once MPOP has been migrated to the new OpenSearch cluster and the old cluster has been decommissioned
+generic-service-old:
+  ingress:
+    host: probation-offender-search-old.hmpps.service.justice.gov.uk
+    tlsSecretName: probation-offender-search-old-cert
+    contextColour: green
+
+  env:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
+    OAUTH_ENDPOINT_URL: "https://sign-in.hmpps.service.justice.gov.uk"
+    COMMUNITY_ENDPOINT_URL: "https://community-api-secure.probation.service.justice.gov.uk"
+    DELIUS_ENDPOINT_URL: "https://probation-search-and-delius.hmpps.service.justice.gov.uk"
+    SENTRY_ENVIRONMENT: prod
+    FLIPT_URL: https://feature-toggles.hmpps.service.justice.gov.uk
+    DATALOAD_ONDEMAND_BATCH_SIZE: 100
+
+  namespace_secrets:
+    opensearch:
+      OPENSEARCH_URIS: "old_url"
+
+  allowlist:
+    delius-prod-1: 52.56.115.146/32
+    delius-prod-2: 35.178.104.253/32
+    delius-prod-3: 35.177.47.45/32
+
 cron:
   SYNTHETIC_MONITOR_CRON_EXPRESSION: "*/10 * * * *"
 
