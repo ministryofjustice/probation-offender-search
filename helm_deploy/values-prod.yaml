@@ -36,7 +36,7 @@ generic-service-old:
 
   image:
     repository: ghcr.io/ministryofjustice/probation-offender-search
-    tag: app_version # override at deployment time
+    tag: 2026-08-12.712.5531f3f
     port: 8080
 
   ingress:
