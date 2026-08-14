@@ -6,7 +6,7 @@
 
 API to provides searching of offender records in Delius via Elastic search
 
-## Intellij setup
+## IntelliJ setup
 
 - Install JDK 25
 - Enable Gradle using JDK 25
@@ -21,21 +21,19 @@ API to provides searching of offender records in Delius via Elastic search
 - `/info`: provides information about the version of the deployed application, used by the notm-monitor.
 
 ## Running OpenSearch for tests
-The integration tests use the 'test' profile and require an [OpenSearch docker container](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/docker/):
-```bash
-$ docker-compose pull opensearch
-$ docker-compose up opensearch
-```
 
-Running the test `uk.gov.justice.hmpps.offendersearch.controllers.OffenderSearchAPIIntegrationTest` will insert an Offender Index on 
-the locally running OpenSearch instance and populate with Offender test data. OpenSearch has been added to the CircleCI configuration for 
-the build pipeline too. See [config.yml](./.circleci/config.yml).
+The integration tests use the 'test' profile and requires Docker to be running. Testcontainers will start the required OpenSearch container.
+[OpenSearchSetup.kt](src/test/kotlin/uk/gov/justice/hmpps/probationsearch/contactsearch/OpenSearchSetup.kt) will populate the container with configuration and test data.
 
 #### Building & Running
 
-Note the OpenSearch container is required for both tests and local running.
+To run locally, you can start up the container using Docker compose.
 
-```$bash
-$ ./gradlew test
-$ SPRING_PROFILES_ACTIVE=dev,opensearch ./gradlew bootRun
+```bash
+docker-compose pull opensearch
+docker-compose up opensearch
+```
+
+```bash
+SPRING_PROFILES_ACTIVE=dev,opensearch ./gradlew bootRun
 ```

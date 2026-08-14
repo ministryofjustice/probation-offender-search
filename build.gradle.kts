@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.4"
   kotlin("plugin.spring") version "2.4.10"
-  id("com.google.cloud.tools.jib") version "3.5.4"
 }
 
 dependencies {
@@ -36,59 +35,12 @@ dependencies {
   testImplementation("io.rest-assured:xml-path:6.0.1")
   testImplementation("io.rest-assured:spring-mock-mvc:6.0.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.46")
+  testImplementation("org.opensearch:opensearch-testcontainers:4.1.0")
+  testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.3")
 }
 
-java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(25))
-}
-
-kotlin {
-  compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_25)
-    freeCompilerArgs.set(listOf("-Xannotation-default-target=param-property"))
-  }
-}
-
-tasks {
-  withType<Test>().configureEach {
-    jvmArgs("-Dspring.test.context.cache.pause=never")
-  }
-  val copyAgentJar by registering(Copy::class) {
-    from("${project.layout.buildDirectory.get().asFile}/libs")
-    include("applicationinsights-agent*.jar")
-    into("${project.layout.buildDirectory.get().asFile}/agent")
-    rename("applicationinsights-agent(.+).jar", "agent.jar")
-    dependsOn("assemble")
-  }
-  getByName("jib") { dependsOn += copyAgentJar }
-  getByName("jibBuildTar") { dependsOn += copyAgentJar }
-  getByName("jibDockerBuild") { dependsOn += copyAgentJar }
-}
-
-jib {
-  container {
-    creationTime.set("USE_CURRENT_TIMESTAMP")
-    jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
-    mainClass = "uk.gov.justice.hmpps.probationsearch.OffenderSearchApplicationKt"
-    user = "2000:2000"
-  }
-  from {
-    image = "eclipse-temurin:25-jre-alpine"
-  }
-  extraDirectories {
-    paths {
-      path {
-        setFrom("${project.layout.buildDirectory.get().asFile}")
-        includes.add("agent/agent.jar")
-      }
-      path {
-        setFrom("${project.rootDir}")
-        includes.add("applicationinsights*.json")
-        into = "/agent"
-      }
-    }
-  }
-}
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+kotlin.compilerOptions.jvmTarget.set(JvmTarget.JVM_25)
 
 // Disable ktlint in favour of IntelliJ formatting
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {

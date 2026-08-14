@@ -8,7 +8,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.opensearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -19,20 +18,17 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import tools.jackson.databind.ObjectMapper
+import uk.gov.justice.hmpps.probationsearch.OpenSearchIntegrationTest
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.services.FeatureFlags
 import uk.gov.justice.hmpps.probationsearch.util.JwtAuthenticationHelper
 import uk.gov.justice.hmpps.probationsearch.util.PersonSearchHelper
-import uk.gov.justice.hmpps.probationsearch.wiremock.OpenSearchExtension
 import java.lang.reflect.Type
-import java.nio.file.Files
-import java.nio.file.Paths
 
-@ExtendWith(OpenSearchExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @MockitoBean(types = [FeatureFlags::class])
-@ActiveProfiles(profiles = ["test", "wiremock"])
-class OffenderSearchControllerTest {
+@ActiveProfiles(profiles = ["test"])
+class OffenderSearchControllerTest : OpenSearchIntegrationTest() {
   @LocalServerPort
   var port = 0
 
@@ -60,7 +56,6 @@ class OffenderSearchControllerTest {
 
   @Test
   fun offenderSearch() {
-    OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/search-data/singleMatch.json"))
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
@@ -78,7 +73,6 @@ class OffenderSearchControllerTest {
 
   @Test
   fun offenderSearchWithAliases() {
-    OpenSearchExtension.openSearch.stubSearch(response("src/test/resources/search-data/singleMatch.json"))
     val results = RestAssured.given()
       .auth()
       .oauth2(jwtAuthenticationHelper.createJwt("ROLE_PROBATION__SEARCH_PERSON"))
@@ -120,10 +114,6 @@ class OffenderSearchControllerTest {
       .`when`()["/search"]
       .then()
       .statusCode(400)
-  }
-
-  private fun response(file: String): String {
-    return Files.readString(Paths.get(file))
   }
 
 }

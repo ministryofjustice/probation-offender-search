@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import tools.jackson.databind.ObjectMapper
+import uk.gov.justice.hmpps.probationsearch.OpenSearchIntegrationTest
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderAlias
 import uk.gov.justice.hmpps.probationsearch.dto.OffenderDetail
 import uk.gov.justice.hmpps.probationsearch.dto.PhoneNumber
@@ -25,7 +26,7 @@ import kotlin.random.Random.Default.nextInt
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @MockitoBean(types = [FeatureFlags::class])
 @ActiveProfiles(profiles = ["test"])
-abstract class ElasticIntegrationBase {
+abstract class ElasticIntegrationBase : OpenSearchIntegrationTest() {
 
   @Autowired
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper

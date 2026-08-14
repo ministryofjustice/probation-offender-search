@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import tools.jackson.databind.ObjectMapper
+import uk.gov.justice.hmpps.probationsearch.OpenSearchIntegrationTest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.OpenSearchSetup
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchRequest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse
@@ -31,7 +32,7 @@ import java.time.LocalDate
 @ExtendWith(DeliusApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["test"])
-class ContactSemanticSearchIntegrationTest {
+class ContactSemanticSearchIntegrationTest : OpenSearchIntegrationTest() {
   @MockitoBean
   private lateinit var featureFlags: FeatureFlags
 
