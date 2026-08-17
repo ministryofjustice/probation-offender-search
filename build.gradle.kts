@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.5"
   kotlin("plugin.spring") version "2.4.10"
 }
 
@@ -16,7 +16,7 @@ dependencies {
   implementation("org.opensearch.client:spring-data-opensearch-starter:3.1.1")
   implementation("org.opensearch.client:opensearch-java:3.9.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
-  implementation("io.sentry:sentry-spring-boot-4:8.52.0")
+  implementation("io.sentry:sentry-spring-boot-4:8.53.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
@@ -29,14 +29,14 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.junit.vintage:junit-vintage-engine")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.0.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.2.0")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path:6.0.1")
   testImplementation("io.rest-assured:xml-path:6.0.1")
   testImplementation("io.rest-assured:spring-mock-mvc:6.0.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.46")
   testImplementation("org.opensearch:opensearch-testcontainers:4.1.0")
-  testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.3")
+  testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(25))
