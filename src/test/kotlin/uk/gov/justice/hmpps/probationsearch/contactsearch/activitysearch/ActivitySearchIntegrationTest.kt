@@ -93,10 +93,10 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .results()
 
     assertThat(results.size).isEqualTo(3)
-    assertThat(results.totalResults).isEqualTo(8)
+    assertThat(results.totalResults).isEqualTo(12)
     assertThat(results.results.map { it.id }).containsAll(
       contacts
-        .filter { it.crn == crn && it.startDateTime!! <= LocalDateTime.now() }
+        .filter { it.crn == crn }
         .sortedByDescending { it.startDateTime }
         .map { it.id }
         .take(3),
@@ -113,8 +113,8 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(8)
-    assertThat(results.totalResults).isEqualTo(8)
+    assertThat(results.size).isEqualTo(12)
+    assertThat(results.totalResults).isEqualTo(12)
   }
 
 
@@ -134,8 +134,8 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
-    assertThat(results.totalResults).isEqualTo(1)
+    assertThat(results.size).isEqualTo(4)
+    assertThat(results.totalResults).isEqualTo(4)
   }
 
   @Test
@@ -157,8 +157,8 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(2)
-    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.size).isEqualTo(5)
+    assertThat(results.totalResults).isEqualTo(5)
   }
 
   @Test
@@ -181,8 +181,8 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(3)
-    assertThat(results.totalResults).isEqualTo(3)
+    assertThat(results.size).isEqualTo(6)
+    assertThat(results.totalResults).isEqualTo(6)
   }
 
 
@@ -202,11 +202,11 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .results()
 
     assertThat(results.size).isEqualTo(3)
-    assertThat(results.totalResults).isEqualTo(8)
+    assertThat(results.totalResults).isEqualTo(12)
   }
 
   @Test
-  fun `can filter based on no outcome (and in the past)`() {
+  fun `can filter based on no outcome`() {
     val crn = "T654321"
     val results = RestAssured.given()
       .`when`()
@@ -216,14 +216,14 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
           filters = listOf(ActivitySearchService.ActivityFilter.NO_OUTCOME.filterName),
           includeSystemGenerated = false,
         ),
-        mapOf("page" to 0, "size" to 3),
+        mapOf("page" to 0, "size" to 4),
       )
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(1)
-    assertThat(results.totalResults).isEqualTo(1)
-    assertThat(results.results[0].notes).isEqualTo("I have no outcome")
+    assertThat(results.size).isEqualTo(4)
+    assertThat(results.totalResults).isEqualTo(4)
+    assertThat(results.results.map { it.notes }).contains("I have no outcome")
   }
 
   @Test
@@ -314,8 +314,8 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(2)
-    assertThat(results.totalResults).isEqualTo(2)
+    assertThat(results.size).isEqualTo(3)
+    assertThat(results.totalResults).isEqualTo(3)
   }
 
   @Test
@@ -363,7 +363,7 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .results()
 
     assertThat(results.size).isEqualTo(3)
-    assertThat(results.totalResults).isEqualTo(5)
+    assertThat(results.totalResults).isEqualTo(6)
     assertThat(results.results.map { it.notes }).contains("I have no outcome")
   }
 
@@ -378,13 +378,13 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
           dateFrom = LocalDate.now(),
           includeSystemGenerated = false,
         ),
-        mapOf("page" to 0, "size" to 6),
+        mapOf("page" to 0, "size" to 10),
       )
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(5)
-    assertThat(results.totalResults).isEqualTo(5)
+    assertThat(results.size).isEqualTo(9)
+    assertThat(results.totalResults).isEqualTo(9)
     assertThat(results.results.map { it.notes }).contains("I have no outcome")
   }
 
@@ -405,7 +405,7 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .results()
 
     assertThat(results.size).isEqualTo(4)
-    assertThat(results.totalResults).isEqualTo(8)
+    assertThat(results.totalResults).isEqualTo(9)
     assertThat(results.results.map { it.notes }).contains("I have no outcome")
   }
 
@@ -477,8 +477,8 @@ class ActivitySearchIntegrationTest : OpenSearchIntegrationTest() {
       .then()
       .results()
 
-    assertThat(results.size).isEqualTo(9)
-    assertThat(results.totalResults).isEqualTo(9)
+    assertThat(results.size).isEqualTo(13)
+    assertThat(results.totalResults).isEqualTo(13)
     assertThat(results.results.map { it.notes }).contains("I am system generated")
 
   }
