@@ -26,7 +26,7 @@ dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.30.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.31.0")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
   implementation("io.flipt:flipt-client-java:1.3.3") {
     exclude("org.apache.httpcomponents", "httpclient")
@@ -40,7 +40,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path:6.0.1")
   testImplementation("io.rest-assured:xml-path:6.0.1")
   testImplementation("io.rest-assured:spring-mock-mvc:6.0.1")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.46")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.47")
   testImplementation("org.opensearch:opensearch-testcontainers:4.1.0")
   testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
 }
