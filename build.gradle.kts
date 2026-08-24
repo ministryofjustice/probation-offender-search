@@ -6,6 +6,12 @@ plugins {
 }
 
 dependencies {
+  constraints {
+    implementation("org.eclipse.parsson:parsson:1.1.9") {
+      because("Fix CVE-2026-9563 found in 1.1.7")
+    }
+  }
+
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   implementation("org.springframework.boot:spring-boot-starter-webflux")
