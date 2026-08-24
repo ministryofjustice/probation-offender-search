@@ -79,15 +79,7 @@ class ActivitySearchService(
       filter(rangeQuery("date").gte(it.toString()))
     }
     request.dateTo?.let {
-      if (it.isEqual(LocalDate.now())) {
-        filter(rangeQuery("startDateTime").lte(LocalDateTime.now()))
-      } else {
-        filter(rangeQuery("date").lte(it.toString()))
-      }
-    }
-
-    if (request.dateTo == null) {
-      filter(rangeQuery("startDateTime").lte(LocalDateTime.now()))
+      filter(rangeQuery("date").lte(it.toString()))
     }
 
     if (!request.includeSystemGenerated) filter(matchQuery("systemGenerated", "N"))

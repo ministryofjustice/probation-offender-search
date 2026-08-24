@@ -20,7 +20,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.hmpps.probationsearch.security.AuthAwareTokenConverter
+import uk.gov.justice.hmpps.kotlin.auth.AuthAwareTokenConverter
 import uk.gov.justice.hmpps.probationsearch.wiremock.CommunityApiExtension
 import java.security.KeyPair
 import java.time.LocalDateTime

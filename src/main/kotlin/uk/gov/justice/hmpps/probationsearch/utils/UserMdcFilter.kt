@@ -9,16 +9,16 @@ import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import uk.gov.justice.hmpps.probationsearch.config.SecurityUserContext
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 
 @Component
 @Order(1)
-class UserMdcFilter @Autowired constructor(private val securityUserContext: SecurityUserContext) : Filter {
+class UserMdcFilter @Autowired constructor(private val authenticationHolder: HmppsAuthenticationHolder) : Filter {
   override fun init(filterConfig: FilterConfig) { // Initialise - no functionality
   }
 
   override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-    val currentUsername = securityUserContext.currentUsername
+    val currentUsername = authenticationHolder.authenticationOrNull?.userName
     try {
       if (currentUsername != null) {
         MDC.put(USER_ID_HEADER, currentUsername)

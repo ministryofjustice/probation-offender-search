@@ -31,6 +31,7 @@ import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.util.ResourceUtils
+import uk.gov.justice.hmpps.probationsearch.OpenSearchIntegrationTest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.ContactGenerator.contacts
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchRequest
 import uk.gov.justice.hmpps.probationsearch.contactsearch.model.ContactSearchResponse
@@ -42,7 +43,7 @@ import uk.gov.justice.hmpps.probationsearch.wiremock.DeliusApiExtension
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @MockitoBean(types = [FeatureFlags::class, TelemetryClient::class])
 @ActiveProfiles(profiles = ["test"])
-class ContactKeywordSearchIntegrationTest {
+class ContactKeywordSearchIntegrationTest : OpenSearchIntegrationTest() {
 
   @Autowired
   internal lateinit var jwtAuthenticationHelper: JwtAuthenticationHelper
