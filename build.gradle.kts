@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.8"
   kotlin("plugin.spring") version "2.4.10"
 }
 
@@ -19,16 +19,16 @@ dependencies {
   implementation("org.springframework.data:spring-data-jpa")
   implementation("io.jsonwebtoken:jjwt-impl:0.13.0")
   implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
-  implementation("org.opensearch.client:spring-data-opensearch-starter:3.1.1")
-  implementation("org.opensearch.client:opensearch-java:3.9.0")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:3.1.2")
+  implementation("org.opensearch.client:opensearch-java:3.10.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
-  implementation("io.sentry:sentry-spring-boot-4:8.54.0")
+  implementation("io.sentry:sentry-spring-boot-4:8.55.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.1")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.31.1")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin")
-  implementation("io.flipt:flipt-client-java:1.3.3") {
+  implementation("io.flipt:flipt-client-java:1.3.4") {
     exclude("org.apache.httpcomponents", "httpclient")
   }
 
@@ -40,7 +40,7 @@ dependencies {
   testImplementation("io.rest-assured:json-path:6.0.1")
   testImplementation("io.rest-assured:xml-path:6.0.1")
   testImplementation("io.rest-assured:spring-mock-mvc:6.0.1")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.47")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v3:2.1.48")
   testImplementation("org.opensearch:opensearch-testcontainers:4.1.0")
   testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
 }
