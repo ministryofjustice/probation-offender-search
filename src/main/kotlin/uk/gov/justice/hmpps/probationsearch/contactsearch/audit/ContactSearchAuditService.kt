@@ -36,7 +36,7 @@ class ContactSearchAuditService(
         subjectId = request.crn,
         subjectType = "CRN",
         correlationId = Span.current().spanContext.traceId,
-        service = "probation-search",
+        service = "probation-offender-search",
         details = objectMapper.writeValueAsString(request),
       )
 
@@ -65,7 +65,7 @@ class ContactSearchAuditService(
         subjectId = request.crn,
         subjectType = "CRN",
         correlationId = Span.current().spanContext.traceId,
-        service = "probation-search",
+        service = "probation-offender-search",
         details = objectMapper.writeValueAsString(request),
       )
 
