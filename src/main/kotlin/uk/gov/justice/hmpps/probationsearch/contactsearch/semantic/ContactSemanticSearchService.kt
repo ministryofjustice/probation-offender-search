@@ -178,7 +178,7 @@ class ContactSemanticSearchService(
               .field("textEmbedding.knn")
               .queryText(request.query)
               .minScore(MIN_SCORE)
-              .filter { it.term("textEmbedding.crn" to request.crn) }
+              .filter { it.term("crn" to request.crn) }
           }
         }
     }.toQuery()
