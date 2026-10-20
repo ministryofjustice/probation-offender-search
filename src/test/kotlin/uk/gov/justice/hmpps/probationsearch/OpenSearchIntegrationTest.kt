@@ -10,7 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @Testcontainers
 abstract class OpenSearchIntegrationTest {
   private class TestOpenSearchContainer :
-    OpenSearchContainer<TestOpenSearchContainer>("opensearchproject/opensearch:3.2.0") {
+    OpenSearchContainer<TestOpenSearchContainer>("opensearchproject/opensearch:3.7.0") {
     override fun start() {
       // Keep the same container running throughout the tests
       if (!isRunning) super.start()
