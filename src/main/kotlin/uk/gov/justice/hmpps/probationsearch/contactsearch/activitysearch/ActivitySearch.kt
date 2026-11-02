@@ -29,7 +29,10 @@ data class ActivitySearchRequest(
   ) val filterBySupervisionPackageContacts: Boolean = false,
   val filters: List<String> = emptyList(),
   val typeCodes: List<String> = emptyList(),
-)
+) {
+  val query = keywords
+  val matchAllTerms = false
+}
 
 data class ActivitySearchAuditRequest(
   val search: ActivitySearchRequest,
