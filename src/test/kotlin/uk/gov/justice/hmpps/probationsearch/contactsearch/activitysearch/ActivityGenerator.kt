@@ -35,7 +35,7 @@ object ActivityGenerator {
     supervisionPackage: String? = "N",
     sparks: List<Sparks>? = null,
 
-    ) = ActivitySearchResult(
+  ) = ActivitySearchResult(
     crn,
     id,
     typeCode,
