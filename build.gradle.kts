@@ -5,13 +5,10 @@ plugins {
   kotlin("plugin.spring") version "2.4.21"
 }
 
-dependencies {
-  constraints {
-    implementation("org.eclipse.parsson:parsson:1.1.9") {
-      because("Fix CVE-2026-9563 found in 1.1.7")
-    }
-  }
+// Override the Spring Boot-managed version to fix CVE-2026-124077.
+extra["commons-codec.version"] = "1.23.0"
 
+dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -19,8 +16,20 @@ dependencies {
   implementation("org.springframework.data:spring-data-jpa")
   implementation("io.jsonwebtoken:jjwt-impl:0.13.0")
   implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
-  implementation("org.opensearch.client:spring-data-opensearch-starter:3.1.4")
-  implementation("org.opensearch.client:opensearch-java:3.11.0")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:3.1.4") {
+    constraints {
+      implementation("com.github.luben:zstd-jni:1.5.7-14") {
+        because("Fix CVE-2026-87795, CVE-2026-87823, CVE-2026-87824, CVE-2026-87825, CVE-2026-87877, CVE-2026-90560 and CVE-2026-90852")
+      }
+    }
+  }
+  implementation("org.opensearch.client:opensearch-java:3.11.0") {
+    constraints {
+      implementation("org.eclipse.parsson:parsson:1.1.9") {
+        because("Fix CVE-2026-9563 found in 1.1.7")
+      }
+    }
+  }
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
   implementation("io.sentry:sentry-spring-boot-4:8.65.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.1.0")
