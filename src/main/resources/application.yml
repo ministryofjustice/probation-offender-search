@@ -14,9 +14,6 @@ spring:
     groups:
       test:
         - "stdout"
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
   security:
     oauth2:
       client:
