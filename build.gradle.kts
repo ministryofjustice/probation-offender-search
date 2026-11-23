@@ -18,7 +18,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.opensearch.client:spring-data-opensearch-starter:3.1.4") {
     constraints {
-      implementation("com.github.luben:zstd-jni:1.5.7-14") {
+      implementation("com.github.luben:zstd-jni:1.5.7-28") {
         because("Fix CVE-2026-87795, CVE-2026-87823, CVE-2026-87824, CVE-2026-87825, CVE-2026-87877, CVE-2026-90560 and CVE-2026-90852")
       }
     }
