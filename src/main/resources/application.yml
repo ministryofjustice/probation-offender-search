@@ -31,6 +31,7 @@ spring:
           hmpps-auth:
             token-uri: ${oauth.endpoint.url}/auth/oauth/token
 
+info.productId: HMPPS518 # https://developer-portal.hmpps.service.justice.gov.uk/products/probation-integrations
 server:
   port: 8080
   servlet:
