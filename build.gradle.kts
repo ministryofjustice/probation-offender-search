@@ -16,7 +16,7 @@ dependencies {
   implementation("org.springframework.data:spring-data-jpa")
   implementation("io.jsonwebtoken:jjwt-impl:0.13.0")
   implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
-  implementation("org.opensearch.client:spring-data-opensearch-starter:3.1.4") {
+  implementation("org.opensearch.client:spring-data-opensearch-starter:3.1.5") {
     constraints {
       implementation("com.github.luben:zstd-jni:1.5.7-28") {
         because("Fix CVE-2026-87795, CVE-2026-87823, CVE-2026-87824, CVE-2026-87825, CVE-2026-87877, CVE-2026-90560 and CVE-2026-90852")
@@ -44,7 +44,7 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.junit.vintage:junit-vintage-engine")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.4.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.4.1")
   testImplementation("org.awaitility:awaitility-kotlin")
   testImplementation("io.rest-assured:json-path:6.3.0")
   testImplementation("io.rest-assured:xml-path:6.3.0")
